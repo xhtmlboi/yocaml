@@ -1,0 +1,9 @@
+{0 Wordpress}
+
+{e WordPress} is a free and open-source content management system (CMS)
+written in OCaml. In other words, {e Wordpress} is a static blog generator
+written in OCaml. And yes, another one!
+
+{1 Full Documentation}
+
+The full API can be {{:Wordpress/index.html} found here}

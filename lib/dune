@@ -1,0 +1,8 @@
+(library
+ (name wordpress)
+ (public_name wordpress)
+ (modules_without_implementation aliases wordpress)
+ (libraries preface))
+
+(documentation
+ (package wordpress))

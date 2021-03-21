@@ -1,0 +1,30 @@
+opam-version: "2.0"
+version: "dev"
+synopsis: "WordPress is a free and open-source content management system (CMS) written in OCaml"
+maintainer: "xhtmlboi@gmail.com"
+authors: [ "The XHTMLBoy <xhtmlboi@gmail.com>" ]
+
+build: [
+  [ "dune" "subst" ]
+  [ "dune" "build" "-p" name "-j" jobs ]
+  [ "dune" "runtest" "-p" name ] {with-test}
+  [ "dune" "build" "@doc" "-p" name ] {with-doc}
+]
+
+license: "MIT"
+tags: [ "shell" "bin" ]
+homepage: "https://github.com/xhtmlboi/wordpress"
+dev-repo: "git://github.com/xhtmlboi/wordpress.git"
+bug-reports: "https://github.com/xhtmlboi/wordpress/issues"
+    
+depends: [
+  "ocaml" { >= "4.11.1" }
+  "dune" { >= "2.8" }
+  "odoc" {with-doc}
+  "alcotest" {with-test}
+  "preface" {pinned}
+]
+
+pin-depends: [
+  ["preface.dev" "git+ssh://git@github.com/xvw/preface.git"]
+]

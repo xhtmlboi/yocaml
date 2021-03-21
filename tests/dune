@@ -1,0 +1,3 @@
+(test
+ (name wordpress_test)
+ (libraries alcotest preface wordpress))
