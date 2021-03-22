@@ -51,3 +51,11 @@ module Validate = Validate
 
 module Lexicon = Lexicon
 module Aliases = Aliases
+module Util = Util
+
+(** {1 Included common utils}
+
+    There are always lots of little unreadable tools that I want to use...
+    sometimes it improves readability... sometimes not. *)
+
+include module type of Util
