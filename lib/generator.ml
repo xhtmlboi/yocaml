@@ -24,6 +24,15 @@ let read filename =
   | _ -> Error.(to_try (Unreadable_file filename))
 ;;
 
+let rec create_path ?(file_perm = 0o777) path =
+  if not (Sys.file_exists path)
+  then (
+    let parent = Filename.dirname path in
+    let () = create_path ~file_perm parent in
+    try Unix.mkdir path file_perm with
+    | _ -> ())
+;;
+
 let write filename content =
   try
     let chan = open_out filename in
@@ -71,7 +80,9 @@ let run program =
             | File_exists path -> resume @@ Sys.file_exists path
             | Get_modification_time path -> resume @@ mtime path
             | Read_file path -> resume @@ read path
-            | Write_file (path, content) -> resume @@ write path content
+            | Write_file (path, content) ->
+              let () = create_path (Filename.dirname path) in
+              resume @@ write path content
             | Log (level, message) ->
               let () = log level message in
               resume ()

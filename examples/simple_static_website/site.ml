@@ -1,19 +1,21 @@
 open Wordpress
 
-let run_for page =
+let dest = "_build"
+
+let create_page page =
   let open Build in
-  run
-    (page ^ ".html")
+  create_file
+    (page ^ ".html" |> into dest)
     (read_file "tpl/header.html"
-    >>> concat_content ~separator:"\n" ("pages/" ^ page ^ ".html")
-    >>> concat_content ~separator:"\n" "tpl/footer.html")
+    >>> concat_content ("pages/" ^ page ^ ".html")
+    >>> concat_content "tpl/footer.html")
 ;;
 
 let generator =
   let open Effect.Monad in
-  let* () = run_for "index" in
-  let* () = run_for "about" in
-  run_for "lipsum"
+  let* () = create_page "index" in
+  let* () = create_page "about" in
+  create_page "lipsum"
 ;;
 
 let () = Generator.run generator

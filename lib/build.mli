@@ -12,15 +12,18 @@ type ('a, 'b) t
 
 (** {1 Action on rules} *)
 
-(** [run target build_rule] executes the [build_rule] task if the dependencies
-    are not up-to-date for [target] (or [target] does not exist). *)
-val run : filepath -> (unit, string) t -> unit Effect.t
+(** [create_file target build_rule] executes the [build_rule] task if the
+    dependencies are not up-to-date for [target] (or [target] does not exist). *)
+val create_file : filepath -> (unit, string) t -> unit Effect.t
 
 (** [dependencies rule] returns the dependencies of the [rule]. *)
 val dependencies : ('a, 'b) t -> Deps.t
 
 (** [task rule] returns the task of the [rule]. *)
 val task : ('a, 'b) t -> 'a -> 'b Effect.t
+
+(** [filepath |> into dir] describes a [filepath] into a [dir]. *)
+val into : filepath -> filepath -> filepath
 
 (** {1 Building rules}
 
@@ -30,11 +33,11 @@ val task : ('a, 'b) t -> 'a -> 'b Effect.t
 val read_file : filepath -> (unit, string) t
 
 (** Pipe an arrow to an other and concat the results. *)
-val concat_content : separator:string -> filepath -> (string, string) t
+val concat_content : ?separator:string -> filepath -> (string, string) t
 
 (** Concat two files. *)
 val concat_files
-  :  separator:string
+  :  ?separator:string
   -> filepath
   -> filepath
   -> (unit, string) t

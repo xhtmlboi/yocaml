@@ -28,5 +28,4 @@ setup.log
 # Local OPAM switch
 _opam/
 
-examples/*/*.html
 *.exe

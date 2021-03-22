@@ -6,7 +6,7 @@ type ('a, 'b) t =
 let dependencies { dependencies; _ } = dependencies
 let task { task; _ } = task
 
-let auxiliary_build_with_deps target deps task =
+let auxiliary_create_file_with_deps target deps task =
   let open Effect.Monad in
   let* may_need_update = Deps.need_update deps target in
   match may_need_update with
@@ -80,12 +80,14 @@ module Arrow_choice =
 include (
   Arrow_choice : Preface_specs.ARROW_CHOICE with type ('a, 'b) t := ('a, 'b) t)
 
-let run target build_rule =
-  auxiliary_build_with_deps
+let create_file target build_rule =
+  auxiliary_create_file_with_deps
     target
     build_rule.dependencies
     (build_rule.task ())
 ;;
+
+let into = Filename.concat
 
 let read_file path =
   { dependencies = Deps.singleton (Deps.file path)
@@ -99,12 +101,12 @@ let read_file path =
   }
 ;;
 
-let concat_content ~separator path =
+let concat_content ?(separator = "\n") path =
   let open Preface in
   let c (x, y) = x ^ separator ^ y in
   Fun.flip Tuple.( & ) () ^>> snd (read_file path) >>^ c
 ;;
 
-let concat_files ~separator first_file second_file =
-  read_file first_file >>> concat_content ~separator second_file
+let concat_files ?separator first_file second_file =
+  read_file first_file >>> concat_content ?separator second_file
 ;;

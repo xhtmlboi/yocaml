@@ -29,7 +29,7 @@ let simple_file_copy =
     Build.dependencies arrow |> Deps.to_list |> List.map Deps.to_filepath
   in
   check (list string) "the deps should be equal" [ "source.txt" ] deps;
-  Dummy.handle dummy (Build.run "target.build" arrow);
+  Dummy.handle dummy (Build.create_file "target.build" arrow);
   check
     bool
     "the target should exists after handling"
@@ -83,7 +83,7 @@ let simple_file_copy_with_multiple_deps =
     "the deps should be equal"
     [ "source1.txt"; "source2.txt"; "source3.txt" ]
     deps;
-  Dummy.handle dummy (Build.run "target.build" arrow);
+  Dummy.handle dummy (Build.create_file "target.build" arrow);
   check
     bool
     "the target should exists after handling"
