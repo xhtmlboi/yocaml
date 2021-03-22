@@ -23,6 +23,7 @@ module Build = Build
     strategy. *)
 
 module Deps = Deps
+module Generator = Generator
 
 (** {1 Handling}
 

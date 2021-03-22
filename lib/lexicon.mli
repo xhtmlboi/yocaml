@@ -16,8 +16,11 @@ type t = string
 
 (** {1 Messages} *)
 
+(** Occurs when a target need to be built. *)
+val target_need_to_be_built : filepath -> t
+
 (** Occurs when a target is up to date. *)
-val target_is_up_to_date : filepath -> string
+val target_is_up_to_date : filepath -> t
 
 (** Occurs when there is an error. *)
-val crap_there_is_an_error : Error.t -> string
+val crap_there_is_an_error : Error.t -> t

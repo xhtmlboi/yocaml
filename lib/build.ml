@@ -15,7 +15,8 @@ let auxiliary_build_with_deps target deps task =
   | Ok need_update ->
     if need_update
     then
-      task
+      Effect.info (Lexicon.target_need_to_be_built target)
+      >>= Fun.const task
       >>= Effect.write_file target
       >>= function
       | Error err ->

@@ -12,7 +12,9 @@ type t =
   | List of t Preface.Nonempty_list.t
       (** Groups several errors into one (mainly to ensure conversions between
           [Try] and [Validate]). *)
-  | Unknown of string (** An unqualified error (probably due to laziness) *)
+  | Unix of Unix.error * string * string (** Unix related error. *)
+  | Unreadable_file of string (** When a file is unreadable. *)
+  | Unknown of string (** An unqualified error (probably due to laziness). *)
 
 (** Represents an [Error.t] in [exception]. *)
 exception Error of t
