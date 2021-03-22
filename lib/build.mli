@@ -22,9 +22,6 @@ val dependencies : ('a, 'b) t -> Deps.t
 (** [task rule] returns the task of the [rule]. *)
 val task : ('a, 'b) t -> 'a -> 'b Effect.t
 
-(** [filepath |> into dir] describes a [filepath] into a [dir]. *)
-val into : filepath -> filepath -> filepath
-
 (** {1 Building rules}
 
     Combiners to build rules (increasingly complex, to infinity and beyond). *)

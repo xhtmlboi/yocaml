@@ -4,11 +4,10 @@ let dest = "_build"
 
 let create_page page =
   let open Build in
-  create_file
-    (page ^ ".html" |> into dest)
-    (read_file "tpl/header.html"
-    >>> concat_content ("pages/" ^ page ^ ".html")
-    >>> concat_content "tpl/footer.html")
+  create_file (page ^ ".html" |> into dest)
+  $ read_file "tpl/header.html"
+    %> concat_content ("pages/" ^ page ^ ".html")
+    %> concat_content "tpl/footer.html"
 ;;
 
 let generator =

@@ -1,3 +1,5 @@
+open Wordpress.Util
+
 module Filesystem = struct
   type path = string
   type mtime = int
@@ -101,7 +103,7 @@ let perform_if_exists path f =
   Option.fold
     ~none:Wordpress.Error.(to_try (Unknown ("File not exists " ^ path)))
     ~some:Wordpress.Try.ok
-  @@ f path
+  $ f path
 ;;
 
 let handle dummy program =
@@ -110,15 +112,15 @@ let handle dummy program =
         (fun resume effect ->
           let f : type b. (b -> 'a) -> b Wordpress.Effect.f -> 'a =
            fun resume -> function
-            | File_exists path -> resume @@ file_exists dummy path
+            | File_exists path -> resume $ file_exists dummy path
             | Get_modification_time path ->
-              resume @@ perform_if_exists path (get_file_mtime dummy)
+              resume $ perform_if_exists path (get_file_mtime dummy)
             | Read_file path ->
-              resume @@ perform_if_exists path (get_file_content dummy)
+              resume $ perform_if_exists path (get_file_content dummy)
             | Write_file (path, content) ->
               let () = write_file dummy path content in
-              resume @@ Wordpress.Try.ok ()
-            | Log (level, message) -> resume @@ log dummy level message
+              resume $ Wordpress.Try.ok ()
+            | Log (level, message) -> resume $ log dummy level message
             | Throw _ -> assert false
           in
           f resume effect)

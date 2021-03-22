@@ -1,4 +1,5 @@
 open Aliases
+open Util
 
 type (_, 'a) effects =
   | File_exists : filepath -> (< file_exists : e ; .. >, bool) effects
@@ -24,16 +25,16 @@ module Freer = Preface.Make.Freer_monad.Over (struct
     effects
 end)
 
-let file_exists path = Freer.perform @@ File_exists path
-let get_modification_time path = Freer.perform @@ Get_modification_time path
-let read_file path = Freer.perform @@ Read_file path
-let write_file path content = Freer.perform @@ Write_file (path, content)
-let log level message = Freer.perform @@ Log (level, message)
+let file_exists path = Freer.perform $ File_exists path
+let get_modification_time path = Freer.perform $ Get_modification_time path
+let read_file path = Freer.perform $ Read_file path
+let write_file path content = Freer.perform $ Write_file (path, content)
+let log level message = Freer.perform $ Log (level, message)
 let trace = log Trace
 let debug = log Debug
 let info = log Info
 let warning = log Warning
 let alert = log Alert
-let throw error = Freer.perform @@ Throw error
+let throw error = Freer.perform $ Throw error
 
 include Freer

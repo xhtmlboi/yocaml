@@ -1,7 +1,7 @@
 (library
  (name wordpress)
  (public_name wordpress)
- (modules_without_implementation aliases wordpress)
+ (modules_without_implementation aliases)
  (libraries unix preface))
 
 (documentation

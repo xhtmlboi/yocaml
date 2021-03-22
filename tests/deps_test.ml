@@ -3,12 +3,12 @@ open Wordpress
 let need_update_no_deps_file_not_present =
   let open Alcotest in
   test_case "When the file has no dependencies but does not exists" `Quick
-  @@ fun () ->
+  $ fun () ->
   let dummy = Dummy.make () in
   let deps = Deps.empty in
   let target = "my-file.txt" in
   let expected = Try.ok true in
-  let computed = Dummy.handle dummy @@ Deps.need_update deps target in
+  let computed = Dummy.handle dummy $ Deps.need_update deps target in
   check
     (result bool (testable Error.pp Error.equal))
     "since the filesystem is empty, the file need to be updated"
@@ -19,7 +19,7 @@ let need_update_no_deps_file_not_present =
 let need_update_no_deps_file_present =
   let open Alcotest in
   test_case "When the file has no dependencies but does exists" `Quick
-  @@ fun () ->
+  $ fun () ->
   let dummy =
     Dummy.(
       make
@@ -29,7 +29,7 @@ let need_update_no_deps_file_present =
   let deps = Deps.empty in
   let target = "my-file.txt" in
   let expected = Try.ok false in
-  let computed = Dummy.handle dummy @@ Deps.need_update deps target in
+  let computed = Dummy.handle dummy $ Deps.need_update deps target in
   check
     (result bool (testable Error.pp Error.equal))
     "The target has no dependencies and exists in the file system, so it \
@@ -41,7 +41,7 @@ let need_update_no_deps_file_present =
 let need_update_updated_deps_file_present =
   let open Alcotest in
   test_case "When the file has dependencies but they are up to date" `Quick
-  @@ fun () ->
+  $ fun () ->
   let dummy =
     Dummy.(
       make
@@ -58,7 +58,7 @@ let need_update_updated_deps_file_present =
   in
   let target = "my-file.txt" in
   let expected = Try.ok false in
-  let computed = Dummy.handle dummy @@ Deps.need_update deps target in
+  let computed = Dummy.handle dummy $ Deps.need_update deps target in
   check
     (result bool (testable Error.pp Error.equal))
     "The target has dependencies but they are all up to date, so it should \
@@ -70,7 +70,7 @@ let need_update_updated_deps_file_present =
 let need_update_outatded_deps_file_present =
   let open Alcotest in
   test_case "When the file has dependencies and they are out of date" `Quick
-  @@ fun () ->
+  $ fun () ->
   let dummy =
     Dummy.(
       make
@@ -87,7 +87,7 @@ let need_update_outatded_deps_file_present =
   in
   let target = "my-file.txt" in
   let expected = Try.ok true in
-  let computed = Dummy.handle dummy @@ Deps.need_update deps target in
+  let computed = Dummy.handle dummy $ Deps.need_update deps target in
   check
     (result bool (testable Error.pp Error.equal))
     "The target has dependencies but some are out of date, so it should not \

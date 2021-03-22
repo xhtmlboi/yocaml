@@ -1,8 +1,10 @@
+open Util
+
 let mtime path =
   let open Unix in
   try
     let s = stat path in
-    Try.ok @@ int_of_float s.st_mtime
+    Try.ok $ int_of_float s.st_mtime
   with
   | Unix_error (err, f, p) -> Error.(to_try (Unix (err, f, p)))
 ;;
@@ -45,7 +47,7 @@ let write filename content =
 
 let time () =
   let open Unix in
-  let t = gmtime @@ time () in
+  let t = gmtime $ time () in
   Format.asprintf
     "%d-%d-%d %d:%d;%d"
     (t.tm_year + 1900)
@@ -77,12 +79,12 @@ let run program =
         (fun resume effect ->
           let f : type b. (b -> 'a) -> b Effect.f -> 'a =
            fun resume -> function
-            | File_exists path -> resume @@ Sys.file_exists path
-            | Get_modification_time path -> resume @@ mtime path
-            | Read_file path -> resume @@ read path
+            | File_exists path -> resume $ Sys.file_exists path
+            | Get_modification_time path -> resume $ mtime path
+            | Read_file path -> resume $ read path
             | Write_file (path, content) ->
               let () = create_path (Filename.dirname path) in
-              resume @@ write path content
+              resume $ write path content
             | Log (level, message) ->
               let () = log level message in
               resume ()

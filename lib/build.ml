@@ -1,3 +1,5 @@
+open Util
+
 type ('a, 'b) t =
   { dependencies : Deps.t
   ; task : 'a -> 'b Effect.t
@@ -70,8 +72,8 @@ module Arrow_choice =
         let open Preface in
         let dependencies = build.dependencies in
         let task = function
-          | Either.Left x -> Effect.map Either.left @@ build.task x
-          | Either.Right x -> Effect.(map Either.right @@ return x)
+          | Either.Left x -> Effect.map Either.left $ build.task x
+          | Either.Right x -> Effect.(map Either.right $ return x)
         in
         { dependencies; task }
       ;;
@@ -86,8 +88,6 @@ let create_file target build_rule =
     build_rule.dependencies
     (build_rule.task ())
 ;;
-
-let into = Filename.concat
 
 let read_file path =
   { dependencies = Deps.singleton (Deps.file path)

@@ -5,7 +5,7 @@ let simple_file_copy =
   test_case
     "Simple copying using [read_file] when the target is not present"
     `Quick
-  @@ fun () ->
+  $ fun () ->
   let dummy =
     Dummy.(
       make
@@ -48,7 +48,7 @@ let simple_file_copy_with_multiple_deps =
     "Simple copying using [read_file] with multiple dependencies when the \
      target is not present"
     `Quick
-  @@ fun () ->
+  $ fun () ->
   let dummy =
     Dummy.(
       make
