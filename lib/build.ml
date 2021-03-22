@@ -3,6 +3,9 @@ type ('a, 'b) t =
   ; task : 'a -> 'b Effect.t
   }
 
+let dependencies { dependencies; _ } = dependencies
+let task { task; _ } = task
+
 let auxiliary_build_with_deps target deps task =
   let open Effect.Monad in
   let* may_need_update = Deps.need_update deps target in
@@ -81,4 +84,26 @@ let run target build_rule =
     target
     build_rule.dependencies
     (build_rule.task ())
+;;
+
+let read_file path =
+  { dependencies = Deps.singleton (Deps.file path)
+  ; task =
+      (fun () ->
+        let open Effect.Monad in
+        Effect.read_file path
+        >>= function
+        | Error e -> Effect.throw e
+        | Ok content -> return content)
+  }
+;;
+
+let concat_content ~separator path =
+  let open Preface in
+  let c (x, y) = x ^ separator ^ y in
+  Fun.flip Tuple.( & ) () ^>> snd (read_file path) >>^ c
+;;
+
+let concat_files ~separator first_file second_file =
+  read_file first_file >>> concat_content ~separator second_file
 ;;

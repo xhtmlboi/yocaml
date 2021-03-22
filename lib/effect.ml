@@ -10,7 +10,7 @@ type (_, 'a) effects =
       (filepath * string)
       -> (< write_file : e ; .. >, unit Try.t) effects
   | Log : (log_level * string) -> (< log : e ; .. >, unit) effects
-  | Throw : Error.t -> (< throw : e ; .. >, unit) effects
+  | Throw : Error.t -> (< throw : e ; .. >, 'a) effects
 
 module Freer = Preface.Make.Freer_monad.Over (struct
   type 'a t =

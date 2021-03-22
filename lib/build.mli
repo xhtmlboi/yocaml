@@ -16,6 +16,29 @@ type ('a, 'b) t
     are not up-to-date for [target] (or [target] does not exist). *)
 val run : filepath -> (unit, string) t -> unit Effect.t
 
+(** [dependencies rule] returns the dependencies of the [rule]. *)
+val dependencies : ('a, 'b) t -> Deps.t
+
+(** [task rule] returns the task of the [rule]. *)
+val task : ('a, 'b) t -> 'a -> 'b Effect.t
+
+(** {1 Building rules}
+
+    Combiners to build rules (increasingly complex, to infinity and beyond). *)
+
+(** Arrow version of a file reader. *)
+val read_file : filepath -> (unit, string) t
+
+(** Pipe an arrow to an other and concat the results. *)
+val concat_content : separator:string -> filepath -> (string, string) t
+
+(** Concat two files. *)
+val concat_files
+  :  separator:string
+  -> filepath
+  -> filepath
+  -> (unit, string) t
+
 (** {1 Included Arrow combinators}
 
     A [build rule] respects the interface of an [Arrow Choice] (which implies

@@ -14,6 +14,7 @@ include Deps_set
 
 let to_list deps = elements deps
 let file path = File path
+let to_filepath (File x) = x
 
 module Monoid = Preface.Make.Monoid.Via_combine_and_neutral (struct
   type nonrec t = t

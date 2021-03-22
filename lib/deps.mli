@@ -22,6 +22,9 @@ val file : filepath -> kind
 (** [to_list deps] turns a {!type:t} into a [List] of {!type:kind}. *)
 val to_list : t -> kind list
 
+(** Translate [kind] to [filepath]. *)
+val to_filepath : kind -> filepath
+
 (** {1 Effects Helpers}
 
     As working with a list of dependencies usually involves running effects,
