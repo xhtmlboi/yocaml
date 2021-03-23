@@ -1,4 +1,4 @@
-open Wordpress.Util
+open Wordpress
 
 module Filesystem = struct
   type path = string
@@ -7,44 +7,76 @@ module Filesystem = struct
   let ( / ) = Filename.concat
 
   module Fs_set = Set.Make (struct
-    type t = path * mtime * string
+    type t = path * mtime * string * bool
 
-    let compare (p, _, _) (k, _, _) = String.compare p k
+    let compare (p, _, _, _) (k, _, _, _) = String.compare p k
   end)
 
   type t = Fs_set.t
   type elt = Fs_set.elt
 
   let empty = Fs_set.empty
-  let make files = Fs_set.add_seq (List.to_seq files) empty
-  let file ?(mtime = 1) ?(content = "") path = path, mtime, content
+
+  let make files =
+    Fs_set.add_seq
+      (List.to_seq
+         (List.concat_map
+            (fun (path, mtime, content, is_file) ->
+              if is_file
+              then
+                [ path, mtime, content, true
+                ; Filename.dirname path, mtime, "", false
+                ]
+              else [ path, mtime, content, false ])
+            files))
+      empty
+  ;;
+
+  let file ?(mtime = 1) ?(content = "") path = path, mtime, content, true
+  let dir ?(mtime = 1) path = path, mtime, "", false
 
   let write_file fs ?mtime filename content =
-    let elt mtime = filename, mtime, content in
-    let time, tmp =
-      match Fs_set.find_opt (elt 1) fs with
-      | None -> Option.value ~default:1 mtime, fs
-      | Some ((_, x, _) as e) ->
-        Option.value ~default:(succ x) mtime, Fs_set.remove e fs
-    in
-    Fs_set.add (elt time) tmp
+    let elt mtime = filename, mtime, content, true in
+    (match Fs_set.find_opt (elt 1) fs with
+    | None -> Try.ok (Option.value ~default:1 mtime, fs)
+    | Some ((_, x, _, is_file) as e) ->
+      if is_file
+      then Try.ok (Option.value ~default:(succ x) mtime, Fs_set.remove e fs)
+      else Error.(to_try $ Unreadable_file filename))
+    |> Try.Functor.map (fun (time, tmp) -> Fs_set.add (elt time) tmp)
   ;;
 
   let get_file fs path = Fs_set.find_opt (file path) fs
 
   let file_exists fs path =
-    Option.fold
-      ~none:false
-      ~some:Preface.Predicate.tautology
-      (get_file fs path)
+    Option.fold ~none:false ~some:(fun (_, _, _, x) -> x) (get_file fs path)
+  ;;
+
+  let substring_of sub s =
+    let len = String.length sub in
+    try
+      let s' = String.sub s 0 len in
+      s' = sub
+    with
+    | _ -> false
+  ;;
+
+  let directory_exists fs path =
+    match get_file fs path with
+    | Some (_, _, _, x) -> x
+    | None -> Fs_set.exists (fun (p, _, _, _) -> substring_of p path) fs
   ;;
 
   let get_file_mtime fs path =
-    Option.map (fun (_, x, _) -> x) (get_file fs path)
+    Preface.Option.Monad.bind
+      (fun (_, x, _, is_file) -> if is_file then Some x else None)
+      (get_file fs path)
   ;;
 
   let get_file_content fs path =
-    Option.map (fun (_, _, x) -> x) (get_file fs path)
+    Preface.Option.Monad.bind
+      (fun (_, _, x, is_file) -> if is_file then Some x else None)
+      (get_file fs path)
   ;;
 end
 
@@ -64,14 +96,16 @@ type t =
 let file = Filesystem.file
 
 let write_file dummy ?mtime filename content =
-  let new_filesystem =
+  let open Try.Monad in
+  let+ new_fs =
     Filesystem.write_file dummy.filesystem ?mtime filename content
   in
-  dummy.filesystem <- new_filesystem
+  dummy.filesystem <- new_fs
 ;;
 
 let get_file dummy = Filesystem.get_file dummy.filesystem
 let file_exists dummy = Filesystem.file_exists dummy.filesystem
+let directory_exists dummy = Filesystem.directory_exists dummy.filesystem
 let get_file_mtime dummy = Filesystem.get_file_mtime dummy.filesystem
 let get_file_content dummy = Filesystem.get_file_content dummy.filesystem
 
@@ -118,9 +152,10 @@ let handle dummy program =
             | Read_file path ->
               resume $ perform_if_exists path (get_file_content dummy)
             | Write_file (path, content) ->
-              let () = write_file dummy path content in
-              resume $ Wordpress.Try.ok ()
+              let res = write_file dummy path content in
+              resume res
             | Log (level, message) -> resume $ log dummy level message
+            | Read_dir (_path, _kind, _predicate) -> assert false
             | Throw _ -> assert false
           in
           f resume effect)

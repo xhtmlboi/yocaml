@@ -8,6 +8,22 @@
 
     Please refer to {{:../index.html} the documentation index} for an example. *)
 
+(** {1 High-level API}
+
+    The WordPress high-level API. It is mainly these combiners that should be
+    used to build static pages. *)
+
+(** Runs a Wordpress program. *)
+val run : 'a Effect.t -> 'a
+
+(** Collapses sequentially Wordpress program. [sequence p ps f] produces a
+    program which performs [p] followed by [f ps]. *)
+val sequence
+  :  'b Effect.t
+  -> 'a list Effect.t
+  -> ('a -> 'b Effect.t)
+  -> 'b Effect.t
+
 (** {1 Build system}
 
     [Build] is the main module of {e Wordpress}. It is used to describe rules

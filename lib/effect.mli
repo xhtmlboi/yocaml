@@ -31,6 +31,11 @@ type (_, 'a) effects =
   | Write_file :
       (filepath * string)
       -> (< write_file : e ; .. >, unit Try.t) effects
+  | Read_dir :
+      (filepath
+      * [< `Files | `Directories | `Both ]
+      * filepath Preface.Predicate.t)
+      -> (< read_dir : e ; .. >, filepath list) effects
   | Log : (log_level * string) -> (< log : e ; .. >, unit) effects
   | Throw : Error.t -> (< throw : e ; .. >, 'a) effects
 
@@ -56,6 +61,7 @@ module Freer :
             ; get_modification_time : e
             ; read_file : e
             ; write_file : e
+            ; read_dir : e
             ; log : e
             ; throw : e >
           , 'a )
@@ -94,6 +100,24 @@ val read_file : filepath -> string Try.t Freer.t
     exists. Once again I am using strings, but this time it is not laziness,
     it is to be consistent with [read_file]. *)
 val write_file : filepath -> string -> unit Try.t Freer.t
+
+(** Get a list of all children of a path. *)
+val read_children
+  :  filepath
+  -> filepath Preface.Predicate.t
+  -> filepath list Freer.t
+
+(** Get a list of all child files of a path (exclude dirs). *)
+val read_child_files
+  :  filepath
+  -> filepath Preface.Predicate.t
+  -> filepath list Freer.t
+
+(** Get a list of all child directories of a path (exclude files). *)
+val read_child_directories
+  :  filepath
+  -> filepath Preface.Predicate.t
+  -> filepath list Freer.t
 
 (** {3 Logging}
 

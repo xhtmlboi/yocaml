@@ -73,6 +73,30 @@ let log level message =
   print_endline (Format.asprintf "%s [%s]\t%s" t l message)
 ;;
 
+let read_dir path =
+  try Sys.readdir path |> Array.to_list with
+  | _ -> []
+;;
+
+let read_predicate path pred = function
+  | `Files ->
+    fun x ->
+      let p = x |> into path in
+      if Sys.file_exists p && not $ Sys.is_directory p && pred x
+      then Some p
+      else None
+  | `Directories ->
+    fun x ->
+      let p = x |> into path in
+      if Sys.file_exists p && not $ Sys.is_directory p && pred x
+      then Some p
+      else None
+  | `Both ->
+    fun x ->
+      let p = x |> into path in
+      if pred x then Some p else None
+;;
+
 let run program =
   Effect.run
     { handler =
@@ -85,6 +109,10 @@ let run program =
             | Write_file (path, content) ->
               let () = create_path (Filename.dirname path) in
               resume $ write path content
+            | Read_dir (path, kind, predicate) ->
+              let children = read_dir path in
+              resume
+              $ List.filter_map (read_predicate path predicate kind) children
             | Log (level, message) ->
               let () = log level message in
               resume ()
