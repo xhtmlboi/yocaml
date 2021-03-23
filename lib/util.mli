@@ -10,6 +10,21 @@ open Aliases
 (** [filepath |> into dir] describes a [filepath] into a [dir]. *)
 val into : filepath -> filepath -> filepath
 
+(** [with_extension ext path] returns [true] if [path] ends with [ext] [false]
+    otherwise, ie: [with_extension "html" "index.html"] returns [true] but
+    [with_extenstion "html" "foohtml"] returns [false]. *)
+val with_extension : string -> filepath -> bool
+
+(** Keep the filename and remove the path. *)
+val basename : filepath -> filepath
+
+(** Add an extension to a filepath. For example:
+    [add_extension "index.txt" "html"] will produce ["index.txt.html"]. *)
+val add_extension : filepath -> string -> filepath
+
+val remove_extension : filepath -> filepath
+val replace_extension : filepath -> string -> filepath
+
 (** {1 Infix operators}
 
     Even if sometimes, infix operators can seem unreadable... the immoderate

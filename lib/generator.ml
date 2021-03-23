@@ -58,19 +58,34 @@ let time () =
     t.tm_sec
 ;;
 
+let level_to_string =
+  let open Preface.Fun in
+  (function
+    | Aliases.Trace -> "trace"
+    | Aliases.Debug -> "debug"
+    | Aliases.Info -> "info"
+    | Aliases.Warning -> "warning"
+    | Aliases.Alert -> "alert")
+  %> String.uppercase_ascii
+;;
+
+let fmt s x = "\027[" ^ s ^ "m" ^ x ^ "\027[0m"
+
+let colorize = function
+  | Aliases.Trace -> "97", "100;37"
+  | Aliases.Debug -> "36", "46;30"
+  | Aliases.Info -> "32", "42;30"
+  | Aliases.Warning -> "33", "43;30"
+  | Aliases.Alert -> "31", "41;30"
+;;
+
 let log level message =
-  let l =
-    (let open Aliases in
-    match level with
-    | Trace -> "trace"
-    | Debug -> "debug"
-    | Info -> "info"
-    | Warning -> "warning"
-    | Alert -> "alert")
-    |> String.uppercase_ascii
-  in
-  let t = time () in
-  print_endline (Format.asprintf "%s [%s]\t%s" t l message)
+  let l = level_to_string level in
+  let t = fmt "90" (time ()) in
+  let cm, cl = colorize level in
+  let m = fmt cm message in
+  let flag = fmt cl $ " " ^ String.make 1 l.[0] ^ " " in
+  print_endline (Format.asprintf "%s %s | %s" flag t m)
 ;;
 
 let read_dir path =
@@ -116,7 +131,11 @@ let run program =
             | Log (level, message) ->
               let () = log level message in
               resume ()
-            | Throw error -> Error.raise' error
+            | Throw error ->
+              let () =
+                log Aliases.Alert (Lexicon.crap_there_is_an_error error)
+              in
+              Error.raise' error
           in
           f resume effect)
     }

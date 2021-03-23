@@ -8,21 +8,34 @@
 
     Please refer to {{:../index.html} the documentation index} for an example. *)
 
+open Aliases
+
 (** {1 High-level API}
 
     The WordPress high-level API. It is mainly these combiners that should be
-    used to build static pages. *)
+    used to build static pages.
 
-(** Runs a Wordpress program. *)
-val run : 'a Effect.t -> 'a
+    {2 Composing and performing effects} *)
 
-(** Collapses sequentially Wordpress program. [sequence p ps f] produces a
-    program which performs [p] followed by [f ps]. *)
+(** Runs a Wordpress program with the default handler. *)
+val execute : 'a Effect.t -> 'a
+
+(** Collapses sequentially Wordpress program. [sequence ps f p] produces a
+    program which performs [p] followed by [f ps]. A common usage is
+    [p |> sequences ps f]. *)
 val sequence
-  :  'b Effect.t
-  -> 'a list Effect.t
+  :  'a list Effect.t
   -> ('a -> 'b Effect.t)
   -> 'b Effect.t
+  -> 'b Effect.t
+
+(** [process_files path predicate action] performs sequentially [action] on
+    each files which satisfies [predicate]. *)
+val process_files
+  :  filepath
+  -> filepath Preface.Predicate.t
+  -> (filepath -> unit Effect.t)
+  -> unit Effect.t
 
 (** {1 Build system}
 
@@ -75,3 +88,11 @@ module Util = Util
     sometimes it improves readability... sometimes not. *)
 
 include module type of Util
+
+(** {1 Included Effect plumbery}
+
+    A page generation process usually involves composing and executing
+    effects, so rather than constantly forcing the [Effect] module into user
+    space, the module is injected into the high-level API. *)
+
+include module type of Effect

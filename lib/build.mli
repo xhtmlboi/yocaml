@@ -30,7 +30,7 @@ val task : ('a, 'b) t -> 'a -> 'b Effect.t
 val read_file : filepath -> (unit, string) t
 
 (** Pipe an arrow to an other and concat the results. *)
-val concat_content : ?separator:string -> filepath -> (string, string) t
+val pipe_content : ?separator:string -> filepath -> (string, string) t
 
 (** Concat two files. *)
 val concat_files
@@ -38,6 +38,9 @@ val concat_files
   -> filepath
   -> filepath
   -> (unit, string) t
+
+(** Process a string as a Markdown document. *)
+val process_markdown : (string, string) t
 
 (** {1 Included Arrow combinators}
 

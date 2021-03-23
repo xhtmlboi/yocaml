@@ -23,6 +23,7 @@ depends: [
   "odoc" {with-doc}
   "alcotest" {with-test}
   "preface" {pinned}
+  "omd"
 ]
 
 pin-depends: [

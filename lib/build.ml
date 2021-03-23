@@ -24,7 +24,7 @@ let auxiliary_create_file_with_deps target deps task =
       | Error err ->
         Effect.alert (Lexicon.crap_there_is_an_error err) >> Effect.throw err
       | Ok () -> return ()
-    else Effect.info (Lexicon.target_is_up_to_date target) >|= Fun.const ()
+    else Effect.trace (Lexicon.target_is_up_to_date target) >|= Fun.const ()
 ;;
 
 module Category = Preface.Make.Category.Via_id_and_compose (struct
@@ -101,12 +101,17 @@ let read_file path =
   }
 ;;
 
-let concat_content ?(separator = "\n") path =
+let process_markdown =
+  let open Preface.Fun in
+  arrow $ Omd.to_html % Omd.of_string
+;;
+
+let pipe_content ?(separator = "\n") path =
   let open Preface in
   let c (x, y) = x ^ separator ^ y in
   Fun.flip Tuple.( & ) () ^>> snd (read_file path) >>^ c
 ;;
 
 let concat_files ?separator first_file second_file =
-  read_file first_file >>> concat_content ?separator second_file
+  read_file first_file >>> pipe_content ?separator second_file
 ;;

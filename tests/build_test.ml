@@ -72,8 +72,8 @@ let simple_file_copy_with_multiple_deps =
   let arrow =
     let open Build in
     read_file "source1.txt"
-    >>> concat_content ~separator:"\t" "source2.txt"
-    >>> concat_content ~separator:"\t" "source3.txt"
+    >>> pipe_content ~separator:"\t" "source2.txt"
+    >>> pipe_content ~separator:"\t" "source3.txt"
   in
   let deps =
     Build.dependencies arrow |> Deps.to_list |> List.map Deps.to_filepath
