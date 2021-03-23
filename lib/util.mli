@@ -22,7 +22,10 @@ val basename : filepath -> filepath
     [add_extension "index.txt" "html"] will produce ["index.txt.html"]. *)
 val add_extension : filepath -> string -> filepath
 
+(** Remove the extension of a filepath. *)
 val remove_extension : filepath -> filepath
+
+(** Replace the extension of a filepath. *)
 val replace_extension : filepath -> string -> filepath
 
 (** {1 Infix operators}

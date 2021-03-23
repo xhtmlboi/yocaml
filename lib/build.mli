@@ -16,6 +16,9 @@ type ('a, 'b) t
     dependencies are not up-to-date for [target] (or [target] does not exist). *)
 val create_file : filepath -> (unit, string) t -> unit Effect.t
 
+(** Copy files from a destination to a source, taking account of dependencies. *)
+val copy_file : ?new_name:string -> filepath -> into:filepath -> unit Effect.t
+
 (** [dependencies rule] returns the dependencies of the [rule]. *)
 val dependencies : ('a, 'b) t -> Deps.t
 

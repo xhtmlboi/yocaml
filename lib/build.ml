@@ -8,23 +8,13 @@ type ('a, 'b) t =
 let dependencies { dependencies; _ } = dependencies
 let task { task; _ } = task
 
-let auxiliary_create_file_with_deps target deps task =
+let perform_if_update_needed target deps do_something do_nothing =
   let open Effect.Monad in
   let* may_need_update = Deps.need_update deps target in
   match may_need_update with
   | Error err ->
     Effect.alert (Lexicon.crap_there_is_an_error err) >> Effect.throw err
-  | Ok need_update ->
-    if need_update
-    then
-      Effect.info (Lexicon.target_need_to_be_built target)
-      >>= Fun.const task
-      >>= Effect.write_file target
-      >>= function
-      | Error err ->
-        Effect.alert (Lexicon.crap_there_is_an_error err) >> Effect.throw err
-      | Ok () -> return ()
-    else Effect.trace (Lexicon.target_is_up_to_date target) >|= Fun.const ()
+  | Ok need_update -> if need_update then do_something else do_nothing
 ;;
 
 module Category = Preface.Make.Category.Via_id_and_compose (struct
@@ -83,10 +73,17 @@ include (
   Arrow_choice : Preface_specs.ARROW_CHOICE with type ('a, 'b) t := ('a, 'b) t)
 
 let create_file target build_rule =
-  auxiliary_create_file_with_deps
+  perform_if_update_needed
     target
     build_rule.dependencies
-    (build_rule.task ())
+    Effect.(
+      info (Lexicon.target_need_to_be_built target)
+      >> build_rule.task ()
+      >>= write_file target
+      >>= function
+      | Error err -> alert (Lexicon.crap_there_is_an_error err) >> throw err
+      | Ok () -> return ())
+    Effect.(trace (Lexicon.target_is_up_to_date target))
 ;;
 
 let read_file path =
@@ -99,6 +96,14 @@ let read_file path =
         | Error e -> Effect.throw e
         | Ok content -> return content)
   }
+;;
+
+let copy_file ?new_name path ~into =
+  let destination =
+    Option.fold ~none:(Filename.basename path) ~some:Fun.id new_name
+    |> Filename.concat into
+  in
+  create_file destination $ read_file path
 ;;
 
 let process_markdown =

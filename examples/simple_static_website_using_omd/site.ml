@@ -2,20 +2,36 @@ open Wordpress
 
 let dest = "_build"
 
+let rule_css =
+  let open Build in
+  process_files "css/" (with_extension "css")
+  $ fun path -> copy_file path ~into:("css" |> into dest)
+;;
+
+let rule_images =
+  let open Build in
+  process_files
+    "."
+    Preface.Predicate.(with_extension "svg" || with_extension "png")
+  $ fun path -> copy_file path ~into:("img" |> into dest)
+;;
+
+let rule_pages =
+  let open Build in
+  process_files "pages/" (with_extension "md")
+  $ fun path ->
+  create_file (basename $ replace_extension path "html" |> into dest)
+  $ read_file "tpl/header.html"
+    %> pipe_content path
+    %> process_markdown
+    %> pipe_content "tpl/footer.html"
+;;
+
 let () =
-  let program =
-    let* () = debug "Let's start my website generation!" in
-    let* () =
-      process_files "pages/" (with_extension "md")
-      $ fun path ->
-      Build.(
-        create_file (basename $ replace_extension path "html" |> into dest)
-        $ read_file "tpl/header.html"
-          %> pipe_content path
-          %> process_markdown
-          %> pipe_content "tpl/footer.html")
-    in
-    debug "Everything is done!"
-  in
-  execute program
+  debug "Let's start my website generation!"
+  >> rule_css
+  >> rule_images
+  >> rule_pages
+  >> debug "Everything is done!"
+  |> execute
 ;;
