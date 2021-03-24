@@ -2,7 +2,7 @@
  (name wordpress)
  (public_name wordpress)
  (modules_without_implementation aliases)
- (libraries unix omd preface))
+ (libraries unix omd mustache yaml preface))
 
 (documentation
  (package wordpress))

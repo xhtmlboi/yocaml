@@ -79,13 +79,18 @@ let colorize = function
   | Aliases.Alert -> "31", "41;30"
 ;;
 
+let print_level = function
+  | Aliases.Trace | Aliases.Debug | Aliases.Info -> Format.printf
+  | Aliases.Warning | Aliases.Alert -> Format.eprintf
+;;
+
 let log level message =
   let l = level_to_string level in
   let t = fmt "90" (time ()) in
   let cm, cl = colorize level in
   let m = fmt cm message in
   let flag = fmt cl $ " " ^ String.make 1 l.[0] ^ " " in
-  print_endline (Format.asprintf "%s %s | %s" flag t m)
+  print_level level "%s %s | %s\n" flag t m
 ;;
 
 let read_dir path =

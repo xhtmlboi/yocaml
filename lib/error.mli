@@ -14,7 +14,10 @@ type t =
           [Try] and [Validate]). *)
   | Unix of Unix.error * string * string (** Unix related error. *)
   | Unreadable_file of string (** When a file is unreadable. *)
-  | Unknown of string (** An unqualified error (probably due to laziness). *)
+  | Missing_field of string
+  | Invalid_field of string
+  | Invalid_metadata of string
+  | Unknown of string (** An unq\ualified error (probably due to laziness). *)
 
 (** Represents an [Error.t] in [exception]. *)
 exception Error of t

@@ -25,14 +25,14 @@ val execute : 'a Effect.t -> 'a
     [p |> sequences ps f]. *)
 val sequence
   :  'a list Effect.t
-  -> ('a -> 'b Effect.t)
+  -> ('a -> 'b -> 'b Effect.t)
   -> 'b Effect.t
   -> 'b Effect.t
 
 (** [process_files path predicate action] performs sequentially [action] on
     each files which satisfies [predicate]. *)
 val process_files
-  :  filepath
+  :  filepath list
   -> filepath Preface.Predicate.t
   -> (filepath -> unit Effect.t)
   -> unit Effect.t

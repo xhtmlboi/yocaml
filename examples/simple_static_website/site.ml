@@ -6,7 +6,7 @@ let () =
   let program =
     let* () = debug "Let's start my website generation!" in
     let* () =
-      process_files "pages/" (with_extension "html")
+      process_files [ "pages/" ] (with_extension "html")
       $ fun path ->
       Build.(
         create_file (basename path |> into dest)

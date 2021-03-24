@@ -9,11 +9,10 @@ let dependencies { dependencies; _ } = dependencies
 let task { task; _ } = task
 
 let perform_if_update_needed target deps do_something do_nothing =
-  let open Effect.Monad in
+  let open Effect in
   let* may_need_update = Deps.need_update deps target in
   match may_need_update with
-  | Error err ->
-    Effect.alert (Lexicon.crap_there_is_an_error err) >> Effect.throw err
+  | Error err -> throw err
   | Ok need_update -> if need_update then do_something else do_nothing
 ;;
 
@@ -98,6 +97,12 @@ let read_file path =
   }
 ;;
 
+let watch path =
+  { dependencies = Deps.singleton (Deps.file path)
+  ; task = (fun () -> Effect.return ())
+  }
+;;
+
 let copy_file ?new_name path ~into =
   let destination =
     Option.fold ~none:(Filename.basename path) ~some:Fun.id new_name
@@ -115,6 +120,13 @@ let pipe_content ?(separator = "\n") path =
   let open Preface in
   let c (x, y) = x ^ separator ^ y in
   Fun.flip Tuple.( & ) () ^>> snd (read_file path) >>^ c
+;;
+
+let inject_body =
+  arrow (fun (layout, content) ->
+      let f = Mustache.of_string layout in
+      let o = `O [ "body", `String content ] in
+      Mustache.render ~strict:false f o)
 ;;
 
 let concat_files ?separator first_file second_file =

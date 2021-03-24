@@ -2,6 +2,9 @@ type t =
   | List of t Preface.Nonempty_list.t
   | Unix of Unix.error * string * string
   | Unreadable_file of string
+  | Missing_field of string
+  | Invalid_field of string
+  | Invalid_metadata of string
   | Unknown of string
 
 exception Error of t
@@ -13,6 +16,9 @@ let rec pp formater error =
   | Unix (error, fname, arg) ->
     ppf "Unix (%s, %s, %s)" (Unix.error_message error) fname arg
   | Unreadable_file filename -> ppf "Unreadable_file (%s)" filename
+  | Missing_field field -> ppf "Missing_field (%s)" field
+  | Invalid_field field -> ppf "Invalid_field (%s)" field
+  | Invalid_metadata metadata -> ppf "Invalid_metadata (%s)" metadata
   | List nonempty_list ->
     ppf "List (%a)" (Preface.Nonempty_list.pp pp) nonempty_list
 ;;
@@ -35,5 +41,8 @@ let rec equal x y =
     a = x && String.equal b y && String.equal c z
   | Unreadable_file a, Unreadable_file b -> String.equal a b
   | List a, List b -> Preface.Nonempty_list.equal equal a b
+  | Missing_field a, Missing_field b -> String.equal a b
+  | Invalid_field a, Invalid_field b -> String.equal a b
+  | Invalid_metadata a, Invalid_metadata b -> String.equal a b
   | _ -> false
 ;;

@@ -172,3 +172,8 @@ include
   Preface_specs.FREER_MONAD
     with type 'a f = 'a Freer.f
      and type 'a t = 'a Freer.t
+
+module Traverse :
+  Preface.Specs.TRAVERSABLE
+    with type 'a t = 'a Freer.t
+     and type 'a iter = 'a list

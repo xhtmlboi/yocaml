@@ -51,4 +51,5 @@ let read_children = read_directory `Both
 let read_child_files = read_directory `Files
 let read_child_directories = read_directory `Directories
 
+module Traverse = Preface.List.Monad.Traversable (Freer)
 include Freer

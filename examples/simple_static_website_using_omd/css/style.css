@@ -1,7 +1,8 @@
 body {
     font-family: sans-serif;
+    margin: 32px;
 }
 
 .mini-logo {
-    width: 120px;
+    height: 32px;
 }

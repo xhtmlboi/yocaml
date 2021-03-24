@@ -12,13 +12,6 @@ type ('a, 'b) t
 
 (** {1 Action on rules} *)
 
-(** [create_file target build_rule] executes the [build_rule] task if the
-    dependencies are not up-to-date for [target] (or [target] does not exist). *)
-val create_file : filepath -> (unit, string) t -> unit Effect.t
-
-(** Copy files from a destination to a source, taking account of dependencies. *)
-val copy_file : ?new_name:string -> filepath -> into:filepath -> unit Effect.t
-
 (** [dependencies rule] returns the dependencies of the [rule]. *)
 val dependencies : ('a, 'b) t -> Deps.t
 
@@ -28,6 +21,15 @@ val task : ('a, 'b) t -> 'a -> 'b Effect.t
 (** {1 Building rules}
 
     Combiners to build rules (increasingly complex, to infinity and beyond). *)
+
+val watch : filepath -> (unit, unit) t
+
+(** [create_file target build_rule] executes the [build_rule] task if the
+    dependencies are not up-to-date for [target] (or [target] does not exist). *)
+val create_file : filepath -> (unit, string) t -> unit Effect.t
+
+(** Copy files from a destination to a source, taking account of dependencies. *)
+val copy_file : ?new_name:string -> filepath -> into:filepath -> unit Effect.t
 
 (** Arrow version of a file reader. *)
 val read_file : filepath -> (unit, string) t
@@ -44,6 +46,9 @@ val concat_files
 
 (** Process a string as a Markdown document. *)
 val process_markdown : (string, string) t
+
+(** Inject a string into a template. *)
+val inject_body : (string * string, string) t
 
 (** {1 Included Arrow combinators}
 
