@@ -8,6 +8,7 @@ module Validate = Validate
 module Lexicon = Lexicon
 module Aliases = Aliases
 module Util = Util
+module Metadata = Metadata
 
 let execute = Generator.run
 

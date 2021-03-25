@@ -1,24 +1,22 @@
-type date = int * int * int
+(** Data structures attachable to articles/documents.*)
 
-class type mustacheable =
+class virtual mustacheable :
   object
-    method to_mustache : [ `O of (string * Mustache.Json.value) list ]
+    method virtual to_mustache : [ `O of (string * Mustache.Json.value) list ]
   end
 
 module Base : sig
-  class obj : ?page_title:string -> unit -> mustacheable
+  type obj
 
-  val validate : Yaml.value -> obj Validate.t
+  val from_yaml : Yaml.value -> obj Validate.t
+  val equal : obj -> obj -> bool
+  val pp : Format.formatter -> obj -> unit
 end
 
 module Article : sig
-  class obj :
-    ?page_title:string
-    -> ?tags:string list
-    -> date
-    -> string
-    -> string
-    -> mustacheable
+  type obj
 
-  val validate : Yaml.value -> obj Validate.t
+  val from_yaml : Yaml.value -> obj Validate.t
+  val equal : obj -> obj -> bool
+  val pp : Format.formatter -> obj -> unit
 end

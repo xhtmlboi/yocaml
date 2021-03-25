@@ -4,9 +4,13 @@ type date = int * int * int
 
 let date_to_string (y, m, d) = Format.asprintf "%04d-%02d-%02d" y m d
 
-class type mustacheable =
+let date_eq (y, m, d) (yy, mm, dd) =
+  Preface.List.equal Int.equal [ y; m; d ] [ yy; mm; dd ]
+;;
+
+class virtual mustacheable =
   object
-    method to_mustache : [ `O of (string * Mustache.Json.value) list ]
+    method virtual to_mustache : [ `O of (string * Mustache.Json.value) list ]
   end
 
 let forgettable_string key xs =
@@ -65,15 +69,19 @@ let forgettable_string_list key xs =
 ;;
 
 module Base = struct
-  class obj ?page_title () : mustacheable =
+  class obj ?page_title () =
     object
+      inherit mustacheable
+
       val page_title : string option = page_title
+
+      method get_page_title = page_title
 
       method to_mustache =
         `O [ "title", `String (Option.value page_title ~default:"") ]
     end
 
-  let validate = function
+  let from_yaml = function
     | `String title -> Validate.valid (new obj ~page_title:title ())
     | `O xs ->
       List.find_map
@@ -89,6 +97,14 @@ module Base = struct
       |> (function
       | page_title -> Validate.valid (new obj ?page_title ()))
     | _ -> Validate.valid (new obj ())
+  ;;
+
+  let equal a b = Option.equal String.equal a#get_page_title b#get_page_title
+
+  let pp ppf x =
+    Format.fprintf ppf "Metadata.base (title = %a)"
+    $ Preface.Option.pp Format.pp_print_string
+    $ x#get_page_title
   ;;
 end
 
@@ -108,6 +124,14 @@ module Article = struct
 
       val article_synopsis = article_synopsis
 
+      method get_tags = tags
+
+      method get_date = date
+
+      method get_article_title = article_title
+
+      method get_article_synopsis = article_synopsis
+
       method! to_mustache =
         match super#to_mustache with
         | `O xs ->
@@ -124,7 +148,39 @@ module Article = struct
     new obj ?page_title ~tags date article_title article_synopsis
   ;;
 
-  let validate = function
+  let equal a b =
+    Base.equal a b
+    && Preface.List.equal String.equal a#get_tags b#get_tags
+    && date_eq a#get_date b#get_date
+    && String.equal a#get_article_title b#get_article_title
+    && String.equal a#get_article_synopsis b#get_article_synopsis
+  ;;
+
+  let pp ppf x =
+    let title =
+      Format.asprintf "title = %a"
+      $ Preface.Option.pp Format.pp_print_string
+      $ x#get_page_title
+    in
+    let tags =
+      Format.asprintf "tags = %a"
+      $ Preface.List.pp Format.pp_print_string
+      $ x#get_tags
+    in
+    let date = "date = " ^ date_to_string x#get_date in
+    let article_title = "article_title =" ^ x#get_article_title in
+    let article_synopsis = "article_synopsis =" ^ x#get_article_synopsis in
+    Format.fprintf
+      ppf
+      "Metadata.article (%s;%s;%s;%s;%s)"
+      title
+      tags
+      date
+      article_title
+      article_synopsis
+  ;;
+
+  let from_yaml = function
     | `O xs ->
       let open Validate.Applicative in
       let obj = List.map (fun (x, y) -> String.lowercase_ascii x, y) xs in

@@ -22,6 +22,13 @@ val task : ('a, 'b) t -> 'a -> 'b Effect.t
 
     Combiners to build rules (increasingly complex, to infinity and beyond). *)
 
+(** [watch file] generates an Arrow that adds a file to the dependency list
+    without reading it. It can be useful for making file generation dependent
+    on other files. For example :
+
+    {[ let track_binary_update = watch Sys.argv.(0) ]}
+
+    Which adds the generating binary to the list of dependencies. *)
 val watch : filepath -> (unit, unit) t
 
 (** [create_file target build_rule] executes the [build_rule] task if the
@@ -56,4 +63,4 @@ val inject_body : (string * string, string) t
     [Category] and [Arrow], by construction), for ergonomic reasons, the
     combinators of the three classes are included in the module toplevel. *)
 
-include Preface_specs.ARROW_CHOICE with type ('a, 'b) t := ('a, 'b) t
+include Preface.Specs.ARROW_CHOICE with type ('a, 'b) t := ('a, 'b) t
