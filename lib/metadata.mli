@@ -1,22 +1,71 @@
 (** Data structures attachable to articles/documents.*)
 
-class virtual mustacheable :
-  object
-    method virtual to_mustache : [ `O of (string * Mustache.Json.value) list ]
-  end
+(** Adding metadata that could be added dynamically to a template, during the
+    generation of a page for example, is a step forward in the ergonomics of
+    the blog! And yes, it avoids having to define a template per article.
 
-module Base : sig
+    Even if my goal was to remain as agnostic as possible, I find it quite
+    useful to have the necessary tools to bootstrap a blog quickly. So I
+    decided to rely mainly on two libraries for parsing and metadata
+    injection.
+
+    - {{:https://github.com/avsm/ocaml-yaml} ocaml-yaml} for the
+      metadata-description in a relatively readable format.
+    - {{:https://github.com/rgrinberg/ocaml-mustache} ocaml-mustache} for data
+      injection in a template. *)
+
+(** {1 Common interface for declaring a set of metadata}
+
+    As I am not particularly happy with the implementation I am proposing... I
+    decided to make everything abstract. A collection of metadata should
+    simply respect the following interface: *)
+
+module type METADATA = sig
+  (** The container of the metadata. *)
   type obj
 
+  (** {2 Conversion} *)
+
+  (** Try to produces an [obj] from a [yaml] value. *)
   val from_yaml : Yaml.value -> obj Validate.t
+
+  (** Produces a [Json], compliant to [Mustache] from an [obj]. *)
+  val to_mustache : obj -> [ `O of (string * Mustache.Json.value) list ]
+
+  (** {2 Utils} *)
+
+  (** Equality between [obj]. *)
   val equal : obj -> obj -> bool
+
+  (** Printers for [obj]. *)
   val pp : Format.formatter -> obj -> unit
 end
 
-module Article : sig
-  type obj
+(** {1 Defined metadata set}
 
-  val from_yaml : Yaml.value -> obj Validate.t
-  val equal : obj -> obj -> bool
-  val pp : Format.formatter -> obj -> unit
-end
+    In order to be able to bootstrap a project quickly, here are some
+    prefabricated data sets. *)
+
+(** {2 Base document}
+
+    Describes the bare minimum of a page to be built. So the optional presence
+    of a title: [page_title]. *)
+
+module Base : METADATA
+
+(** {2 A simple article}
+
+    My main goal is to create my blog... describing articles seems useful. The
+    template for articles "inherits" that of a basic document and requires
+    these fields:
+
+    - [page_title] optional [string]
+    - [tags] optional [string list]
+    - [date] mandatory [string with format: "yyyy-mm-dd"]
+    - [article_title] the title of the article
+    - [article_synopsis] the synopsis of the article.
+
+    The date format, among others, is quite restrictive, but the aim is for a
+    potential user to describe their own metadata sets. *)
+
+module Article : METADATA

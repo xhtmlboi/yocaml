@@ -8,6 +8,15 @@ let date_eq (y, m, d) (yy, mm, dd) =
   Preface.List.equal Int.equal [ y; m; d ] [ yy; mm; dd ]
 ;;
 
+module type METADATA = sig
+  type obj
+
+  val from_yaml : Yaml.value -> obj Validate.t
+  val to_mustache : obj -> [ `O of (string * Mustache.Json.value) list ]
+  val equal : obj -> obj -> bool
+  val pp : Format.formatter -> obj -> unit
+end
+
 class virtual mustacheable =
   object
     method virtual to_mustache : [ `O of (string * Mustache.Json.value) list ]
@@ -78,8 +87,13 @@ module Base = struct
       method get_page_title = page_title
 
       method to_mustache =
-        `O [ "title", `String (Option.value page_title ~default:"") ]
+        `O
+          (match page_title with
+          | None -> []
+          | Some title -> [ "page_title", `String title ])
     end
+
+  let to_mustache x = x#to_mustache
 
   let from_yaml = function
     | `String title -> Validate.valid (new obj ~page_title:title ())
@@ -179,6 +193,8 @@ module Article = struct
       article_title
       article_synopsis
   ;;
+
+  let to_mustache x = x#to_mustache
 
   let from_yaml = function
     | `O xs ->
