@@ -1,9 +1,107 @@
 {0 Wordpress}
 
-{e WordPress} is a free and open-source content management system (CMS)
-written in OCaml. In other words, {e Wordpress} is a static blog generator
-written in OCaml. And yes, another one!
+{e WordPress} is a free and open-source content management system
+(CMS) written in OCaml. In other words, {e Wordpress} is a static blog
+generator written in OCaml. And yes, another one!
+
+The objective of the project is mainly to learn how to use OCaml (and
+to discover its ecosystem). It is therefore likely that some parts of
+the code are not idiomatic and please do not hesitate to tell me or to
+contribute. In addition, it was an opportunity to experiment with the
+ergonomics of the {{:https://github.com/xvw/preface} Preface} library
+and to provide it with slightly less academic examples.
+
+When thinking about how to compute file dependencies, I had initially
+settled on the idea of using a comonad transformation ([StoreT]) but
+then I remembered the paper
+{{:http://www.cse.chalmers.se/~rjmh/Papers/arrows.pdf} Generalising
+Monads to Arrows}, which describes the construction of static and
+dynamic parsers which seemed relevant to capturing dependencies.
+
+On the other hand, I was perfectly aware of the existence of
+{{:https://jaspervdj.be/hakyll/} Hakyll}, an excellent "static blog
+generator, generator" (notably used by my friend
+{{:https://xvw.github.io} xvw}). But in my understanding of the
+definition flow of a generator (at user level, I have never observed
+the source code), the document construction routine was monadic.  days
+ago, {{:https://github.com/mspwn} msp} pointed out to me that Hakyll,
+prior to version 4, used dependency capture logic incredibly similar
+to that of {e WordPress}, funny! Hakyll decided to use a monadic
+construction to simplify the DSL. Maybe I'll come to the same
+conclusions when I have to maintain a blog with complicated
+construction rules, I'll totally replace my API and in that case, I'll
+probably take inspiration from the work done on Hakyll. But for the
+moment I'm quite happy with it.
 
 {1 Full Documentation}
 
 The full API can be {{:Wordpress/index.html} found here}
+
+{1 Alternatives}
+
+As my main motivation is to discover OCaml while having a tool to
+build my personal page, it is likely that {e WordPress} is absolutely
+not usable for anyone but me, so here are some alternatives.
+
+- {{:https://www.good-eris.net/stog/} Stog} is a static web site
+  compiler. It is able to handle blog posts as well as regular pages
+  or any XML document in general
+  
+- {{:https://github.com/Armael/stone} Stone} is a static
+  website generator: it takes a template, a css stylesheet, the
+  content itself written in a high-level formatting syntax, and
+  generates the corresponding html pages
+  
+- {{:https://github.com/patricoferris/sesame} Sesame} is a library of
+  tools for building smaller, greener, less resource intensive and
+  more accessible website and blogs inspired by Low Tech Magazine
+  
+- {{:https://soupault.app/} Soupault} is a tool that helps you create
+  and manage static websites
+
+If for some obscure reason you would like to be included in this
+list...  {{:https://github.com/xhtmlboi/wordpress/issues} drop me a
+line}
+
+{1 Credits}
+
+{e WordPress} makes use of several libraries from the OCaml ecosystem,
+you can find an exhaustive list in the
+{{:https://github.com/xhtmlboi/wordpress/blob/main/wordpress.opam}
+Opam file} at the root of the project. For an exhaustive list of
+contributors, I invite you to visit the
+{{:https://github.com/xhtmlboi/wordpress} Github page} of the project.
+
+{2 Tools}
+
+I haven't written OCaml for a very long time and the very clear
+progress of the ecosystem is very impressive!
+
+- {{:https://ocaml.org} OCaml} (of course), I guess that the project
+  was mainly developped using [OCaml 4.12]
+- {{:https://dune.build/} Dune}, {{:https://opam.ocaml.org} OPAM} (and
+  {{:https://www.gnu.org/software/make/} Gnu Make} as build-system
+- {{:https://github.com/ocaml/odoc} odoc} as a documetation parser and
+  generator
+
+{2 Libraries}
+
+Even though the libraries are part of the tooling, I was very pleased
+to quickly discover a collection of well documented libraries with a
+pleasant user experience. Each of these libraries also has
+dependencies which I invite you to consult (or apply [ocamldep]) to
+get a full understanding of what made this project possible.
+
+- {{:https://github.com/xvw/preface} Preface} as a complement to the
+  standard library and as an effects manager and abstraction provider.
+  As this project was started to test the usability of the library, a
+  very large part of the code is based on this library.
+- {{:https://github.com/mirage/alcotest} Alcotest} is a very funny
+  name for a very nice unit test library
+- {{:https://github.com/ocaml/omd} omd} Markdown is a fairly common
+  format for writing on the internet. Fortunately, OCaml has an
+  excellent [txt] -> [markdown] conversion library
+- {{:https://github.com/avsm/ocaml-yaml} ocaml-yaml} by default, I use
+  [Yaml] to describe metadata
+- {{:https://github.com/rgrinberg/ocaml-mustache} ocaml-mustache} by
+  default, I use [Mustache] for templating

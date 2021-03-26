@@ -51,10 +51,13 @@ val concat_files
   -> filepath
   -> (unit, string) t
 
-(** Process a string as a Markdown document. *)
+(** Process a string as a Markdown document. The markdown generation uses the
+    excellent {{:https://github.com/ocaml/omd} OMD} library. *)
 val process_markdown : (string, string) t
 
-(** Inject a string into a template. *)
+(** Inject a string into a template. It use
+    {{:https://github.com/rgrinberg/ocaml-mustache} ocaml-mustache} for
+    capturing the field [{{{body}}}].*)
 val inject_body : (string * string, string) t
 
 (** {1 Included Arrow combinators}
