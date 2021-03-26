@@ -14,8 +14,8 @@ doc:
 clean:
 	dune clean
 
-utop: all
-	dune repl
+repl: all
+	dune utop
 
 fmt:
 	dune build @fmt --auto-promote

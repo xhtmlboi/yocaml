@@ -5,6 +5,8 @@ type t =
   | Missing_field of string
   | Invalid_field of string
   | Invalid_metadata of string
+  | Required_metadata of string list
+  | Yaml of string
   | Unknown of string
 
 exception Error of t
@@ -19,6 +21,9 @@ let rec pp formater error =
   | Missing_field field -> ppf "Missing_field (%s)" field
   | Invalid_field field -> ppf "Invalid_field (%s)" field
   | Invalid_metadata metadata -> ppf "Invalid_metadata (%s)" metadata
+  | Yaml message -> ppf "Yaml (%s)" message
+  | Required_metadata list ->
+    ppf "Required_metadata (%a)" (Preface.List.pp Format.pp_print_string) list
   | List nonempty_list ->
     ppf "List (%a)" (Preface.Nonempty_list.pp pp) nonempty_list
 ;;
@@ -44,5 +49,8 @@ let rec equal x y =
   | Missing_field a, Missing_field b -> String.equal a b
   | Invalid_field a, Invalid_field b -> String.equal a b
   | Invalid_metadata a, Invalid_metadata b -> String.equal a b
+  | Yaml a, Yaml b -> String.equal a b
+  | Required_metadata a, Required_metadata b ->
+    Preface.List.equal String.equal a b
   | _ -> false
 ;;

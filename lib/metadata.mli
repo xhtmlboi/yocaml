@@ -29,6 +29,9 @@ module type METADATA = sig
   (** Try to produces an [obj] from a [yaml] value. *)
   val from_yaml : Yaml.value -> obj Validate.t
 
+  (** Try to produces an [obj] from an optional value passing through [Yaml]. *)
+  val from_string : string option -> obj Validate.t
+
   (** Produces a [Json], compliant to [Mustache] from an [obj]. *)
   val to_mustache : obj -> [ `O of (string * Mustache.Json.value) list ]
 
@@ -39,6 +42,9 @@ module type METADATA = sig
 
   (** Printers for [obj]. *)
   val pp : Format.formatter -> obj -> unit
+
+  (** A structured representation of [obj]. *)
+  val repr : string list
 end
 
 (** {1 Defined metadata set}
@@ -51,7 +57,14 @@ end
     Describes the bare minimum of a page to be built. So the optional presence
     of a title: [page_title]. *)
 
-module Base : METADATA
+module Base : sig
+  include METADATA
+
+  (** {2 Accessors} *)
+
+  (** fetch the page title. *)
+  val page_title : obj -> string option
+end
 
 (** {2 A simple article}
 
@@ -68,4 +81,23 @@ module Base : METADATA
     The date format, among others, is quite restrictive, but the aim is for a
     potential user to describe their own metadata sets. *)
 
-module Article : METADATA
+module Article : sig
+  include METADATA
+
+  (** {2 Accessors} *)
+
+  (** fetch the page title. *)
+  val page_title : obj -> string option
+
+  (** fetch the tags. *)
+  val tags : obj -> string list
+
+  (** fetch the date. *)
+  val date : obj -> int * int * int
+
+  (** fetch the article title. *)
+  val article_title : obj -> string
+
+  (** fetch the article synopsis. *)
+  val article_synopsis : obj -> string
+end

@@ -12,9 +12,11 @@ module type METADATA = sig
   type obj
 
   val from_yaml : Yaml.value -> obj Validate.t
+  val from_string : string option -> obj Validate.t
   val to_mustache : obj -> [ `O of (string * Mustache.Json.value) list ]
   val equal : obj -> obj -> bool
   val pp : Format.formatter -> obj -> unit
+  val repr : string list
 end
 
 class virtual mustacheable =
@@ -113,13 +115,25 @@ module Base = struct
     | _ -> Validate.valid (new obj ())
   ;;
 
+  let from_string str =
+    match str with
+    | None -> Validate.valid (new obj ())
+    | Some x ->
+      Result.fold ~ok:from_yaml ~error:(function `Msg e ->
+          Error.(to_validate $ Yaml e))
+      $ Yaml.of_string x
+  ;;
+
   let equal a b = Option.equal String.equal a#get_page_title b#get_page_title
+  let repr = [ "page_title?" ]
 
   let pp ppf x =
     Format.fprintf ppf "Metadata.base (title = %a)"
     $ Preface.Option.pp Format.pp_print_string
     $ x#get_page_title
   ;;
+
+  let page_title obj = obj#get_page_title
 end
 
 module Article = struct
@@ -130,7 +144,7 @@ module Article = struct
           ~page_title:(Option.value ~default:article_title page_title)
           () as super
 
-      val tags : string list = tags
+      val tags : string list = List.map String.lowercase_ascii tags
 
       val date : date = date
 
@@ -172,7 +186,7 @@ module Article = struct
 
   let pp ppf x =
     let title =
-      Format.asprintf "title = %a"
+      Format.asprintf "page_title = %a"
       $ Preface.Option.pp Format.pp_print_string
       $ x#get_page_title
     in
@@ -196,16 +210,35 @@ module Article = struct
 
   let to_mustache x = x#to_mustache
 
+  let repr =
+    [ "page_title?"; "tags?"; "date"; "article_title"; "article_synopsis" ]
+  ;;
+
   let from_yaml = function
     | `O xs ->
       let open Validate.Applicative in
       let obj = List.map (fun (x, y) -> String.lowercase_ascii x, y) xs in
       mk
-      <$> forgettable_string "title" obj
+      <$> forgettable_string "page_title" obj
       <*> forgettable_string_list "tags" obj
       <*> required_date "date" obj
       <*> required_string "article_title" obj
       <*> required_string "article_synopsis" obj
-    | x -> Error.(to_validate $ Invalid_metadata (Yaml.to_string_exn x))
+    | _ -> Error.(to_validate $ Required_metadata repr)
   ;;
+
+  let from_string str =
+    match str with
+    | None -> Error.(to_validate $ Required_metadata repr)
+    | Some x ->
+      Result.fold ~ok:from_yaml ~error:(function `Msg e ->
+          Error.(to_validate $ Yaml e))
+      $ Yaml.of_string x
+  ;;
+
+  let page_title = Base.page_title
+  let tags obj = obj#get_tags
+  let date obj = obj#get_date
+  let article_title obj = obj#get_article_title
+  let article_synopsis obj = obj#get_article_synopsis
 end
