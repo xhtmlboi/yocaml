@@ -124,13 +124,6 @@ let pipe_content ?(separator = "\n") path =
   Fun.flip Tuple.( & ) () ^>> snd (read_file path) >>^ c
 ;;
 
-let inject_body =
-  arrow (fun (layout, content) ->
-      let f = Mustache.of_string layout in
-      let o = `O [ "body", `String content ] in
-      Mustache.render ~strict:false f o)
-;;
-
 let concat_files ?separator first_file second_file =
   read_file first_file >>> pipe_content ?separator second_file
 ;;

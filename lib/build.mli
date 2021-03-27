@@ -55,13 +55,10 @@ val concat_files
     excellent {{:https://github.com/ocaml/omd} OMD} library. *)
 val process_markdown : (string, string) t
 
-(** Inject a string into a template. It use
-    {{:https://github.com/rgrinberg/ocaml-mustache} ocaml-mustache} for
-    capturing the field [{{{body}}}].*)
-val inject_body : (string * string, string) t
-
 (** Read a file and parse metadata in the header. If the metadata is invalid,
-    the arrow will throw an error.*)
+    the arrow will throw an error. The Arrow uses
+    {{:https://github.com/avsm/ocaml-yaml} ocaml-yaml} for defining metadata.
+    See {!module:Metadata}. *)
 val read_file_with_metadata
   :  (module Metadata.METADATA with type obj = 'a)
   -> filepath
@@ -69,7 +66,9 @@ val read_file_with_metadata
 
 (** Applies a file as a template. (and replacing the metadata). Once the
     content has been transformed, the arrow returns a pair containing the
-    metadata and the file content injected into the template.*)
+    metadata and the file content injected into the template. The Arrow uses
+    {{:https://github.com/rgrinberg/ocaml-mustache} ocaml-yaml} as template
+    engine. *)
 val apply_as_template
   :  (module Metadata.METADATA with type obj = 'a)
   -> filepath
