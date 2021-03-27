@@ -19,6 +19,7 @@ type t =
   | Invalid_metadata of string
   | Required_metadata of string list
   | Yaml of string
+  | Mustache of string
   | Unknown of string (** An unq\ualified error (probably due to laziness). *)
 
 (** Represents an [Error.t] in [exception]. *)

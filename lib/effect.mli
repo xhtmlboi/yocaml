@@ -38,6 +38,7 @@ type (_, 'a) effects =
       -> (< read_dir : e ; .. >, filepath list) effects
   | Log : (log_level * string) -> (< log : e ; .. >, unit) effects
   | Throw : Error.t -> (< throw : e ; .. >, 'a) effects
+  | Raise : exn -> (< raise_ : e ; .. >, 'a) effects
 
 (** {1 Global definition}
 
@@ -63,7 +64,8 @@ module Freer :
             ; write_file : e
             ; read_dir : e
             ; log : e
-            ; throw : e >
+            ; throw : e
+            ; raise_ : e >
           , 'a )
           effects
 
@@ -151,8 +153,13 @@ val alert : string -> unit Freer.t
     When we are in the context of an IO, ahem, effect execution, it's open
     bar, we can do whatever we want, like throwing exceptions galore! *)
 
-(** [throw error] should be interpreted as... "fire, fire, what to do!". *)
+(** [throw error] should be interpreted as... "fire, fire, what to do using an
+    Error!". *)
 val throw : Error.t -> 'a Freer.t
+
+(** [raise_ exn] should be interpreted as... "fire, fire, what to do using an
+    exception!". *)
+val raise_ : exn -> 'a Freer.t
 
 (** {2 Included Freer combinators}
 

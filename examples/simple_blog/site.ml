@@ -23,17 +23,18 @@ let process_images =
 ;;
 
 let process_articles =
-  let content_of x = split_metadata x |> snd in
   process_files [ "articles" ] (with_extension "md")
   $ fun path ->
   let open Build in
-  let file = basename $ replace_extension path "html" in
-  let dest = into dest (into "articles" file) in
+  let base_name = basename $ replace_extension path "html" in
+  let dest = into dest (into "articles" base_name) in
   create_file dest
   $ (track_binary_update
-    >>> read_file "layout.html"
-    &&& (read_file path >>^ content_of >>> process_markdown)
-    >>> inject_body)
+    >>> read_file_with_metadata (module Metadata.Article) path
+    >>> snd process_markdown
+    >>> apply_as_template (module Metadata.Article) "article.html"
+    >>> apply_as_template (module Metadata.Article) "layout.html"
+    >>^ Preface.Tuple.snd)
 ;;
 
 let () =

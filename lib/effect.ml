@@ -17,6 +17,7 @@ type (_, 'a) effects =
       -> (< read_dir : e ; .. >, filepath list) effects
   | Log : (log_level * string) -> (< log : e ; .. >, unit) effects
   | Throw : Error.t -> (< throw : e ; .. >, 'a) effects
+  | Raise : exn -> (< raise_ : e ; .. >, 'a) effects
 
 module Freer = Preface.Make.Freer_monad.Over (struct
   type 'a t =
@@ -26,7 +27,8 @@ module Freer = Preface.Make.Freer_monad.Over (struct
       ; write_file : e
       ; read_dir : e
       ; log : e
-      ; throw : e >
+      ; throw : e
+      ; raise_ : e >
     , 'a )
     effects
 end)
@@ -42,6 +44,7 @@ let info = log Info
 let warning = log Warning
 let alert = log Alert
 let throw error = Freer.perform $ Throw error
+let raise_ exn = Freer.perform $ Raise exn
 
 let read_directory k path predicate =
   Freer.perform $ Read_dir (path, k, predicate)

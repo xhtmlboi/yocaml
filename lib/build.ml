@@ -97,6 +97,8 @@ let read_file path =
   }
 ;;
 
+let failable_task task = { dependencies = Deps.empty; task }
+
 let watch path =
   { dependencies = Deps.singleton (Deps.file path)
   ; task = (fun () -> Effect.return ())
@@ -131,4 +133,36 @@ let inject_body =
 
 let concat_files ?separator first_file second_file =
   read_file first_file >>> pipe_content ?separator second_file
+;;
+
+let read_file_with_metadata
+    (type a)
+    (module M : Metadata.METADATA with type obj = a)
+    path
+  =
+  let open Preface.Fun in
+  read_file path
+  >>^ Preface.Tuple.Bifunctor.map_fst M.from_string % split_metadata
+  >>^ (fun (m, c) -> Validate.Monad.(m >|= flip Preface.Tuple.( & ) c))
+  >>> failable_task (function
+          | Preface.Validation.Valid x -> Effect.return x
+          | Preface.Validation.Invalid x -> Effect.throw (Error.List x))
+;;
+
+let apply_as_template
+    (type a)
+    (module M : Metadata.METADATA with type obj = a)
+    template
+  =
+  let piped = Preface.(Fun.flip Tuple.( & ) ()) in
+  let action ((obj, content), tpl_content) =
+    let values = M.to_mustache obj in
+    let variables = `O (("body", `String content) :: values) in
+    try
+      let layout = Mustache.of_string tpl_content in
+      Effect.return (obj, Mustache.render layout variables)
+    with
+    | e -> Effect.raise_ e
+  in
+  piped ^>> snd (read_file template) >>> failable_task action
 ;;

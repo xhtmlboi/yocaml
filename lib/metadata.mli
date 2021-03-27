@@ -33,7 +33,7 @@ module type METADATA = sig
   val from_string : string option -> obj Validate.t
 
   (** Produces a [Json], compliant to [Mustache] from an [obj]. *)
-  val to_mustache : obj -> [ `O of (string * Mustache.Json.value) list ]
+  val to_mustache : obj -> (string * Mustache.Json.value) list
 
   (** {2 Utils} *)
 

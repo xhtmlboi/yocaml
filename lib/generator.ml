@@ -141,6 +141,11 @@ let run program =
                 log Aliases.Alert (Lexicon.crap_there_is_an_error error)
               in
               Error.raise' error
+            | Raise exn ->
+              let () =
+                log Aliases.Alert (Lexicon.crap_there_is_an_exception exn)
+              in
+              raise exn
           in
           f resume effect)
     }

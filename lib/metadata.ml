@@ -13,7 +13,7 @@ module type METADATA = sig
 
   val from_yaml : Yaml.value -> obj Validate.t
   val from_string : string option -> obj Validate.t
-  val to_mustache : obj -> [ `O of (string * Mustache.Json.value) list ]
+  val to_mustache : obj -> (string * Mustache.Json.value) list
   val equal : obj -> obj -> bool
   val pp : Format.formatter -> obj -> unit
   val repr : string list
@@ -21,7 +21,7 @@ end
 
 class virtual mustacheable =
   object
-    method virtual to_mustache : [ `O of (string * Mustache.Json.value) list ]
+    method virtual to_mustache : (string * Mustache.Json.value) list
   end
 
 let forgettable_string key xs =
@@ -89,10 +89,9 @@ module Base = struct
       method get_page_title = page_title
 
       method to_mustache =
-        `O
-          (match page_title with
-          | None -> []
-          | Some title -> [ "page_title", `String title ])
+        match page_title with
+        | None -> []
+        | Some title -> [ "page_title", `String title ]
     end
 
   let to_mustache x = x#to_mustache
@@ -161,15 +160,12 @@ module Article = struct
       method get_article_synopsis = article_synopsis
 
       method! to_mustache =
-        match super#to_mustache with
-        | `O xs ->
-          let tags = "tags", `A (List.map (fun x -> `String x) tags)
-          and date = "date", `String (date_to_string date)
-          and article_title = "article_title", `String article_title
-          and article_synopsis =
-            "article_synopsis", `String article_synopsis
-          in
-          `O (tags :: date :: article_title :: article_synopsis :: xs)
+        let base = super#to_mustache in
+        let tags = "tags", `A (List.map (fun x -> `String x) tags)
+        and date = "date", `String (date_to_string date)
+        and article_title = "article_title", `String article_title
+        and article_synopsis = "article_synopsis", `String article_synopsis in
+        tags :: date :: article_title :: article_synopsis :: base
     end
 
   let mk page_title tags date article_title article_synopsis =

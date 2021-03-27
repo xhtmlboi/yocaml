@@ -60,6 +60,21 @@ val process_markdown : (string, string) t
     capturing the field [{{{body}}}].*)
 val inject_body : (string * string, string) t
 
+(** Read a file and parse metadata in the header. If the metadata is invalid,
+    the arrow will throw an error.*)
+val read_file_with_metadata
+  :  (module Metadata.METADATA with type obj = 'a)
+  -> filepath
+  -> (unit, 'a * string) t
+
+(** Applies a file as a template. (and replacing the metadata). Once the
+    content has been transformed, the arrow returns a pair containing the
+    metadata and the file content injected into the template.*)
+val apply_as_template
+  :  (module Metadata.METADATA with type obj = 'a)
+  -> filepath
+  -> ('a * string, 'a * string) t
+
 (** {1 Included Arrow combinators}
 
     A [build rule] respects the interface of an [Arrow Choice] (which implies

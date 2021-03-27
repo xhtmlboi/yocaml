@@ -24,3 +24,6 @@ val target_is_up_to_date : filepath -> t
 
 (** Occurs when there is an error. *)
 val crap_there_is_an_error : Error.t -> t
+
+(** Occurs when there is an exception. *)
+val crap_there_is_an_exception : exn -> t
