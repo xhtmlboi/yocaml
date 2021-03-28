@@ -35,6 +35,10 @@ val watch : filepath -> (unit, unit) t
     dependencies are not up-to-date for [target] (or [target] does not exist). *)
 val create_file : filepath -> (unit, string) t -> unit Effect.t
 
+val fold_dependencies
+  :  ('a, 'b) t list
+  -> (('c -> 'd Effect.t) -> ('c, 'd) t) * ('a -> 'b Effect.t) list
+
 (** Copy files from a destination to a source, taking account of dependencies. *)
 val copy_file : ?new_name:string -> filepath -> into:filepath -> unit Effect.t
 
@@ -60,7 +64,7 @@ val process_markdown : (string, string) t
     {{:https://github.com/avsm/ocaml-yaml} ocaml-yaml} for defining metadata.
     See {!module:Metadata}. *)
 val read_file_with_metadata
-  :  (module Metadata.METADATA with type obj = 'a)
+  :  (module Metadata.PARSABLE with type obj = 'a)
   -> filepath
   -> (unit, 'a * string) t
 
@@ -70,7 +74,8 @@ val read_file_with_metadata
     {{:https://github.com/rgrinberg/ocaml-mustache} ocaml-yaml} as template
     engine. *)
 val apply_as_template
-  :  (module Metadata.METADATA with type obj = 'a)
+  :  (module Metadata.INJECTABLE with type obj = 'a)
+  -> ?strict:bool
   -> filepath
   -> ('a * string, 'a * string) t
 

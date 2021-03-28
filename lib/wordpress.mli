@@ -29,6 +29,11 @@ val sequence
   -> 'b Effect.t
   -> 'b Effect.t
 
+val collect_files
+  :  filepath list
+  -> filepath Preface.Predicate.t
+  -> filepath list Effect.t
+
 (** [process_files path predicate action] performs sequentially [action] on
     each files which satisfies [predicate]. *)
 val process_files

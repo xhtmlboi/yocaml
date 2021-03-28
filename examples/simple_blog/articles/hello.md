@@ -1,6 +1,6 @@
 ---
-page_title: Index page
-date: 2021-03-27
+page_title: Index page foo
+date: 2021-03-28
 article_title: Hello, this is the index page !
 article_synopsis:
     This is a simple article about me, myself, and I,

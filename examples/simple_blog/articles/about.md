@@ -6,4 +6,4 @@ article_synopsis:
     This is a simple article about me, myself, and I,
     mainly for testing metadata injection!
 ---
-this page is about me. **MMMM**
+this page is about me. **MMMM** test

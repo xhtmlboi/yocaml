@@ -8,12 +8,24 @@ let date_eq (y, m, d) (yy, mm, dd) =
   Preface.List.equal Int.equal [ y; m; d ] [ yy; mm; dd ]
 ;;
 
-module type METADATA = sig
+module type INJECTABLE = sig
   type obj
 
-  val from_yaml : Yaml.value -> obj Validate.t
-  val from_string : string option -> obj Validate.t
   val to_mustache : obj -> (string * Mustache.Json.value) list
+end
+
+module type PARSABLE = sig
+  (** The container of the metadata. *)
+  type obj
+
+  (** Try to produces an [obj] from an optional value. *)
+  val from_string : string option -> obj Validate.t
+end
+
+module type METADATA = sig
+  include INJECTABLE
+  include PARSABLE with type obj := obj
+
   val equal : obj -> obj -> bool
   val pp : Format.formatter -> obj -> unit
   val repr : string list
@@ -237,4 +249,32 @@ module Article = struct
   let date obj = obj#get_date
   let article_title obj = obj#get_article_title
   let article_synopsis obj = obj#get_article_synopsis
+end
+
+module Articles = struct
+  type obj = (Article.obj * string) list
+
+  let make o = o
+
+  let cmp dec (a, b, c) (x, y, z) =
+    let f a b c = (a * 10000) + (b * 100) + c in
+    let res = Int.compare (f a b c) (f x y z) in
+    if dec then ~-res else res
+  ;;
+
+  let sort_by_date ?(decreasing = true) obj =
+    List.sort
+      (fun (l, _) (r, _) -> cmp decreasing (Article.date l) (Article.date r))
+      obj
+  ;;
+
+  let to_mustache obj =
+    [ ( "articles"
+      , `A
+          (List.map
+             (fun (m, url) ->
+               `O (("url", `String url) :: Article.to_mustache m))
+             obj) )
+    ]
+  ;;
 end

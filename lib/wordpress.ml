@@ -17,12 +17,14 @@ let sequence lists handler first =
   lists >>= List.fold_left (fun t x -> t >>= handler x) first
 ;;
 
+let collect_files paths predicate =
+  List.map (fun path -> Effect.read_child_files path predicate) paths
+  |> Effect.Traverse.sequence
+  |> Effect.map List.flatten
+;;
+
 let process_files paths predicate effect =
-  let effects =
-    List.map (fun path -> Effect.read_child_files path predicate) paths
-    |> Effect.Traverse.sequence
-    |> Effect.map List.flatten
-  in
+  let effects = collect_files paths predicate in
   sequence effects (fun x _ -> effect x) (Effect.return ())
 ;;
 

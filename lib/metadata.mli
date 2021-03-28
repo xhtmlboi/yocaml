@@ -20,20 +20,25 @@
     decided to make everything abstract. A collection of metadata should
     simply respect the following interface: *)
 
-module type METADATA = sig
+module type INJECTABLE = sig
   (** The container of the metadata. *)
   type obj
 
-  (** {2 Conversion} *)
-
-  (** Try to produces an [obj] from a [yaml] value. *)
-  val from_yaml : Yaml.value -> obj Validate.t
-
-  (** Try to produces an [obj] from an optional value passing through [Yaml]. *)
-  val from_string : string option -> obj Validate.t
-
   (** Produces a [Json], compliant to [Mustache] from an [obj]. *)
   val to_mustache : obj -> (string * Mustache.Json.value) list
+end
+
+module type PARSABLE = sig
+  (** The container of the metadata. *)
+  type obj
+
+  (** Try to produces an [obj] from an optional value. *)
+  val from_string : string option -> obj Validate.t
+end
+
+module type METADATA = sig
+  include INJECTABLE
+  include PARSABLE with type obj := obj
 
   (** {2 Utils} *)
 
@@ -100,4 +105,13 @@ module Article : sig
 
   (** fetch the article synopsis. *)
   val article_synopsis : obj -> string
+end
+
+(** {2 A list of articles} *)
+
+module Articles : sig
+  include INJECTABLE
+
+  val make : (Article.obj * string) list -> obj
+  val sort_by_date : ?decreasing:bool -> obj -> obj
 end

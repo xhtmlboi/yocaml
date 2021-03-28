@@ -97,6 +97,16 @@ let read_file path =
   }
 ;;
 
+let fold_dependencies arr_list =
+  let dependencies, tasks =
+    List.fold_left
+      (fun (d, l) x -> Deps.union x.dependencies d, x.task :: l)
+      (Deps.empty, [])
+      arr_list
+  in
+  (fun task -> { dependencies; task }), tasks
+;;
+
 let failable_task task = { dependencies = Deps.empty; task }
 
 let watch path =
@@ -130,7 +140,7 @@ let concat_files ?separator first_file second_file =
 
 let read_file_with_metadata
     (type a)
-    (module M : Metadata.METADATA with type obj = a)
+    (module M : Metadata.PARSABLE with type obj = a)
     path
   =
   let open Preface.Fun in
@@ -144,7 +154,8 @@ let read_file_with_metadata
 
 let apply_as_template
     (type a)
-    (module M : Metadata.METADATA with type obj = a)
+    (module M : Metadata.INJECTABLE with type obj = a)
+    ?(strict = true)
     template
   =
   let piped = Preface.(Fun.flip Tuple.( & ) ()) in
@@ -153,7 +164,7 @@ let apply_as_template
     let variables = `O (("body", `String content) :: values) in
     try
       let layout = Mustache.of_string tpl_content in
-      Effect.return (obj, Mustache.render layout variables)
+      Effect.return (obj, Mustache.render ~strict layout variables)
     with
     | e -> Effect.raise_ e
   in
