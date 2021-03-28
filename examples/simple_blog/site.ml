@@ -54,27 +54,20 @@ let process_articles =
 ;;
 
 let index =
-  let open Effect in
   let open Build in
   let* deps = read_child_files "articles" is_markdown in
-  let need_task, effects =
+  let task, effects =
     fold_dependencies
       (List.map (fun p -> article p >>^ fun (m, _) -> m, article_url p) deps)
   in
   create_file
     (into dest "index.html")
-    (need_task (fun () ->
+    (task (fun () ->
          let+ metadata = Traverse.sequence $ List.map apply effects in
-         let articles =
-           let open Metadata.Articles in
-           make metadata |> sort_by_date
-         in
+         let articles = Metadata.Articles.(make metadata |> sort_by_date) in
          articles, "")
     >>> apply_as_template (module Metadata.Articles) "index.html"
-    >>> apply_as_template
-          ~strict:false
-          (module Metadata.Articles)
-          "layout.html"
+    >>> apply_as_template (module Metadata.Articles) "layout.html"
     >>^ Preface.Tuple.snd)
 ;;
 

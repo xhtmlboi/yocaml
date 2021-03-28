@@ -121,6 +121,33 @@ val read_child_directories
   -> filepath Preface.Predicate.t
   -> filepath list Freer.t
 
+(** Same of [read_children] but searching through a list of directories.*)
+val collect_children
+  :  filepath list
+  -> filepath Preface.Predicate.t
+  -> filepath list Freer.t
+
+(** Same of [read_child_files] but searching through a list of directories.*)
+val collect_child_files
+  :  filepath list
+  -> filepath Preface.Predicate.t
+  -> filepath list Freer.t
+
+(** Same of [read_child_directories] but searching through a list of
+    directories.*)
+val collect_child_directories
+  :  filepath list
+  -> filepath Preface.Predicate.t
+  -> filepath list Freer.t
+
+(** [process_files path predicate action] performs sequentially [action] on
+    each files which satisfies [predicate]. *)
+val process_files
+  :  filepath list
+  -> filepath Preface.Predicate.t
+  -> (filepath -> unit Freer.t)
+  -> unit Freer.t
+
 (** {3 Logging}
 
     Even if it would be possible to limit our feedback with the user to simply
@@ -160,6 +187,17 @@ val throw : Error.t -> 'a Freer.t
 (** [raise_ exn] should be interpreted as... "fire, fire, what to do using an
     exception!". *)
 val raise_ : exn -> 'a Freer.t
+
+(** {3 Effects composition} *)
+
+(** Collapses sequentially Wordpress program. [sequence ps f p] produces a
+    program which performs [p] followed by [f ps]. A common usage is
+    [p |> sequences ps f]. *)
+val sequence
+  :  'a list Freer.t
+  -> ('a -> 'b -> 'b Freer.t)
+  -> 'b Freer.t
+  -> 'b Freer.t
 
 (** {2 Included Freer combinators}
 

@@ -8,8 +8,6 @@
 
     Please refer to {{:../index.html} the documentation index} for an example. *)
 
-open Aliases
-
 (** {1 High-level API}
 
     The WordPress high-level API. It is mainly these combiners that should be
@@ -19,28 +17,6 @@ open Aliases
 
 (** Runs a Wordpress program with the default handler. *)
 val execute : 'a Effect.t -> 'a
-
-(** Collapses sequentially Wordpress program. [sequence ps f p] produces a
-    program which performs [p] followed by [f ps]. A common usage is
-    [p |> sequences ps f]. *)
-val sequence
-  :  'a list Effect.t
-  -> ('a -> 'b -> 'b Effect.t)
-  -> 'b Effect.t
-  -> 'b Effect.t
-
-val collect_files
-  :  filepath list
-  -> filepath Preface.Predicate.t
-  -> filepath list Effect.t
-
-(** [process_files path predicate action] performs sequentially [action] on
-    each files which satisfies [predicate]. *)
-val process_files
-  :  filepath list
-  -> filepath Preface.Predicate.t
-  -> (filepath -> unit Effect.t)
-  -> unit Effect.t
 
 (** {1 Build system}
 

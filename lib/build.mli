@@ -71,8 +71,8 @@ val read_file_with_metadata
 (** Applies a file as a template. (and replacing the metadata). Once the
     content has been transformed, the arrow returns a pair containing the
     metadata and the file content injected into the template. The Arrow uses
-    {{:https://github.com/rgrinberg/ocaml-mustache} ocaml-yaml} as template
-    engine. *)
+    {{:https://github.com/rgrinberg/ocaml-mustache} ocaml-mustache} as
+    template engine. *)
 val apply_as_template
   :  (module Metadata.INJECTABLE with type obj = 'a)
   -> ?strict:bool

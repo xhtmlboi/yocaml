@@ -101,11 +101,10 @@ module Base = struct
       method get_page_title = page_title
 
       method to_mustache =
-        match page_title with
-        | None -> []
-        | Some title -> [ "page_title", `String title ]
+        [ "page_title", `String (Option.value ~default:"" page_title) ]
     end
 
+  let make s = new obj ?page_title:s ()
   let to_mustache x = x#to_mustache
 
   let from_yaml = function
@@ -252,9 +251,9 @@ module Article = struct
 end
 
 module Articles = struct
-  type obj = (Article.obj * string) list
+  type obj = string option * (Article.obj * string) list
 
-  let make o = o
+  let make ?page_title o = page_title, o
 
   let cmp dec (a, b, c) (x, y, z) =
     let f a b c = (a * 10000) + (b * 100) + c in
@@ -262,19 +261,21 @@ module Articles = struct
     if dec then ~-res else res
   ;;
 
-  let sort_by_date ?(decreasing = true) obj =
-    List.sort
-      (fun (l, _) (r, _) -> cmp decreasing (Article.date l) (Article.date r))
-      obj
+  let sort_by_date ?(decreasing = true) (t, obj) =
+    ( t
+    , List.sort
+        (fun (l, _) (r, _) ->
+          cmp decreasing (Article.date l) (Article.date r))
+        obj )
   ;;
 
-  let to_mustache obj =
-    [ ( "articles"
-      , `A
-          (List.map
-             (fun (m, url) ->
-               `O (("url", `String url) :: Article.to_mustache m))
-             obj) )
-    ]
+  let to_mustache (t, obj) =
+    ( "articles"
+    , `A
+        (List.map
+           (fun (m, url) ->
+             `O (("url", `String url) :: Article.to_mustache m))
+           obj) )
+    :: (Base.make t)#to_mustache
   ;;
 end

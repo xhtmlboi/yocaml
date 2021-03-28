@@ -112,6 +112,6 @@ end
 module Articles : sig
   include INJECTABLE
 
-  val make : (Article.obj * string) list -> obj
+  val make : ?page_title:string -> (Article.obj * string) list -> obj
   val sort_by_date : ?decreasing:bool -> obj -> obj
 end

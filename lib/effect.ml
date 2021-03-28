@@ -56,3 +56,25 @@ let read_child_directories = read_directory `Directories
 
 module Traverse = Preface.List.Monad.Traversable (Freer)
 include Freer
+
+let sequence lists handler first =
+  lists >>= List.fold_left (fun t x -> t >>= handler x) first
+;;
+
+let collect_children_with_callback f paths predicate =
+  List.map (fun path -> f path predicate) paths
+  |> Traverse.sequence
+  |> map List.flatten
+;;
+
+let collect_children = collect_children_with_callback read_children
+let collect_child_files = collect_children_with_callback read_child_files
+
+let collect_child_directories =
+  collect_children_with_callback read_child_directories
+;;
+
+let process_files paths predicate effect =
+  let effects = collect_child_files paths predicate in
+  sequence effects (fun x _ -> effect x) (return ())
+;;
