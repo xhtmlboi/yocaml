@@ -54,6 +54,7 @@ let process_articles =
 ;;
 
 let index =
+  let page_title = "Index" in
   let open Build in
   let* deps = read_child_files "articles" is_markdown in
   let task, effects =
@@ -64,8 +65,11 @@ let index =
     (into dest "index.html")
     (task (fun () ->
          let+ metadata = Traverse.sequence $ List.map apply effects in
-         let articles = Metadata.Articles.(make metadata |> sort_by_date) in
-         articles, "")
+         let articles =
+           Metadata.Articles.(
+             make ~title:page_title metadata |> sort_articles_by_date)
+         in
+         without_body articles)
     >>> apply_as_template (module Metadata.Articles) "index.html"
     >>> apply_as_template (module Metadata.Articles) "layout.html"
     >>^ Preface.Tuple.snd)

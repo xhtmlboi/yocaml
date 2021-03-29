@@ -12,6 +12,20 @@ let validate_testable upp ueq =
   Alcotest.testable (pp upp) (equal ueq)
 ;;
 
+let page_testable = Alcotest.testable Metadata.Page.pp Metadata.Page.equal
+
+let article_testable =
+  Alcotest.testable Metadata.Article.pp Metadata.Article.equal
+;;
+
+let valid_page_testable =
+  validate_testable Metadata.Page.pp Metadata.Page.equal
+;;
+
+let valid_article_testable =
+  validate_testable Metadata.Article.pp Metadata.Article.equal
+;;
+
 let capture_base_metadata_valid1 =
   let open Alcotest in
   test_case "capture base metadata 1 without values" `Quick
@@ -19,12 +33,12 @@ let capture_base_metadata_valid1 =
   let obj =
     Preface.Tuple.fst
     $ split_metadata {|My article|}
-    |> Metadata.Base.from_string
+    |> Metadata.Page.from_string
   in
   check
   $ opt_validate_testable Format.pp_print_string String.equal
   $ "should be equal"
-  $ Validate.Monad.(obj >|= Metadata.Base.page_title)
+  $ Validate.Monad.(obj >|= Metadata.Page.title)
   $ Validate.valid None
 ;;
 
@@ -37,12 +51,12 @@ let capture_base_metadata_valid2 =
     $ split_metadata {|---
 other_deps: foo
 ---My article|}
-    |> Metadata.Base.from_string
+    |> Metadata.Page.from_string
   in
   check
   $ opt_validate_testable Format.pp_print_string String.equal
   $ "should be equal"
-  $ Validate.Monad.(obj >|= Metadata.Base.page_title)
+  $ Validate.Monad.(obj >|= Metadata.Page.title)
   $ Validate.valid None
 ;;
 
@@ -55,12 +69,12 @@ let capture_base_metadata_valid3 =
     $ split_metadata {|---
 other_deps: foo bar
 ---My article|}
-    |> Metadata.Base.from_string
+    |> Metadata.Page.from_string
   in
   check
   $ opt_validate_testable Format.pp_print_string String.equal
   $ "should be equal"
-  $ Validate.Monad.(obj >|= Metadata.Base.page_title)
+  $ Validate.Monad.(obj >|= Metadata.Page.title)
   $ Validate.valid None
 ;;
 
@@ -73,13 +87,13 @@ let capture_base_metadata_valid4 =
     $ split_metadata {|---
 My superb article
 ---My article|}
-    |> Metadata.Base.from_string
+    |> Metadata.Page.from_string
   in
   check
-  $ opt_validate_testable Format.pp_print_string String.equal
-  $ "should be equal"
-  $ Validate.Monad.(obj >|= Metadata.Base.page_title)
-  $ Validate.valid (Some "My superb article")
+    valid_page_testable
+    "should be equal"
+    obj
+    (Validate.valid $ Metadata.Page.make None None)
 ;;
 
 let capture_base_metadata_valid5 =
@@ -89,14 +103,14 @@ let capture_base_metadata_valid5 =
   let obj =
     Preface.Tuple.fst
     $ split_metadata {|---
-page_title: My superb article  
+title: My superb article  
 ---My article|}
-    |> Metadata.Base.from_string
+    |> Metadata.Page.from_string
   in
   check
   $ opt_validate_testable Format.pp_print_string String.equal
   $ "should be equal"
-  $ Validate.Monad.(obj >|= Metadata.Base.page_title)
+  $ Validate.Monad.(obj >|= Metadata.Page.title)
   $ Validate.valid (Some "My superb article")
 ;;
 
@@ -112,8 +126,8 @@ let capture_article_metadata_invalid1 =
   check
   $ opt_validate_testable Format.pp_print_string String.equal
   $ "should be equal"
-  $ Validate.Monad.(obj >|= Metadata.Article.page_title)
-  $ Error.(to_validate $ Required_metadata Metadata.Article.repr)
+  $ Validate.Monad.(obj >|= Metadata.Article.title)
+  $ Error.(to_validate $ Invalid_metadata "Article")
 ;;
 
 let capture_article_metadata_invalid2 =
@@ -129,8 +143,8 @@ My article|}
   check
   $ opt_validate_testable Format.pp_print_string String.equal
   $ "should be equal"
-  $ Validate.Monad.(obj >|= Metadata.Article.page_title)
-  $ Error.(to_validate $ Required_metadata Metadata.Article.repr)
+  $ Validate.Monad.(obj >|= Metadata.Article.title)
+  $ Error.(to_validate $ Invalid_metadata "Article")
 ;;
 
 let capture_article_metadata_invalid3 =
@@ -146,8 +160,8 @@ let capture_article_metadata_invalid3 =
   check
   $ opt_validate_testable Format.pp_print_string String.equal
   $ "should be equal"
-  $ Validate.Monad.(obj >|= Metadata.Article.page_title)
-  $ Error.(to_validate $ Required_metadata Metadata.Article.repr)
+  $ Validate.Monad.(obj >|= Metadata.Article.title)
+  $ Error.(to_validate $ Invalid_metadata "Article")
 ;;
 
 let capture_article_metadata_invalid4 =
@@ -164,11 +178,11 @@ article_title: My First Article
   check
   $ opt_validate_testable Format.pp_print_string String.equal
   $ "should be equal"
-  $ Validate.Monad.(obj >|= Metadata.Article.page_title)
+  $ Validate.Monad.(obj >|= Metadata.Article.title)
   $ Validate.invalid
       Preface.Nonempty_list.(
-        Error.Missing_field "date"
-        :: Last (Error.Missing_field "article_synopsis"))
+        Error.Missing_field "article_description"
+        :: Last (Error.Missing_field "date"))
 ;;
 
 let capture_article_metadata_invalid5 =
@@ -180,7 +194,7 @@ let capture_article_metadata_invalid5 =
     $ split_metadata
         {|---
 article_title: My First Article
-article_synopsis:
+article_description:
   Hello, this is my first article, I guess that it is 
   interesting, but I don't think so!
 date: 2021-12
@@ -190,8 +204,9 @@ date: 2021-12
   check
   $ opt_validate_testable Format.pp_print_string String.equal
   $ "should be equal"
-  $ Validate.Monad.(obj >|= Metadata.Article.page_title)
-  $ Validate.invalid Preface.Nonempty_list.(Last (Error.Invalid_field "date"))
+  $ Validate.Monad.(obj >|= Metadata.Article.title)
+  $ Validate.invalid
+      Preface.Nonempty_list.(Last (Error.Invalid_date "2021-12"))
 ;;
 
 let capture_article_metadata_valid1 =
@@ -202,47 +217,27 @@ let capture_article_metadata_valid1 =
     Preface.Tuple.fst
     $ split_metadata
         {|---
-page_title: Blog - an article
+title: Blog - an article
 article_title: My First Article  
-article_synopsis:
+article_description:
   Hello, this is my first article, I guess that it is 
   interesting, but I don't think so!    
 date: 2021-12-03
 ---My article|}
     |> Metadata.Article.from_string
   in
-  check
-  $ opt_validate_testable Format.pp_print_string String.equal
-  $ "should be equal"
-  $ Validate.Monad.(obj >|= Metadata.Article.page_title)
-  $ Validate.valid (Some "Blog - an article");
-  check
-  $ validate_testable
-      (Preface.List.pp Format.pp_print_string)
-      (Preface.List.equal String.equal)
-  $ "should be equal"
-  $ Validate.Monad.(obj >|= Metadata.Article.tags)
-  $ Validate.valid [];
-  check
-  $ validate_testable Format.pp_print_string String.equal
-  $ "should be equal"
-  $ Validate.Monad.(
-      obj
-      >|= Metadata.Article.date
-      >|= fun (x, y, z) -> Format.asprintf "%d-%d-%d" x y z)
-  $ Validate.valid "2021-12-3";
-  check
-  $ validate_testable Format.pp_print_string String.equal
-  $ "should be equal"
-  $ Validate.Monad.(obj >|= Metadata.Article.article_title)
-  $ Validate.valid "My First Article";
-  check
-  $ validate_testable Format.pp_print_string String.equal
-  $ "should be equal"
-  $ Validate.Monad.(obj >|= Metadata.Article.article_synopsis)
-  $ Validate.valid
-      "Hello, this is my first article, I guess that it is interesting, but \
-       I don't think so!"
+  let expected =
+    Validate.valid
+    $ Metadata.Article.make
+        "My First Article"
+        "Hello, this is my first article, I guess that it is interesting, \
+         but I don't think so!"
+        []
+        (Metadata.Date.make 2021 12 3)
+        (Some "Blog - an article")
+        None
+  in
+  check valid_article_testable "should be equal" expected obj
 ;;
 
 let capture_article_metadata_valid2 =
@@ -253,51 +248,31 @@ let capture_article_metadata_valid2 =
     Preface.Tuple.fst
     $ split_metadata
         {|---
-page_title: Blog - an article
+title: Blog - an article
 article_title: My First Article  
 tags:
   - Bohr
   - Church  
   - McLane         
-article_synopsis:
+article_description:
   Hello, this is my first article, I guess that it is 
   interesting, but I don't think so!    
 date: 2021-12-03
 ---My article|}
     |> Metadata.Article.from_string
   in
-  check
-  $ opt_validate_testable Format.pp_print_string String.equal
-  $ "should be equal"
-  $ Validate.Monad.(obj >|= Metadata.Article.page_title)
-  $ Validate.valid (Some "Blog - an article");
-  check
-  $ validate_testable
-      (Preface.List.pp Format.pp_print_string)
-      (Preface.List.equal String.equal)
-  $ "should be equal"
-  $ Validate.Monad.(obj >|= Metadata.Article.tags)
-  $ Validate.valid [ "bohr"; "church"; "mclane" ];
-  check
-  $ validate_testable Format.pp_print_string String.equal
-  $ "should be equal"
-  $ Validate.Monad.(
-      obj
-      >|= Metadata.Article.date
-      >|= fun (x, y, z) -> Format.asprintf "%d-%d-%d" x y z)
-  $ Validate.valid "2021-12-3";
-  check
-  $ validate_testable Format.pp_print_string String.equal
-  $ "should be equal"
-  $ Validate.Monad.(obj >|= Metadata.Article.article_title)
-  $ Validate.valid "My First Article";
-  check
-  $ validate_testable Format.pp_print_string String.equal
-  $ "should be equal"
-  $ Validate.Monad.(obj >|= Metadata.Article.article_synopsis)
-  $ Validate.valid
-      "Hello, this is my first article, I guess that it is interesting, but \
-       I don't think so!"
+  let expected =
+    Validate.valid
+    $ Metadata.Article.make
+        "My First Article"
+        "Hello, this is my first article, I guess that it is interesting, \
+         but I don't think so!"
+        [ "bohr"; "church"; "mclane" ]
+        (Metadata.Date.make 2021 12 3)
+        (Some "Blog - an article")
+        None
+  in
+  check valid_article_testable "should be equal" expected obj
 ;;
 
 let cases =

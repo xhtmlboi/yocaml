@@ -14,104 +14,179 @@
     - {{:https://github.com/rgrinberg/ocaml-mustache} ocaml-mustache} for data
       injection in a template. *)
 
-(** {1 Common interface for declaring a set of metadata}
+(** {1 Metadata description}
 
-    As I am not particularly happy with the implementation I am proposing... I
-    decided to make everything abstract. A collection of metadata should
-    simply respect the following interface: *)
+    Minimum interfaces for describing metadata sets. *)
+
+(** {2 Injectable}
+
+    Describes a data set that can be injected, for example into a template.
+    (Currently, the injection process relay on Mustache) *)
 
 module type INJECTABLE = sig
-  (** The container of the metadata. *)
-  type obj
+  type t
 
-  (** Produces a [Json], compliant to [Mustache] from an [obj]. *)
-  val to_mustache : obj -> (string * Mustache.Json.value) list
+  (** Produces a [Json], compliant to [Mustache] from a [t]. *)
+  val to_mustache : t -> (string * Mustache.Json.value) list
 end
+
+(** {2 Parsable}
+
+    Describes a data set that can be parsed from, for example, the metadata of
+    a document. Which are usually described using Yaml. *)
 
 module type PARSABLE = sig
-  (** The container of the metadata. *)
-  type obj
+  type t
 
-  (** Try to produces an [obj] from an optional value. *)
-  val from_string : string option -> obj Validate.t
+  (** Try to produces a [t] from an optional value. *)
+  val from_string : string option -> t Validate.t
 end
 
-module type METADATA = sig
+(** {1 Utility}
+
+    A collection of public features for building metadata sets. *)
+
+(** {2 Date}
+
+    A rather naive representation of dates. *)
+
+module Date : sig
+  type t
+
+  val make : int -> int -> int -> t
+  val to_string : t -> string
+  val from_string : string -> t Try.t
+  val pp : Format.formatter -> t -> unit
+  val equal : t -> t -> bool
+  val compare : t -> t -> int
+  val to_mustache : t -> (string * Mustache.Json.value) list
+end
+
+(** {2 Rules}
+
+    Validating JSON (for Mustache and Yaml) using Applicative Validation. *)
+
+module Rules : sig
+  (** [is_object obj f x] performs [f] on the values of [obj] if [obj] is a
+      JSON Object, otherwise returns x. *)
+  val is_object : [> `O of 'a ] -> ('a -> 'b) -> 'b -> 'b
+
+  (** Find a value indexed by a string. *)
+  val fetch_field : (string * 'a) list -> string -> 'a option
+
+  (** Find an optional string in an indexed list. *)
+  val optional_string
+    :  (string * [> `String of string ]) list
+    -> string
+    -> string option Validate.t
+
+  (** Find an optional date in an indexed list. *)
+  val optional_date
+    :  (string * [> `String of string ]) list
+    -> string
+    -> Date.t option Validate.t
+
+  (** Find an optional list of string in an indexed list. *)
+  val optional_string_list
+    :  (string * [> `A of [> `String of string ] list ]) list
+    -> string
+    -> string list Validate.t
+
+  (** Find a string in an indexed list. *)
+  val required_string
+    :  (string * [> `String of string ]) list
+    -> string
+    -> string Validate.t
+
+  (** Find a date in an indexed list. *)
+  val required_date
+    :  (string * [> `String of string ]) list
+    -> string
+    -> Date.t Validate.t
+
+  (** Find a nonempty list of string in an indexed list. *)
+  val required_string_list
+    :  (string * [> `A of [> `String of string ] list ]) list
+    -> string
+    -> string list Validate.t
+end
+
+(** {1 Metadata description}
+
+    Example of a metadata set. These examples are directly usable but you
+    should write your own! *)
+
+(** {2 A single page}
+
+    This collection of metadata describes a single page, characterised by a
+    [title] and a [description]. Both parameters are optional. *)
+
+module Page : sig
   include INJECTABLE
-  include PARSABLE with type obj := obj
+  include PARSABLE with type t := t
 
-  (** {2 Utils} *)
-
-  (** Equality between [obj]. *)
-  val equal : obj -> obj -> bool
-
-  (** Printers for [obj]. *)
-  val pp : Format.formatter -> obj -> unit
-
-  (** A structured representation of [obj]. *)
-  val repr : string list
+  val make : string option -> string option -> t
+  val title : t -> string option
+  val description : t -> string option
+  val set_title : string option -> t -> t
+  val set_description : string option -> t -> t
+  val equal : t -> t -> bool
+  val pp : Format.formatter -> t -> unit
 end
 
-(** {1 Defined metadata set}
+(** {2 An Article}
 
-    In order to be able to bootstrap a project quickly, here are some
-    prefabricated data sets. *)
-
-(** {2 Base document}
-
-    Describes the bare minimum of a page to be built. So the optional presence
-    of a title: [page_title]. *)
-
-module Base : sig
-  include METADATA
-
-  (** {2 Accessors} *)
-
-  (** fetch the page title. *)
-  val page_title : obj -> string option
-end
-
-(** {2 A simple article}
-
-    My main goal is to create my blog... describing articles seems useful. The
-    template for articles "inherits" that of a basic document and requires
-    these fields:
-
-    - [page_title] optional [string]
-    - [tags] optional [string list]
-    - [date] mandatory [string with format: "yyyy-mm-dd"]
-    - [article_title] the title of the article
-    - [article_synopsis] the synopsis of the article.
-
-    The date format, among others, is quite restrictive, but the aim is for a
-    potential user to describe their own metadata sets. *)
+    This collection of metadata describes an article, characterised by a
+    [title] and a [description] (optional like for single page). And
+    article-related metadata: [article_title], [article_description], [tags]
+    and [date]. *)
 
 module Article : sig
-  include METADATA
+  include INJECTABLE
+  include PARSABLE with type t := t
 
-  (** {2 Accessors} *)
+  val make
+    :  string
+    -> string
+    -> string list
+    -> Date.t
+    -> string option
+    -> string option
+    -> t
 
-  (** fetch the page title. *)
-  val page_title : obj -> string option
-
-  (** fetch the tags. *)
-  val tags : obj -> string list
-
-  (** fetch the date. *)
-  val date : obj -> int * int * int
-
-  (** fetch the article title. *)
-  val article_title : obj -> string
-
-  (** fetch the article synopsis. *)
-  val article_synopsis : obj -> string
+  val article_title : t -> string
+  val article_description : t -> string
+  val date : t -> Date.t
+  val tags : t -> string list
+  val title : t -> string option
+  val description : t -> string option
+  val set_article_title : string -> t -> t
+  val set_article_description : string -> t -> t
+  val set_date : Date.t -> t -> t
+  val set_tags : string list -> t -> t
+  val set_title : string option -> t -> t
+  val set_description : string option -> t -> t
+  val equal : t -> t -> bool
+  val pp : Format.formatter -> t -> unit
+  val compare_by_date : t -> t -> int
 end
 
-(** {2 A list of articles} *)
+(** {2 A page with a list of article} *)
 
 module Articles : sig
   include INJECTABLE
 
-  val make : ?page_title:string -> (Article.obj * string) list -> obj
-  val sort_by_date : ?decreasing:bool -> obj -> obj
+  val make
+    :  ?title:string
+    -> ?description:string
+    -> (Article.t * string) list
+    -> t
+
+  val sort_articles_by_date : ?decreasing:bool -> t -> t
+  val articles : t -> (Article.t * string) list
+  val title : t -> string option
+  val description : t -> string option
+  val set_title : string option -> t -> t
+  val set_description : string option -> t -> t
+  val set_articles : (Article.t * string) list -> t -> t
 end

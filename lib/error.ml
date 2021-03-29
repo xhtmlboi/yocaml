@@ -8,6 +8,7 @@ type t =
   | Required_metadata of string list
   | Yaml of string
   | Mustache of string
+  | Invalid_date of string
   | Unknown of string
 
 exception Error of t
@@ -26,6 +27,7 @@ let rec pp formater error =
   | Mustache message -> ppf "Mustache (%s)" message
   | Required_metadata list ->
     ppf "Required_metadata (%a)" (Preface.List.pp Format.pp_print_string) list
+  | Invalid_date str -> ppf "Invalid_date (%s)" str
   | List nonempty_list ->
     ppf "List (%a)" (Preface.Nonempty_list.pp pp) nonempty_list
 ;;
@@ -55,5 +57,6 @@ let rec equal x y =
   | Mustache a, Mustache b -> String.equal a b
   | Required_metadata a, Required_metadata b ->
     Preface.List.equal String.equal a b
+  | Invalid_date a, Invalid_date b -> String.equal a b
   | _ -> false
 ;;

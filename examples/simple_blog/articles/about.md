@@ -1,8 +1,8 @@
 ---
-page_title: About him
+title: About him
 date: 2021-03-27
 article_title: My Awesome Article about... my life
-article_synopsis:
+article_description:
     This is a simple article about me, myself, and I,
     mainly for testing metadata injection!
 ---

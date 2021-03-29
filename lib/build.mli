@@ -64,7 +64,7 @@ val process_markdown : (string, string) t
     {{:https://github.com/avsm/ocaml-yaml} ocaml-yaml} for defining metadata.
     See {!module:Metadata}. *)
 val read_file_with_metadata
-  :  (module Metadata.PARSABLE with type obj = 'a)
+  :  (module Metadata.PARSABLE with type t = 'a)
   -> filepath
   -> (unit, 'a * string) t
 
@@ -74,10 +74,13 @@ val read_file_with_metadata
     {{:https://github.com/rgrinberg/ocaml-mustache} ocaml-mustache} as
     template engine. *)
 val apply_as_template
-  :  (module Metadata.INJECTABLE with type obj = 'a)
+  :  (module Metadata.INJECTABLE with type t = 'a)
   -> ?strict:bool
   -> filepath
   -> ('a * string, 'a * string) t
+
+(** When a template should be applied without body. *)
+val without_body : 'a -> 'a * string
 
 (** {1 Included Arrow combinators}
 

@@ -1,281 +1,318 @@
 open Util
 
-type date = int * int * int
-
-let date_to_string (y, m, d) = Format.asprintf "%04d-%02d-%02d" y m d
-
-let date_eq (y, m, d) (yy, mm, dd) =
-  Preface.List.equal Int.equal [ y; m; d ] [ yy; mm; dd ]
-;;
-
 module type INJECTABLE = sig
-  type obj
+  type t
 
-  val to_mustache : obj -> (string * Mustache.Json.value) list
+  val to_mustache : t -> (string * Mustache.Json.value) list
 end
 
 module type PARSABLE = sig
-  (** The container of the metadata. *)
-  type obj
+  type t
 
-  (** Try to produces an [obj] from an optional value. *)
-  val from_string : string option -> obj Validate.t
+  val from_string : string option -> t Validate.t
 end
 
-module type METADATA = sig
-  include INJECTABLE
-  include PARSABLE with type obj := obj
+module Date = struct
+  type t = int * int * int
 
-  val equal : obj -> obj -> bool
-  val pp : Format.formatter -> obj -> unit
-  val repr : string list
-end
+  let make y m d = y, m, d
+  let pp ppf (y, m, d) = Format.fprintf ppf "%04d-%02d-%02d" y m d
+  let to_string d = Format.asprintf "%a" pp d
 
-class virtual mustacheable =
-  object
-    method virtual to_mustache : (string * Mustache.Json.value) list
-  end
+  let equal (y, m, d) (yy, mm, dd) =
+    Preface.List.equal Int.equal [ y; m; d ] [ yy; mm; dd ]
+  ;;
 
-let forgettable_string key xs =
-  List.find_map
-    (fun (k, v) ->
-      if String.equal k key
-      then (
-        match v with
-        | `String res -> Some res
-        | _ -> None)
-      else None)
-    xs
-  |> Validate.valid
-;;
-
-let required_string key xs =
-  let open Validate.Monad in
-  forgettable_string key xs
-  >>= function
-  | None -> Error.(to_validate $ Missing_field key)
-  | Some x -> Validate.valid x
-;;
-
-let required_date key xs =
-  let open Validate.Monad in
-  required_string key xs
-  >>= fun x ->
-  try Scanf.sscanf x "%04d-%02d-%02d" (fun y m d -> return (y, m, d)) with
-  | _ -> Error.(to_validate $ Invalid_field key)
-;;
-
-let is_string = function
-  | `String _ -> true
-  | _ -> false
-;;
-
-let forgettable_string_list key xs =
-  List.find_map
-    (fun (k, v) ->
-      if String.equal k key
-      then (
-        match v with
-        | `A res when List.for_all is_string res -> Some res
-        | _ -> None)
-      else None)
-    xs
-  |> (function
-       | None -> []
-       | Some x ->
-         List.filter_map
-           (function
-             | `String k -> Some k
-             | _ -> None)
-           x)
-  |> Validate.valid
-;;
-
-module Base = struct
-  class obj ?page_title () =
-    object
-      inherit mustacheable
-
-      val page_title : string option = page_title
-
-      method get_page_title = page_title
-
-      method to_mustache =
-        [ "page_title", `String (Option.value ~default:"" page_title) ]
-    end
-
-  let make s = new obj ?page_title:s ()
-  let to_mustache x = x#to_mustache
-
-  let from_yaml = function
-    | `String title -> Validate.valid (new obj ~page_title:title ())
-    | `O xs ->
-      List.find_map
-        (fun (x, xs) ->
-          let key = String.lowercase_ascii x in
-          if List.mem key [ "title"; "page_title" ]
-          then (
-            match xs with
-            | `String title -> Some title
-            | _ -> None)
-          else None)
-        xs
-      |> (function
-      | page_title -> Validate.valid (new obj ?page_title ()))
-    | _ -> Validate.valid (new obj ())
+  let compare (a, b, c) (x, y, z) =
+    let f a b c = (a * 10000) + (b * 100) + c in
+    Int.compare (f a b c) (f x y z)
   ;;
 
   let from_string str =
-    match str with
-    | None -> Validate.valid (new obj ())
-    | Some x ->
-      Result.fold ~ok:from_yaml ~error:(function `Msg e ->
-          Error.(to_validate $ Yaml e))
-      $ Yaml.of_string x
+    let open Try.Monad in
+    try Scanf.sscanf str "%04d-%02d-%02d" (fun y m d -> return (y, m, d)) with
+    | _ -> Error.(to_try $ Invalid_date str)
   ;;
 
-  let equal a b = Option.equal String.equal a#get_page_title b#get_page_title
-  let repr = [ "page_title?" ]
-
-  let pp ppf x =
-    Format.fprintf ppf "Metadata.base (title = %a)"
-    $ Preface.Option.pp Format.pp_print_string
-    $ x#get_page_title
+  let to_mustache = function
+    | (y, m, d) as date ->
+      [ "canonical", `String (to_string date)
+      ; "year", `String (string_of_int y)
+      ; "month", `String (string_of_int m)
+      ; "day", `String (string_of_int d)
+      ]
   ;;
-
-  let page_title obj = obj#get_page_title
 end
 
-module Article = struct
-  class obj ?page_title ?(tags = []) date article_title article_synopsis =
-    object
-      inherit
-        Base.obj
-          ~page_title:(Option.value ~default:article_title page_title)
-          () as super
+module Rules = struct
+  let is_object json is_obj not_obj =
+    match json with
+    | `O obj -> is_obj obj
+    | _ -> not_obj
+  ;;
 
-      val tags : string list = List.map String.lowercase_ascii tags
+  let fetch_field obj field =
+    let key = String.lowercase_ascii field in
+    List.find_opt
+      (fun (k, _) ->
+        let aux_key = String.lowercase_ascii k in
+        String.equal key aux_key)
+      obj
+    |> Option.map snd
+  ;;
 
-      val date : date = date
+  let optional_string obj field =
+    match fetch_field obj field with
+    | Some (`String value) -> Validate.valid (Some value)
+    | None -> Validate.valid None
+    | Some _ -> Error.(to_validate $ Invalid_field field)
+  ;;
 
-      val article_title = article_title
+  let optional_date obj field =
+    match fetch_field obj field with
+    | Some (`String value) ->
+      Date.from_string value
+      |> Validate.from_try
+      |> Validate.Functor.map Option.some
+    | None -> Validate.valid None
+    | Some _ -> Error.(to_validate $ Invalid_field field)
+  ;;
 
-      val article_synopsis = article_synopsis
+  let is_string = function
+    | `String _ -> true
+    | _ -> false
+  ;;
 
-      method get_tags = tags
+  let capture_string = function
+    | `String x -> Some x
+    | _ -> None
+  ;;
 
-      method get_date = date
+  let optional_string_list obj field =
+    match fetch_field obj field with
+    | Some (`A res) when List.for_all is_string res ->
+      List.filter_map capture_string res |> Validate.valid
+    | None -> Validate.valid []
+    | Some _ -> Error.(to_validate $ Invalid_field field)
+  ;;
 
-      method get_article_title = article_title
+  let required_string obj field =
+    let open Validate in
+    let open Monad in
+    optional_string obj field
+    >>= Option.fold ~none:(error $ Error.Missing_field field) ~some:valid
+  ;;
 
-      method get_article_synopsis = article_synopsis
+  let required_date obj field =
+    let open Validate in
+    let open Monad in
+    optional_date obj field
+    >>= Option.fold ~none:(error $ Error.Missing_field field) ~some:valid
+  ;;
 
-      method! to_mustache =
-        let base = super#to_mustache in
-        let tags = "tags", `A (List.map (fun x -> `String x) tags)
-        and date = "date", `String (date_to_string date)
-        and article_title = "article_title", `String article_title
-        and article_synopsis = "article_synopsis", `String article_synopsis in
-        tags :: date :: article_title :: article_synopsis :: base
-    end
+  let required_string_list obj field =
+    let open Validate in
+    let open Monad in
+    optional_string_list obj field
+    >>= function
+    | [] -> error $ Error.Missing_field field
+    | list -> valid list
+  ;;
+end
 
-  let mk page_title tags date article_title article_synopsis =
-    new obj ?page_title ~tags date article_title article_synopsis
+module Page = struct
+  type t =
+    { title : string option
+    ; description : string option
+    }
+
+  let make title description = { title; description }
+
+  let to_mustache { title; description } =
+    [ "title", Option.fold ~none:`Null ~some:(fun x -> `String x) title
+    ; ( "description"
+      , Option.fold ~none:`Null ~some:(fun x -> `String x) description )
+    ]
+  ;;
+
+  let from_yaml yaml =
+    Rules.is_object
+      yaml
+      (fun obj ->
+        let open Validate.Applicative in
+        make
+        <$> Rules.optional_string obj "title"
+        <*> Rules.optional_string obj "description")
+      (Validate.valid $ make None None)
+  ;;
+
+  let from_string = function
+    | None -> Validate.valid $ make None None
+    | Some str ->
+      Result.fold ~ok:from_yaml ~error:(function `Msg e ->
+          Error.(to_validate $ Yaml e))
+      $ Yaml.of_string str
   ;;
 
   let equal a b =
-    Base.equal a b
-    && Preface.List.equal String.equal a#get_tags b#get_tags
-    && date_eq a#get_date b#get_date
-    && String.equal a#get_article_title b#get_article_title
-    && String.equal a#get_article_synopsis b#get_article_synopsis
+    Option.equal String.equal a.title b.title
+    && Option.equal String.equal a.description b.description
   ;;
 
-  let pp ppf x =
-    let title =
-      Format.asprintf "page_title = %a"
-      $ Preface.Option.pp Format.pp_print_string
-      $ x#get_page_title
-    in
-    let tags =
-      Format.asprintf "tags = %a"
-      $ Preface.List.pp Format.pp_print_string
-      $ x#get_tags
-    in
-    let date = "date = " ^ date_to_string x#get_date in
-    let article_title = "article_title =" ^ x#get_article_title in
-    let article_synopsis = "article_synopsis =" ^ x#get_article_synopsis in
+  let pp ppf { title; description } =
+    let p_opt = Preface.Option.pp Format.pp_print_string in
     Format.fprintf
       ppf
-      "Metadata.article (%s;%s;%s;%s;%s)"
+      "{title = %a; description = %a}"
+      p_opt
       title
-      tags
-      date
-      article_title
-      article_synopsis
+      p_opt
+      description
   ;;
 
-  let to_mustache x = x#to_mustache
+  let title p = p.title
+  let description p = p.description
+  let set_title new_title p = { p with title = new_title }
+  let set_description new_desc p = { p with description = new_desc }
+end
 
-  let repr =
-    [ "page_title?"; "tags?"; "date"; "article_title"; "article_synopsis" ]
+module Article = struct
+  type t =
+    { article_title : string
+    ; article_description : string
+    ; tags : string list
+    ; date : Date.t
+    ; title : string option
+    ; description : string option
+    }
+
+  let make article_title article_description tags date title description =
+    { article_title
+    ; article_description
+    ; tags = List.map String.lowercase_ascii tags
+    ; date
+    ; title
+    ; description
+    }
   ;;
 
-  let from_yaml = function
-    | `O xs ->
-      let open Validate.Applicative in
-      let obj = List.map (fun (x, y) -> String.lowercase_ascii x, y) xs in
-      mk
-      <$> forgettable_string "page_title" obj
-      <*> forgettable_string_list "tags" obj
-      <*> required_date "date" obj
-      <*> required_string "article_title" obj
-      <*> required_string "article_synopsis" obj
-    | _ -> Error.(to_validate $ Required_metadata repr)
+  let from_yaml yaml =
+    Rules.is_object
+      yaml
+      (fun obj ->
+        let open Validate.Applicative in
+        make
+        <$> Rules.required_string obj "article_title"
+        <*> Rules.required_string obj "article_description"
+        <*> Rules.optional_string_list obj "tags"
+        <*> Rules.required_date obj "date"
+        <*> Rules.optional_string obj "title"
+        <*> Rules.optional_string obj "description")
+      (Validate.error $ Error.Invalid_metadata "Article")
   ;;
 
-  let from_string str =
-    match str with
-    | None -> Error.(to_validate $ Required_metadata repr)
-    | Some x ->
+  let from_string = function
+    | None -> Validate.error $ Error.Invalid_metadata "Article"
+    | Some str ->
       Result.fold ~ok:from_yaml ~error:(function `Msg e ->
           Error.(to_validate $ Yaml e))
-      $ Yaml.of_string x
+      $ Yaml.of_string str
   ;;
 
-  let page_title = Base.page_title
-  let tags obj = obj#get_tags
-  let date obj = obj#get_date
-  let article_title obj = obj#get_article_title
-  let article_synopsis obj = obj#get_article_synopsis
+  let to_mustache
+      { article_title; article_description; tags; date; title; description }
+    =
+    [ "article_title", `String article_title
+    ; "article_description", `String article_description
+    ; "tags", `A (List.map (fun x -> `String x) tags)
+    ; "date", `O (Date.to_mustache date)
+    ; "title", Option.fold ~none:`Null ~some:(fun x -> `String x) title
+    ; ( "description"
+      , Option.fold ~none:`Null ~some:(fun x -> `String x) description )
+    ]
+  ;;
+
+  let pp
+      ppf
+      { article_title; article_description; tags; date; title; description }
+    =
+    let p_opt = Preface.Option.pp Format.pp_print_string in
+    Format.fprintf
+      ppf
+      "{article_title = %s; article_description = %s; date = %a; tags = %a; \
+       title = %a; description = %a}"
+      article_title
+      article_description
+      Date.pp
+      date
+      (Preface.List.pp Format.pp_print_string)
+      tags
+      p_opt
+      title
+      p_opt
+      description
+  ;;
+
+  let equal a b =
+    String.equal a.article_title b.article_title
+    && String.equal a.article_description b.article_description
+    && Date.equal a.date b.date
+    && Preface.List.equal String.equal a.tags b.tags
+    && Preface.Option.equal String.equal a.title b.title
+    && Preface.Option.equal String.equal a.description b.description
+  ;;
+
+  let article_title p = p.article_title
+  let article_description p = p.article_description
+  let tags p = p.tags
+  let date p = p.date
+  let title p = p.title
+  let description p = p.description
+  let set_article_title new_title p = { p with article_title = new_title }
+
+  let set_article_description new_desc p =
+    { p with article_description = new_desc }
+  ;;
+
+  let set_date new_date p = { p with date = new_date }
+  let set_tags new_tags p = { p with tags = new_tags }
+  let set_title new_title p = { p with title = new_title }
+  let set_description new_desc p = { p with description = new_desc }
+  let compare_by_date a b = Date.compare a.date b.date
 end
 
 module Articles = struct
-  type obj = string option * (Article.obj * string) list
+  type t =
+    { articles : (Article.t * string) list
+    ; title : string option
+    ; description : string option
+    }
 
-  let make ?page_title o = page_title, o
+  let make ?title ?description articles = { articles; title; description }
+  let title p = p.title
+  let description p = p.description
+  let articles p = p.articles
+  let set_articles new_articles p = { p with articles = new_articles }
+  let set_title new_title p = { p with title = new_title }
+  let set_description new_desc p = { p with description = new_desc }
 
-  let cmp dec (a, b, c) (x, y, z) =
-    let f a b c = (a * 10000) + (b * 100) + c in
-    let res = Int.compare (f a b c) (f x y z) in
-    if dec then ~-res else res
+  let sort_articles_by_date ?(decreasing = true) p =
+    set_articles
+      (List.sort
+         (fun (a, _) (b, _) ->
+           let r = Article.compare_by_date a b in
+           if decreasing then ~-r else r)
+         p.articles)
+      p
   ;;
 
-  let sort_by_date ?(decreasing = true) (t, obj) =
-    ( t
-    , List.sort
-        (fun (l, _) (r, _) ->
-          cmp decreasing (Article.date l) (Article.date r))
-        obj )
-  ;;
-
-  let to_mustache (t, obj) =
+  let to_mustache { articles; title; description } =
     ( "articles"
     , `A
         (List.map
-           (fun (m, url) ->
-             `O (("url", `String url) :: Article.to_mustache m))
-           obj) )
-    :: (Base.make t)#to_mustache
+           (fun (article, url) ->
+             `O (("url", `String url) :: Article.to_mustache article))
+           articles) )
+    :: (Page.to_mustache $ Page.make title description)
   ;;
 end

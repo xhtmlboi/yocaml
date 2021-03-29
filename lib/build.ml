@@ -140,7 +140,7 @@ let concat_files ?separator first_file second_file =
 
 let read_file_with_metadata
     (type a)
-    (module M : Metadata.PARSABLE with type obj = a)
+    (module M : Metadata.PARSABLE with type t = a)
     path
   =
   let open Preface.Fun in
@@ -154,7 +154,7 @@ let read_file_with_metadata
 
 let apply_as_template
     (type a)
-    (module M : Metadata.INJECTABLE with type obj = a)
+    (module M : Metadata.INJECTABLE with type t = a)
     ?(strict = true)
     template
   =
@@ -170,3 +170,5 @@ let apply_as_template
   in
   piped ^>> snd (read_file template) >>> failable_task action
 ;;
+
+let without_body x = x, ""

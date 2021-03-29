@@ -22,3 +22,6 @@ fmt:
 
 deps:
 	dune external-lib-deps --missing @@default
+
+install: all
+	dune install
