@@ -21,12 +21,12 @@ let rule_pages =
   let open Build in
   process_files [ "pages/" ] (with_extension "md")
   $ fun path ->
-  create_file (basename $ replace_extension path "html" |> into dest)
-  $ track_binary_update
-    %> read_file "tpl/header.html"
-    %> pipe_content path
-    %> process_markdown
-    %> pipe_content "tpl/footer.html"
+  create_file
+    (basename $ replace_extension path "html" |> into dest)
+    (track_binary_update
+    >>> read_file "tpl/header.html"
+    >>> (pipe_content path >>> process_markdown)
+    >>> pipe_content "tpl/footer.html")
 ;;
 
 let () =

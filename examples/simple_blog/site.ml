@@ -64,12 +64,11 @@ let index =
   create_file
     (into dest "index.html")
     (task (fun () ->
-         let+ metadata = Traverse.sequence $ List.map apply effects in
-         let articles =
-           Metadata.Articles.(
-             make ~title:page_title metadata |> sort_articles_by_date)
-         in
-         without_body articles)
+         List.map apply effects
+         |> Traverse.sequence
+         >|= Metadata.Articles.make ~title:page_title
+         >|= Metadata.Articles.sort_articles_by_date
+         >|= without_body)
     >>> apply_as_template (module Metadata.Articles) "index.html"
     >>> apply_as_template (module Metadata.Articles) "layout.html"
     >>^ Preface.Tuple.snd)

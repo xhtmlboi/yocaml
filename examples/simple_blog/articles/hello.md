@@ -1,5 +1,5 @@
 ---
-title: Index page foo
+title: Hello world
 date: 2021-03-28
 article_title: Hello, this is the index page !
 article_description:
