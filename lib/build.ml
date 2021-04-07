@@ -131,7 +131,7 @@ let process_markdown =
 let pipe_content ?(separator = "\n") path =
   let open Preface in
   let c (x, y) = x ^ separator ^ y in
-  Fun.flip Tuple.( & ) () ^>> snd (read_file path) >>^ c
+  Fun.flip Pair.( & ) () ^>> snd (read_file path) >>^ c
 ;;
 
 let concat_files ?separator first_file second_file =
@@ -145,8 +145,8 @@ let read_file_with_metadata
   =
   let open Preface.Fun in
   read_file path
-  >>^ Preface.Tuple.Bifunctor.map_fst M.from_string % split_metadata
-  >>^ (fun (m, c) -> Validate.Monad.(m >|= flip Preface.Tuple.( & ) c))
+  >>^ Preface.Pair.Bifunctor.map_fst M.from_string % split_metadata
+  >>^ (fun (m, c) -> Validate.Monad.(m >|= flip Preface.Pair.( & ) c))
   >>> failable_task (function
           | Preface.Validation.Valid x -> Effect.return x
           | Preface.Validation.Invalid x -> Effect.throw (Error.List x))
@@ -158,7 +158,7 @@ let apply_as_template
     ?(strict = true)
     template
   =
-  let piped = Preface.(Fun.flip Tuple.( & ) ()) in
+  let piped = Preface.(Fun.flip Pair.( & ) ()) in
   let action ((obj, content), tpl_content) =
     let values = M.to_mustache obj in
     let variables = `O (("body", `String content) :: values) in

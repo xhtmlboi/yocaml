@@ -50,7 +50,7 @@ let process_articles =
   Build.(
     create_file
       (into dest $ article_url src)
-      (article src >>^ Preface.Tuple.snd))
+      (article src >>^ Preface.Pair.snd))
 ;;
 
 let index =
@@ -71,7 +71,7 @@ let index =
          >|= without_body)
     >>> apply_as_template (module Metadata.Articles) "index.html"
     >>> apply_as_template (module Metadata.Articles) "layout.html"
-    >>^ Preface.Tuple.snd)
+    >>^ Preface.Pair.snd)
 ;;
 
 let () =

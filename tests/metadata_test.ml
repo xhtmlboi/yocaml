@@ -31,7 +31,7 @@ let capture_base_metadata_valid1 =
   test_case "capture base metadata 1 without values" `Quick
   $ fun () ->
   let obj =
-    Preface.Tuple.fst
+    Preface.Pair.fst
     $ split_metadata {|My article|}
     |> Metadata.Page.from_string
   in
@@ -47,7 +47,7 @@ let capture_base_metadata_valid2 =
   test_case "capture base metadata 2 without values" `Quick
   $ fun () ->
   let obj =
-    Preface.Tuple.fst
+    Preface.Pair.fst
     $ split_metadata {|---
 other_deps: foo
 ---My article|}
@@ -65,7 +65,7 @@ let capture_base_metadata_valid3 =
   test_case "capture base metadata 3 without values" `Quick
   $ fun () ->
   let obj =
-    Preface.Tuple.fst
+    Preface.Pair.fst
     $ split_metadata {|---
 other_deps: foo bar
 ---My article|}
@@ -83,7 +83,7 @@ let capture_base_metadata_valid4 =
   test_case "capture base metadata 4 with only a title" `Quick
   $ fun () ->
   let obj =
-    Preface.Tuple.fst
+    Preface.Pair.fst
     $ split_metadata {|---
 My superb article
 ---My article|}
@@ -101,7 +101,7 @@ let capture_base_metadata_valid5 =
   test_case "capture base metadata 5 with an indexed title" `Quick
   $ fun () ->
   let obj =
-    Preface.Tuple.fst
+    Preface.Pair.fst
     $ split_metadata {|---
 title: My superb article  
 ---My article|}
@@ -119,7 +119,7 @@ let capture_article_metadata_invalid1 =
   test_case "capture article metadata 1 invalid" `Quick
   $ fun () ->
   let obj =
-    Preface.Tuple.fst
+    Preface.Pair.fst
     $ split_metadata {|My article|}
     |> Metadata.Article.from_string
   in
@@ -135,7 +135,7 @@ let capture_article_metadata_invalid2 =
   test_case "capture article metadata 2 invalid" `Quick
   $ fun () ->
   let obj =
-    Preface.Tuple.fst
+    Preface.Pair.fst
     $ split_metadata {|---
 My article|}
     |> Metadata.Article.from_string
@@ -152,7 +152,7 @@ let capture_article_metadata_invalid3 =
   test_case "capture article metadata 3 invalid" `Quick
   $ fun () ->
   let obj =
-    Preface.Tuple.fst
+    Preface.Pair.fst
     $ split_metadata {|---
 ---My article|}
     |> Metadata.Article.from_string
@@ -169,7 +169,7 @@ let capture_article_metadata_invalid4 =
   test_case "capture article metadata 4 invalid" `Quick
   $ fun () ->
   let obj =
-    Preface.Tuple.fst
+    Preface.Pair.fst
     $ split_metadata {|---
 article_title: My First Article
 ---My article|}
@@ -190,7 +190,7 @@ let capture_article_metadata_invalid5 =
   test_case "capture article metadata 5 invalid" `Quick
   $ fun () ->
   let obj =
-    Preface.Tuple.fst
+    Preface.Pair.fst
     $ split_metadata
         {|---
 article_title: My First Article
@@ -214,7 +214,7 @@ let capture_article_metadata_valid1 =
   test_case "capture article metadata 1 valid" `Quick
   $ fun () ->
   let obj =
-    Preface.Tuple.fst
+    Preface.Pair.fst
     $ split_metadata
         {|---
 title: Blog - an article
@@ -245,7 +245,7 @@ let capture_article_metadata_valid2 =
   test_case "capture article metadata 2 valid" `Quick
   $ fun () ->
   let obj =
-    Preface.Tuple.fst
+    Preface.Pair.fst
     $ split_metadata
         {|---
 title: Blog - an article
