@@ -64,17 +64,19 @@ module Aliases = Aliases
 module Util = Util
 module Metadata = Metadata
 
-(** {1 Included common utils}
+(** {1 Included general stuff}
+
+    {2 Included common util}
 
     There are always lots of little unreadable tools that I want to use...
     sometimes it improves readability... sometimes not. *)
 
-include module type of Util
+include module type of Util (** @closed *)
 
-(** {1 Included Effect plumbery}
+(** {2 Included Effect plumbery}
 
     A page generation process usually involves composing and executing
     effects, so rather than constantly forcing the [Effect] module into user
     space, the module is injected into the high-level API. *)
 
-include module type of Effect
+include module type of Effect (** @closed *)
