@@ -58,7 +58,6 @@ module Arrow_choice =
       type nonrec ('a, 'b) t = ('a, 'b) t
 
       let left build =
-        let open Preface in
         let dependencies = build.dependencies in
         let task = function
           | Either.Left x -> Effect.map Either.left $ build.task x
