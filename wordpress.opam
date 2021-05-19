@@ -12,7 +12,7 @@ build: [
 ]
 
 license: "GPL3"
-tags: [ "shell" "bin" ]
+tags: [ "shell" "bin" "make" "static" "blog" "generator" ]
 homepage: "https://github.com/xhtmlboi/wordpress"
 dev-repo: "git://github.com/xhtmlboi/wordpress.git"
 bug-reports: "https://github.com/xhtmlboi/wordpress/issues"

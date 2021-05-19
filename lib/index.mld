@@ -12,7 +12,7 @@ ergonomics of the {{:https://github.com/xvw/preface} Preface} library
 and to provide it with slightly less academic examples.
 
 When thinking about how to compute file dependencies, I had initially
-settled on the idea of using a comonad transformation ([StoreT]) but
+settled on the idea of using a comonad transformation ([TracedT]) but
 then I remembered the paper
 {{:http://www.cse.chalmers.se/~rjmh/Papers/arrows.pdf} Generalising
 Monads to Arrows}, which describes the construction of static and
@@ -36,6 +36,183 @@ moment I'm quite happy with it.
 {1 Full Documentation}
 
 The full API can be {{:Wordpress/index.html} found here}
+
+{1 Tutorial}
+
+{e Wordpress} is slightly different from many tools that statically
+build web pages. Instead of imposing a template to follow, WordPress
+is a {b library} and it is up to the user to compose their generator.
+This approach does, unfortunately, make the rapid bootstrapping of a
+blog a little more complicated but it does allow the user more freedom
+in how they want to organise and generate their page collection.
+
+In this little tutorial, I'll show you several ways to build pages
+with {e WordPress}, in peace and quiet. But the tutorial assumes that
+you use (and understand) {{:http://opam.ocaml.org/}OPAM} and
+{{:https://dune.build/}Dune}. So I won't dwell on how to
+install {e WordPress} (using a [pin]) and sometimes I'll use Preface.
+
+{2 As a simple template engine}
+
+When designing static sites, it is sometimes common to only want a
+list of pages that respect the same template. Writing all the content
+in HTML and copying/pasting the templates into each document works
+fine, but when you want to modify the template, you have to do it...
+for all the pages... what a hell! As a first tutorial, I suggest you
+discover how to separate the templates from the content.
+
+Here is the file tree I propose:
+
+{[
+./
+templates/
+pages/
+bin/
+]}
+
+In [templates/] we will place our templates. For the purposes of the example,
+an [header] and a [footer], and in [pages/] we will place our pages.
+For example [index.html] for the home page, [project.html] for a list of
+projects and [about.html] to describe the role of the website.
+[bin] will be used to host the source code of our site generator.
+Quite common in short.
+
+{3 Setting up the project}
+
+Create a [bin/dune] and [bin/my_site.ml] file (if you want to name the binary
+that will be used to create a site [my_site.exe]) and define the dune file
+as such:
+
+{[
+(executable
+ (name my_site)
+ (promote (until-clean))
+ (libraries wordpress))
+]}
+
+Nothing very clever, we just say we want an executable and that will have
+{e WordPress} as a dependency... it makes sense!
+
+{3 Defining some pages and templates}
+
+I offer you high quality HTML code for the templates, a header and a footer.
+The idea is to pipe the header, the page and the footer.
+
+Here is an example of header. As you can see, I'm pretty experimented with
+HTML.
+
+{[
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>My website lol</title>
+</head>
+<body>
+    <h1>My Website</h1>
+    <ul>
+        <!-- "A powerful menu"  -->
+        <li><a href="index.html">Home</a></li>
+        <li><a href="projects.html">Projects</a></li>
+        <li><a href="about.html">About</a> </li>
+    </ul>
+    <hr>
+    <main>
+]}
+
+Let's create a footer with the ambition of our header!
+
+
+{[
+    </main>
+    <hr>
+    copyright <strong>Myself</strong>
+  </body>
+</html>
+]}
+
+You can now create several pages, for example, [index.html],
+[project.html] and [about.html] with arbitrary content.
+
+{3 Defining the generator}
+
+Let's go back to our [my_site.ml] file to create our generator!
+
+{[
+open Wordpress
+
+let destination = "_build"
+
+let () =
+  print_endline "Hello"
+]}
+
+First, let's define where we want to generate our site. I chose
+the [_build] directory, so I don't have to modify the [.gitignore]
+of the project.
+
+To create a page, the process is quite simple. We will browse all
+the files in the [pages] directory and for each file, we will
+create a file with the same name in our destination directory which
+will read the [header.html] template, piping its content with the file
+we are reading and piping it with the [footer.html] template.
+
+Most of the functions we will use are in the {!module:Wordpress.Build} module.
+
+{[
+open Wordpress
+
+let destination = "_build"
+
+let task =
+  process_files ["pages/"] (with_extension "html") (fun file ->
+      let target = basename file |> into destination in
+      let open Build in
+      create_file target (
+        read_file "templates/header.html"
+        >>> pipe_content file
+        >>> pipe_content "templates/footer.html")
+    )
+
+let () =
+  print_endline "Hello"
+
+]}
+
+The API tries to be as clear as possible. The [process_files] function
+takes a list of directories as an argument and filters the entries with
+a predicate. Here, the files must end in [.html]. Then, for each file,
+we will create an image in our destination, read the header, read the
+browsed file and pipe it with the header content, read the footer and pipe
+it with the previous content.
+
+Now you have to run the program described above. Nothing could be easier,
+we can use {!val:Wordpress.execute}. (It is possible to provide its own
+execution function, for that I refer you to
+{{:https://github.com/xvw/preface/blob/master/guides/freer_effect_handling.md}
+    the guide on the Preface effect handlers}).
+
+{[
+open Wordpress
+
+let destination = "_build"
+
+let task =
+  process_files ["pages/"] (with_extension "html") (fun file ->
+      let target = basename file |> into destination in
+      let open Build in
+      create_file target (
+        read_file "templates/header.html"
+        >>> pipe_content file
+        >>> pipe_content "templates/footer.html")
+    )
+
+let () =
+  execute task
+]}
+
+That's it! You have your first template engine that you can try
+out and that replaces the PHP includes!
 
 {1 Alternatives}
 
