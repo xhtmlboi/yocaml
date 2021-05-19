@@ -11,7 +11,7 @@ build: [
   [ "dune" "build" "@doc" "-p" name ] {with-doc}
 ]
 
-license: "MIT"
+license: "GPL3"
 tags: [ "shell" "bin" ]
 homepage: "https://github.com/xhtmlboi/wordpress"
 dev-repo: "git://github.com/xhtmlboi/wordpress.git"
