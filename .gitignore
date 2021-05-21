@@ -1,3 +1,3 @@
 /*
 !.gitignore
-!_build/default/_doc/_html/*
+!doc/*
