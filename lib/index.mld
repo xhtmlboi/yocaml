@@ -456,3 +456,54 @@ And let's modify our template to display this metadata if it exists... or not:
 The template modification uses the "conditional" syntax to display the title and
 description only if the metadata is present. And yes, remember, the title and
 description are optional!
+
+{2 Mixing Markdown and Html pages}
+
+Writing HTML by hand can be tiring, and one often wishes one could write a document
+in a slightly less verbose format like Markdown or Org!
+
+The modification of the generator is quite simple because the
+{!val:Wordpress.Build.process_markdown} function already transforms a
+text document (in Markdown) into an HTML document (using the
+{{:https://github.com/ocaml/omd} omd} library).
+
+So rather than only browsing the files that have the extension, we will browse
+the files that have the extension [md] and [html] then, once we have read the
+file and its metadata, if the file has the extension [md] we will apply the
+arrow [process_markdown] on the second member of the pair
+(the content and not the metadata) otherwise we do nothing...
+that is to say the application of the identity function:
+
+{[
+let may_process_markdown file =
+  let open Build in
+  if with_extension "md" file then snd process_markdown else arrow Fun.id
+;;
+]}
+
+And our generator becomes:
+
+{[
+
+let task =
+  process_files
+    [ "pages/" ]
+    (fun f -> with_extension "html" f || with_extension "md" f)
+    (fun file ->
+      let fname = basename file |> into destination in
+      let target = replace_extension fname "html" in
+      let open Build in
+      create_file
+        target
+        (track_binary_update
+        >>> read_file_with_metadata (module Metadata.Page) file
+        >>> may_process_markdown file
+        >>> apply_as_template (module Metadata.Page) "templates/layout.html"
+        >>^ Stdlib.snd))
+;;
+]}
+
+That's it! Our generator is able to process HTML files naturally without
+modifying the output of the reading, and to apply a transformation
+(from Markdown to HTML) if the file has the extension [md]! Great, we'll soon
+be able to describe a real static blog generator, with articles and all.
