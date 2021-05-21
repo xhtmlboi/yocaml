@@ -507,3 +507,11 @@ That's it! Our generator is able to process HTML files naturally without
 modifying the output of the reading, and to apply a transformation
 (from Markdown to HTML) if the file has the extension [md]! Great, we'll soon
 be able to describe a real static blog generator, with articles and all.
+
+{1 A controversial name}
+
+This project was essentially started to give concrete examples of how to use the
+Preface library. I thought it was very funny to give it a perfectly stupid name
+for the sake of provocation. However, I must admit to having some fun with the
+maintenance of this project, it might be necessary to find a more appropriate
+name. If you have any ideas, don't hesitate to send them to me!
