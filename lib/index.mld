@@ -214,6 +214,44 @@ let () =
 That's it! You have your first template engine that you can try
 out and that replaces the PHP includes!
 
+{3 Adding the generator as a dependency}
+
+The functions in the {!module:Wordpress.Build} module capture their
+dependencies and compositions, with the [>>>] operator merging them.
+In our example, each page to be built will have as dependencies
+[templates/header.html], [templates/footer.html] and the page in the
+[pages] directory being observed. This means that each page will be
+rebuilt {e if and only} if necessary.
+
+On the other hand, if the generator is ever recompiled, which could have
+the effect of completely changing our site, we would also like to be able
+to consider that a file has to be regenerated. Fortunately the
+{!val:Wordpress.Build.watch} function allows us to add a file to the
+dependencies without reading it, so we can modify our [task] in this way:
+
+{[
+open Wordpress
+
+let destination = "_build"
+let track_binary_update = Build.watch Sys.argv.(0)
+
+let task =
+  process_files [ "pages/" ] (with_extension "html") (fun file ->
+      let target = basename file |> into destination in
+      let open Build in
+      create_file
+        target
+        (track_binary_update
+        >>> read_file "templates/header.html"
+        >>> pipe_content file
+        >>> pipe_content "templates/footer.html"))
+;;
+
+let () = execute task
+]}
+
+Now, every time the generator is recompiled, the pages will have to be rebuilt!
+
 {1 Alternatives}
 
 As my main motivation is to discover OCaml while having a tool to
