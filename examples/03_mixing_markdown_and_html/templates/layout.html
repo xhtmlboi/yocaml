@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>My website lol</title>
+</head>
+<body>
+    <h1>My Website</h1>
+    <ul>
+        <!-- "A powerful menu"  -->
+        <li><a href="index.html">Home</a></li>
+        <li><a href="projects.html">Projects</a></li>
+        <li><a href="about.html">About</a> </li>
+    </ul>
+    <hr>
+    {{#title}}<h2>{{.}}</h2>{{/title}}
+    {{#description}}<p>{{.}}</p>{{/description}}
+    <main>
+        {{{body}}}
+    </main>
+    <hr>
+    copyright <strong>Myself</strong>
+</body>
+</html>

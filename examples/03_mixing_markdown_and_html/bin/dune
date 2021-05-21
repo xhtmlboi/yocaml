@@ -1,4 +1,4 @@
 (executable
- (name site)
+ (name my_site)
  (promote (until-clean))
  (libraries wordpress))
