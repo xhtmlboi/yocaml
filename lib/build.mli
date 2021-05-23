@@ -82,6 +82,57 @@ val apply_as_template
 (** When a template should be applied without body. *)
 val without_body : 'a -> 'a * string
 
+(**Sometimes it is necessary to calculate a page according to other pages, for
+   example to make an index of articles. With [collection] you can separate
+   this procedure into 3 steps.
+
+   - First, it executes an effect that acts on a list
+   - Then it goes through the list of collected data and applies an arbitrary
+     arrow to it.
+   - Finally, it applies an aggregate function to the collected list.
+
+   For example, let's build our index by projecting the list of articles into
+   the Articles metadata:
+
+   {[
+     let index =
+       let open Build in
+       let* articles =
+         collection
+           (read_child_files "articles/" (with_extension "md"))
+           (fun source ->
+             track_binary_update
+             >>> read_file_with_metadata (module Metadata.Article) source
+             >>^ fun (x, _) -> x, article_destination source)
+           (fun x meta content ->
+             x
+             |> Metadata.Articles.make
+                  ?title:(Metadata.Page.title meta)
+                  ?description:(Metadata.Page.description meta)
+             |> Metadata.Articles.sort_articles_by_date
+             |> fun x -> x, content)
+       in
+       create_file
+         (into destination "index.html")
+         (track_binary_update
+         >>> read_file_with_metadata (module Metadata.Page) "index.md"
+         >>> snd process_markdown
+         >>> articles
+         >>> apply_as_template
+               (module Metadata.Articles)
+               "templates/list.html"
+         >>> apply_as_template
+               (module Metadata.Articles)
+               "templates/layout.html"
+         >>^ Stdlib.snd)
+     ;;
+   ]} *)
+val collection
+  :  'a list Effect.t
+  -> ('a -> (unit, 'b) t)
+  -> ('b list -> 'c -> 'd -> 'e)
+  -> ('c * 'd, 'e) t Effect.t
+
 (** {1 Included Arrow combinators}
 
     A [build rule] respects the interface of an [Arrow Choice] (which implies

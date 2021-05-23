@@ -171,3 +171,15 @@ let apply_as_template
 ;;
 
 let without_body x = x, ""
+
+let collection effect arrow process =
+  let open Effect in
+  let open Preface.Fun in
+  effect
+  >|= fold_dependencies % List.map arrow
+  >|= fun (task, effects) ->
+  task (fun (meta, content) ->
+      List.map (fun f -> f ()) effects
+      |> Traverse.sequence
+      >|= fun x -> process x meta content)
+;;
