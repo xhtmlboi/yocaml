@@ -1,0 +1,13 @@
+{{{body}}}
+
+<h3>Blog</h3>
+
+<ol reversed class="list-articles">
+{{#articles}}
+<li>
+  <span class="date">{{#date}}{{canonical}}{{/date}}</span>
+  <a href="{{url}}">{{article_title}}</a><br />
+  <p>{{article_description}}</p>
+</li>
+{{/articles}}
+</ol>

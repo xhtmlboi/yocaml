@@ -127,7 +127,15 @@ of {e Wordpress}. However, keep in mind that while the library makes arbitrary
 decisions to facilitate bootstrapping a project, you can build your own build
 rules based on the libraries of your choice.
 
+As {e WordPress} doesn't offer an integrated development server (which is a
+shame by the way), I got into the habit of launching a Python server with
+[python3 -m http.server --directory _build/] in the directory where I build a
+site.
+
 {2 As a simple template engine}
+
+{{:https://github.com/xhtmlboi/wordpress/tree/main/examples/01_template_engine}
+    Source code of the example}
 
 When designing static sites, it is sometimes common to only want a
 list of pages that respect the same template. Writing all the content
@@ -329,6 +337,9 @@ Now, every time the generator is recompiled, the pages will have to be rebuilt!
 
 {2 Using a proper templating strategy}
 
+{{:https://github.com/xhtmlboi/wordpress/tree/main/examples/02_real_template_engine}
+    Source code of the example}
+
 At the moment we have cheated by splitting our layout into two files but this is
 not usually done! We would like to be able to inject the content directly into
 a file containing the entire layout like this, in [templates/layout.html]:
@@ -419,7 +430,7 @@ For example for [pages/about.html]:
 {[
 ---
 title: The famous about page
-description: This page TALK ABOUT ME!
+description: This page TALKS ABOUT ME!
 ---
 You are on the about page.
 ]}
@@ -458,6 +469,10 @@ description only if the metadata is present. And yes, remember, the title and
 description are optional!
 
 {2 Mixing Markdown and Html pages}
+
+{{:https://github.com/xhtmlboi/wordpress/tree/main/examples/03_mixing_markdown_and_html}
+    Source code of the example}
+
 
 Writing HTML by hand can be tiring, and one often wishes one could write a document
 in a slightly less verbose format like Markdown or Org!
@@ -507,6 +522,293 @@ That's it! Our generator is able to process HTML files naturally without
 modifying the output of the reading, and to apply a transformation
 (from Markdown to HTML) if the file has the extension [md]! Great, we'll soon
 be able to describe a real static blog generator, with articles and all.
+
+{2 A first real blog}
+
+{{:https://github.com/xhtmlboi/wordpress/tree/main/examples/04_first_blog}
+    Source code of the example}
+
+After having familiarized ourselves with page generation, we have enough
+knowledge to build a real blog! However, there is still a difficulty. How to
+build the index of articles? We will try to answer this question in this guide!
+
+The file tree is identical to the previous ones except that this time we add a
+directory [articles] which will contain our articles, a directory [css] for our
+stylesheets and a directory [images] for our images.
+
+{[
+./
+templates/
+articles/
+pages/
+bin/
+images/
+css/
+]}
+
+The page generator will not change because its behaviour does not change:
+
+{[
+open Wordpress
+
+let destination = "_build"
+let track_binary_update = Build.watch Sys.argv.(0)
+
+let may_process_markdown file =
+  let open Build in
+  if with_extension "md" file then snd process_markdown else arrow Fun.id
+;;
+
+let pages =
+  process_files
+    [ "pages/" ]
+    (fun f -> with_extension "html" f || with_extension "md" f)
+    (fun file ->
+      let fname = basename file |> into destination in
+      let target = replace_extension fname "html" in
+      let open Build in
+      create_file
+        target
+        (track_binary_update
+        >>> read_file_with_metadata (module Metadata.Page) file
+        >>> may_process_markdown file
+        >>> apply_as_template (module Metadata.Page) "templates/layout.html"
+        >>^ Stdlib.snd))
+;;
+
+let () = execute pages
+]}
+
+{3 Processing static files}
+
+In addition to pages and articles, it is quite common to have static files, for
+example images or css style sheets. We are going to create two rules to move
+these images and stylesheets into the appropriate directories.
+
+We can use {!val:Wordpress.Build.copy_file} which is an arrow that simply copies
+a file somewhere. The rule is a hell of a lot easier to write than for pages,
+you just copy and paste a css file into the target.
+
+{[
+let css_destination = into destination "css"
+
+let css =
+  process_files [ "css/" ] (with_extension "css") (fun file ->
+      Build.copy_file file ~into:css_destination)
+;;
+]}
+
+The same can be done for images, assuming for the purposes of the tutorial that
+only a limited number of formats are supported: [svg], [png] and [gif] (yes, I
+love gifs).
+
+{[
+let images_destination = into destination "images"
+
+let images =
+  process_files
+    [ "images" ]
+    (fun f ->
+      with_extension "svg" f
+      || with_extension "png" f
+      || with_extension "gif" f)
+    (fun file -> Build.copy_file file ~into:images_destination)
+;;
+]}
+
+Note that it is possible to simplify the predicates by using
+{{:https://ocaml-preface.github.io/preface/Preface_stdlib/Predicate/index.html}
+    Predicate}, from Preface:
+
+{[
+let images =
+  let open Preface.Predicate in
+  process_files
+    [ "images" ]
+    (with_extension "svg" || with_extension "png" || with_extension "gif")
+    (fun file -> Build.copy_file file ~into:images_destination)
+;;
+]}
+
+Now we have to compose our different rules to execute them sequentially. As the
+execution of an Arrow produces a value of type ['a Effect.t] we can use the
+sequential composition [>>]:
+
+{[let () = execute (pages >> css >> images)]}
+
+{3 Processing articles}
+
+The rule for building articles is not fundamentally different from the one for
+building pages, except that we will add a new template for describing an
+article. As for pages, we will use a metadata already described:
+{!module:Wordpress.Metadata.Article}.
+
+{[
+<a href="/index.html">Back to index</a>
+
+<article>
+    <h2>{{article_title}}</h2>
+    {{{body}}}
+</article>
+]}
+
+And we can write a first article with this metadata:
+
+{[
+---
+date: 2021-05-22
+article_title: This is an example
+article_description: This is the description of the example
+---
+]}
+
+There is more metadata available for articles but these are the 3 mandatory
+data. So let's not complicate this already too long tutorial and focus on the
+essentials.
+
+As mentioned, the rule for articles is quite similar to that for pages:
+
+{[
+let article_destination file =
+  let fname = basename file |> into "articles" in
+  replace_extension fname "html"
+;;
+
+let articles =
+  process_files [ "articles/" ] (with_extension "md") (fun file ->
+      let open Build in
+      let target = article_destination file |> into destination in
+      create_file
+        target
+        (track_binary_update
+        >>> read_file_with_metadata (module Metadata.Article) file
+        >>> snd process_markdown
+        >>> apply_as_template
+              (module Metadata.Article)
+              "templates/article.html"
+        >>> apply_as_template
+              (module Metadata.Article)
+              "templates/layout.html"
+        >>^ Stdlib.snd))
+;;
+]}
+
+The main difference is that we only deal with Markdown files (but I could have
+re-used [may_process_markdown]) and that we apply two templates, the first being
+the article template which we apply to the general template.
+
+And as before, the rule is added to the general task.
+
+{[let () = execute (pages >> css >> images >> articles)]}
+
+{3 Indexing articles on the front page}
+
+Here is the tricky part! Currently, the procedure for building an article index
+(or archive page) is a bit complex. Mainly to keep it generic. However, if I can
+find a clearer API that can act as a wrapper, I'll be sure to improve it. Also,
+if you have any suggestions, I'd love to hear them!
+
+The idea is to read all the files involved, a bit like [process_files] but to
+accumulate all the dependencies. Fortunately, it is possible to use the
+{!val:Wordpress.Build.collection} function to reduce a list of values wrapped in
+an effect.
+
+The function takes three arguments: a list wrapped in an effect, an arrow that
+will act on each element of the list (to calculate dependencies dynamically) and
+a transformation of this list to produce a value. Here, we will build an
+Articles metadata based on the list of articles and then inject it into our
+templates. Once this new arrow is built, we can freely use it in a pipeline, as
+seen previously!
+
+So before generating our index, we will build an arrow to collect the list of
+items while tracking each of the items in the dependency list!
+
+{[
+let index =
+  let open Build in
+  let* articles =
+    collection
+      (read_child_files "articles/" (with_extension "md"))
+      (fun source ->
+        track_binary_update
+        >>> read_file_with_metadata (module Metadata.Article) source
+        >>^ fun (x, _) -> x, article_destination source)
+      (fun x meta content ->
+        x
+        |> Metadata.Articles.make
+             ?title:(Metadata.Page.title meta)
+             ?description:(Metadata.Page.description meta)
+        |> Metadata.Articles.sort_articles_by_date
+        |> fun x -> x, content)
+  in
+]}
+
+As you can see, we use {!val:Wordpress.Effect.read_child_files} to read the
+articles and we use an arrow to extract only their metadata. Then we transform
+this metadata into a new metadata that manages all the articles. And after that,
+we can simply describe an arrow that builds our index and adds the index
+building rule to the general task!
+
+{[
+let index =
+  let open Build in
+  let* articles =
+    collection
+      (read_child_files "articles/" (with_extension "md"))
+      (fun source ->
+        track_binary_update
+        >>> read_file_with_metadata (module Metadata.Article) source
+        >>^ fun (x, _) -> x, article_destination source)
+      (fun x meta content ->
+        x
+        |> Metadata.Articles.make
+             ?title:(Metadata.Page.title meta)
+             ?description:(Metadata.Page.description meta)
+        |> Metadata.Articles.sort_articles_by_date
+        |> fun x -> x, content)
+  in
+  create_file
+    (into destination "index.html")
+    (track_binary_update
+    >>> read_file_with_metadata (module Metadata.Page) "index.md"
+    >>> snd process_markdown
+    >>> articles
+    >>> apply_as_template (module Metadata.Articles) "templates/list.html"
+    >>> apply_as_template (module Metadata.Articles) "templates/layout.html"
+    >>^ Stdlib.snd)
+;;
+
+let () = execute (pages >> css >> images >> articles >> index)
+]}
+
+The [list.html] template is fairly plainly written and simply lists the
+published articles.
+
+{[
+{{{body}}}
+
+<h3>Blog</h3>
+
+<ol reversed class="list-articles">
+{{#articles}}
+<li>
+  <span class="date">{{#date}}{{canonical}}{{/date}}</span>
+  <a href="{{url}}">{{article_title}}</a><br />
+  <p>{{article_description}}</p>
+</li>
+{{/articles}}
+</ol>
+]}
+
+And there you have it, all the ingredients to build a real static blog!
+
+{2 Conclusion}
+
+Although many of the trivial cases are quite simple, once dynamic dependencies
+are introduced, the system can become a little more complicated. However, I
+think that once the logic behind the [collection] function is understood, many
+of the more complex scenarios become unlocked! Please feel free to give me
+feedback.
 
 {1 A controversial name}
 
