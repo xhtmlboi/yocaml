@@ -21,11 +21,7 @@ depends: [
   "ocaml" { >= "4.11.1" }
   "dune" { >= "2.8" }
   "odoc" {with-doc}
-  "alcotest" {with-test}
-  "preface" {pinned}
-  "omd"
-  "mustache"
-  "yaml"
+  "yocaml"
 ]
 
 pin-depends: [
