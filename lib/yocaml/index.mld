@@ -35,7 +35,8 @@ moment I'm quite happy with it.
 
 {1 Full Documentation}
 
-The full API can be {{:Yocaml/index.html} found here}
+- The full API can be {{:Yocaml/index.html} found here}
+- The Unix Runtime can be {{:../yocaml_unix/index.html} found here}
 
 {1 Alternatives}
 
@@ -169,11 +170,14 @@ as such:
 (executable
  (name my_site)
  (promote (until-clean))
- (libraries yocaml))
+ (libraries yocaml yocaml_unix))
 ]}
 
-Nothing very clever, we just say we want an executable and that will have
-{e YOCaml} as a dependency... it makes sense!
+Nothing very clever, we just say we want an executable and that will have {e
+YOCaml} as a dependency... it makes sense! And we add [Yocaml_unix] which allows
+to execute, with the Unix Runtime, a construction plan. (The separation between
+the runtime and the description of a plan allows the YOCaml library to be
+entirely pure and not dependent on the Unix module)
 
 {3 Defining some pages and templates}
 
@@ -269,7 +273,7 @@ browsed file and pipe it with the header content, read the footer and pipe
 it with the previous content.
 
 Now you have to run the program described above. Nothing could be easier,
-we can use {!val:Yocaml.execute}. (It is possible to provide its own
+we can use {!val:Yocaml_unix.execute}. (It is possible to provide its own
 execution function, for that I refer you to
 {{:https://github.com/xvw/preface/blob/master/guides/freer_effect_handling.md}
     the guide on the Preface effect handlers}).
@@ -290,7 +294,7 @@ let task =
     )
 
 let () =
-  execute task
+  Yocaml_unix.execute task
 ]}
 
 That's it! You have your first template engine that you can try
@@ -329,7 +333,7 @@ let task =
         >>> pipe_content "templates/footer.html"))
 ;;
 
-let () = execute task
+let () = Yocaml_unix.execute task
 ]}
 
 Now, every time the generator is recompiled, the pages will have to be rebuilt!
@@ -575,7 +579,7 @@ let pages =
         >>^ Stdlib.snd))
 ;;
 
-let () = execute pages
+let () = Yocaml_unix.execute pages
 ]}
 
 {3 Processing static files}
@@ -633,7 +637,7 @@ Now we have to compose our different rules to execute them sequentially. As the
 execution of an Arrow produces a value of type ['a Effect.t] we can use the
 sequential composition [>>]:
 
-{[let () = execute (pages >> css >> images)]}
+{[let () = Yocaml_unix.execute (pages >> css >> images)]}
 
 {3 Processing articles}
 
@@ -698,7 +702,7 @@ the article template which we apply to the general template.
 
 And as before, the rule is added to the general task.
 
-{[let () = execute (pages >> css >> images >> articles)]}
+{[let () = Yocaml_unix.execute (pages >> css >> images >> articles)]}
 
 {3 Indexing articles on the front page}
 
@@ -777,7 +781,7 @@ let index =
     >>^ Stdlib.snd)
 ;;
 
-let () = execute (pages >> css >> images >> articles >> index)
+let () = Yocaml_unix.execute (pages >> css >> images >> articles >> index)
 ]}
 
 The [list.html] template is fairly plainly written and simply lists the
