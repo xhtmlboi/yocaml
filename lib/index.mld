@@ -35,7 +35,7 @@ moment I'm quite happy with it.
 
 {1 Full Documentation}
 
-The full API can be {{:YOCaml/index.html} found here}
+The full API can be {{:Yocaml/index.html} found here}
 
 {1 Alternatives}
 
@@ -239,7 +239,7 @@ create a file with the same name in our destination directory which
 will read the [header.html] template, piping its content with the file
 we are reading and piping it with the [footer.html] template.
 
-Most of the functions we will use are in the {!module:YOCaml.Build} module.
+Most of the functions we will use are in the {!module:Yocaml.Build} module.
 
 {[
 open YOCaml
@@ -269,7 +269,7 @@ browsed file and pipe it with the header content, read the footer and pipe
 it with the previous content.
 
 Now you have to run the program described above. Nothing could be easier,
-we can use {!val:YOCaml.execute}. (It is possible to provide its own
+we can use {!val:Yocaml.execute}. (It is possible to provide its own
 execution function, for that I refer you to
 {{:https://github.com/xvw/preface/blob/master/guides/freer_effect_handling.md}
     the guide on the Preface effect handlers}).
@@ -298,7 +298,7 @@ out and that replaces the PHP includes!
 
 {3 Adding the generator as a dependency}
 
-The functions in the {!module:YOCaml.Build} module capture their
+The functions in the {!module:Yocaml.Build} module capture their
 dependencies and compositions, with the [>>>] operator merging them.
 In our example, each page to be built will have as dependencies
 [templates/header.html], [templates/footer.html] and the page in the
@@ -308,7 +308,7 @@ rebuilt {e if and only} if necessary.
 On the other hand, if the generator is ever recompiled, which could have
 the effect of completely changing our site, we would also like to be able
 to consider that a file has to be regenerated. Fortunately the
-{!val:YOCaml.Build.watch} function allows us to add a file to the
+{!val:Yocaml.Build.watch} function allows us to add a file to the
 dependencies without reading it, so we can modify our [task] in this way:
 
 {[
@@ -379,17 +379,17 @@ to understand all that can be described.
 {3 Applying a template}
 
 Now we need to modify our generator so that it reads a file and injects it into
-our template. The {!module:YOCaml.Metadata} module offers a structured
+our template. The {!module:Yocaml.Metadata} module offers a structured
 set of metadata. For the purposes of this tutorial, we will use
-{!module:YOCaml.Metadata.Page} which does not impose much.
+{!module:Yocaml.Metadata.Page} which does not impose much.
 Indeed, it offers two optional fields: [Title] and [Description].
 
 The modification in the generator to be made is that the file and its potential
-metadata must be read using the {!val:YOCaml.Build.read_file_with_metadata}
+metadata must be read using the {!val:Yocaml.Build.read_file_with_metadata}
 function and then applied to the template using the
-{!val:YOCaml.Build.apply_as_template} function. Both functions take a module
+{!val:Yocaml.Build.apply_as_template} function. Both functions take a module
 that describes how to parse/inject metadata.
-Here we use {!module:YOCaml.Metadata.Page}.
+Here we use {!module:Yocaml.Metadata.Page}.
 
 {[
 
@@ -406,7 +406,7 @@ let task =
 ;;
 ]}
 
-{!val:YOCaml.Build.read_file_with_metadata} and {!val:YOCaml.Build.apply_as_template}
+{!val:Yocaml.Build.read_file_with_metadata} and {!val:Yocaml.Build.apply_as_template}
 return a pair with an option for the metadata and the file content. Fortunately,
 the application of a template takes optional metadata as an argument but the
 function will return the metadata unchanged and the contents of the template
@@ -477,7 +477,7 @@ Writing HTML by hand can be tiring, and one often wishes one could write a docum
 in a slightly less verbose format like Markdown or Org!
 
 The modification of the generator is quite simple because the
-{!val:YOCaml.Build.process_markdown} function already transforms a
+{!val:Yocaml.Build.process_markdown} function already transforms a
 text document (in Markdown) into an HTML document (using the
 {{:https://github.com/ocaml/omd} omd} library).
 
@@ -584,7 +584,7 @@ In addition to pages and articles, it is quite common to have static files, for
 example images or css style sheets. We are going to create two rules to move
 these images and stylesheets into the appropriate directories.
 
-We can use {!val:YOCaml.Build.copy_file} which is an arrow that simply copies
+We can use {!val:Yocaml.Build.copy_file} which is an arrow that simply copies
 a file somewhere. The rule is a hell of a lot easier to write than for pages,
 you just copy and paste a css file into the target.
 
@@ -640,7 +640,7 @@ sequential composition [>>]:
 The rule for building articles is not fundamentally different from the one for
 building pages, except that we will add a new template for describing an
 article. As for pages, we will use a metadata already described:
-{!module:YOCaml.Metadata.Article}.
+{!module:Yocaml.Metadata.Article}.
 
 {[
 <a href="/index.html">Back to index</a>
@@ -709,7 +709,7 @@ if you have any suggestions, I'd love to hear them!
 
 The idea is to read all the files involved, a bit like [process_files] but to
 accumulate all the dependencies. Fortunately, it is possible to use the
-{!val:YOCaml.Build.collection} function to reduce a list of values wrapped in
+{!val:Yocaml.Build.collection} function to reduce a list of values wrapped in
 an effect.
 
 The function takes three arguments: a list wrapped in an effect, an arrow that
@@ -742,7 +742,7 @@ let index =
   in
 ]}
 
-As you can see, we use {!val:YOCaml.Effect.read_child_files} to read the
+As you can see, we use {!val:Yocaml.Effect.read_child_files} to read the
 articles and we use an arrow to extract only their metadata. Then we transform
 this metadata into a new metadata that manages all the articles. And after that,
 we can simply describe an arrow that builds our index and adds the index
