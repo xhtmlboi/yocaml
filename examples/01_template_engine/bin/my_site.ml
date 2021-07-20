@@ -15,4 +15,4 @@ let task =
         >>> pipe_content "templates/footer.html"))
 ;;
 
-let () = execute task
+let () = Yocaml_unix.execute task

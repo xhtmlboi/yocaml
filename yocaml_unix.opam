@@ -1,6 +1,6 @@
 opam-version: "2.0"
 version: "dev"
-synopsis: "YOCaml It is a static site generator, mostly written in OCaml"
+synopsis: "YOCaml Unix runtime"
 maintainer: "xhtmlboi@gmail.com"
 authors: [ "The XHTMLBoy <xhtmlboi@gmail.com>" ]
 
@@ -16,16 +16,12 @@ tags: [ "shell" "bin" "make" "static" "blog" "generator" ]
 homepage: "https://github.com/xhtmlboi/yocaml"
 dev-repo: "git://github.com/xhtmlboi/yocaml.git"
 bug-reports: "https://github.com/xhtmlboi/yocaml/issues"
-    
+
 depends: [
   "ocaml" { >= "4.11.1" }
   "dune" { >= "2.8" }
   "odoc" {with-doc}
-  "alcotest" {with-test}
-  "preface" {pinned}
-  "omd"
-  "mustache"
-  "yaml"
+  "yocaml"
 ]
 
 pin-depends: [
