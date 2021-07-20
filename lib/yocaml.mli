@@ -6,8 +6,8 @@
     won't be efficient or ergonomic, but it's a fun project to do in your
     spare time.
 
-    Please refer to {{:../index.html#tutorial} the documentation index} for
-    an example. *)
+    Please refer to {{:../index.html#tutorial} the documentation index} for an
+    example. *)
 
 (** {1 High-level API}
 

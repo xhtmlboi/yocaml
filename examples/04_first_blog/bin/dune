@@ -1,4 +1,4 @@
 (executable
  (name my_site)
  (promote (until-clean))
- (libraries wordpress))
+ (libraries yocaml))

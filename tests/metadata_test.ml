@@ -1,4 +1,4 @@
-open Wordpress
+open Yocaml
 
 let opt_validate_testable upp ueq =
   let open Validate in
@@ -103,7 +103,7 @@ let capture_base_metadata_valid5 =
   let obj =
     Preface.Pair.fst
     $ split_metadata {|---
-title: My superb article  
+title: My superb article
 ---My article|}
     |> Metadata.Page.from_string
   in
@@ -195,7 +195,7 @@ let capture_article_metadata_invalid5 =
         {|---
 article_title: My First Article
 article_description:
-  Hello, this is my first article, I guess that it is 
+  Hello, this is my first article, I guess that it is
   interesting, but I don't think so!
 date: 2021-12
 ---My article|}
@@ -218,10 +218,10 @@ let capture_article_metadata_valid1 =
     $ split_metadata
         {|---
 title: Blog - an article
-article_title: My First Article  
+article_title: My First Article
 article_description:
-  Hello, this is my first article, I guess that it is 
-  interesting, but I don't think so!    
+  Hello, this is my first article, I guess that it is
+  interesting, but I don't think so!
 date: 2021-12-03
 ---My article|}
     |> Metadata.Article.from_string
@@ -249,14 +249,14 @@ let capture_article_metadata_valid2 =
     $ split_metadata
         {|---
 title: Blog - an article
-article_title: My First Article  
+article_title: My First Article
 tags:
   - Bohr
-  - Church  
-  - McLane         
+  - Church
+  - McLane
 article_description:
-  Hello, this is my first article, I guess that it is 
-  interesting, but I don't think so!    
+  Hello, this is my first article, I guess that it is
+  interesting, but I don't think so!
 date: 2021-12-03
 ---My article|}
     |> Metadata.Article.from_string

@@ -190,7 +190,7 @@ val raise_ : exn -> 'a Freer.t
 
 (** {3 Effects composition} *)
 
-(** Collapses sequentially Wordpress program. [sequence ps f p] produces a
+(** Collapses sequentially YOCaml program. [sequence ps f p] produces a
     program which performs [p] followed by [f ps]. A common usage is
     [p |> sequences ps f]. *)
 val sequence

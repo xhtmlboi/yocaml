@@ -1,4 +1,4 @@
-open Wordpress
+open Yocaml
 
 let need_update_no_deps_file_not_present =
   let open Alcotest in

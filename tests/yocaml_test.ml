@@ -1,7 +1,7 @@
 let () =
   let open Alcotest in
   run
-    "Wordpress test"
+    "YOCaml test"
     [ Build_test.cases
     ; Deps_test.cases
     ; Util_test.cases

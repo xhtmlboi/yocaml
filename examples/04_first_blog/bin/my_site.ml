@@ -1,4 +1,4 @@
-open Wordpress
+open Yocaml
 
 let destination = "_build"
 let css_destination = into destination "css"

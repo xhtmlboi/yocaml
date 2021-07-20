@@ -1,4 +1,4 @@
-open Wordpress
+open Yocaml
 
 let destination = "_build"
 let track_binary_update = Build.watch Sys.argv.(0)
