@@ -91,4 +91,4 @@ let index =
     >>^ Stdlib.snd)
 ;;
 
-let () = execute (pages >> css >> images >> articles >> index)
+let () = Yocaml_unix.execute (pages >> css >> images >> articles >> index)

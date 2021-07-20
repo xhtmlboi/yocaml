@@ -1,0 +1,7 @@
+(library
+ (name yocaml_unix)
+ (public_name yocaml_unix)
+ (libraries yocaml))
+
+(documentation
+ (package yocaml_unix))

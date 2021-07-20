@@ -25,4 +25,4 @@ let task =
         >>^ Stdlib.snd))
 ;;
 
-let () = execute task
+let () = Yocaml_unix.execute task

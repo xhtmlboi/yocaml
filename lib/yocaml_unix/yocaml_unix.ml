@@ -1,3 +1,4 @@
+open Yocaml
 open Util
 
 let mtime path =
@@ -117,7 +118,7 @@ let read_predicate path pred = function
       if pred x then Some p else None
 ;;
 
-let run program =
+let execute program =
   Effect.run
     { handler =
         (fun resume effect ->
