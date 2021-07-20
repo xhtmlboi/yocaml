@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title>index (yocaml.index)</title><link rel="stylesheet" href="../odoc.css"/><meta charset="utf-8"/><meta name="generator" content="odoc 1.5.2"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/><script src="../highlight.pack.js"></script><script>hljs.initHighlightingOnLoad();</script></head><body><div class="content"><header><nav><a href="../index.html">Up</a> – yocaml</nav><h1 id="yocaml"><a href="#yocaml" class="anchor"></a>YOCaml</h1><p><em>YOCaml</em> is a free and open-source content management system (CMS) written in OCaml. In other words, <em>YOCaml</em> is a static blog generator written in OCaml. And yes, another one!</p><p>The objective of the project is mainly to learn how to use OCaml (and to discover its ecosystem). It is therefore likely that some parts of the code are not idiomatic and please do not hesitate to tell me or to contribute. In addition, it was an opportunity to experiment with the ergonomics of the <a href="https://github.com/xvw/preface">Preface</a> library and to provide it with slightly less academic examples.</p><p>When thinking about how to compute file dependencies, I had initially settled on the idea of using a comonad transformation (<code>TracedT</code>) but then I remembered the paper <a href="http://www.cse.chalmers.se/~rjmh/Papers/arrows.pdf">Generalising Monads to Arrows</a>, which describes the construction of static and dynamic parsers which seemed relevant to capturing dependencies.</p><p>On the other hand, I was perfectly aware of the existence of <a href="https://jaspervdj.be/hakyll/">Hakyll</a>, an excellent &quot;static blog generator, generator&quot; (notably used by my friend <a href="https://xvw.github.io">xvw</a>). But in my understanding of the definition flow of a generator (at user level, I have never observed the source code), the document construction routine was monadic. days ago, <a href="https://github.com/mspwn">msp</a> pointed out to me that Hakyll, prior to version 4, used dependency capture logic incredibly similar to that of <em>YOCaml</em>, funny! Hakyll decided to use a monadic construction to simplify the DSL. Maybe I'll come to the same conclusions when I have to maintain a blog with complicated construction rules, I'll totally replace my API and in that case, I'll probably take inspiration from the work done on Hakyll. But for the moment I'm quite happy with it.</p><nav class="toc"><ul><li><a href="#full-documentation">Full Documentation</a></li><li><a href="#alternatives">Alternatives</a></li><li><a href="#credits">Credits</a><ul><li><a href="#tools">Tools</a></li><li><a href="#libraries">Libraries</a></li></ul></li><li><a href="#tutorial">Tutorial</a><ul><li><a href="#as-a-simple-template-engine">As a simple template engine</a><ul><li><a href="#setting-up-the-project">Setting up the project</a></li><li><a href="#defining-some-pages-and-templates">Defining some pages and templates</a></li><li><a href="#defining-the-generator">Defining the generator</a></li><li><a href="#adding-the-generator-as-a-dependency">Adding the generator as a dependency</a></li></ul></li><li><a href="#using-a-proper-templating-strategy">Using a proper templating strategy</a><ul><li><a href="#applying-a-template">Applying a template</a></li><li><a href="#using-metadata">Using Metadata</a></li></ul></li><li><a href="#mixing-markdown-and-html-pages">Mixing Markdown and Html pages</a></li><li><a href="#a-first-real-blog">A first real blog</a><ul><li><a href="#processing-static-files">Processing static files</a></li><li><a href="#processing-articles">Processing articles</a></li><li><a href="#indexing-articles-on-the-front-page">Indexing articles on the front page</a></li></ul></li><li><a href="#conclusion">Conclusion</a></li></ul></li></ul></nav></header><h2 id="full-documentation"><a href="#full-documentation" class="anchor"></a>Full Documentation</h2><p>The full API can be <a href="YOCaml/index.html">found here</a></p><h2 id="alternatives"><a href="#alternatives" class="anchor"></a>Alternatives</h2><p>As my main motivation is to discover OCaml while having a tool to build my personal page, it is likely that <em>YOCaml</em> is absolutely not usable for anyone but me, so here are some alternatives.</p><ul><li><a href="https://www.good-eris.net/stog/">Stog</a> is a static web site compiler. It is able to handle blog posts as well as regular pages or any XML document in general</li></ul><ul><li><a href="https://github.com/Armael/stone">Stone</a> is a static website generator: it takes a template, a css stylesheet, the content itself written in a high-level formatting syntax, and generates the corresponding html pages</li></ul><ul><li><a href="https://github.com/patricoferris/sesame">Sesame</a> is a library of tools for building smaller, greener, less resource intensive and more accessible website and blogs inspired by Low Tech Magazine</li></ul><ul><li><a href="https://soupault.app/">Soupault</a> is a tool that helps you create and manage static websites</li></ul><p>If for some obscure reason you would like to be included in this list... <a href="https://github.com/xhtmlboi/yocaml/issues">drop me a line</a></p><h2 id="credits"><a href="#credits" class="anchor"></a>Credits</h2><p><em>YOCaml</em> makes use of several libraries from the OCaml ecosystem, you can find an exhaustive list in the <a href="https://github.com/xhtmlboi/yocaml/blob/main/yocaml.opam">Opam file</a> at the root of the project. For an exhaustive list of contributors, I invite you to visit the <a href="https://github.com/xhtmlboi/yocaml">Github page</a> of the project.</p><h3 id="tools"><a href="#tools" class="anchor"></a>Tools</h3><p>I haven't written OCaml for a very long time and the very clear progress of the ecosystem is very impressive!</p><ul><li><a href="https://ocaml.org">OCaml</a> (of course), I guess that the project was mainly developped using <code>OCaml 4.12</code></li><li><a href="https://dune.build/">Dune</a>, <a href="https://opam.ocaml.org">OPAM</a> (and <a href="https://www.gnu.org/software/make/">Gnu Make</a> as build-system</li><li><a href="https://github.com/ocaml/odoc">odoc</a> as a documetation parser and generator</li></ul><h3 id="libraries"><a href="#libraries" class="anchor"></a>Libraries</h3><p>Even though the libraries are part of the tooling, I was very pleased to quickly discover a collection of well documented libraries with a pleasant user experience. Each of these libraries also has dependencies which I invite you to consult (or apply <code>ocamldep</code>) to get a full understanding of what made this project possible.</p><ul><li><a href="https://github.com/xvw/preface">Preface</a> as a complement to the standard library and as an effects manager and abstraction provider. As this project was started to test the usability of the library, a very large part of the code is based on this library.</li><li><a href="https://github.com/mirage/alcotest">Alcotest</a> is a very funny name for a very nice unit test library</li><li><a href="https://github.com/ocaml/omd">omd</a> Markdown is a fairly common format for writing on the internet. Fortunately, OCaml has an excellent <code>txt</code> -&gt; <code>markdown</code> conversion library</li><li><a href="https://github.com/avsm/ocaml-yaml">ocaml-yaml</a> by default, I use <code>Yaml</code> to describe metadata</li><li><a href="https://github.com/rgrinberg/ocaml-mustache">ocaml-mustache</a> by default, I use <code>Mustache</code> for templating</li></ul><h2 id="tutorial"><a href="#tutorial" class="anchor"></a>Tutorial</h2><p><em>YOCaml</em> is slightly different from many tools that statically build web pages. Instead of imposing a template to follow, YOCaml is a <b>library</b> and it is up to the user to compose their generator. This approach does, unfortunately, make the rapid bootstrapping of a blog a little more complicated but it does allow the user more freedom in how they want to organise and generate their page collection.</p><p>In this little tutorial, I'll show you several ways to build pages with <em>YOCaml</em>, in peace and quiet. But the tutorial assumes that you use (and understand) <a href="http://opam.ocaml.org/">OPAM</a> and <a href="https://dune.build/">Dune</a>. So I won't dwell on how to install <em>YOCaml</em> (using a <code>pin</code>) and sometimes I'll use Preface.</p><p>This tutorial is very prescriptive and essentially uses the default behaviours of <em>YOCaml</em>. However, keep in mind that while the library makes arbitrary decisions to facilitate bootstrapping a project, you can build your own build rules based on the libraries of your choice.</p><p>As <em>YOCaml</em> doesn't offer an integrated development server (which is a shame by the way), I got into the habit of launching a Python server with <code>python3 -m http.server --directory _build/</code> in the directory where I build a site.</p><h3 id="as-a-simple-template-engine"><a href="#as-a-simple-template-engine" class="anchor"></a>As a simple template engine</h3><p><a href="https://github.com/xhtmlboi/yocaml/tree/main/examples/01_template_engine">Source code of the example</a></p><p>When designing static sites, it is sometimes common to only want a list of pages that respect the same template. Writing all the content in HTML and copying/pasting the templates into each document works fine, but when you want to modify the template, you have to do it... for all the pages... what a hell! As a first tutorial, I suggest you discover how to separate the templates from the content.</p><p>Here is the file tree I propose:</p><pre><code class="ml">./
+templates/
+pages/
+bin/</code></pre><p>In <code>templates/</code> we will place our templates. For the purposes of the example, an <code>header</code> and a <code>footer</code>, and in <code>pages/</code> we will place our pages. For example <code>index.html</code> for the home page, <code>project.html</code> for a list of projects and <code>about.html</code> to describe the role of the website. <code>bin</code> will be used to host the source code of our site generator. Quite common in short.</p><h4 id="setting-up-the-project"><a href="#setting-up-the-project" class="anchor"></a>Setting up the project</h4><p>Create a <code>bin/dune</code> and <code>bin/my_site.ml</code> file (if you want to name the binary that will be used to create a site <code>my_site.exe</code>) and define the dune file as such:</p><pre><code class="ml">(executable
+ (name my_site)
+ (promote (until-clean))
+ (libraries yocaml))</code></pre><p>Nothing very clever, we just say we want an executable and that will have <em>YOCaml</em> as a dependency... it makes sense!</p><h4 id="defining-some-pages-and-templates"><a href="#defining-some-pages-and-templates" class="anchor"></a>Defining some pages and templates</h4><p>I offer you high quality HTML code for the templates, a header and a footer. The idea is to pipe the header, the page and the footer.</p><p>Here is an example of header. As you can see, I'm pretty experimented with HTML.</p><pre><code class="ml">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;utf-8&quot;&gt;
+    &lt;title&gt;My website lol&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;My Website&lt;/h1&gt;
+    &lt;ul&gt;
+        &lt;!-- &quot;A powerful menu&quot;  --&gt;
+        &lt;li&gt;&lt;a href=&quot;index.html&quot;&gt;Home&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=&quot;projects.html&quot;&gt;Projects&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=&quot;about.html&quot;&gt;About&lt;/a&gt; &lt;/li&gt;
+    &lt;/ul&gt;
+    &lt;hr&gt;
+    &lt;main&gt;</code></pre><p>Let's create a footer with the ambition of our header!</p><pre><code class="ml">    &lt;/main&gt;
+    &lt;hr&gt;
+    copyright &lt;strong&gt;Myself&lt;/strong&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre><p>You can now create several pages, for example, <code>index.html</code>, <code>project.html</code> and <code>about.html</code> with arbitrary content.</p><h4 id="defining-the-generator"><a href="#defining-the-generator" class="anchor"></a>Defining the generator</h4><p>Let's go back to our <code>my_site.ml</code> file to create our generator!</p><pre><code class="ml">open YOCaml
+
+let destination = &quot;_build&quot;
+
+let () =
+  print_endline &quot;Hello&quot;</code></pre><p>First, let's define where we want to generate our site. I chose the <code>_build</code> directory, so I don't have to modify the <code>.gitignore</code> of the project.</p><p>To create a page, the process is quite simple. We will browse all the files in the <code>pages</code> directory and for each file, we will create a file with the same name in our destination directory which will read the <code>header.html</code> template, piping its content with the file we are reading and piping it with the <code>footer.html</code> template.</p><p>Most of the functions we will use are in the <span class="xref-unresolved" title="unresolved reference to &quot;YOCaml.Build&quot;"><code>YOCaml</code>.Build</span> module.</p><pre><code class="ml">open YOCaml
+
+let destination = &quot;_build&quot;
+
+let task =
+  process_files [&quot;pages/&quot;] (with_extension &quot;html&quot;) (fun file -&gt;
+      let target = basename file |&gt; into destination in
+      let open Build in
+      create_file target (
+        read_file &quot;templates/header.html&quot;
+        &gt;&gt;&gt; pipe_content file
+        &gt;&gt;&gt; pipe_content &quot;templates/footer.html&quot;)
+    )
+
+let () =
+  print_endline &quot;Hello&quot;</code></pre><p>The API tries to be as clear as possible. The <code>process_files</code> function takes a list of directories as an argument and filters the entries with a predicate. Here, the files must end in <code>.html</code>. Then, for each file, we will create an image in our destination, read the header, read the browsed file and pipe it with the header content, read the footer and pipe it with the previous content.</p><p>Now you have to run the program described above. Nothing could be easier, we can use <span class="xref-unresolved" title="unresolved reference to &quot;YOCaml.execute&quot;"><code>YOCaml</code>.execute</span>. (It is possible to provide its own execution function, for that I refer you to <a href="https://github.com/xvw/preface/blob/master/guides/freer_effect_handling.md">the guide on the Preface effect handlers</a>).</p><pre><code class="ml">open YOCaml
+
+let destination = &quot;_build&quot;
+
+let task =
+  process_files [&quot;pages/&quot;] (with_extension &quot;html&quot;) (fun file -&gt;
+      let target = basename file |&gt; into destination in
+      let open Build in
+      create_file target (
+        read_file &quot;templates/header.html&quot;
+        &gt;&gt;&gt; pipe_content file
+        &gt;&gt;&gt; pipe_content &quot;templates/footer.html&quot;)
+    )
+
+let () =
+  execute task</code></pre><p>That's it! You have your first template engine that you can try out and that replaces the PHP includes!</p><h4 id="adding-the-generator-as-a-dependency"><a href="#adding-the-generator-as-a-dependency" class="anchor"></a>Adding the generator as a dependency</h4><p>The functions in the <span class="xref-unresolved" title="unresolved reference to &quot;YOCaml.Build&quot;"><code>YOCaml</code>.Build</span> module capture their dependencies and compositions, with the <code>&gt;&gt;&gt;</code> operator merging them. In our example, each page to be built will have as dependencies <code>templates/header.html</code>, <code>templates/footer.html</code> and the page in the <code>pages</code> directory being observed. This means that each page will be rebuilt <em>if and only</em> if necessary.</p><p>On the other hand, if the generator is ever recompiled, which could have the effect of completely changing our site, we would also like to be able to consider that a file has to be regenerated. Fortunately the <span class="xref-unresolved" title="unresolved reference to &quot;YOCaml.Build.watch&quot;"><span class="xref-unresolved" title="unresolved reference to &quot;YOCaml.Build&quot;"><code>YOCaml</code>.Build</span>.watch</span> function allows us to add a file to the dependencies without reading it, so we can modify our <code>task</code> in this way:</p><pre><code class="ml">open YOCaml
+
+let destination = &quot;_build&quot;
+let track_binary_update = Build.watch Sys.argv.(0)
+
+let task =
+  process_files [ &quot;pages/&quot; ] (with_extension &quot;html&quot;) (fun file -&gt;
+      let target = basename file |&gt; into destination in
+      let open Build in
+      create_file
+        target
+        (track_binary_update
+        &gt;&gt;&gt; read_file &quot;templates/header.html&quot;
+        &gt;&gt;&gt; pipe_content file
+        &gt;&gt;&gt; pipe_content &quot;templates/footer.html&quot;))
+;;
+
+let () = execute task</code></pre><p>Now, every time the generator is recompiled, the pages will have to be rebuilt!</p><h3 id="using-a-proper-templating-strategy"><a href="#using-a-proper-templating-strategy" class="anchor"></a>Using a proper templating strategy</h3><p><a href="https://github.com/xhtmlboi/yocaml/tree/main/examples/02_real_template_engine">Source code of the example</a></p><p>At the moment we have cheated by splitting our layout into two files but this is not usually done! We would like to be able to inject the content directly into a file containing the entire layout like this, in <code>templates/layout.html</code>:</p><pre><code class="ml">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;utf-8&quot;&gt;
+    &lt;title&gt;My website lol&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;My Website&lt;/h1&gt;
+    &lt;ul&gt;
+        &lt;!-- &quot;A powerful menu&quot;  --&gt;
+        &lt;li&gt;&lt;a href=&quot;index.html&quot;&gt;Home&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=&quot;projects.html&quot;&gt;Projects&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=&quot;about.html&quot;&gt;About&lt;/a&gt; &lt;/li&gt;
+    &lt;/ul&gt;
+    &lt;hr&gt;
+    &lt;main&gt;
+        {{{body}}}
+    &lt;/main&gt;
+    &lt;hr&gt;
+    copyright &lt;strong&gt;Myself&lt;/strong&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre><p>By default, <em>YOCaml</em> uses <a href="https://mustache.github.io/">Mustach</a> via the excellent <a href="https://github.com/rgrinberg/ocaml-mustache">ocaml-mustache</a> library to describe templates. The idea is to attempt to read a file and its metadata and inject it into a template that is ready for the metadata. I invite you to read the <a href="https://mustache.github.io/mustache.5.html">Mustach documentation</a> to understand all that can be described.</p><h4 id="applying-a-template"><a href="#applying-a-template" class="anchor"></a>Applying a template</h4><p>Now we need to modify our generator so that it reads a file and injects it into our template. The <span class="xref-unresolved" title="unresolved reference to &quot;YOCaml.Metadata&quot;"><code>YOCaml</code>.Metadata</span> module offers a structured set of metadata. For the purposes of this tutorial, we will use <span class="xref-unresolved" title="unresolved reference to &quot;YOCaml.Metadata.Page&quot;"><span class="xref-unresolved" title="unresolved reference to &quot;YOCaml.Metadata&quot;"><code>YOCaml</code>.Metadata</span>.Page</span> which does not impose much. Indeed, it offers two optional fields: <code>Title</code> and <code>Description</code>.</p><p>The modification in the generator to be made is that the file and its potential metadata must be read using the <span class="xref-unresolved" title="unresolved reference to &quot;YOCaml.Build.read_file_with_metadata&quot;"><span class="xref-unresolved" title="unresolved reference to &quot;YOCaml.Build&quot;"><code>YOCaml</code>.Build</span>.read_file_with_metadata</span> function and then applied to the template using the <span class="xref-unresolved" title="unresolved reference to &quot;YOCaml.Build.apply_as_template&quot;"><span class="xref-unresolved" title="unresolved reference to &quot;YOCaml.Build&quot;"><code>YOCaml</code>.Build</span>.apply_as_template</span> function. Both functions take a module that describes how to parse/inject metadata. Here we use <span class="xref-unresolved" title="unresolved reference to &quot;YOCaml.Metadata.Page&quot;"><span class="xref-unresolved" title="unresolved reference to &quot;YOCaml.Metadata&quot;"><code>YOCaml</code>.Metadata</span>.Page</span>.</p><pre><code class="ml">let task =
+  process_files [ &quot;pages/&quot; ] (with_extension &quot;html&quot;) (fun file -&gt;
+      let target = basename file |&gt; into destination in
+      let open Build in
+      create_file
+        target
+        (track_binary_update
+        &gt;&gt;&gt; read_file_with_metadata (module Metadata.Page) file
+        &gt;&gt;&gt; apply_as_template (module Metadata.Page) &quot;templates/layout.html&quot;
+        &gt;&gt;^ Stdlib.snd))
+;;</code></pre><p><span class="xref-unresolved" title="unresolved reference to &quot;YOCaml.Build.read_file_with_metadata&quot;"><span class="xref-unresolved" title="unresolved reference to &quot;YOCaml.Build&quot;"><code>YOCaml</code>.Build</span>.read_file_with_metadata</span> and <span class="xref-unresolved" title="unresolved reference to &quot;YOCaml.Build.apply_as_template&quot;"><span class="xref-unresolved" title="unresolved reference to &quot;YOCaml.Build&quot;"><code>YOCaml</code>.Build</span>.apply_as_template</span> return a pair with an option for the metadata and the file content. Fortunately, the application of a template takes optional metadata as an argument but the function will return the metadata unchanged and the contents of the template application. So in the end, it is only necessary to keep the processed content, hence the use of <code>&gt;&gt;^ Stdlib.snd</code> which allows a normal function to be applied as an arrow.</p><p>Now we should have exactly the same site as before except that our layout is better defined!</p><h4 id="using-metadata"><a href="#using-metadata" class="anchor"></a>Using Metadata</h4><p>At the moment we do not use the optional metadata at all. Which is a shame! Let's see how to inject data into the pages to enrich the meaning of our pages! By default, metadata is expressed in Yaml via the <a href="https://github.com/avsm/ocaml-yaml">ocaml-yaml</a> library and uses a format similar to <a href="https://jekyllrb.com/">Jekyll</a>. Let's add metadata to our pages. For example for <code>pages/about.html</code>:</p><pre><code class="ml">---
+title: The famous about page
+description: This page TALKS ABOUT ME!
+---
+You are on the about page.</code></pre><p>And let's modify our template to display this metadata if it exists... or not:</p><pre><code class="ml">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;utf-8&quot;&gt;
+    &lt;title&gt;My website lol&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;My Website&lt;/h1&gt;
+    &lt;ul&gt;
+        &lt;!-- &quot;A powerful menu&quot;  --&gt;
+        &lt;li&gt;&lt;a href=&quot;index.html&quot;&gt;Home&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=&quot;projects.html&quot;&gt;Projects&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=&quot;about.html&quot;&gt;About&lt;/a&gt; &lt;/li&gt;
+    &lt;/ul&gt;
+    &lt;hr&gt;
+    {{#title}}&lt;h2&gt;{{.}}&lt;/h2&gt;{{/title}}
+    {{#description}}&lt;p&gt;{{.}}&lt;/p&gt;{{/description}}
+    &lt;main&gt;
+        {{{body}}}
+    &lt;/main&gt;
+    &lt;hr&gt;
+    copyright &lt;strong&gt;Myself&lt;/strong&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre><p>The template modification uses the &quot;conditional&quot; syntax to display the title and description only if the metadata is present. And yes, remember, the title and description are optional!</p><h3 id="mixing-markdown-and-html-pages"><a href="#mixing-markdown-and-html-pages" class="anchor"></a>Mixing Markdown and Html pages</h3><p><a href="https://github.com/xhtmlboi/yocaml/tree/main/examples/03_mixing_markdown_and_html">Source code of the example</a></p><p>Writing HTML by hand can be tiring, and one often wishes one could write a document in a slightly less verbose format like Markdown or Org!</p><p>The modification of the generator is quite simple because the <span class="xref-unresolved" title="unresolved reference to &quot;YOCaml.Build.process_markdown&quot;"><span class="xref-unresolved" title="unresolved reference to &quot;YOCaml.Build&quot;"><code>YOCaml</code>.Build</span>.process_markdown</span> function already transforms a text document (in Markdown) into an HTML document (using the <a href="https://github.com/ocaml/omd">omd</a> library).</p><p>So rather than only browsing the files that have the extension, we will browse the files that have the extension <code>md</code> and <code>html</code> then, once we have read the file and its metadata, if the file has the extension <code>md</code> we will apply the arrow <code>process_markdown</code> on the second member of the pair (the content and not the metadata) otherwise we do nothing... that is to say the application of the identity function:</p><pre><code class="ml">let may_process_markdown file =
+  let open Build in
+  if with_extension &quot;md&quot; file then snd process_markdown else arrow Fun.id
+;;</code></pre><p>And our generator becomes:</p><pre><code class="ml">let task =
+  process_files
+    [ &quot;pages/&quot; ]
+    (fun f -&gt; with_extension &quot;html&quot; f || with_extension &quot;md&quot; f)
+    (fun file -&gt;
+      let fname = basename file |&gt; into destination in
+      let target = replace_extension fname &quot;html&quot; in
+      let open Build in
+      create_file
+        target
+        (track_binary_update
+        &gt;&gt;&gt; read_file_with_metadata (module Metadata.Page) file
+        &gt;&gt;&gt; may_process_markdown file
+        &gt;&gt;&gt; apply_as_template (module Metadata.Page) &quot;templates/layout.html&quot;
+        &gt;&gt;^ Stdlib.snd))
+;;</code></pre><p>That's it! Our generator is able to process HTML files naturally without modifying the output of the reading, and to apply a transformation (from Markdown to HTML) if the file has the extension <code>md</code>! Great, we'll soon be able to describe a real static blog generator, with articles and all.</p><h3 id="a-first-real-blog"><a href="#a-first-real-blog" class="anchor"></a>A first real blog</h3><p><a href="https://github.com/xhtmlboi/yocaml/tree/main/examples/04_first_blog">Source code of the example</a></p><p>After having familiarized ourselves with page generation, we have enough knowledge to build a real blog! However, there is still a difficulty. How to build the index of articles? We will try to answer this question in this guide!</p><p>The file tree is identical to the previous ones except that this time we add a directory <code>articles</code> which will contain our articles, a directory <code>css</code> for our stylesheets and a directory <code>images</code> for our images.</p><pre><code class="ml">./
+templates/
+articles/
+pages/
+bin/
+images/
+css/</code></pre><p>The page generator will not change because its behaviour does not change:</p><pre><code class="ml">open YOCaml
+
+let destination = &quot;_build&quot;
+let track_binary_update = Build.watch Sys.argv.(0)
+
+let may_process_markdown file =
+  let open Build in
+  if with_extension &quot;md&quot; file then snd process_markdown else arrow Fun.id
+;;
+
+let pages =
+  process_files
+    [ &quot;pages/&quot; ]
+    (fun f -&gt; with_extension &quot;html&quot; f || with_extension &quot;md&quot; f)
+    (fun file -&gt;
+      let fname = basename file |&gt; into destination in
+      let target = replace_extension fname &quot;html&quot; in
+      let open Build in
+      create_file
+        target
+        (track_binary_update
+        &gt;&gt;&gt; read_file_with_metadata (module Metadata.Page) file
+        &gt;&gt;&gt; may_process_markdown file
+        &gt;&gt;&gt; apply_as_template (module Metadata.Page) &quot;templates/layout.html&quot;
+        &gt;&gt;^ Stdlib.snd))
+;;
+
+let () = execute pages</code></pre><h4 id="processing-static-files"><a href="#processing-static-files" class="anchor"></a>Processing static files</h4><p>In addition to pages and articles, it is quite common to have static files, for example images or css style sheets. We are going to create two rules to move these images and stylesheets into the appropriate directories.</p><p>We can use <span class="xref-unresolved" title="unresolved reference to &quot;YOCaml.Build.copy_file&quot;"><span class="xref-unresolved" title="unresolved reference to &quot;YOCaml.Build&quot;"><code>YOCaml</code>.Build</span>.copy_file</span> which is an arrow that simply copies a file somewhere. The rule is a hell of a lot easier to write than for pages, you just copy and paste a css file into the target.</p><pre><code class="ml">let css_destination = into destination &quot;css&quot;
+
+let css =
+  process_files [ &quot;css/&quot; ] (with_extension &quot;css&quot;) (fun file -&gt;
+      Build.copy_file file ~into:css_destination)
+;;</code></pre><p>The same can be done for images, assuming for the purposes of the tutorial that only a limited number of formats are supported: <code>svg</code>, <code>png</code> and <code>gif</code> (yes, I love gifs).</p><pre><code class="ml">let images_destination = into destination &quot;images&quot;
+
+let images =
+  process_files
+    [ &quot;images&quot; ]
+    (fun f -&gt;
+      with_extension &quot;svg&quot; f
+      || with_extension &quot;png&quot; f
+      || with_extension &quot;gif&quot; f)
+    (fun file -&gt; Build.copy_file file ~into:images_destination)
+;;</code></pre><p>Note that it is possible to simplify the predicates by using <a href="https://ocaml-preface.github.io/preface/Preface_stdlib/Predicate/index.html">Predicate</a>, from Preface:</p><pre><code class="ml">let images =
+  let open Preface.Predicate in
+  process_files
+    [ &quot;images&quot; ]
+    (with_extension &quot;svg&quot; || with_extension &quot;png&quot; || with_extension &quot;gif&quot;)
+    (fun file -&gt; Build.copy_file file ~into:images_destination)
+;;</code></pre><p>Now we have to compose our different rules to execute them sequentially. As the execution of an Arrow produces a value of type <code>'a Effect.t</code> we can use the sequential composition <code>&gt;&gt;</code>:</p><pre><code class="ml">let () = execute (pages &gt;&gt; css &gt;&gt; images)</code></pre><h4 id="processing-articles"><a href="#processing-articles" class="anchor"></a>Processing articles</h4><p>The rule for building articles is not fundamentally different from the one for building pages, except that we will add a new template for describing an article. As for pages, we will use a metadata already described: <span class="xref-unresolved" title="unresolved reference to &quot;YOCaml.Metadata.Article&quot;"><span class="xref-unresolved" title="unresolved reference to &quot;YOCaml.Metadata&quot;"><code>YOCaml</code>.Metadata</span>.Article</span>.</p><pre><code class="ml">&lt;a href=&quot;/index.html&quot;&gt;Back to index&lt;/a&gt;
+
+&lt;article&gt;
+    &lt;h2&gt;{{article_title}}&lt;/h2&gt;
+    {{{body}}}
+&lt;/article&gt;</code></pre><p>And we can write a first article with this metadata:</p><pre><code class="ml">---
+date: 2021-05-22
+article_title: This is an example
+article_description: This is the description of the example
+---</code></pre><p>There is more metadata available for articles but these are the 3 mandatory data. So let's not complicate this already too long tutorial and focus on the essentials.</p><p>As mentioned, the rule for articles is quite similar to that for pages:</p><pre><code class="ml">let article_destination file =
+  let fname = basename file |&gt; into &quot;articles&quot; in
+  replace_extension fname &quot;html&quot;
+;;
+
+let articles =
+  process_files [ &quot;articles/&quot; ] (with_extension &quot;md&quot;) (fun file -&gt;
+      let open Build in
+      let target = article_destination file |&gt; into destination in
+      create_file
+        target
+        (track_binary_update
+        &gt;&gt;&gt; read_file_with_metadata (module Metadata.Article) file
+        &gt;&gt;&gt; snd process_markdown
+        &gt;&gt;&gt; apply_as_template
+              (module Metadata.Article)
+              &quot;templates/article.html&quot;
+        &gt;&gt;&gt; apply_as_template
+              (module Metadata.Article)
+              &quot;templates/layout.html&quot;
+        &gt;&gt;^ Stdlib.snd))
+;;</code></pre><p>The main difference is that we only deal with Markdown files (but I could have re-used <code>may_process_markdown</code>) and that we apply two templates, the first being the article template which we apply to the general template.</p><p>And as before, the rule is added to the general task.</p><pre><code class="ml">let () = execute (pages &gt;&gt; css &gt;&gt; images &gt;&gt; articles)</code></pre><h4 id="indexing-articles-on-the-front-page"><a href="#indexing-articles-on-the-front-page" class="anchor"></a>Indexing articles on the front page</h4><p>Here is the tricky part! Currently, the procedure for building an article index (or archive page) is a bit complex. Mainly to keep it generic. However, if I can find a clearer API that can act as a wrapper, I'll be sure to improve it. Also, if you have any suggestions, I'd love to hear them!</p><p>The idea is to read all the files involved, a bit like <code>process_files</code> but to accumulate all the dependencies. Fortunately, it is possible to use the <span class="xref-unresolved" title="unresolved reference to &quot;YOCaml.Build.collection&quot;"><span class="xref-unresolved" title="unresolved reference to &quot;YOCaml.Build&quot;"><code>YOCaml</code>.Build</span>.collection</span> function to reduce a list of values wrapped in an effect.</p><p>The function takes three arguments: a list wrapped in an effect, an arrow that will act on each element of the list (to calculate dependencies dynamically) and a transformation of this list to produce a value. Here, we will build an Articles metadata based on the list of articles and then inject it into our templates. Once this new arrow is built, we can freely use it in a pipeline, as seen previously!</p><p>So before generating our index, we will build an arrow to collect the list of items while tracking each of the items in the dependency list!</p><pre><code class="ml">let index =
+  let open Build in
+  let* articles =
+    collection
+      (read_child_files &quot;articles/&quot; (with_extension &quot;md&quot;))
+      (fun source -&gt;
+        track_binary_update
+        &gt;&gt;&gt; read_file_with_metadata (module Metadata.Article) source
+        &gt;&gt;^ fun (x, _) -&gt; x, article_destination source)
+      (fun x meta content -&gt;
+        x
+        |&gt; Metadata.Articles.make
+             ?title:(Metadata.Page.title meta)
+             ?description:(Metadata.Page.description meta)
+        |&gt; Metadata.Articles.sort_articles_by_date
+        |&gt; fun x -&gt; x, content)
+  in</code></pre><p>As you can see, we use <span class="xref-unresolved" title="unresolved reference to &quot;YOCaml.Effect.read_child_files&quot;"><span class="xref-unresolved" title="unresolved reference to &quot;YOCaml.Effect&quot;"><code>YOCaml</code>.Effect</span>.read_child_files</span> to read the articles and we use an arrow to extract only their metadata. Then we transform this metadata into a new metadata that manages all the articles. And after that, we can simply describe an arrow that builds our index and adds the index building rule to the general task!</p><pre><code class="ml">let index =
+  let open Build in
+  let* articles =
+    collection
+      (read_child_files &quot;articles/&quot; (with_extension &quot;md&quot;))
+      (fun source -&gt;
+        track_binary_update
+        &gt;&gt;&gt; read_file_with_metadata (module Metadata.Article) source
+        &gt;&gt;^ fun (x, _) -&gt; x, article_destination source)
+      (fun x meta content -&gt;
+        x
+        |&gt; Metadata.Articles.make
+             ?title:(Metadata.Page.title meta)
+             ?description:(Metadata.Page.description meta)
+        |&gt; Metadata.Articles.sort_articles_by_date
+        |&gt; fun x -&gt; x, content)
+  in
+  create_file
+    (into destination &quot;index.html&quot;)
+    (track_binary_update
+    &gt;&gt;&gt; read_file_with_metadata (module Metadata.Page) &quot;index.md&quot;
+    &gt;&gt;&gt; snd process_markdown
+    &gt;&gt;&gt; articles
+    &gt;&gt;&gt; apply_as_template (module Metadata.Articles) &quot;templates/list.html&quot;
+    &gt;&gt;&gt; apply_as_template (module Metadata.Articles) &quot;templates/layout.html&quot;
+    &gt;&gt;^ Stdlib.snd)
+;;
+
+let () = execute (pages &gt;&gt; css &gt;&gt; images &gt;&gt; articles &gt;&gt; index)</code></pre><p>The <code>list.html</code> template is fairly plainly written and simply lists the published articles.</p><pre><code class="ml">{{{body}}}
+
+&lt;h3&gt;Blog&lt;/h3&gt;
+
+&lt;ol reversed class=&quot;list-articles&quot;&gt;
+{{#articles}}
+&lt;li&gt;
+  &lt;span class=&quot;date&quot;&gt;{{#date}}{{canonical}}{{/date}}&lt;/span&gt;
+  &lt;a href=&quot;{{url}}&quot;&gt;{{article_title}}&lt;/a&gt;&lt;br /&gt;
+  &lt;p&gt;{{article_description}}&lt;/p&gt;
+&lt;/li&gt;
+{{/articles}}
+&lt;/ol&gt;</code></pre><p>And there you have it, all the ingredients to build a real static blog!</p><h3 id="conclusion"><a href="#conclusion" class="anchor"></a>Conclusion</h3><p>Although many of the trivial cases are quite simple, once dynamic dependencies are introduced, the system can become a little more complicated. However, I think that once the logic behind the <code>collection</code> function is understood, many of the more complex scenarios become unlocked! Please feel free to give me feedback.</p></div></body></html>
