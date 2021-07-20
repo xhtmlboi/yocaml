@@ -1,7 +1,7 @@
-{0 Wordpress}
+{0 YOCaml}
 
-{e WordPress} is a free and open-source content management system
-(CMS) written in OCaml. In other words, {e Wordpress} is a static blog
+{e YOCaml} is a free and open-source content management system
+(CMS) written in OCaml. In other words, {e YOCaml} is a static blog
 generator written in OCaml. And yes, another one!
 
 The objective of the project is mainly to learn how to use OCaml (and
@@ -26,7 +26,7 @@ definition flow of a generator (at user level, I have never observed
 the source code), the document construction routine was monadic.  days
 ago, {{:https://github.com/mspwn} msp} pointed out to me that Hakyll,
 prior to version 4, used dependency capture logic incredibly similar
-to that of {e WordPress}, funny! Hakyll decided to use a monadic
+to that of {e YOCaml}, funny! Hakyll decided to use a monadic
 construction to simplify the DSL. Maybe I'll come to the same
 conclusions when I have to maintain a blog with complicated
 construction rules, I'll totally replace my API and in that case, I'll
@@ -35,12 +35,12 @@ moment I'm quite happy with it.
 
 {1 Full Documentation}
 
-The full API can be {{:Wordpress/index.html} found here}
+The full API can be {{:YOCaml/index.html} found here}
 
 {1 Alternatives}
 
 As my main motivation is to discover OCaml while having a tool to
-build my personal page, it is likely that {e WordPress} is absolutely
+build my personal page, it is likely that {e YOCaml} is absolutely
 not usable for anyone but me, so here are some alternatives.
 
 - {{:https://www.good-eris.net/stog/} Stog} is a static web site
@@ -60,12 +60,11 @@ not usable for anyone but me, so here are some alternatives.
   and manage static websites
 
 If for some obscure reason you would like to be included in this
-list...  {{:https://github.com/xhtmlboi/wordpress/issues} drop me a
-line}
+list...  {{:https://github.com/xhtmlboi/wordpress/issues} drop me a line}
 
 {1 Credits}
 
-{e WordPress} makes use of several libraries from the OCaml ecosystem,
+{e YOCaml} makes use of several libraries from the OCaml ecosystem,
 you can find an exhaustive list in the
 {{:https://github.com/xhtmlboi/wordpress/blob/main/wordpress.opam}
 Opam file} at the root of the project. For an exhaustive list of
@@ -109,25 +108,25 @@ get a full understanding of what made this project possible.
 
 {1 Tutorial}
 
-{e Wordpress} is slightly different from many tools that statically
-build web pages. Instead of imposing a template to follow, WordPress
+{e YOCaml} is slightly different from many tools that statically
+build web pages. Instead of imposing a template to follow, YOCaml
 is a {b library} and it is up to the user to compose their generator.
 This approach does, unfortunately, make the rapid bootstrapping of a
 blog a little more complicated but it does allow the user more freedom
 in how they want to organise and generate their page collection.
 
 In this little tutorial, I'll show you several ways to build pages
-with {e WordPress}, in peace and quiet. But the tutorial assumes that
+with {e YOCaml}, in peace and quiet. But the tutorial assumes that
 you use (and understand) {{:http://opam.ocaml.org/}OPAM} and
 {{:https://dune.build/}Dune}. So I won't dwell on how to
-install {e WordPress} (using a [pin]) and sometimes I'll use Preface.
+install {e YOCaml} (using a [pin]) and sometimes I'll use Preface.
 
 This tutorial is very prescriptive and essentially uses the default behaviours
-of {e Wordpress}. However, keep in mind that while the library makes arbitrary
+of {e YOCaml}. However, keep in mind that while the library makes arbitrary
 decisions to facilitate bootstrapping a project, you can build your own build
 rules based on the libraries of your choice.
 
-As {e WordPress} doesn't offer an integrated development server (which is a
+As {e YOCaml} doesn't offer an integrated development server (which is a
 shame by the way), I got into the habit of launching a Python server with
 [python3 -m http.server --directory _build/] in the directory where I build a
 site.
@@ -170,11 +169,11 @@ as such:
 (executable
  (name my_site)
  (promote (until-clean))
- (libraries wordpress))
+ (libraries yocaml))
 ]}
 
 Nothing very clever, we just say we want an executable and that will have
-{e WordPress} as a dependency... it makes sense!
+{e YOCaml} as a dependency... it makes sense!
 
 {3 Defining some pages and templates}
 
@@ -222,7 +221,7 @@ You can now create several pages, for example, [index.html],
 Let's go back to our [my_site.ml] file to create our generator!
 
 {[
-open Wordpress
+open YOCaml
 
 let destination = "_build"
 
@@ -240,10 +239,10 @@ create a file with the same name in our destination directory which
 will read the [header.html] template, piping its content with the file
 we are reading and piping it with the [footer.html] template.
 
-Most of the functions we will use are in the {!module:Wordpress.Build} module.
+Most of the functions we will use are in the {!module:YOCaml.Build} module.
 
 {[
-open Wordpress
+open YOCaml
 
 let destination = "_build"
 
@@ -270,13 +269,13 @@ browsed file and pipe it with the header content, read the footer and pipe
 it with the previous content.
 
 Now you have to run the program described above. Nothing could be easier,
-we can use {!val:Wordpress.execute}. (It is possible to provide its own
+we can use {!val:YOCaml.execute}. (It is possible to provide its own
 execution function, for that I refer you to
 {{:https://github.com/xvw/preface/blob/master/guides/freer_effect_handling.md}
     the guide on the Preface effect handlers}).
 
 {[
-open Wordpress
+open YOCaml
 
 let destination = "_build"
 
@@ -299,7 +298,7 @@ out and that replaces the PHP includes!
 
 {3 Adding the generator as a dependency}
 
-The functions in the {!module:Wordpress.Build} module capture their
+The functions in the {!module:YOCaml.Build} module capture their
 dependencies and compositions, with the [>>>] operator merging them.
 In our example, each page to be built will have as dependencies
 [templates/header.html], [templates/footer.html] and the page in the
@@ -309,11 +308,11 @@ rebuilt {e if and only} if necessary.
 On the other hand, if the generator is ever recompiled, which could have
 the effect of completely changing our site, we would also like to be able
 to consider that a file has to be regenerated. Fortunately the
-{!val:Wordpress.Build.watch} function allows us to add a file to the
+{!val:YOCaml.Build.watch} function allows us to add a file to the
 dependencies without reading it, so we can modify our [task] in this way:
 
 {[
-open Wordpress
+open YOCaml
 
 let destination = "_build"
 let track_binary_update = Build.watch Sys.argv.(0)
@@ -369,7 +368,7 @@ a file containing the entire layout like this, in [templates/layout.html]:
 </html>
 ]}
 
-By default, {e Wordpress} uses {{:https://mustache.github.io/}Mustach}
+By default, {e YOCaml} uses {{:https://mustache.github.io/}Mustach}
 via the excellent {{:https://github.com/rgrinberg/ocaml-mustache} ocaml-mustache}
 library to describe templates. The idea is to attempt to read a file and
 its metadata and inject it into a template that is ready for the
@@ -380,17 +379,17 @@ to understand all that can be described.
 {3 Applying a template}
 
 Now we need to modify our generator so that it reads a file and injects it into
-our template. The {!module:Wordpress.Metadata} module offers a structured
+our template. The {!module:YOCaml.Metadata} module offers a structured
 set of metadata. For the purposes of this tutorial, we will use
-{!module:Wordpress.Metadata.Page} which does not impose much.
+{!module:YOCaml.Metadata.Page} which does not impose much.
 Indeed, it offers two optional fields: [Title] and [Description].
 
 The modification in the generator to be made is that the file and its potential
-metadata must be read using the {!val:Wordpress.Build.read_file_with_metadata}
+metadata must be read using the {!val:YOCaml.Build.read_file_with_metadata}
 function and then applied to the template using the
-{!val:Wordpress.Build.apply_as_template} function. Both functions take a module
+{!val:YOCaml.Build.apply_as_template} function. Both functions take a module
 that describes how to parse/inject metadata.
-Here we use {!module:Wordpress.Metadata.Page}.
+Here we use {!module:YOCaml.Metadata.Page}.
 
 {[
 
@@ -407,7 +406,7 @@ let task =
 ;;
 ]}
 
-{!val:Wordpress.Build.read_file_with_metadata} and {!val:Wordpress.Build.apply_as_template}
+{!val:YOCaml.Build.read_file_with_metadata} and {!val:YOCaml.Build.apply_as_template}
 return a pair with an option for the metadata and the file content. Fortunately,
 the application of a template takes optional metadata as an argument but the
 function will return the metadata unchanged and the contents of the template
@@ -478,7 +477,7 @@ Writing HTML by hand can be tiring, and one often wishes one could write a docum
 in a slightly less verbose format like Markdown or Org!
 
 The modification of the generator is quite simple because the
-{!val:Wordpress.Build.process_markdown} function already transforms a
+{!val:YOCaml.Build.process_markdown} function already transforms a
 text document (in Markdown) into an HTML document (using the
 {{:https://github.com/ocaml/omd} omd} library).
 
@@ -549,7 +548,7 @@ css/
 The page generator will not change because its behaviour does not change:
 
 {[
-open Wordpress
+open YOCaml
 
 let destination = "_build"
 let track_binary_update = Build.watch Sys.argv.(0)
@@ -585,7 +584,7 @@ In addition to pages and articles, it is quite common to have static files, for
 example images or css style sheets. We are going to create two rules to move
 these images and stylesheets into the appropriate directories.
 
-We can use {!val:Wordpress.Build.copy_file} which is an arrow that simply copies
+We can use {!val:YOCaml.Build.copy_file} which is an arrow that simply copies
 a file somewhere. The rule is a hell of a lot easier to write than for pages,
 you just copy and paste a css file into the target.
 
@@ -641,7 +640,7 @@ sequential composition [>>]:
 The rule for building articles is not fundamentally different from the one for
 building pages, except that we will add a new template for describing an
 article. As for pages, we will use a metadata already described:
-{!module:Wordpress.Metadata.Article}.
+{!module:YOCaml.Metadata.Article}.
 
 {[
 <a href="/index.html">Back to index</a>
@@ -710,7 +709,7 @@ if you have any suggestions, I'd love to hear them!
 
 The idea is to read all the files involved, a bit like [process_files] but to
 accumulate all the dependencies. Fortunately, it is possible to use the
-{!val:Wordpress.Build.collection} function to reduce a list of values wrapped in
+{!val:YOCaml.Build.collection} function to reduce a list of values wrapped in
 an effect.
 
 The function takes three arguments: a list wrapped in an effect, an arrow that
@@ -743,7 +742,7 @@ let index =
   in
 ]}
 
-As you can see, we use {!val:Wordpress.Effect.read_child_files} to read the
+As you can see, we use {!val:YOCaml.Effect.read_child_files} to read the
 articles and we use an arrow to extract only their metadata. Then we transform
 this metadata into a new metadata that manages all the articles. And after that,
 we can simply describe an arrow that builds our index and adds the index
@@ -809,11 +808,3 @@ are introduced, the system can become a little more complicated. However, I
 think that once the logic behind the [collection] function is understood, many
 of the more complex scenarios become unlocked! Please feel free to give me
 feedback.
-
-{1 A controversial name}
-
-This project was essentially started to give concrete examples of how to use the
-Preface library. I thought it was very funny to give it a perfectly stupid name
-for the sake of provocation. However, I must admit to having some fun with the
-maintenance of this project, it might be necessary to find a more appropriate
-name. If you have any ideas, don't hesitate to send them to me!
