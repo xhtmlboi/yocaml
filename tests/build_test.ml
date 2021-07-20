@@ -1,4 +1,4 @@
-open Wordpress
+open Yocaml
 
 let simple_file_copy =
   let open Alcotest in

@@ -1,4 +1,4 @@
-open Wordpress
+open Yocaml
 
 module Filesystem = struct
   type path = string
@@ -116,7 +116,7 @@ let put dummy message =
 
 let log dummy level message =
   let l =
-    let open Wordpress.Aliases in
+    let open Aliases in
     match level with
     | Trace -> "trace"
     | Debug -> "debug"
@@ -135,16 +135,16 @@ let make ?(filesystem = []) () =
 
 let perform_if_exists path f =
   Option.fold
-    ~none:Wordpress.Error.(to_try (Unknown ("File not exists " ^ path)))
-    ~some:Wordpress.Try.ok
+    ~none:Error.(to_try (Unknown ("File not exists " ^ path)))
+    ~some:Try.ok
   $ f path
 ;;
 
 let handle dummy program =
-  Wordpress.Effect.run
+  Effect.run
     { handler =
         (fun resume effect ->
-          let f : type b. (b -> 'a) -> b Wordpress.Effect.f -> 'a =
+          let f : type b. (b -> 'a) -> b Effect.f -> 'a =
            fun resume -> function
             | File_exists path -> resume $ file_exists dummy path
             | Get_modification_time path ->

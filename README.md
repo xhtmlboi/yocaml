@@ -1,2 +1,3 @@
-# wordpress
-WordPress is a free and open-source content management system (CMS) written in OCaml
+# YOCaml
+
+YOCaml is a free and open-source content management system (CMS) written in OCaml

@@ -1,8 +1,8 @@
 (library
- (name wordpress)
- (public_name wordpress)
+ (name yocaml)
+ (public_name yocaml)
  (modules_without_implementation aliases)
  (libraries unix omd mustache yaml preface))
 
 (documentation
- (package wordpress))
+ (package yocaml))

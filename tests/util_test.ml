@@ -1,4 +1,4 @@
-open Wordpress
+open Yocaml
 
 let split_metadata_no_metadata1 =
   let open Alcotest in
@@ -100,21 +100,19 @@ let split_metadata_with_metadata3 =
   let open Alcotest in
   test_case "split_metadate - with metadata 3" `Quick
   $ fun () ->
-  let str =
-    {|---
+  let str = {|---
 foo;s -------
 hello
 --
 fooo ---
-bar    
+bar
 ---test
 ok ok ok
 
-|}
-  in
+|} in
   let computed = split_metadata str in
   let expected =
-    Some "foo;s -------\nhello\n--\nfooo ---\nbar    \n", "test\nok ok ok\n\n"
+    Some "foo;s -------\nhello\n--\nfooo ---\nbar\n", "test\nok ok ok\n\n"
   in
   check (pair (option string) string) "should be equal" computed expected
 ;;
@@ -129,7 +127,7 @@ foo;s -------
 hello
 --
 fooo ---
-bar    
+bar
 ---test
 ok ok ok
 
@@ -137,7 +135,7 @@ ok ok ok
   in
   let computed = split_metadata str in
   let expected =
-    Some "foo;s -------\nhello\n--\nfooo ---\nbar    \n", "test\nok ok ok\n\n"
+    Some "foo;s -------\nhello\n--\nfooo ---\nbar\n", "test\nok ok ok\n\n"
   in
   check (pair (option string) string) "should be equal" computed expected
 ;;
