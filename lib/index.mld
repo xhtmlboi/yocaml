@@ -60,16 +60,16 @@ not usable for anyone but me, so here are some alternatives.
   and manage static websites
 
 If for some obscure reason you would like to be included in this
-list...  {{:https://github.com/xhtmlboi/wordpress/issues} drop me a line}
+list...  {{:https://github.com/xhtmlboi/yocaml/issues} drop me a line}
 
 {1 Credits}
 
 {e YOCaml} makes use of several libraries from the OCaml ecosystem,
 you can find an exhaustive list in the
-{{:https://github.com/xhtmlboi/wordpress/blob/main/wordpress.opam}
+{{:https://github.com/xhtmlboi/yocaml/blob/main/yocaml.opam}
 Opam file} at the root of the project. For an exhaustive list of
 contributors, I invite you to visit the
-{{:https://github.com/xhtmlboi/wordpress} Github page} of the project.
+{{:https://github.com/xhtmlboi/yocaml} Github page} of the project.
 
 {2 Tools}
 
@@ -133,7 +133,7 @@ site.
 
 {2 As a simple template engine}
 
-{{:https://github.com/xhtmlboi/wordpress/tree/main/examples/01_template_engine}
+{{:https://github.com/xhtmlboi/yocaml/tree/main/examples/01_template_engine}
     Source code of the example}
 
 When designing static sites, it is sometimes common to only want a
@@ -336,7 +336,7 @@ Now, every time the generator is recompiled, the pages will have to be rebuilt!
 
 {2 Using a proper templating strategy}
 
-{{:https://github.com/xhtmlboi/wordpress/tree/main/examples/02_real_template_engine}
+{{:https://github.com/xhtmlboi/yocaml/tree/main/examples/02_real_template_engine}
     Source code of the example}
 
 At the moment we have cheated by splitting our layout into two files but this is
@@ -469,7 +469,7 @@ description are optional!
 
 {2 Mixing Markdown and Html pages}
 
-{{:https://github.com/xhtmlboi/wordpress/tree/main/examples/03_mixing_markdown_and_html}
+{{:https://github.com/xhtmlboi/yocaml/tree/main/examples/03_mixing_markdown_and_html}
     Source code of the example}
 
 
@@ -524,7 +524,7 @@ be able to describe a real static blog generator, with articles and all.
 
 {2 A first real blog}
 
-{{:https://github.com/xhtmlboi/wordpress/tree/main/examples/04_first_blog}
+{{:https://github.com/xhtmlboi/yocaml/tree/main/examples/04_first_blog}
     Source code of the example}
 
 After having familiarized ourselves with page generation, we have enough
