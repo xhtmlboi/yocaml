@@ -1,3 +1,4 @@
-# YOCaml
+# ![logo](misc/logo.png) YOCaml
 
-YOCaml is a free and open-source content management system (CMS) written in OCaml
+YOCaml It is a static site generator, mostly written in OCaml.
+The logo and name are the brainchild of [Biloumaster](https://github.com/BilouMaster).
