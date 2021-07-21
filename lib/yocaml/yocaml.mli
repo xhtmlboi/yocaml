@@ -38,6 +38,14 @@ module Error = Error
 module Try = Try
 module Validate = Validate
 
+(** {1 Runtime}
+
+    A YOCaml program is a pure application that has, a priori, no dependence
+    on the operating system. These dependencies are provided when a program is
+    run (as declared in the [yocaml_unix] package). *)
+
+module Runtime = Runtime
+
 (** {1 Misc}
 
     Modules serving only internal interests. They are documented (and public)

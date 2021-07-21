@@ -3,6 +3,7 @@ module Deps = Deps
 module Effect = Effect
 module Error = Error
 module Try = Try
+module Runtime = Runtime
 module Validate = Validate
 module Lexicon = Lexicon
 module Aliases = Aliases
