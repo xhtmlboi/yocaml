@@ -13,16 +13,44 @@
 
 open Aliases
 
-(** {1 Runtime definition} *)
+(** {1 Runtime definition}
+
+    The signature describes the set of primitives to be implemented to build
+    an additional runtime. *)
 
 module type RUNTIME = sig
+  (** [file_exists path] should returns [true] if [path] exists (as a file or
+      a directory), [false] otherwise. *)
   val file_exists : filepath -> bool
+
+  (** [is_directory path] should returns [true] if [path] is an existing file
+      and if the file is a directory, [false] otherwise. *)
   val is_directory : filepath -> bool
+
+  (** [get_modification_time path] should returns a [Try.t] containing the
+      modification time (as an integer) of the given file. The function may
+      fail. *)
   val get_modification_time : filepath -> int Try.t
+
+  (** [read_file path] should returns a [Try.t] containing the content (as a
+      string) of the given file. The function may fail.*)
   val read_file : filepath -> string Try.t
+
+  (** [write_file path content] should write (create or overwrite) [content]
+      into the given path. The function may fail. *)
   val write_file : filepath -> string -> unit Try.t
+
+  (** [read_dir path] should returns a list of children. The function is
+      pretty optimistic if the directory does not exist, or for any other
+      possible reason the function should fail, it will return an empty list. *)
   val read_dir : filepath -> filepath list
+
+  (** [create_dir path] is an optimistic version of [mkdir -p], the function
+      extract the directory of a file and create it if it does not exists
+      without any failure. *)
   val create_dir : ?file_perm:int -> filepath -> unit
+
+  (** [log level message] justs dump a message on stdout. *)
   val log : Aliases.log_level -> string -> unit
 end
 
