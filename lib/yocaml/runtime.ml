@@ -50,15 +50,15 @@ let execute (module R : RUNTIME) program =
                 create_predicate (module R) path predicate kind
               in
               resume $ List.filter_map full_predicate children
-            | Log (level, message) ->
+            | Effect.Log (level, message) ->
               let () = R.log level message in
               resume ()
-            | Throw error ->
+            | Effect.Throw error ->
               let () =
                 R.log Aliases.Alert (Lexicon.crap_there_is_an_error error)
               in
               Error.raise' error
-            | Raise exn ->
+            | Effect.Raise exn ->
               let () =
                 R.log Aliases.Alert (Lexicon.crap_there_is_an_exception exn)
               in
