@@ -34,6 +34,12 @@ module Date = struct
     | _ -> Error.(to_try $ Invalid_date str)
   ;;
 
+  let from_yaml field obj =
+    let open Validate.Monad in
+    let open Preface.Fun.Infix in
+    Validate.Yaml.string field obj >>= Try.to_validate % from_string
+  ;;
+
   let to_mustache = function
     | (y, m, d) as date ->
       [ "canonical", `String (to_string date)
@@ -41,82 +47,6 @@ module Date = struct
       ; "month", `String (string_of_int m)
       ; "day", `String (string_of_int d)
       ]
-  ;;
-end
-
-module Rules = struct
-  let is_object json is_obj not_obj =
-    match json with
-    | `O obj -> is_obj obj
-    | _ -> not_obj
-  ;;
-
-  let fetch_field obj field =
-    let key = String.lowercase_ascii field in
-    List.find_opt
-      (fun (k, _) ->
-        let aux_key = String.lowercase_ascii k in
-        String.equal key aux_key)
-      obj
-    |> Option.map snd
-  ;;
-
-  let optional_string obj field =
-    match fetch_field obj field with
-    | Some (`String value) -> Validate.valid (Some value)
-    | None -> Validate.valid None
-    | Some _ -> Error.(to_validate $ Invalid_field field)
-  ;;
-
-  let optional_date obj field =
-    match fetch_field obj field with
-    | Some (`String value) ->
-      Date.from_string value
-      |> Validate.from_try
-      |> Validate.Functor.map Option.some
-    | None -> Validate.valid None
-    | Some _ -> Error.(to_validate $ Invalid_field field)
-  ;;
-
-  let is_string = function
-    | `String _ -> true
-    | _ -> false
-  ;;
-
-  let capture_string = function
-    | `String x -> Some x
-    | _ -> None
-  ;;
-
-  let optional_string_list obj field =
-    match fetch_field obj field with
-    | Some (`A res) when List.for_all is_string res ->
-      List.filter_map capture_string res |> Validate.valid
-    | None -> Validate.valid []
-    | Some _ -> Error.(to_validate $ Invalid_field field)
-  ;;
-
-  let required_string obj field =
-    let open Validate in
-    let open Monad in
-    optional_string obj field
-    >>= Option.fold ~none:(error $ Error.Missing_field field) ~some:valid
-  ;;
-
-  let required_date obj field =
-    let open Validate in
-    let open Monad in
-    optional_date obj field
-    >>= Option.fold ~none:(error $ Error.Missing_field field) ~some:valid
-  ;;
-
-  let required_string_list obj field =
-    let open Validate in
-    let open Monad in
-    optional_string_list obj field
-    >>= function
-    | [] -> error $ Error.Missing_field field
-    | list -> valid list
   ;;
 end
 
@@ -136,13 +66,14 @@ module Page = struct
   ;;
 
   let from_yaml yaml =
-    Rules.is_object
+    let open Validate in
+    Yaml.as_object
       yaml
       (fun obj ->
-        let open Validate.Applicative in
+        let open Applicative in
         make
-        <$> Rules.optional_string obj "title"
-        <*> Rules.optional_string obj "description")
+        <$> Yaml.(optional string "title" obj)
+        <*> Yaml.(optional string "description" obj))
       (Validate.valid $ make None None)
   ;;
 
@@ -197,17 +128,18 @@ module Article = struct
   ;;
 
   let from_yaml yaml =
-    Rules.is_object
+    let open Validate in
+    Yaml.as_object
       yaml
       (fun obj ->
-        let open Validate.Applicative in
+        let open Applicative in
         make
-        <$> Rules.required_string obj "article_title"
-        <*> Rules.required_string obj "article_description"
-        <*> Rules.optional_string_list obj "tags"
-        <*> Rules.required_date obj "date"
-        <*> Rules.optional_string obj "title"
-        <*> Rules.optional_string obj "description")
+        <$> Yaml.(required string "article_title" obj)
+        <*> Yaml.(required string "article_description" obj)
+        <*> Yaml.(with_default ~default:[] (list string) "tags" obj)
+        <*> Yaml.(required Date.from_yaml "date" obj)
+        <*> Yaml.(optional string "title" obj)
+        <*> Yaml.(optional string "description" obj))
       (Validate.error $ Error.Invalid_metadata "Article")
   ;;
 
