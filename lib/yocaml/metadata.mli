@@ -56,59 +56,11 @@ module Date : sig
   val make : int -> int -> int -> t
   val to_string : t -> string
   val from_string : string -> t Try.t
+  val from_yaml : string -> [> `String of string ] -> t Validate.t
   val pp : Format.formatter -> t -> unit
   val equal : t -> t -> bool
   val compare : t -> t -> int
   val to_mustache : t -> (string * Mustache.Json.value) list
-end
-
-(** {2 Rules}
-
-    Validating JSON (for Mustache and Yaml) using Applicative Validation. *)
-
-module Rules : sig
-  (** [is_object obj f x] performs [f] on the values of [obj] if [obj] is a
-      JSON Object, otherwise returns x. *)
-  val is_object : [> `O of 'a ] -> ('a -> 'b) -> 'b -> 'b
-
-  (** Find a value indexed by a string. *)
-  val fetch_field : (string * 'a) list -> string -> 'a option
-
-  (** Find an optional string in an indexed list. *)
-  val optional_string
-    :  (string * [> `String of string ]) list
-    -> string
-    -> string option Validate.t
-
-  (** Find an optional date in an indexed list. *)
-  val optional_date
-    :  (string * [> `String of string ]) list
-    -> string
-    -> Date.t option Validate.t
-
-  (** Find an optional list of string in an indexed list. *)
-  val optional_string_list
-    :  (string * [> `A of [> `String of string ] list ]) list
-    -> string
-    -> string list Validate.t
-
-  (** Find a string in an indexed list. *)
-  val required_string
-    :  (string * [> `String of string ]) list
-    -> string
-    -> string Validate.t
-
-  (** Find a date in an indexed list. *)
-  val required_date
-    :  (string * [> `String of string ]) list
-    -> string
-    -> Date.t Validate.t
-
-  (** Find a nonempty list of string in an indexed list. *)
-  val required_string_list
-    :  (string * [> `A of [> `String of string ] list ]) list
-    -> string
-    -> string list Validate.t
 end
 
 (** {1 Metadata description}
