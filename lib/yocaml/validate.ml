@@ -94,7 +94,6 @@ module Yaml = struct
     | `String value -> valid value
     | `Bool value -> valid (string_of_bool value)
     | `Float value -> valid (string_of_float value)
-    | `Int value -> valid (string_of_int value)
     | _ -> Error.(to_validate (Invalid_field field))
   ;;
 
@@ -111,7 +110,7 @@ module Yaml = struct
   ;;
 
   let int field = function
-    | `Int value -> valid value
+    | `Float value -> valid (int_of_float value)
     | _ -> Error.(to_validate (Invalid_field field))
   ;;
 

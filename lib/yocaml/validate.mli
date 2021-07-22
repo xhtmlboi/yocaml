@@ -125,14 +125,14 @@ module Yaml : sig
       String. *)
   val as_string
     :  string
-    -> [> `String of string | `Bool of bool | `Float of float | `Int of int ]
+    -> [> `String of string | `Bool of bool | `Float of float ]
     -> string t
 
   (** A validator for a Boolean. *)
   val bool : string -> [> `String of string | `Bool of bool ] -> bool t
 
   (** A validator for an Int. *)
-  val int : string -> [> `Int of int ] -> int t
+  val int : string -> [> `Float of float ] -> int t
 
   (** A validator for a Float. *)
   val float : string -> [> `Float of float ] -> float t
