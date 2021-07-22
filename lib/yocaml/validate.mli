@@ -49,6 +49,9 @@ module Functor : Preface_specs.FUNCTOR with type 'a t = 'a t
 module Applicative :
   Preface_specs.Traversable.API_OVER_APPLICATIVE with type 'a t = 'a t
 
+(** [Validate] is an [Alt] that (logically) implements [combine]. *)
+module Alt : Preface_specs.Alt.API with type 'a t = 'a t
+
 (** [Validate] is a [Selective] that (logically) implements [select] and
     [branch]. *)
 module Selective : Preface_specs.SELECTIVE with type 'a t = 'a t
@@ -56,3 +59,88 @@ module Selective : Preface_specs.SELECTIVE with type 'a t = 'a t
 (** [Validate] is also a [Monad] that (logically) implements [bind] and
     [return]. *)
 module Monad : Preface_specs.Traversable.API_OVER_MONAD with type 'a t = 'a t
+
+(** {1 Validators} *)
+
+(** {2 Yaml} *)
+
+module Yaml : sig
+  (** [as_object yaml valid invalid] If [yaml] is an object, applies the
+      [valid] function to the key value list, otherwise returns the value
+      [invalid]. *)
+  val as_object
+    :  [> `O of (string * 'a) list ]
+    -> ((string * 'a) list -> 'b)
+    -> 'b
+    -> 'b
+
+  (** [fetch_field key list] Retrieves the value attached to [key] in [list].
+
+      This function is quite suitable for use with [as_object]:
+
+      {[
+        as_object
+          my_object
+          (Validate.valid % fetch_field "Hello")
+          Error.(to_validate $ Invalid_metadata "object")
+        (* Returns an option with the field *)
+      ]} *)
+  val fetch_field : string -> (string * 'a) list -> 'a option
+
+  (** Finds an optional field and applies a validation to it. The validator
+      can return None. The function works well with [as_object]. *)
+  val optional'
+    :  (string -> 'a -> 'b option t)
+    -> string
+    -> (string * 'a) list
+    -> 'b option t
+
+  (** Same of [optional'] except that the validator can never returns an empty
+      value.*)
+  val optional
+    :  (string -> 'a -> 'b t)
+    -> string
+    -> (string * 'a) list
+    -> 'b option t
+
+  (** Same of [optional] but handle a default case. *)
+  val with_default
+    :  default:'b
+    -> (string -> 'a -> 'b t)
+    -> string
+    -> (string * 'a) list
+    -> 'b t
+
+  (** Same of [optional] but the field must be present. *)
+  val required
+    :  (string -> 'a -> 'b t)
+    -> string
+    -> (string * 'a) list
+    -> 'b t
+
+  (** A validator for a String. *)
+  val string : string -> [> `String of string ] -> string t
+
+  (** A validator for a String which can handle [bool], [float] and [int] as
+      String. *)
+  val as_string
+    :  string
+    -> [> `String of string | `Bool of bool | `Float of float | `Int of int ]
+    -> string t
+
+  (** A validator for a Boolean. *)
+  val bool : string -> [> `String of string | `Bool of bool ] -> bool t
+
+  (** A validator for an Int. *)
+  val int : string -> [> `Int of int ] -> int t
+
+  (** A validator for a Float. *)
+  val float : string -> [> `Float of float ] -> float t
+
+  (** A validator for List. *)
+  val list
+    :  (string -> 'a -> 'b t)
+    -> string
+    -> [> `A of 'a list ]
+    -> 'b list t
+end
