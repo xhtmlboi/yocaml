@@ -45,8 +45,9 @@ build my personal page, it is likely that {e YOCaml} is absolutely
 not usable for anyone but me, so here are some alternatives.
 
 - {{:https://www.good-eris.net/stog/} Stog} is a static web site
-  compiler. It is able to handle blog posts as well as regular pages
-  or any XML document in general
+  compiler that uses a custom XML dialect to store metadata
+  together with pages, instead of front matter,
+  and supports OCaml plugin loading via dynlink
   
 - {{:https://github.com/Armael/stone} Stone} is a static
   website generator: it takes a template, a css stylesheet, the
@@ -57,8 +58,9 @@ not usable for anyone but me, so here are some alternatives.
   tools for building smaller, greener, less resource intensive and
   more accessible website and blogs inspired by Low Tech Magazine
   
-- {{:https://soupault.app/} Soupault} is a tool that helps you create
-  and manage static websites
+- {{:https://soupault.app/} Soupault} is a static website generator
+  and postprocessor that is based on HTML element tree rewriting
+  and provides a DOM-like API to Lua plugins.
 
 If for some obscure reason you would like to be included in this
 list...  {{:https://github.com/xhtmlboi/yocaml/issues} drop me a line}
