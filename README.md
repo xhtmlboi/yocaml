@@ -27,7 +27,7 @@ opam pin add yocaml git+ssh://git@github.com/xhtmlboi/yocaml.git
 opam pin add yocaml_unix git+ssh://git@github.com/xhtmlboi/yocaml.git
 ```
 
-And in the `dune`` file of your executable:
+And in the `dune` file of your executable:
 
 ```common-lisp
 (executable
