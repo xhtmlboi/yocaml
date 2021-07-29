@@ -5,7 +5,9 @@ let track_binary_update = Build.watch Sys.argv.(0)
 
 let may_process_markdown file =
   let open Build in
-  if with_extension "md" file then snd process_markdown else arrow Fun.id
+  if with_extension "md" file
+  then Yocaml_markdown.content_to_html ()
+  else arrow Fun.id
 ;;
 
 let task =

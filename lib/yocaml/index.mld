@@ -35,8 +35,25 @@ moment I'm quite happy with it.
 
 {1 Full Documentation}
 
-- The full API can be {{:Yocaml/index.html} found here}
-- The Unix Runtime can be {{:../yocaml_unix/index.html} found here}
+The full API can be {{:Yocaml/index.html} found here}
+
+{2 Runtimes}
+
+A runtime describes the set of "low-level" primitives to operate in a specific
+context. This separation allows to have a pure and platform agnostic kernel (the
+[Yocaml] module) and to define specific runtimes as needed. Currently, there is
+only a UNIX runtime.
+
+- {{:../yocaml_unix/index.html} Yocaml_unix} An UNIX Runtime for YOCaml
+
+{2 Plugins}
+
+Plugins are wrappers on top of popular libraries from the OCaml community in
+order to keep the core (the [Yocaml] module) as small as possible and with the
+least amount of dependencies.
+
+- {{:../yocaml_markdown/index.html} Yocaml_markdown} Render Markdown String to
+  HTML String using {{:https://github.com/ocaml/omd} omd}
 
 {1 Alternatives}
 
@@ -482,22 +499,45 @@ description are optional!
 Writing HTML by hand can be tiring, and one often wishes one could write a document
 in a slightly less verbose format like Markdown or Org!
 
-The modification of the generator is quite simple because the
-{!val:Yocaml.Build.process_markdown} function already transforms a
-text document (in Markdown) into an HTML document (using the
-{{:https://github.com/ocaml/omd} omd} library).
+The modification of the generator is quite simple because there is a library
+ {{:../yocaml_markdown/index.html} Yocaml_markdown} (which relies on
+ {{:https://github.com/ocaml/omd} omd}) that offers two arrows for rendering
+ Markdown into HTML:
+
+- [Yocaml_markdown.to_html] which is an arrow of type [(string, string)
+  Build.t], in other words, it takes a string and turns it into a parsed string
+  - [Yocaml_markdown.content_to_html] which is a function of type [unit -> ('a'
+  * string, 'a * string) Build.t], as it is very common to read the content of a
+  file and its metadata represented as a [metadata * file_content] pair, the
+  function returns an arrow that acts on the second element of the pair.
+  ([Yocaml_markdown.content_to_html ()] is equivalent to [Build.snd
+  Yocaml_markdown.to_html]).
+
+So we have to patch our [dune] file in order to take advantage of
+[Yocaml_markdown]:
+
+{[
+(executable
+ (name my_site)
+ (promote (until-clean))
+ (libraries yocaml yocaml_markdown yocaml_unix))
+]}
+
 
 So rather than only browsing the files that have the extension, we will browse
 the files that have the extension [md] and [html] then, once we have read the
 file and its metadata, if the file has the extension [md] we will apply the
-arrow [process_markdown] on the second member of the pair
-(the content and not the metadata) otherwise we do nothing...
-that is to say the application of the identity function:
+arrow [Yocaml_markdown.to_html] on the second member of the pair (the content
+and not the metadata), so we can use [Yocaml_markdown.content_to_html ()]
+otherwise we do nothing... that is to say the application of the identity
+function:
 
 {[
 let may_process_markdown file =
   let open Build in
-  if with_extension "md" file then snd process_markdown else arrow Fun.id
+  if with_extension "md" file then
+     Yocaml_markdown.content_to_html ()
+  else arrow Fun.id
 ;;
 ]}
 
@@ -554,14 +594,16 @@ css/
 The page generator will not change because its behaviour does not change:
 
 {[
-open YOCaml
+open Yocaml
 
 let destination = "_build"
 let track_binary_update = Build.watch Sys.argv.(0)
 
 let may_process_markdown file =
   let open Build in
-  if with_extension "md" file then snd process_markdown else arrow Fun.id
+  if with_extension "md" file then
+    Yocaml_markdown.content_to_html ()
+  else arrow Fun.id
 ;;
 
 let pages =
@@ -687,7 +729,7 @@ let articles =
         target
         (track_binary_update
         >>> read_file_with_metadata (module Metadata.Article) file
-        >>> snd process_markdown
+        >>> Yocaml_markdown.content_to_html ()
         >>> apply_as_template
               (module Metadata.Article)
               "templates/article.html"
@@ -776,7 +818,7 @@ let index =
     (into destination "index.html")
     (track_binary_update
     >>> read_file_with_metadata (module Metadata.Page) "index.md"
-    >>> snd process_markdown
+    >>> Yocaml_markdown.content_to_html ()
     >>> articles
     >>> apply_as_template (module Metadata.Articles) "templates/list.html"
     >>> apply_as_template (module Metadata.Articles) "templates/layout.html"
