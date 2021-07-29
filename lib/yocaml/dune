@@ -2,7 +2,7 @@
  (name yocaml)
  (public_name yocaml)
  (modules_without_implementation aliases)
- (libraries omd mustache yaml preface))
+ (libraries mustache yaml preface))
 
 (documentation
  (package yocaml))

@@ -55,10 +55,6 @@ val concat_files
   -> filepath
   -> (unit, string) t
 
-(** Process a string as a Markdown document. The markdown generation uses the
-    excellent {{:https://github.com/ocaml/omd} OMD} library. *)
-val process_markdown : (string, string) t
-
 (** Read a file and parse metadata in the header. If the metadata is invalid,
     the arrow will throw an error. The Arrow uses
     {{:https://github.com/avsm/ocaml-yaml} ocaml-yaml} for defining metadata.

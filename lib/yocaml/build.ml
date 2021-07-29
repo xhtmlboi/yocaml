@@ -122,11 +122,6 @@ let copy_file ?new_name path ~into =
   create_file destination $ read_file path
 ;;
 
-let process_markdown =
-  let open Preface.Fun in
-  arrow $ Omd.to_html % Omd.of_string
-;;
-
 let pipe_content ?(separator = "\n") path =
   let open Preface in
   let c (x, y) = x ^ separator ^ y in
