@@ -1,16 +1,5 @@
 open Yocaml
-
-let opt_validate_testable upp ueq =
-  let open Validate in
-  Alcotest.testable
-    (pp $ Preface.Option.pp upp)
-    (equal $ Preface.Option.equal ueq)
-;;
-
-let validate_testable upp ueq =
-  let open Validate in
-  Alcotest.testable (pp upp) (equal ueq)
-;;
+open Common_test
 
 let page_testable = Alcotest.testable Metadata.Page.pp Metadata.Page.equal
 
