@@ -1,5 +1,6 @@
 type t =
   | List of t Preface.Nonempty_list.t
+  | Labelled_list of string * t Preface.Nonempty_list.t
   | Unix of Unix.error * string * string
   | Unreadable_file of string
   | Missing_field of string
@@ -30,6 +31,8 @@ let rec pp formater error =
   | Invalid_date str -> ppf "Invalid_date (%s)" str
   | List nonempty_list ->
     ppf "List (%a)" (Preface.Nonempty_list.pp pp) nonempty_list
+  | Labelled_list (message, nonempty_list) ->
+    ppf "List: %s (%a)" message (Preface.Nonempty_list.pp pp) nonempty_list
 ;;
 
 let to_string = Format.asprintf "%a" pp

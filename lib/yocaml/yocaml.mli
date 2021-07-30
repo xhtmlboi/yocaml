@@ -55,6 +55,8 @@ module Lexicon = Lexicon
 module Aliases = Aliases
 module Util = Util
 module Metadata = Metadata
+module Key_value = Key_value
+module Template = Template
 
 (** {1 Included general stuff}
 

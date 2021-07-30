@@ -12,6 +12,7 @@ type t =
   | List of t Preface.Nonempty_list.t
       (** Groups several errors into one (mainly to ensure conversions between
           [Try] and [Validate]). *)
+  | Labelled_list of string * t Preface.Nonempty_list.t
   | Unix of Unix.error * string * string (** Unix related error. *)
   | Unreadable_file of string (** When a file is unreadable. *)
   | Missing_field of string
