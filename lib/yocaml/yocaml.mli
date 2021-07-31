@@ -38,6 +38,19 @@ module Error = Error
 module Try = Try
 module Validate = Validate
 
+(** {1 Metadata}
+
+    When we generate pages statically, we often want to be able to attach
+    metadata to them to give the documents more context. *)
+
+module Metadata = Metadata
+
+(** This module describes operations to query key-value objects abstractly.
+    The [Yocaml_yaml] plugin is an example implementation of this protocol.
+    (Or more precisely the module {!module:Yocaml.Key_value.Jsonm_object}). *)
+
+module Key_value = Key_value
+
 (** {1 Runtime}
 
     A YOCaml program is a pure application that has, a priori, no dependence
@@ -54,9 +67,6 @@ module Runtime = Runtime
 module Lexicon = Lexicon
 module Aliases = Aliases
 module Util = Util
-module Metadata = Metadata
-module Key_value = Key_value
-module Template = Template
 
 (** {1 Included general stuff}
 
