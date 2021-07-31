@@ -1,8 +1,12 @@
+(** A Wrapper around {{:https://github.com/avsm/ocaml-yaml} ocaml-yaml}.
+
+    This module can act as a provider to read the metadata of a file being
+    written in Yaml. *)
+
 (** {1 Build additions} *)
 
-(** Read a file and parse metadata in the header. If the metadata is invalid,
-    the arrow will throw an error. The Arrow uses
-    {{:https://github.com/avsm/ocaml-yaml} ocaml-yaml}. *)
+(** Read a file and parse metadata desribed in Yaml in the header. If the
+    metadata is invalid, the arrow will throw an error. *)
 val read_file_with_metadata
   :  (module Yocaml.Metadata.PARSABLE with type t = 'a)
   -> Yocaml.Aliases.filepath

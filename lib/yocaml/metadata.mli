@@ -9,8 +9,6 @@
     decided to rely mainly on two libraries for parsing and metadata
     injection.
 
-    - {{:https://github.com/avsm/ocaml-yaml} ocaml-yaml} for the
-      metadata-description in a relatively readable format.
     - {{:https://github.com/rgrinberg/ocaml-mustache} ocaml-mustache} for data
       injection in a template. *)
 
