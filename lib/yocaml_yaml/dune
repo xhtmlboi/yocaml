@@ -1,0 +1,7 @@
+(library
+ (name yocaml_yaml)
+ (public_name yocaml_yaml)
+ (libraries yocaml yaml preface))
+
+(documentation
+ (package yocaml_yaml))

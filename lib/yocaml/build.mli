@@ -56,11 +56,13 @@ val concat_files
   -> (unit, string) t
 
 (** Read a file and parse metadata in the header. If the metadata is invalid,
-    the arrow will throw an error. The Arrow uses
-    {{:https://github.com/avsm/ocaml-yaml} ocaml-yaml} for defining metadata.
-    See {!module:Metadata}. *)
+    the arrow will throw an error. The first module defines how to go from
+    string to structured object (for example the module [Yocaml_yaml] which
+    process Yaml) and the second one describes the parsed metadata (see:
+    {!module:Metadata}). *)
 val read_file_with_metadata
-  :  (module Metadata.PARSABLE with type t = 'a)
+  :  (module Metadata.PROVIDER)
+  -> (module Metadata.PARSABLE with type t = 'a)
   -> filepath
   -> (unit, 'a * string) t
 

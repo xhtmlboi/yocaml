@@ -134,12 +134,14 @@ let concat_files ?separator first_file second_file =
 
 let read_file_with_metadata
     (type a)
+    (module P : Metadata.PROVIDER)
     (module M : Metadata.PARSABLE with type t = a)
     path
   =
   let open Preface.Fun in
   read_file path
-  >>^ Preface.Pair.Bifunctor.map_fst M.from_string % split_metadata
+  >>^ Preface.Pair.Bifunctor.map_fst (M.from_string (module P))
+      % split_metadata
   >>^ (fun (m, c) -> Validate.Monad.(m >|= flip Preface.Pair.( & ) c))
   >>> failable_task (function
           | Preface.Validation.Valid x -> Effect.return x

@@ -45,77 +45,74 @@ module type KEY_VALUE_OBJECT = sig
 end
 
 module type KEY_VALUE_VALIDATOR = sig
-  module KV : KEY_VALUE_OBJECT
+  type t
 
-  val object_ : KV.t -> (string * KV.t) list Validate.t
-  val list : KV.t -> KV.t list Validate.t
-  val atom : KV.t -> string Validate.t
-  val string : KV.t -> string Validate.t
-  val boolean : KV.t -> bool Validate.t
-  val integer : KV.t -> int Validate.t
-  val float : KV.t -> float Validate.t
-  val text : KV.t -> string Validate.t
-
-  val object_and
-    :  ((string * KV.t) list -> 'a Validate.t)
-    -> KV.t
-    -> 'a Validate.t
-
-  val list_and : (KV.t list -> 'a Validate.t) -> KV.t -> 'a Validate.t
-  val list_of : (KV.t -> 'a Validate.t) -> KV.t -> 'a list Validate.t
-  val atom_and : (string -> 'a Validate.t) -> KV.t -> 'a Validate.t
-  val string_and : (string -> 'a Validate.t) -> KV.t -> 'a Validate.t
-  val boolean_and : (bool -> 'a Validate.t) -> KV.t -> 'a Validate.t
-  val integer_and : (int -> 'a Validate.t) -> KV.t -> 'a Validate.t
-  val float_and : (float -> 'a Validate.t) -> KV.t -> 'a Validate.t
-  val text_and : (string -> 'a Validate.t) -> KV.t -> 'a Validate.t
+  val object_ : t -> (string * t) list Validate.t
+  val list : t -> t list Validate.t
+  val atom : t -> string Validate.t
+  val string : t -> string Validate.t
+  val boolean : t -> bool Validate.t
+  val integer : t -> int Validate.t
+  val float : t -> float Validate.t
+  val text : t -> string Validate.t
+  val object_and : ((string * t) list -> 'a Validate.t) -> t -> 'a Validate.t
+  val list_and : (t list -> 'a Validate.t) -> t -> 'a Validate.t
+  val list_of : (t -> 'a Validate.t) -> t -> 'a list Validate.t
+  val atom_and : (string -> 'a Validate.t) -> t -> 'a Validate.t
+  val string_and : (string -> 'a Validate.t) -> t -> 'a Validate.t
+  val boolean_and : (bool -> 'a Validate.t) -> t -> 'a Validate.t
+  val integer_and : (int -> 'a Validate.t) -> t -> 'a Validate.t
+  val float_and : (float -> 'a Validate.t) -> t -> 'a Validate.t
+  val text_and : (string -> 'a Validate.t) -> t -> 'a Validate.t
 
   val optional_field
     :  ?case_sensitive:bool
-    -> (KV.t -> 'a Validate.t)
+    -> (t -> 'a Validate.t)
     -> string
-    -> KV.t
+    -> t
     -> 'a option Validate.t
 
   val optional_field_or
     :  ?case_sensitive:bool
     -> default:'a
-    -> (KV.t -> 'a Validate.t)
+    -> (t -> 'a Validate.t)
     -> string
-    -> KV.t
+    -> t
     -> 'a Validate.t
 
   val required_field
     :  ?case_sensitive:bool
-    -> (KV.t -> 'a Validate.t)
+    -> (t -> 'a Validate.t)
     -> string
-    -> KV.t
+    -> t
     -> 'a Validate.t
 
   val optional_assoc
     :  ?case_sensitive:bool
-    -> (KV.t -> 'a Validate.t)
+    -> (t -> 'a Validate.t)
     -> string
-    -> (string * KV.t) list
+    -> (string * t) list
     -> 'a option Validate.t
 
   val optional_assoc_or
     :  ?case_sensitive:bool
     -> default:'a
-    -> (KV.t -> 'a Validate.t)
+    -> (t -> 'a Validate.t)
     -> string
-    -> (string * KV.t) list
+    -> (string * t) list
     -> 'a Validate.t
 
   val required_assoc
     :  ?case_sensitive:bool
-    -> (KV.t -> 'a Validate.t)
+    -> (t -> 'a Validate.t)
     -> string
-    -> (string * KV.t) list
+    -> (string * t) list
     -> 'a Validate.t
 end
 
 module Make_key_value_validator (KV : KEY_VALUE_OBJECT) = struct
+  type t = KV.t
+
   let object_and additional_validator =
     KV.as_object additional_validator (fun () ->
         Validate.error $ Error.Invalid_field "Object expected")
