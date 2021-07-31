@@ -22,7 +22,7 @@ let capture_base_metadata_valid1 =
   let obj =
     Preface.Pair.fst
     $ split_metadata {|My article|}
-    |> Metadata.Page.from_string
+    |> Metadata.Page.from_string (module Yocaml_yaml)
   in
   check
   $ opt_validate_testable Format.pp_print_string String.equal
@@ -40,7 +40,7 @@ let capture_base_metadata_valid2 =
     $ split_metadata {|---
 other_deps: foo
 ---My article|}
-    |> Metadata.Page.from_string
+    |> Metadata.Page.from_string (module Yocaml_yaml)
   in
   check
   $ opt_validate_testable Format.pp_print_string String.equal
@@ -58,7 +58,7 @@ let capture_base_metadata_valid3 =
     $ split_metadata {|---
 other_deps: foo bar
 ---My article|}
-    |> Metadata.Page.from_string
+    |> Metadata.Page.from_string (module Yocaml_yaml)
   in
   check
   $ opt_validate_testable Format.pp_print_string String.equal
@@ -76,7 +76,7 @@ let capture_base_metadata_valid4 =
     $ split_metadata {|---
 My superb article
 ---My article|}
-    |> Metadata.Page.from_string
+    |> Metadata.Page.from_string (module Yocaml_yaml)
   in
   check
     valid_page_testable
@@ -94,7 +94,7 @@ let capture_base_metadata_valid5 =
     $ split_metadata {|---
 title: My superb article
 ---My article|}
-    |> Metadata.Page.from_string
+    |> Metadata.Page.from_string (module Yocaml_yaml)
   in
   check
   $ opt_validate_testable Format.pp_print_string String.equal
@@ -110,7 +110,7 @@ let capture_article_metadata_invalid1 =
   let obj =
     Preface.Pair.fst
     $ split_metadata {|My article|}
-    |> Metadata.Article.from_string
+    |> Metadata.Article.from_string (module Yocaml_yaml)
   in
   check
   $ opt_validate_testable Format.pp_print_string String.equal
@@ -127,7 +127,7 @@ let capture_article_metadata_invalid2 =
     Preface.Pair.fst
     $ split_metadata {|---
 My article|}
-    |> Metadata.Article.from_string
+    |> Metadata.Article.from_string (module Yocaml_yaml)
   in
   check
   $ opt_validate_testable Format.pp_print_string String.equal
@@ -144,13 +144,13 @@ let capture_article_metadata_invalid3 =
     Preface.Pair.fst
     $ split_metadata {|---
 ---My article|}
-    |> Metadata.Article.from_string
+    |> Metadata.Article.from_string (module Yocaml_yaml)
   in
   check
   $ opt_validate_testable Format.pp_print_string String.equal
   $ "should be equal"
   $ Validate.Monad.(obj >|= Metadata.Article.title)
-  $ Error.(to_validate $ Invalid_metadata "Article")
+  $ Error.(to_validate $ Invalid_field "Object expected")
 ;;
 
 let capture_article_metadata_invalid4 =
@@ -162,7 +162,7 @@ let capture_article_metadata_invalid4 =
     $ split_metadata {|---
 article_title: My First Article
 ---My article|}
-    |> Metadata.Article.from_string
+    |> Metadata.Article.from_string (module Yocaml_yaml)
   in
   check
   $ opt_validate_testable Format.pp_print_string String.equal
@@ -188,7 +188,7 @@ article_description:
   interesting, but I don't think so!
 date: 2021-12
 ---My article|}
-    |> Metadata.Article.from_string
+    |> Metadata.Article.from_string (module Yocaml_yaml)
   in
   check
   $ opt_validate_testable Format.pp_print_string String.equal
@@ -213,7 +213,7 @@ article_description:
   interesting, but I don't think so!
 date: 2021-12-03
 ---My article|}
-    |> Metadata.Article.from_string
+    |> Metadata.Article.from_string (module Yocaml_yaml)
   in
   let expected =
     Validate.valid
@@ -248,7 +248,7 @@ article_description:
   interesting, but I don't think so!
 date: 2021-12-03
 ---My article|}
-    |> Metadata.Article.from_string
+    |> Metadata.Article.from_string (module Yocaml_yaml)
   in
   let expected =
     Validate.valid

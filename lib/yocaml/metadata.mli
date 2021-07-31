@@ -35,11 +35,23 @@ end
     Describes a data set that can be parsed from, for example, the metadata of
     a document. Which are usually described using Yaml. *)
 
+(** Describes how to transform and validate strings into structured objects.
+    An example of a Provider is the [Yocaml_yaml] module.*)
+module type PROVIDER = sig
+  type t
+
+  val from_string : string -> t Validate.t
+
+  include Key_value.KEY_VALUE_VALIDATOR with type t := t
+end
+
+(** Describes how to transform data processed by the Provider into a concrete
+    type.*)
 module type PARSABLE = sig
   type t
 
   (** Try to produces a [t] from an optional value. *)
-  val from_string : string option -> t Validate.t
+  val from_string : (module PROVIDER) -> string option -> t Validate.t
 end
 
 (** {1 Utility}
@@ -56,7 +68,7 @@ module Date : sig
   val make : int -> int -> int -> t
   val to_string : t -> string
   val from_string : string -> t Try.t
-  val from_yaml : string -> [> `String of string ] -> t Validate.t
+  val from : (module PROVIDER with type t = 'a) -> 'a -> t Validate.t
   val pp : Format.formatter -> t -> unit
   val equal : t -> t -> bool
   val compare : t -> t -> int

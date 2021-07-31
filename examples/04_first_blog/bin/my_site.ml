@@ -23,7 +23,7 @@ let pages =
       create_file
         target
         (track_binary_update
-        >>> read_file_with_metadata (module Metadata.Page) file
+        >>> Yocaml_yaml.read_file_with_metadata (module Metadata.Page) file
         >>> may_process_markdown file
         >>> apply_as_template (module Metadata.Page) "templates/layout.html"
         >>^ Stdlib.snd))
@@ -41,7 +41,7 @@ let articles =
       create_file
         target
         (track_binary_update
-        >>> read_file_with_metadata (module Metadata.Article) file
+        >>> Yocaml_yaml.read_file_with_metadata (module Metadata.Article) file
         >>> Yocaml_markdown.content_to_html ()
         >>> apply_as_template
               (module Metadata.Article)
@@ -72,7 +72,9 @@ let index =
       (read_child_files "articles/" (with_extension "md"))
       (fun source ->
         track_binary_update
-        >>> read_file_with_metadata (module Metadata.Article) source
+        >>> Yocaml_yaml.read_file_with_metadata
+              (module Metadata.Article)
+              source
         >>^ fun (x, _) -> x, article_destination source)
       (fun x meta content ->
         x
@@ -85,7 +87,7 @@ let index =
   create_file
     (into destination "index.html")
     (track_binary_update
-    >>> read_file_with_metadata (module Metadata.Page) "index.md"
+    >>> Yocaml_yaml.read_file_with_metadata (module Metadata.Page) "index.md"
     >>> Yocaml_markdown.content_to_html ()
     >>> articles
     >>> apply_as_template (module Metadata.Articles) "templates/list.html"

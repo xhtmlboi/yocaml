@@ -93,87 +93,83 @@ end
 
 (** The full API derived by operating a representation. *)
 module type KEY_VALUE_VALIDATOR = sig
-  (** The KEY_VALUE_OBJECT. *)
-  module KV : KEY_VALUE_OBJECT
+  type t
 
   (** {2 Simple validator}
 
-      Each simple validator checks that the element of type [KV.t] given as an
+      Each simple validator checks that the element of type [t] given as an
       argument respects the expected form. *)
 
   (** [object_ term] checks that [term] is an [object] and extract the object
-      as a list of [string * KV.t]. *)
-  val object_ : KV.t -> (string * KV.t) list Validate.t
+      as a list of [string * t]. *)
+  val object_ : t -> (string * t) list Validate.t
 
   (** [list term] checks that [term] is a [list] (and extract it). *)
-  val list : KV.t -> KV.t list Validate.t
+  val list : t -> t list Validate.t
 
   (** [atom term] checks that [term] is an [atom], like atoms in [SEXP] (and
       extract it as [string]). *)
-  val atom : KV.t -> string Validate.t
+  val atom : t -> string Validate.t
 
   (** [string term] checks that [term] is a [string] (and extract it). *)
-  val string : KV.t -> string Validate.t
+  val string : t -> string Validate.t
 
   (** [boolean term] checks that [term] is a [boolean] (and extract it). *)
-  val boolean : KV.t -> bool Validate.t
+  val boolean : t -> bool Validate.t
 
   (** [list term] checks that [term] is an [integer] (and extract it). *)
-  val integer : KV.t -> int Validate.t
+  val integer : t -> int Validate.t
 
   (** [float term] checks that [term] is a [float] (and extract it). *)
-  val float : KV.t -> float Validate.t
+  val float : t -> float Validate.t
 
   (** [text term] checks that [term] is not an [objet] nor a [list] (and
       extract the value as a [string]). *)
-  val text : KV.t -> string Validate.t
+  val text : t -> string Validate.t
 
   (** {2 Composable validator}
 
-      In addition to validating that an element of type [KV.t] has the
-      expected form, a compound validator also applies an additional
-      validation. For example [string_and string_has_length 3] to validate
-      that the element is a string and has a size of 3 (assuming the
-      [string_has_length x] function exists). *)
+      In addition to validating that an element of type [t] has the expected
+      form, a compound validator also applies an additional validation. For
+      example [string_and string_has_length 3] to validate that the element is
+      a string and has a size of 3 (assuming the [string_has_length x]
+      function exists). *)
 
   (** [object_and validator term] checks that [term] is an [object] and valid
       it using [validator]. *)
-  val object_and
-    :  ((string * KV.t) list -> 'a Validate.t)
-    -> KV.t
-    -> 'a Validate.t
+  val object_and : ((string * t) list -> 'a Validate.t) -> t -> 'a Validate.t
 
   (** [list_and validator term] checks that [term] is a [list] and valid it
       using [validator]. *)
-  val list_and : (KV.t list -> 'a Validate.t) -> KV.t -> 'a Validate.t
+  val list_and : (t list -> 'a Validate.t) -> t -> 'a Validate.t
 
   (** [list_of validator term], ie: [list_of int] checks if [term] is a list
       that contains only values that satisfies the given validator. *)
-  val list_of : (KV.t -> 'a Validate.t) -> KV.t -> 'a list Validate.t
+  val list_of : (t -> 'a Validate.t) -> t -> 'a list Validate.t
 
   (** [atom_and validator term] checks that [term] is an [atom] and valid it
       using [validator]. *)
-  val atom_and : (string -> 'a Validate.t) -> KV.t -> 'a Validate.t
+  val atom_and : (string -> 'a Validate.t) -> t -> 'a Validate.t
 
   (** [string_and validator term] checks that [term] is a [string] and valid
       it using [validator]. *)
-  val string_and : (string -> 'a Validate.t) -> KV.t -> 'a Validate.t
+  val string_and : (string -> 'a Validate.t) -> t -> 'a Validate.t
 
   (** [boolean_and validator term] checks that [term] is a [boolean] and valid
       it using [validator]. *)
-  val boolean_and : (bool -> 'a Validate.t) -> KV.t -> 'a Validate.t
+  val boolean_and : (bool -> 'a Validate.t) -> t -> 'a Validate.t
 
   (** [interger_and validator term] checks that [term] is an [integer] and
       valid it using [validator]. *)
-  val integer_and : (int -> 'a Validate.t) -> KV.t -> 'a Validate.t
+  val integer_and : (int -> 'a Validate.t) -> t -> 'a Validate.t
 
   (** [float_and validator term] checks that [term] is a [float] and valid it
       using [validator]. *)
-  val float_and : (float -> 'a Validate.t) -> KV.t -> 'a Validate.t
+  val float_and : (float -> 'a Validate.t) -> t -> 'a Validate.t
 
   (** [text_and validator term] checks that [term] is a [text] and valid it
       using [validator]. *)
-  val text_and : (string -> 'a Validate.t) -> KV.t -> 'a Validate.t
+  val text_and : (string -> 'a Validate.t) -> t -> 'a Validate.t
 
   (** {2 Queries over objects}
 
@@ -189,9 +185,9 @@ module type KEY_VALUE_VALIDATOR = sig
       ([case_sensitive] act on the [key] and is [false] by default) *)
   val optional_field
     :  ?case_sensitive:bool
-    -> (KV.t -> 'a Validate.t)
+    -> (t -> 'a Validate.t)
     -> string
-    -> KV.t
+    -> t
     -> 'a option Validate.t
 
   (** [optional_field_or ?case_sensitive ~default validator key term] same of
@@ -201,18 +197,18 @@ module type KEY_VALUE_VALIDATOR = sig
   val optional_field_or
     :  ?case_sensitive:bool
     -> default:'a
-    -> (KV.t -> 'a Validate.t)
+    -> (t -> 'a Validate.t)
     -> string
-    -> KV.t
+    -> t
     -> 'a Validate.t
 
   (** [required_field] is like [optional_field] except that the association
       must exist, otherwise the check fails.*)
   val required_field
     :  ?case_sensitive:bool
-    -> (KV.t -> 'a Validate.t)
+    -> (t -> 'a Validate.t)
     -> string
-    -> KV.t
+    -> t
     -> 'a Validate.t
 
   (** {3 Example}
@@ -277,26 +273,26 @@ module type KEY_VALUE_VALIDATOR = sig
   (** Same of [optional_field] but acting on associatives lists. *)
   val optional_assoc
     :  ?case_sensitive:bool
-    -> (KV.t -> 'a Validate.t)
+    -> (t -> 'a Validate.t)
     -> string
-    -> (string * KV.t) list
+    -> (string * t) list
     -> 'a option Validate.t
 
   (** Same of [optional_field_or] but acting on associatives lists. *)
   val optional_assoc_or
     :  ?case_sensitive:bool
     -> default:'a
-    -> (KV.t -> 'a Validate.t)
+    -> (t -> 'a Validate.t)
     -> string
-    -> (string * KV.t) list
+    -> (string * t) list
     -> 'a Validate.t
 
   (** Same of [required_field] but acting on associatives lists. *)
   val required_assoc
     :  ?case_sensitive:bool
-    -> (KV.t -> 'a Validate.t)
+    -> (t -> 'a Validate.t)
     -> string
-    -> (string * KV.t) list
+    -> (string * t) list
     -> 'a Validate.t
 end
 
@@ -306,7 +302,7 @@ end
     to a module with type {!module-type:KEY_VALUE_VALIDATOR}. *)
 
 module Make_key_value_validator (KV : KEY_VALUE_OBJECT) :
-  KEY_VALUE_VALIDATOR with module KV := KV
+  KEY_VALUE_VALIDATOR with type t = KV.t
 
 (** {1 Jsonm}
 
@@ -335,4 +331,4 @@ end
 
 (** {2 Validators} *)
 
-module Jsonm_validator : KEY_VALUE_VALIDATOR with module KV := Jsonm_object
+module Jsonm_validator : KEY_VALUE_VALIDATOR with type t = Jsonm_object.t

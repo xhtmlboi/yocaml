@@ -1,8 +1,11 @@
 opam-version: "2.0"
 version: "dev"
-synopsis: "YOCaml It is a static site generator, mostly written in OCaml"
+synopsis: "Deal with Yaml in YOCaml"
 maintainer: "xhtmlboi@gmail.com"
-authors: [ "The XHTMLBoy <xhtmlboi@gmail.com>" ]
+authors: [
+  "The XHTMLBoy <xhtmlboi@gmail.com>"
+  "Pierre Ruyter <grimfw@gmail.com>"
+]
 
 build: [
   [ "dune" "subst" ]
@@ -16,16 +19,15 @@ tags: [ "shell" "bin" "make" "static" "blog" "generator" ]
 homepage: "https://github.com/xhtmlboi/yocaml"
 dev-repo: "git://github.com/xhtmlboi/yocaml.git"
 bug-reports: "https://github.com/xhtmlboi/yocaml/issues"
-    
+
 depends: [
   "ocaml" { >= "4.11.1" }
   "dune" { >= "2.8" }
   "odoc" {with-doc}
-  "alcotest" {with-test}
-  "preface" {pinned}
-  "mustache"
+  "yocaml"
+  "yaml" { >= "2.1.0" }
 ]
 
 pin-depends: [
-  ["preface.dev" "git+https://github.com/xvw/preface.git"]
+  ["preface.dev" "git+ssh://git@github.com/xvw/preface.git"]
 ]
