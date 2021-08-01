@@ -29,5 +29,5 @@ depends: [
 ]
 
 pin-depends: [
-  ["preface.dev" "git+ssh://git@github.com/xvw/preface.git"]
+  ["preface.dev" "git+https://github.com/xvw/preface.git"]
 ]
