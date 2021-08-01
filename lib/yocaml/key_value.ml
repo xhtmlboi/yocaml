@@ -32,7 +32,7 @@ let hook_on_invalid_mono_list =
 
 module L = Preface.List.Applicative.Traversable (Validate.Applicative)
 
-module type KEY_VALUE_OBJECT = sig
+module type VALIDABLE = sig
   type t
 
   val as_object : (t, (string * t) list, 'a) visitor
@@ -44,7 +44,7 @@ module type KEY_VALUE_OBJECT = sig
   val as_float : (t, float, 'a) visitor
 end
 
-module type KEY_VALUE_VALIDATOR = sig
+module type VALIDATOR = sig
   type t
 
   val object_ : t -> (string * t) list Validate.t
@@ -110,7 +110,7 @@ module type KEY_VALUE_VALIDATOR = sig
     -> 'a Validate.t
 end
 
-module Make_key_value_validator (KV : KEY_VALUE_OBJECT) = struct
+module Make_validator (KV : VALIDABLE) = struct
   type t = KV.t
 
   let object_and additional_validator =
@@ -281,4 +281,4 @@ module Jsonm_object = struct
   ;;
 end
 
-module Jsonm_validator = Make_key_value_validator (Jsonm_object)
+module Jsonm_validator = Make_validator (Jsonm_object)

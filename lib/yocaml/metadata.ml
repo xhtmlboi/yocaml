@@ -6,18 +6,18 @@ module type INJECTABLE = sig
   val to_mustache : t -> (string * Mustache.Json.value) list
 end
 
-module type PROVIDER = sig
+module type VALIDABLE = sig
   type t
 
   val from_string : string -> t Validate.t
 
-  include Key_value.KEY_VALUE_VALIDATOR with type t := t
+  include Key_value.VALIDATOR with type t := t
 end
 
-module type PARSABLE = sig
+module type READABLE = sig
   type t
 
-  val from_string : (module PROVIDER) -> string option -> t Validate.t
+  val from_string : (module VALIDABLE) -> string option -> t Validate.t
 end
 
 module Date = struct
@@ -42,7 +42,7 @@ module Date = struct
     | _ -> Error.(to_try $ Invalid_date str)
   ;;
 
-  let from (type a) (module V : PROVIDER with type t = a) obj =
+  let from (type a) (module V : VALIDABLE with type t = a) obj =
     let open Validate.Monad in
     let open Preface.Fun.Infix in
     V.string obj >>= Try.to_validate % from_string
@@ -73,7 +73,7 @@ module Page = struct
     ]
   ;;
 
-  let from_string (module V : PROVIDER) = function
+  let from_string (module V : VALIDABLE) = function
     | None -> Validate.valid $ make None None
     | Some str ->
       let open Validate.Monad in
@@ -130,8 +130,8 @@ module Article = struct
     }
   ;;
 
-  let from_string (module V : PROVIDER) = function
-    | None -> Validate.error $ Error.Invalid_metadata "Article"
+  let from_string (module V : VALIDABLE) = function
+    | None -> Validate.error $ Error.Required_metadata [ "Article" ]
     | Some str ->
       let open Validate.Monad in
       V.from_string str
