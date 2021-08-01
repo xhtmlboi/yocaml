@@ -21,8 +21,8 @@ type ('a, 'b, 'c) visitor = ('b -> 'c) -> (unit -> 'c) -> 'a -> 'c
 (** {2 The set of visitors for a key-value structurable object} *)
 
 (** Creating a set of validators for a key-value structure only involves
-    implementing the {!module-type:KEY_VALUE_OBJECT} module. *)
-module type KEY_VALUE_OBJECT = sig
+    implementing the {!module-type:VALIDABLE} module. *)
+module type VALIDABLE = sig
   (** {2 Types} *)
 
   (** The type describing the key-value data structure. *)
@@ -89,10 +89,10 @@ end
 (** {1 Description of a set of validation rules}
 
     If we have a representation of a key-value object
-    ({!module-type:KEY_VALUE_OBJECT}) we can derive the API of its validator. *)
+    ({!module-type:VALIDABLE}) we can derive the API of its validator. *)
 
 (** The full API derived by operating a representation. *)
-module type KEY_VALUE_VALIDATOR = sig
+module type VALIDATOR = sig
   type t
 
   (** {2 Simple validator}
@@ -298,11 +298,10 @@ end
 
 (** {2 Producing a concrete module of validation rules}
 
-    Produces a module from a module with type {!module-type:KEY_VALUE_OBJECT}
-    to a module with type {!module-type:KEY_VALUE_VALIDATOR}. *)
+    Produces a module from a module with type {!module-type:VALIDABLE} to a
+    module with type {!module-type:VALIDATOR}. *)
 
-module Make_key_value_validator (KV : KEY_VALUE_OBJECT) :
-  KEY_VALUE_VALIDATOR with type t = KV.t
+module Make_validator (KV : VALIDABLE) : VALIDATOR with type t = KV.t
 
 (** {1 Jsonm}
 
@@ -326,9 +325,9 @@ module Jsonm_object : sig
     | `O of (string * t) list
     ]
 
-  include KEY_VALUE_OBJECT with type t := t
+  include VALIDABLE with type t := t
 end
 
 (** {2 Validators} *)
 
-module Jsonm_validator : KEY_VALUE_VALIDATOR with type t = Jsonm_object.t
+module Jsonm_validator : VALIDATOR with type t = Jsonm_object.t

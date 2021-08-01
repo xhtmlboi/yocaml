@@ -61,8 +61,8 @@ val concat_files
     process Yaml) and the second one describes the parsed metadata (see:
     {!module:Metadata}). *)
 val read_file_with_metadata
-  :  (module Metadata.PROVIDER)
-  -> (module Metadata.PARSABLE with type t = 'a)
+  :  (module Metadata.VALIDABLE)
+  -> (module Metadata.READABLE with type t = 'a)
   -> filepath
   -> (unit, 'a * string) t
 

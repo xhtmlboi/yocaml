@@ -116,7 +116,7 @@ let capture_article_metadata_invalid1 =
   $ opt_validate_testable Format.pp_print_string String.equal
   $ "should be equal"
   $ Validate.Monad.(obj >|= Metadata.Article.title)
-  $ Error.(to_validate $ Invalid_metadata "Article")
+  $ Error.(to_validate $ Required_metadata [ "Article" ])
 ;;
 
 let capture_article_metadata_invalid2 =
@@ -133,7 +133,7 @@ My article|}
   $ opt_validate_testable Format.pp_print_string String.equal
   $ "should be equal"
   $ Validate.Monad.(obj >|= Metadata.Article.title)
-  $ Error.(to_validate $ Invalid_metadata "Article")
+  $ Error.(to_validate $ Required_metadata [ "Article" ])
 ;;
 
 let capture_article_metadata_invalid3 =
