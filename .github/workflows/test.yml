@@ -37,6 +37,8 @@ jobs:
 
       - run: opam install . --deps-only --with-test
 
+      - run: opam install preface
+
       - run: opam exec -- dune build
 
       - run: opam exec -- dune runtest
