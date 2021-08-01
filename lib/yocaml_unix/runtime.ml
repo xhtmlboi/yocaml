@@ -9,7 +9,8 @@ let get_modification_time path =
     let s = stat path in
     Yocaml.Try.ok $ int_of_float s.st_mtime
   with
-  | Unix_error (err, f, p) -> Yocaml.Error.(to_try (Unix (err, f, p)))
+  | Unix_error (err, f, p) ->
+    Yocaml.Error.(to_try (Unix (Unix.error_message err, f, p)))
 ;;
 
 let bytes_of_in_channel channel =

@@ -2,23 +2,13 @@
 
 (** Adding metadata that could be added dynamically to a template, during the
     generation of a page for example, is a step forward in the ergonomics of
-    the blog! And yes, it avoids having to define a template per article.
-
-    Even if my goal was to remain as agnostic as possible, I find it quite
-    useful to have the necessary tools to bootstrap a blog quickly. So I
-    decided to rely mainly on two libraries for parsing and metadata
-    injection.
-
-    - {{:https://github.com/avsm/ocaml-yaml} ocaml-yaml} for the
-      metadata-description in a relatively readable format.
-    - {{:https://github.com/rgrinberg/ocaml-mustache} ocaml-mustache} for data
-      injection in a template. *)
+    the blog! And yes, it avoids having to define a template per article. *)
 
 (** {1 Metadata description}
 
     Minimum interfaces for describing metadata sets. *)
 
-(** {2 Injectable}
+(** {2 Injectable metadata}
 
     Describes a data set that can be injected, for example into a template.
     (Currently, the injection process relay on Mustache) *)
@@ -30,16 +20,27 @@ module type INJECTABLE = sig
   val to_mustache : t -> (string * Mustache.Json.value) list
 end
 
-(** {2 Parsable}
+(** {2 Readable metadata}
 
-    Describes a data set that can be parsed from, for example, the metadata of
-    a document. Which are usually described using Yaml. *)
+    A document can be decorated with metadata that can be read and validated. *)
 
-module type PARSABLE = sig
+(** Describes how to transform and validate strings into structured objects.
+    An example of a Validable is the [Yocaml_yaml] module.*)
+module type VALIDABLE = sig
+  type t
+
+  val from_string : string -> t Validate.t
+
+  include Key_value.VALIDATOR with type t := t
+end
+
+(** Describes how to transform data processed by the Validable into a concrete
+    type using validation functions from [VALIDABLE]. *)
+module type READABLE = sig
   type t
 
   (** Try to produces a [t] from an optional value. *)
-  val from_string : string option -> t Validate.t
+  val from_string : (module VALIDABLE) -> string option -> t Validate.t
 end
 
 (** {1 Utility}
@@ -56,7 +57,7 @@ module Date : sig
   val make : int -> int -> int -> t
   val to_string : t -> string
   val from_string : string -> t Try.t
-  val from_yaml : string -> [> `String of string ] -> t Validate.t
+  val from : (module VALIDABLE with type t = 'a) -> 'a -> t Validate.t
   val pp : Format.formatter -> t -> unit
   val equal : t -> t -> bool
   val compare : t -> t -> int
@@ -75,7 +76,7 @@ end
 
 module Page : sig
   include INJECTABLE
-  include PARSABLE with type t := t
+  include READABLE with type t := t
 
   val make : string option -> string option -> t
   val title : t -> string option
@@ -95,7 +96,7 @@ end
 
 module Article : sig
   include INJECTABLE
-  include PARSABLE with type t := t
+  include READABLE with type t := t
 
   val make
     :  string

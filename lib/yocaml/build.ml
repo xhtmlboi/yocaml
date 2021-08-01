@@ -122,11 +122,6 @@ let copy_file ?new_name path ~into =
   create_file destination $ read_file path
 ;;
 
-let process_markdown =
-  let open Preface.Fun in
-  arrow $ Omd.to_html % Omd.of_string
-;;
-
 let pipe_content ?(separator = "\n") path =
   let open Preface in
   let c (x, y) = x ^ separator ^ y in
@@ -139,12 +134,14 @@ let concat_files ?separator first_file second_file =
 
 let read_file_with_metadata
     (type a)
-    (module M : Metadata.PARSABLE with type t = a)
+    (module V : Metadata.VALIDABLE)
+    (module R : Metadata.READABLE with type t = a)
     path
   =
   let open Preface.Fun in
   read_file path
-  >>^ Preface.Pair.Bifunctor.map_fst M.from_string % split_metadata
+  >>^ Preface.Pair.Bifunctor.map_fst (R.from_string (module V))
+      % split_metadata
   >>^ (fun (m, c) -> Validate.Monad.(m >|= flip Preface.Pair.( & ) c))
   >>> failable_task (function
           | Preface.Validation.Valid x -> Effect.return x

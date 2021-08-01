@@ -9,5 +9,6 @@ module Lexicon = Lexicon
 module Aliases = Aliases
 module Util = Util
 module Metadata = Metadata
+module Key_value = Key_value
 include Util
 include Effect

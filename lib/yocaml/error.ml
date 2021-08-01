@@ -1,6 +1,7 @@
 type t =
   | List of t Preface.Nonempty_list.t
-  | Unix of Unix.error * string * string
+  | Labelled_list of string * t Preface.Nonempty_list.t
+  | Unix of string * string * string
   | Unreadable_file of string
   | Missing_field of string
   | Invalid_field of string
@@ -17,8 +18,7 @@ let rec pp formater error =
   let ppf x = Format.fprintf formater x in
   match error with
   | Unknown message -> ppf "Unknown (%s)" message
-  | Unix (error, fname, arg) ->
-    ppf "Unix (%s, %s, %s)" (Unix.error_message error) fname arg
+  | Unix (error, fname, arg) -> ppf "Unix (%s, %s, %s)" error fname arg
   | Unreadable_file filename -> ppf "Unreadable_file (%s)" filename
   | Missing_field field -> ppf "Missing_field (%s)" field
   | Invalid_field field -> ppf "Invalid_field (%s)" field
@@ -30,6 +30,8 @@ let rec pp formater error =
   | Invalid_date str -> ppf "Invalid_date (%s)" str
   | List nonempty_list ->
     ppf "List (%a)" (Preface.Nonempty_list.pp pp) nonempty_list
+  | Labelled_list (message, nonempty_list) ->
+    ppf "List: %s (%a)" message (Preface.Nonempty_list.pp pp) nonempty_list
 ;;
 
 let to_string = Format.asprintf "%a" pp
