@@ -57,8 +57,15 @@ least amount of dependencies.
 - {{:../yocaml_markdown/index.html} Yocaml_markdown} Render Markdown String to
   HTML String using {{:https://github.com/ocaml/omd} omd}
 - {{:../yocaml_yaml/index.html} Yocaml_yaml} Allows document metadata to be
-  treated as being defined in Yaml. This module can be passed directly to the
-  [read_file_with_metadata] function as a provider.
+  treated as being defined in Yaml using
+  {{:https://github.com/avsm/ocaml-yaml} ocaml-yaml}. This module can be passed directly to the
+  [read_file_with_metadata] function as a provider
+- {{:../yocaml_mustache/index.html} Yocaml_mustache} Allows to use [Mustache] as
+  templating language using {{:https://github.com/rgrinberg/ocaml-mustache} ocaml-mustache},
+  This module can be passed directly to the [apply_as_template] function
+- {{:../yocaml_jingoo/index.html} Yocaml_jingoo} Allows to use [Jingoo] as
+  templating language using {{:https://github.com/tategakibunko/jingoo} jingoo},
+  This module can be passed directly to the [apply_as_template] function
 
 {1 Alternatives}
 
@@ -396,13 +403,23 @@ a file containing the entire layout like this, in [templates/layout.html]:
 </html>
 ]}
 
-By default, {e YOCaml} uses {{:https://mustache.github.io/}Mustach}
-via the excellent {{:https://github.com/rgrinberg/ocaml-mustache} ocaml-mustache}
-library to describe templates. The idea is to attempt to read a file and
-its metadata and inject it into a template that is ready for the
-metadata. I invite you to read the
-{{:https://mustache.github.io/mustache.5.html}Mustach documentation}
-to understand all that can be described.
+You can use {{:https://mustache.github.io/}Mustach} via the excellent
+{{:https://github.com/rgrinberg/ocaml-mustache} ocaml-mustache} library to
+describe templates. The library is packaged into [yocaml_mustache]. The idea is
+to attempt to read a file and its metadata and inject it into a template that is
+ready for the metadata. I invite you to read the
+{{:https://mustache.github.io/mustache.5.html}Mustach documentation} to
+understand all that can be described.
+
+First you have to update your [dune] file for handling Mustache:
+
+{[
+(executable
+ (name my_site)
+ (promote (until-clean))
+ (libraries yocaml yocaml_mustache yocaml_unix))
+]}
+
 
 {3 Applying a template}
 
@@ -428,14 +445,15 @@ that allows you to easily process Yaml based on
 (executable
  (name my_site)
  (promote (until-clean))
- (libraries yocaml yocaml_yaml yocaml_unix))
+ (libraries yocaml yocaml_mustache yocaml_yaml yocaml_unix))
 ]}
 
 Here we use {!module:Yocaml.Metadata.Page}. As you can see,
 [Yocaml_yaml.Yocaml_yaml.read_file_with_metadata (module Metadata.Page) file]
 is strictly equivalent to
 [Yocaml.Build.read_file_with_metadata (module Yocaml_yaml) (module Metadata.Page) file].
-
+And we use also [Yocaml_mustache.apply_as_template (module Metadata.page) file] which
+is also strictly equivalent to [Yocaml.Build.apply_as_template (module Metadata.Page) (module Yocaml_mustache) file].
 {[
 
 let task =
@@ -446,12 +464,12 @@ let task =
         target
         (track_binary_update
         >>> Yocaml_yaml.read_file_with_metadata (module Metadata.Page) file
-        >>> apply_as_template (module Metadata.Page) "templates/layout.html"
+        >>> Yocaml_mustache.apply_as_template (module Metadata.Page) "templates/layout.html"
         >>^ Stdlib.snd))
 ;;
 ]}
 
-[Yocaml_yaml.read_file_with_metadata] and {!val:Yocaml.Build.apply_as_template}
+[Yocaml_yaml.read_file_with_metadata] and {!val:Yocaml.Build.Yocaml_mustache.apply_as_template}
 return a pair with an option for the metadata and the file content. Fortunately,
 the application of a template takes optional metadata as an argument but the
 function will return the metadata unchanged and the contents of the template
@@ -542,7 +560,7 @@ So we have to patch our [dune] file in order to take advantage of
 (executable
  (name my_site)
  (promote (until-clean))
- (libraries yocaml yocaml_yaml yocaml_markdown yocaml_unix))
+ (libraries yocaml yocaml_mustache yocaml_yaml yocaml_markdown yocaml_unix))
 ]}
 
 
@@ -580,7 +598,7 @@ let task =
         (track_binary_update
         >>> Yocaml_yaml.read_file_with_metadata (module Metadata.Page) file
         >>> may_process_markdown file
-        >>> apply_as_template (module Metadata.Page) "templates/layout.html"
+        >>> Yocaml_mustache.apply_as_template (module Metadata.Page) "templates/layout.html"
         >>^ Stdlib.snd))
 ;;
 ]}
@@ -641,7 +659,7 @@ let pages =
         (track_binary_update
         >>> Yocaml_yaml.read_file_with_metadata (module Metadata.Page) file
         >>> may_process_markdown file
-        >>> apply_as_template (module Metadata.Page) "templates/layout.html"
+        >>> Yocaml_mustache.apply_as_template (module Metadata.Page) "templates/layout.html"
         >>^ Stdlib.snd))
 ;;
 
@@ -752,10 +770,10 @@ let articles =
         (track_binary_update
         >>> Yocaml_yaml.read_file_with_metadata (module Metadata.Article) file
         >>> Yocaml_markdown.content_to_html ()
-        >>> apply_as_template
+        >>> Yocaml_mustache.apply_as_template
               (module Metadata.Article)
               "templates/article.html"
-        >>> apply_as_template
+        >>> Yocaml_mustache.apply_as_template
               (module Metadata.Article)
               "templates/layout.html"
         >>^ Stdlib.snd))
@@ -842,8 +860,8 @@ let index =
     >>> Yocaml_yaml.read_file_with_metadata (module Metadata.Page) "index.md"
     >>> Yocaml_markdown.content_to_html ()
     >>> articles
-    >>> apply_as_template (module Metadata.Articles) "templates/list.html"
-    >>> apply_as_template (module Metadata.Articles) "templates/layout.html"
+    >>> Yocaml_mustache.apply_as_template (module Metadata.Articles) "templates/list.html"
+    >>> Yocaml_mustache.apply_as_template (module Metadata.Articles) "templates/layout.html"
     >>^ Stdlib.snd)
 ;;
 

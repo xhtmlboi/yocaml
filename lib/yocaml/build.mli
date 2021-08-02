@@ -12,11 +12,11 @@ type ('a, 'b) t
 
 (** {1 Action on rules} *)
 
-(** [dependencies rule] returns the dependencies of the [rule]. *)
-val dependencies : ('a, 'b) t -> Deps.t
+(** [get_dependencies rule] returns the dependencies of the [rule]. *)
+val get_dependencies : ('a, 'b) t -> Deps.t
 
-(** [task rule] returns the task of the [rule]. *)
-val task : ('a, 'b) t -> 'a -> 'b Effect.t
+(** [get_task rule] returns the task of the [rule]. *)
+val get_task : ('a, 'b) t -> 'a -> 'b Effect.t
 
 (** {1 Building rules}
 
@@ -68,11 +68,13 @@ val read_file_with_metadata
 
 (** Applies a file as a template. (and replacing the metadata). Once the
     content has been transformed, the arrow returns a pair containing the
-    metadata and the file content injected into the template. The Arrow uses
-    {{:https://github.com/rgrinberg/ocaml-mustache} ocaml-mustache} as
-    template engine. *)
+    metadata and the file content injected into the template. The first module
+    describes how to make a metadata compliant with a template language (e.g.
+    Mustache) and the second describes how to apply the template with
+    variables.*)
 val apply_as_template
   :  (module Metadata.INJECTABLE with type t = 'a)
+  -> (module Metadata.RENDERABLE)
   -> ?strict:bool
   -> filepath
   -> ('a * string, 'a * string) t
@@ -100,7 +102,9 @@ val without_body : 'a -> 'a * string
            (read_child_files "articles/" (with_extension "md"))
            (fun source ->
              track_binary_update
-             >>> read_file_with_metadata (module Metadata.Article) source
+             >>> Yocaml_yaml.read_file_with_metadata
+                   (module Metadata.Article)
+                   source
              >>^ fun (x, _) -> x, article_destination source)
            (fun x meta content ->
              x
@@ -113,13 +117,15 @@ val without_body : 'a -> 'a * string
        create_file
          (into destination "index.html")
          (track_binary_update
-         >>> read_file_with_metadata (module Metadata.Page) "index.md"
-         >>> snd process_markdown
+         >>> Yocaml_yaml.read_file_with_metadata
+               (module Metadata.Page)
+               "index.md"
+         >>> Yocaml_markdown.content_to_html ()
          >>> articles
-         >>> apply_as_template
+         >>> Yocaml_mustache.apply_as_template
                (module Metadata.Articles)
                "templates/list.html"
-         >>> apply_as_template
+         >>> Yocaml_mustache.apply_as_template
                (module Metadata.Articles)
                "templates/layout.html"
          >>^ Stdlib.snd)

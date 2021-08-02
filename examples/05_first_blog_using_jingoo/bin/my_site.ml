@@ -25,7 +25,7 @@ let pages =
         (track_binary_update
         >>> Yocaml_yaml.read_file_with_metadata (module Metadata.Page) file
         >>> may_process_markdown file
-        >>> Yocaml_mustache.apply_as_template
+        >>> Yocaml_jingoo.apply_as_template
               (module Metadata.Page)
               "templates/layout.html"
         >>^ Stdlib.snd))
@@ -45,10 +45,10 @@ let articles =
         (track_binary_update
         >>> Yocaml_yaml.read_file_with_metadata (module Metadata.Article) file
         >>> Yocaml_markdown.content_to_html ()
-        >>> Yocaml_mustache.apply_as_template
+        >>> Yocaml_jingoo.apply_as_template
               (module Metadata.Article)
               "templates/article.html"
-        >>> Yocaml_mustache.apply_as_template
+        >>> Yocaml_jingoo.apply_as_template
               (module Metadata.Article)
               "templates/layout.html"
         >>^ Stdlib.snd))
@@ -62,7 +62,7 @@ let css =
 let images =
   let open Preface.Predicate in
   process_files
-    [ "images" ]
+    [ "../04_first_blog/images" ]
     (with_extension "svg" || with_extension "png" || with_extension "gif")
     (fun file -> Build.copy_file file ~into:images_destination)
 ;;
@@ -92,10 +92,10 @@ let index =
     >>> Yocaml_yaml.read_file_with_metadata (module Metadata.Page) "index.md"
     >>> Yocaml_markdown.content_to_html ()
     >>> articles
-    >>> Yocaml_mustache.apply_as_template
+    >>> Yocaml_jingoo.apply_as_template
           (module Metadata.Articles)
           "templates/list.html"
-    >>> Yocaml_mustache.apply_as_template
+    >>> Yocaml_jingoo.apply_as_template
           (module Metadata.Articles)
           "templates/layout.html"
     >>^ Stdlib.snd)

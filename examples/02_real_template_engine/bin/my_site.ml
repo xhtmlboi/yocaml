@@ -11,7 +11,9 @@ let task =
         target
         (track_binary_update
         >>> Yocaml_yaml.read_file_with_metadata (module Metadata.Page) file
-        >>> apply_as_template (module Metadata.Page) "templates/layout.html"
+        >>> Yocaml_mustache.apply_as_template
+              (module Metadata.Page)
+              "templates/layout.html"
         >>^ Stdlib.snd))
 ;;
 

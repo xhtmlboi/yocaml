@@ -131,6 +131,25 @@ let jsonm_validate_user_valid_with_only_requirement =
   check user_testable "should be equal" expected computed
 ;;
 
+let jsonm_validate_user_valid_with_only_requirement_and_null_email =
+  let open Alcotest in
+  test_case
+    "validate partial user using field description and using a nullable field"
+    `Quick
+  $ fun () ->
+  let meta =
+    `O
+      [ "firstname", `String "Pierre"
+      ; "lastname", `String "Grim"
+      ; "age", `Float 25.0
+      ; "email", `Null
+      ]
+  in
+  let expected = Validate.valid $ make_user "Pierre" "Grim" 25 false None
+  and computed = validate meta in
+  check user_testable "should be equal" expected computed
+;;
+
 let jsonm_validate_user_invalid =
   let open Alcotest in
   test_case "validate partial invalid user using field description" `Quick
@@ -238,5 +257,6 @@ let cases =
     ; jsonm_validate_user_valid_with_only_requirement_assoc
     ; jsonm_validate_user_valid_assoc
     ; jsonm_validate_user_invalid_assoc
+    ; jsonm_validate_user_valid_with_only_requirement_and_null_email
     ] )
 ;;

@@ -26,7 +26,7 @@ let simple_file_copy =
   in
   let arrow = Build.read_file "source.txt" in
   let deps =
-    Build.dependencies arrow |> Deps.to_list |> List.map Deps.to_filepath
+    Build.get_dependencies arrow |> Deps.to_list |> List.map Deps.to_filepath
   in
   check (list string) "the deps should be equal" [ "source.txt" ] deps;
   Dummy.handle dummy (Build.create_file "target.build" arrow);
@@ -76,7 +76,7 @@ let simple_file_copy_with_multiple_deps =
     >>> pipe_content ~separator:"\t" "source3.txt"
   in
   let deps =
-    Build.dependencies arrow |> Deps.to_list |> List.map Deps.to_filepath
+    Build.get_dependencies arrow |> Deps.to_list |> List.map Deps.to_filepath
   in
   check
     (list string)
