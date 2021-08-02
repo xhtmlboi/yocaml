@@ -3,9 +3,10 @@
     [JSON] or even [TOML]) can be abstractly represented as abstract objects,
     like a key-value table.
 
-    This module abstracts the validation logic for key-value structured data. *)
+    This module abstracts the validation logic and the representation for
+    key-value structured data. *)
 
-(** {1 Description of a format}
+(** {1 Validation}
 
     To be able to validate structured data, one must first provide visitors
     for each data type supported by the metadata description logic. *)
@@ -84,9 +85,12 @@ module type VALIDABLE = sig
 
   (** Visitor for Float.*)
   val as_float : (t, float, 'a) visitor
+
+  (** Visitor for Null. *)
+  val as_null : (t, unit, 'a) visitor
 end
 
-(** {1 Description of a set of validation rules}
+(** {2 Description of a set of validation rules}
 
     If we have a representation of a key-value object
     ({!module-type:VALIDABLE}) we can derive the API of its validator. *)
@@ -126,6 +130,9 @@ module type VALIDATOR = sig
   (** [text term] checks that [term] is not an [objet] nor a [list] (and
       extract the value as a [string]). *)
   val text : t -> string Validate.t
+
+  (** Checks that a value is Null.*)
+  val null : t -> unit Validate.t
 
   (** {2 Composable validator}
 
@@ -170,6 +177,10 @@ module type VALIDATOR = sig
   (** [text_and validator term] checks that [term] is a [text] and valid it
       using [validator]. *)
   val text_and : (string -> 'a Validate.t) -> t -> 'a Validate.t
+
+  (** [null_and validator term] checks that [term] is a [Null] and valid it
+      using [validator]. *)
+  val null_and : (unit -> 'a Validate.t) -> t -> 'a Validate.t
 
   (** {2 Queries over objects}
 
@@ -303,6 +314,43 @@ end
 
 module Make_validator (KV : VALIDABLE) : VALIDATOR with type t = KV.t
 
+(** {1 Representation}
+
+    Provides the minimal combinators to describe a key-value object. *)
+
+module type DESCRIBABLE = sig
+  (** {2 Types} *)
+
+  (** The type describing the key-value data structure. *)
+  type t
+
+  (** {2 Constructors} *)
+
+  (** Produces an object indexed by string. *)
+  val object_ : (string * t) list -> t
+
+  (** Produces a list of [t]. *)
+  val list : t list -> t
+
+  (** Produces a [String]. *)
+  val string : string -> t
+
+  (** Produces a [Booelan]. *)
+  val boolean : bool -> t
+
+  (** Produces an [Integer]. *)
+  val integer : int -> t
+
+  (** Produces a [Float]. *)
+  val float : float -> t
+
+  (** Produces an [Atom]. *)
+  val atom : string -> t
+
+  (** Produces a [Null] value.*)
+  val null : t
+end
+
 (** {1 Jsonm}
 
     The representation proposed by the
@@ -331,3 +379,7 @@ end
 (** {2 Validators} *)
 
 module Jsonm_validator : VALIDATOR with type t = Jsonm_object.t
+
+(** {2 Descriptor} *)
+
+module Jsonm_descriptor : DESCRIBABLE with type t = Jsonm_object.t

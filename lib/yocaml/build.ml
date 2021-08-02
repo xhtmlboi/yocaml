@@ -106,7 +106,7 @@ let fold_dependencies arr_list =
   (fun task -> { dependencies; task }), tasks
 ;;
 
-let failable_task task = { dependencies = Deps.empty; task }
+let simple_task task = { dependencies = Deps.empty; task }
 
 let watch path =
   { dependencies = Deps.singleton (Deps.file path)
@@ -143,28 +143,26 @@ let read_file_with_metadata
   >>^ Preface.Pair.Bifunctor.map_fst (R.from_string (module V))
       % split_metadata
   >>^ (fun (m, c) -> Validate.Monad.(m >|= flip Preface.Pair.( & ) c))
-  >>> failable_task (function
+  >>> simple_task (function
           | Preface.Validation.Valid x -> Effect.return x
           | Preface.Validation.Invalid x -> Effect.throw (Error.List x))
 ;;
 
 let apply_as_template
     (type a)
-    (module M : Metadata.INJECTABLE with type t = a)
+    (module I : Metadata.INJECTABLE with type t = a)
+    (module R : Metadata.RENDERABLE)
     ?(strict = true)
     template
   =
   let piped = Preface.(Fun.flip Pair.( & ) ()) in
   let action ((obj, content), tpl_content) =
-    let values = M.to_mustache obj in
-    let variables = `O (("body", `String content) :: values) in
-    try
-      let layout = Mustache.of_string tpl_content in
-      Effect.return (obj, Mustache.render ~strict layout variables)
-    with
+    let values = I.inject (module R) obj in
+    let variables = ("body", R.string content) :: values in
+    try Effect.return (obj, R.to_string ~strict variables tpl_content) with
     | e -> Effect.raise_ e
   in
-  piped ^>> snd (read_file template) >>> failable_task action
+  piped ^>> snd (read_file template) >>> simple_task action
 ;;
 
 let without_body x = x, ""

@@ -10,14 +10,25 @@
 
 (** {2 Injectable metadata}
 
-    Describes a data set that can be injected, for example into a template.
-    (Currently, the injection process relay on Mustache) *)
+    Describes a data set that can be injected, for example into a template.*)
 
 module type INJECTABLE = sig
   type t
 
-  (** Produces a [Json], compliant to [Mustache] from a [t]. *)
-  val to_mustache : t -> (string * Mustache.Json.value) list
+  (** Produces a structured object, compliant to a template input from a [t]. *)
+  val inject
+    :  (module Key_value.DESCRIBABLE with type t = 'a)
+    -> t
+    -> (string * 'a) list
+end
+
+(** Inject [Injectable] data into a String using a templating strategy. *)
+module type RENDERABLE = sig
+  type t
+
+  val to_string : ?strict:bool -> (string * t) list -> string -> string
+
+  include Key_value.DESCRIBABLE with type t := t
 end
 
 (** {2 Readable metadata}
@@ -61,7 +72,8 @@ module Date : sig
   val pp : Format.formatter -> t -> unit
   val equal : t -> t -> bool
   val compare : t -> t -> int
-  val to_mustache : t -> (string * Mustache.Json.value) list
+
+  include INJECTABLE with type t := t
 end
 
 (** {1 Metadata description}

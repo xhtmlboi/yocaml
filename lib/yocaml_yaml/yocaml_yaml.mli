@@ -15,7 +15,7 @@ val read_file_with_metadata
 (** {1 Types} *)
 
 (** An alias for [Yaml.value]. *)
-type t
+type t = Yocaml.Key_value.Jsonm_object.t
 
 (** {1 Conversion function} *)
 

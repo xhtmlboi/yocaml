@@ -3,7 +3,18 @@ open Util
 module type INJECTABLE = sig
   type t
 
-  val to_mustache : t -> (string * Mustache.Json.value) list
+  val inject
+    :  (module Key_value.DESCRIBABLE with type t = 'a)
+    -> t
+    -> (string * 'a) list
+end
+
+module type RENDERABLE = sig
+  type t
+
+  val to_string : ?strict:bool -> (string * t) list -> string -> string
+
+  include Key_value.DESCRIBABLE with type t := t
 end
 
 module type VALIDABLE = sig
@@ -48,12 +59,13 @@ module Date = struct
     V.string obj >>= Try.to_validate % from_string
   ;;
 
-  let to_mustache = function
+  let inject (type a) (module D : Key_value.DESCRIBABLE with type t = a)
+    = function
     | (y, m, d) as date ->
-      [ "canonical", `String (to_string date)
-      ; "year", `String (string_of_int y)
-      ; "month", `String (string_of_int m)
-      ; "day", `String (string_of_int d)
+      [ "canonical", D.string (to_string date)
+      ; "year", D.string (string_of_int y)
+      ; "month", D.string (string_of_int m)
+      ; "day", D.string (string_of_int d)
       ]
   ;;
 end
@@ -66,10 +78,13 @@ module Page = struct
 
   let make title description = { title; description }
 
-  let to_mustache { title; description } =
-    [ "title", Option.fold ~none:`Null ~some:(fun x -> `String x) title
-    ; ( "description"
-      , Option.fold ~none:`Null ~some:(fun x -> `String x) description )
+  let inject
+      (type a)
+      (module D : Key_value.DESCRIBABLE with type t = a)
+      { title; description }
+    =
+    [ "title", Option.fold ~none:D.null ~some:D.string title
+    ; "description", Option.fold ~none:D.null ~some:D.string description
     ]
   ;;
 
@@ -148,17 +163,17 @@ module Article = struct
               <*> V.(optional_assoc string) "description" assoc)
   ;;
 
-  let to_mustache
+  let inject
+      (type a)
+      (module D : Key_value.DESCRIBABLE with type t = a)
       { article_title; article_description; tags; date; title; description }
     =
-    [ "article_title", `String article_title
-    ; "article_description", `String article_description
-    ; "tags", `A (List.map (fun x -> `String x) tags)
-    ; "date", `O (Date.to_mustache date)
-    ; "title", Option.fold ~none:`Null ~some:(fun x -> `String x) title
-    ; ( "description"
-      , Option.fold ~none:`Null ~some:(fun x -> `String x) description )
+    [ "article_title", D.string article_title
+    ; "article_description", D.string article_description
+    ; "tags", D.list (List.map D.string tags)
+    ; "date", D.object_ $ Date.inject (module D) date
     ]
+    @ Page.inject (module D) (Page.make title description)
   ;;
 
   let pp
@@ -235,13 +250,18 @@ module Articles = struct
       p
   ;;
 
-  let to_mustache { articles; title; description } =
+  let inject
+      (type a)
+      (module D : Key_value.DESCRIBABLE with type t = a)
+      { articles; title; description }
+    =
     ( "articles"
-    , `A
+    , D.list
         (List.map
            (fun (article, url) ->
-             `O (("url", `String url) :: Article.to_mustache article))
+             D.object_
+               (("url", D.string url) :: Article.inject (module D) article))
            articles) )
-    :: (Page.to_mustache $ Page.make title description)
+    :: (Page.inject (module D) $ Page.make title description)
   ;;
 end

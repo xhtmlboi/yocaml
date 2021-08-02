@@ -23,7 +23,9 @@ let task =
         (track_binary_update
         >>> Yocaml_yaml.read_file_with_metadata (module Metadata.Page) file
         >>> may_process_markdown file
-        >>> apply_as_template (module Metadata.Page) "templates/layout.html"
+        >>> Yocaml_mustache.apply_as_template
+              (module Metadata.Page)
+              "templates/layout.html"
         >>^ Stdlib.snd))
 ;;
 

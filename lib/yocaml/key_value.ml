@@ -42,6 +42,7 @@ module type VALIDABLE = sig
   val as_boolean : (t, bool, 'a) visitor
   val as_integer : (t, int, 'a) visitor
   val as_float : (t, float, 'a) visitor
+  val as_null : (t, unit, 'a) visitor
 end
 
 module type VALIDATOR = sig
@@ -55,6 +56,7 @@ module type VALIDATOR = sig
   val integer : t -> int Validate.t
   val float : t -> float Validate.t
   val text : t -> string Validate.t
+  val null : t -> unit Validate.t
   val object_and : ((string * t) list -> 'a Validate.t) -> t -> 'a Validate.t
   val list_and : (t list -> 'a Validate.t) -> t -> 'a Validate.t
   val list_of : (t -> 'a Validate.t) -> t -> 'a list Validate.t
@@ -64,6 +66,7 @@ module type VALIDATOR = sig
   val integer_and : (int -> 'a Validate.t) -> t -> 'a Validate.t
   val float_and : (float -> 'a Validate.t) -> t -> 'a Validate.t
   val text_and : (string -> 'a Validate.t) -> t -> 'a Validate.t
+  val null_and : (unit -> 'a Validate.t) -> t -> 'a Validate.t
 
   val optional_field
     :  ?case_sensitive:bool
@@ -166,6 +169,11 @@ module Make_validator (KV : VALIDABLE) = struct
     >>= additional_validator
   ;;
 
+  let null_and additional_validator =
+    KV.as_null additional_validator (fun () ->
+        Validate.error $ Error.Invalid_field "Null expected")
+  ;;
+
   let object_ = object_and Validate.valid
   let list = list_and Validate.valid
   let atom = atom_and Validate.valid
@@ -174,11 +182,14 @@ module Make_validator (KV : VALIDABLE) = struct
   let integer = integer_and Validate.valid
   let float = float_and Validate.valid
   let text = text_and Validate.valid
+  let null = null_and Validate.valid
 
   let optional_aux kind case_sensitive validator key subject =
     Option.fold
       ~none:(Validate.valid None)
-      ~some:validator
+      ~some:
+        Validate.Alt.(
+          fun x -> null_and (fun () -> Validate.valid None) x <|> validator x)
       (find_assoc ~case_sensitive key subject)
     |> hook_on_invalid_field kind key
   ;;
@@ -237,6 +248,19 @@ module Make_validator (KV : VALIDABLE) = struct
   ;;
 end
 
+module type DESCRIBABLE = sig
+  type t
+
+  val object_ : (string * t) list -> t
+  val list : t list -> t
+  val string : string -> t
+  val boolean : bool -> t
+  val integer : int -> t
+  val float : float -> t
+  val atom : string -> t
+  val null : t
+end
+
 module Jsonm_object = struct
   type t =
     [ `Null
@@ -279,6 +303,24 @@ module Jsonm_object = struct
     | `Float f -> valid f
     | _ -> invalid ()
   ;;
+
+  let as_null valid invalid = function
+    | `Null -> valid ()
+    | _ -> invalid ()
+  ;;
 end
 
 module Jsonm_validator = Make_validator (Jsonm_object)
+
+module Jsonm_descriptor = struct
+  type t = Jsonm_object.t
+
+  let object_ list = `O list
+  let list list = `A list
+  let string str = `String str
+  let boolean b = `Bool b
+  let integer i = `Float (float_of_int i)
+  let float f = `Float f
+  let atom s = `String s
+  let null = `Null
+end

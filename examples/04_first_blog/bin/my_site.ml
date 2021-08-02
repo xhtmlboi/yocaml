@@ -25,7 +25,9 @@ let pages =
         (track_binary_update
         >>> Yocaml_yaml.read_file_with_metadata (module Metadata.Page) file
         >>> may_process_markdown file
-        >>> apply_as_template (module Metadata.Page) "templates/layout.html"
+        >>> Yocaml_mustache.apply_as_template
+              (module Metadata.Page)
+              "templates/layout.html"
         >>^ Stdlib.snd))
 ;;
 
@@ -43,10 +45,10 @@ let articles =
         (track_binary_update
         >>> Yocaml_yaml.read_file_with_metadata (module Metadata.Article) file
         >>> Yocaml_markdown.content_to_html ()
-        >>> apply_as_template
+        >>> Yocaml_mustache.apply_as_template
               (module Metadata.Article)
               "templates/article.html"
-        >>> apply_as_template
+        >>> Yocaml_mustache.apply_as_template
               (module Metadata.Article)
               "templates/layout.html"
         >>^ Stdlib.snd))
@@ -90,8 +92,12 @@ let index =
     >>> Yocaml_yaml.read_file_with_metadata (module Metadata.Page) "index.md"
     >>> Yocaml_markdown.content_to_html ()
     >>> articles
-    >>> apply_as_template (module Metadata.Articles) "templates/list.html"
-    >>> apply_as_template (module Metadata.Articles) "templates/layout.html"
+    >>> Yocaml_mustache.apply_as_template
+          (module Metadata.Articles)
+          "templates/list.html"
+    >>> Yocaml_mustache.apply_as_template
+          (module Metadata.Articles)
+          "templates/layout.html"
     >>^ Stdlib.snd)
 ;;
 

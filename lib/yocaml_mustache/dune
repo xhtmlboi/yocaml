@@ -1,0 +1,7 @@
+(library
+ (name yocaml_mustache)
+ (public_name yocaml_mustache)
+ (libraries yocaml yaml preface))
+
+(documentation
+ (package yocaml_mustache))
