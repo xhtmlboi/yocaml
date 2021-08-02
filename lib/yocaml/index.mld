@@ -57,8 +57,15 @@ least amount of dependencies.
 - {{:../yocaml_markdown/index.html} Yocaml_markdown} Render Markdown String to
   HTML String using {{:https://github.com/ocaml/omd} omd}
 - {{:../yocaml_yaml/index.html} Yocaml_yaml} Allows document metadata to be
-  treated as being defined in Yaml. This module can be passed directly to the
-  [read_file_with_metadata] function as a provider.
+  treated as being defined in Yaml using
+  {{:https://github.com/avsm/ocaml-yaml} ocaml-yaml}. This module can be passed directly to the
+  [read_file_with_metadata] function as a provider
+- {{:../yocaml_mustache/index.html} Yocaml_mustache} Allows to use [Mustache] as
+  templating language using {{:https://github.com/rgrinberg/ocaml-mustache} ocaml-mustache},
+  This module can be passed directly to the [apply_as_template] function
+- {{:../yocaml_jingoo/index.html} Yocaml_jingoo} Allows to use [Jingoo] as
+  templating language using {{:https://github.com/tategakibunko/jingoo} jingoo},
+  This module can be passed directly to the [apply_as_template] function
 
 {1 Alternatives}
 

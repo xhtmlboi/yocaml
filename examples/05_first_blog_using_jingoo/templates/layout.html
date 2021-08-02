@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>My website lol</title>
+    </head>
+    <body>
+        <h1>My blog!</h1>
+        <hr>
+        <main>
+            {%- autoescape false -%}
+            {{ body }}
+            {% endautoescape -%}
+        </main>
+        <hr>
+        copyright <strong>Myself</strong><br>
+        <img src="/images/ocaml.svg" style="width: 120px">
+    </body>
+</html>
