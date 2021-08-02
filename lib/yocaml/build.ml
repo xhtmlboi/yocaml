@@ -5,8 +5,8 @@ type ('a, 'b) t =
   ; task : 'a -> 'b Effect.t
   }
 
-let dependencies { dependencies; _ } = dependencies
-let task { task; _ } = task
+let get_dependencies { dependencies; _ } = dependencies
+let get_task { task; _ } = task
 
 let perform_if_update_needed target deps do_something do_nothing =
   let open Effect in
@@ -106,7 +106,7 @@ let fold_dependencies arr_list =
   (fun task -> { dependencies; task }), tasks
 ;;
 
-let simple_task task = { dependencies = Deps.empty; task }
+let lift_task task = { dependencies = Deps.empty; task }
 
 let watch path =
   { dependencies = Deps.singleton (Deps.file path)
@@ -143,7 +143,7 @@ let read_file_with_metadata
   >>^ Preface.Pair.Bifunctor.map_fst (R.from_string (module V))
       % split_metadata
   >>^ (fun (m, c) -> Validate.Monad.(m >|= flip Preface.Pair.( & ) c))
-  >>> simple_task (function
+  >>> lift_task (function
           | Preface.Validation.Valid x -> Effect.return x
           | Preface.Validation.Invalid x -> Effect.throw (Error.List x))
 ;;
@@ -162,7 +162,7 @@ let apply_as_template
     try Effect.return (obj, R.to_string ~strict variables tpl_content) with
     | e -> Effect.raise_ e
   in
-  piped ^>> snd (read_file template) >>> simple_task action
+  piped ^>> snd (read_file template) >>> lift_task action
 ;;
 
 let without_body x = x, ""

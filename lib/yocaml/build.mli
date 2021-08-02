@@ -12,11 +12,11 @@ type ('a, 'b) t
 
 (** {1 Action on rules} *)
 
-(** [dependencies rule] returns the dependencies of the [rule]. *)
-val dependencies : ('a, 'b) t -> Deps.t
+(** [get_dependencies rule] returns the dependencies of the [rule]. *)
+val get_dependencies : ('a, 'b) t -> Deps.t
 
-(** [task rule] returns the task of the [rule]. *)
-val task : ('a, 'b) t -> 'a -> 'b Effect.t
+(** [get_task rule] returns the task of the [rule]. *)
+val get_task : ('a, 'b) t -> 'a -> 'b Effect.t
 
 (** {1 Building rules}
 
