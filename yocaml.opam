@@ -5,7 +5,7 @@ maintainer: "xhtmlboi@gmail.com"
 authors: [ "The XHTMLBoy <xhtmlboi@gmail.com>" ]
 
 build: [
-  [ "dune" "subst" ]
+  [ "dune" "subst" ] {dev}
   [ "dune" "build" "-p" name "-j" jobs ]
   [ "dune" "runtest" "-p" name ] {with-test}
   [ "dune" "build" "@doc" "-p" name ] {with-doc}
@@ -22,9 +22,5 @@ depends: [
   "dune" { >= "2.8" }
   "odoc" {with-doc}
   "alcotest" {with-test}
-  "preface" {pinned}
-]
-
-pin-depends: [
-  ["preface.dev" "git://github.com/xvw/preface.git"]
+  "preface" { >= "0.1.0"}
 ]

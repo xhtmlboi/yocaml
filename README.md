@@ -17,9 +17,7 @@ The logo and name are the brainchild of [Biloumaster](https://github.com/BilouMa
 
 ## Installation
 
-Until [Preface](https://github.com/xvw/preface/) is released on
-[OPAM](http://opam.ocaml.org/), **YOCaml** is only available by manual
-installation using `pin`.
+**YOCaml** is only available by manual installation using `pin`.
 And in the `dune` file of your executable:
 
 ```common-lisp

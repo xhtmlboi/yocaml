@@ -18,7 +18,6 @@ jobs:
           opam-depext-flags: --with-doc
 
       - run: opam install . --deps-only --with-doc --with-test
-      - run: opam install preface
       - run: opam exec -- dune build
       - run: opam exec -- dune build @doc
 

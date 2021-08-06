@@ -8,7 +8,7 @@ authors: [
 ]
 
 build: [
-  [ "dune" "subst" ]
+  [ "dune" "subst" ] {dev}
   [ "dune" "build" "-p" name "-j" jobs ]
   [ "dune" "runtest" "-p" name ] {with-test}
   [ "dune" "build" "@doc" "-p" name ] {with-doc}
@@ -24,12 +24,11 @@ depends: [
   "ocaml" { >= "4.11.1" }
   "dune" { >= "2.8" }
   "odoc" {with-doc}
-  "preface" {pinned}
-  "yocaml" {pinned}
+  "preface" { >= "0.1.0" }
   "mustache" { >= "3.1.0" }
+  "yocaml" {pinned}
 ]
 
 pin-depends: [
-  ["preface.dev" "git://github.com/xvw/preface.git"]
   ["yocaml.dev" "git://github.com/xhtmlboi/yocaml.git"]
 ]
