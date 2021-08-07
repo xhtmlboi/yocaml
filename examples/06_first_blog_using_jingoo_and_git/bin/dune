@@ -1,0 +1,6 @@
+(executable
+ (name my_site)
+ (promote (until-clean))
+ (libraries
+   yocaml yocaml_markdown yocaml_yaml yocaml_jingoo
+   yocaml_unix yocaml_irmin irmin-git))
