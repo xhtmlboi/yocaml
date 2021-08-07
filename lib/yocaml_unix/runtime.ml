@@ -2,6 +2,7 @@ open Yocaml.Util
 
 let file_exists = Sys.file_exists
 let is_directory = Sys.is_directory
+let target_exists = file_exists
 
 let get_modification_time path =
   let open Unix in
@@ -12,6 +13,8 @@ let get_modification_time path =
   | Unix_error (err, f, p) ->
     Yocaml.Error.(to_try (Unix (Unix.error_message err, f, p)))
 ;;
+
+let target_modification_time = get_modification_time
 
 let bytes_of_in_channel channel =
   let length = in_channel_length channel in
