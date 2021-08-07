@@ -27,6 +27,7 @@ type t =
   | Invalid_month of int
   | Invalid_range of int * int * int
   | Unknown of string (** An unq\ualified error (probably due to laziness). *)
+  | Message of string
 
 (** Represents an [Error.t] in [exception]. *)
 exception Error of t

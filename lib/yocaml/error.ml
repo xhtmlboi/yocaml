@@ -15,6 +15,7 @@ type t =
   | Invalid_month of int
   | Invalid_range of int * int * int
   | Unknown of string
+  | Message of string
 
 exception Error of t
 
@@ -22,6 +23,7 @@ let rec pp formater error =
   let ppf x = Format.fprintf formater x in
   match error with
   | Unknown message -> ppf "Unknown (%s)" message
+  | Message message -> ppf "%s" message
   | Unix (error, fname, arg) -> ppf "Unix (%s, %s, %s)" error fname arg
   | Unreadable_file filename -> ppf "Unreadable_file (%s)" filename
   | Missing_field field -> ppf "Missing_field (%s)" field
@@ -56,6 +58,7 @@ let raise' error = raise (to_exn error)
 
 let rec equal x y =
   match x, y with
+  | Message a, Message b -> String.equal a b
   | Unknown a, Unknown b -> String.equal a b
   | Unix (a, b, c), Unix (x, y, z) ->
     a = x && String.equal b y && String.equal c z

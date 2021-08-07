@@ -2,8 +2,10 @@ open Util
 
 module type RUNTIME = sig
   val file_exists : Filepath.t -> bool
+  val target_exists : Filepath.t -> bool
   val is_directory : Filepath.t -> bool
   val get_modification_time : Filepath.t -> int Try.t
+  val target_exists : Filepath.t -> bool
   val read_file : Filepath.t -> string Try.t
   val write_file : Filepath.t -> string -> unit Try.t
   val read_dir : Filepath.t -> Filepath.t list
@@ -38,7 +40,10 @@ let execute (module R : RUNTIME) program =
            fun resume -> function
             | Effect.Get_modification_time path ->
               resume $ R.get_modification_time path
+            | Effect.Target_modification_time path ->
+              resume $ R.target_modification_time path
             | Effect.File_exists path -> resume $ R.file_exists path
+            | Effect.Target_exists path -> resume $ R.target_exists path
             | Effect.Read_file path -> resume $ R.read_file path
             | Effect.Write_file (path, content) ->
               let () = R.create_dir $ Filename.dirname path in

@@ -147,6 +147,9 @@ let handle dummy program =
           let f : type b. (b -> 'a) -> b Effect.f -> 'a =
            fun resume -> function
             | File_exists path -> resume $ file_exists dummy path
+            | Target_exists path -> resume $ file_exists dummy path
+            | Target_modification_time path ->
+              resume $ perform_if_exists path (get_file_mtime dummy)
             | Get_modification_time path ->
               resume $ perform_if_exists path (get_file_mtime dummy)
             | Read_file path ->

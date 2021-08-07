@@ -61,11 +61,11 @@ let nel_for_one f =
 let need_update deps target =
   let open Preface.Fun.Infix in
   let open Effect.Monad in
-  Effect.file_exists target
+  Effect.target_exists target
   >>= function
   | false -> return $ Try.ok true
   | true ->
-    Effect.get_modification_time target
+    Effect.target_modification_time target
     >>= (function
     | Error err -> return $ Try.error err
     | Ok mtime ->

@@ -2,9 +2,15 @@ open Util
 
 type (_, 'a) effects =
   | File_exists : Filepath.t -> (< file_exists : unit ; .. >, bool) effects
+  | Target_exists :
+      Filepath.t
+      -> (< target_exists : unit ; .. >, bool) effects
   | Get_modification_time :
       Filepath.t
       -> (< get_modification_time : unit ; .. >, int Try.t) effects
+  | Target_modification_time :
+      Filepath.t
+      -> (< target_modification_time : unit ; .. >, int Try.t) effects
   | Read_file :
       Filepath.t
       -> (< read_file : unit ; .. >, string Try.t) effects
@@ -22,20 +28,28 @@ type (_, 'a) effects =
 
 module Freer = Preface.Make.Freer_monad.Over (struct
   type 'a t =
-    ( < file_exists : unit
-      ; get_modification_time : unit
-      ; read_file : unit
-      ; write_file : unit
-      ; read_dir : unit
-      ; log : unit
-      ; throw : unit
-      ; raise_ : unit >
+    ( < file_exists : e
+      ; target_exists : e
+      ; get_modification_time : e
+      ; target_modification_time : e
+      ; read_file : e
+      ; write_file : e
+      ; read_dir : e
+      ; log : e
+      ; throw : e
+      ; raise_ : e >
     , 'a )
     effects
 end)
 
 let file_exists path = Freer.perform $ File_exists path
+let target_exists path = Freer.perform $ Target_exists path
 let get_modification_time path = Freer.perform $ Get_modification_time path
+
+let target_modification_time path =
+  Freer.perform $ Target_modification_time path
+;;
+
 let read_file path = Freer.perform $ Read_file path
 let write_file path content = Freer.perform $ Write_file (path, content)
 let log level message = Freer.perform $ Log (level, message)

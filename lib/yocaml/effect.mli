@@ -22,9 +22,15 @@
 
 type (_, 'a) effects =
   | File_exists : Filepath.t -> (< file_exists : unit ; .. >, bool) effects
+  | Target_exists :
+      Filepath.t
+      -> (< target_exists : unit ; .. >, bool) effects
   | Get_modification_time :
       Filepath.t
       -> (< get_modification_time : unit ; .. >, int Try.t) effects
+  | Target_modification_time :
+      Filepath.t
+      -> (< target_modification_time : unit ; .. >, int Try.t) effects
   | Read_file :
       Filepath.t
       -> (< read_file : unit ; .. >, string Try.t) effects
@@ -59,7 +65,9 @@ module Freer :
   Preface_specs.FREER_MONAD
     with type 'a f =
           ( < file_exists : unit
+            ; target_exists : unit
             ; get_modification_time : unit
+            ; target_modification_time : unit
             ; read_file : unit
             ; write_file : unit
             ; read_dir : unit
@@ -85,10 +93,19 @@ module Freer :
     denoted by the file path [path] exists, [false] otherwise. *)
 val file_exists : Filepath.t -> bool Freer.t
 
+(** [target_exists path] should be interpreted as returning [true] if the file
+    denoted by the file path [path] exists, [false] otherwise. *)
+val target_exists : filepath -> bool Freer.t
+
 (** [get_modification_time path] should be interpreted as returning, as an
     integer, the Unix time ([mtime] corresponding to the modification date of
     the file denoted by the file path [path]. *)
 val get_modification_time : Filepath.t -> int Try.t Freer.t
+
+(** [target_modification_time path] should be interpreted as returning, as an
+    integer, the Unix time ([mtime] corresponding to the modification date of
+    the file denoted by the file path [path]. *)
+val target_modification_time : filepath -> int Try.t Freer.t
 
 (** [read_file path] should be interpreted as trying to read the contents of
     the file denoted by the file path [path]. At the moment I'm using strings
