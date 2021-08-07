@@ -17,6 +17,9 @@
     an additional runtime. *)
 
 module type RUNTIME = sig
+  (** [get_time ()] should returns a float like [Unix.gettimeofday ()]. *)
+  val get_time : unit -> float
+
   (** [file_exists path] should returns [true] if [path] exists (as a file or
       a directory), [false] otherwise. *)
   val file_exists : Filepath.t -> bool

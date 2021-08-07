@@ -1,11 +1,12 @@
 open Util
 
 module type RUNTIME = sig
+  val get_time : unit -> float
   val file_exists : Filepath.t -> bool
   val target_exists : Filepath.t -> bool
   val is_directory : Filepath.t -> bool
   val get_modification_time : Filepath.t -> int Try.t
-  val target_exists : Filepath.t -> bool
+  val target_modification_time : Filepath.t -> int Try.t
   val read_file : Filepath.t -> string Try.t
   val write_file : Filepath.t -> string -> unit Try.t
   val read_dir : Filepath.t -> Filepath.t list

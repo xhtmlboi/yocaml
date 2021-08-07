@@ -4,6 +4,7 @@ let execute
       with type branch = string
        and type key = string list
        and type contents = string)
+    (module Lwt_main : Runtime.LWT_RUN)
     ?branch
     ?author
     ?author_email
@@ -11,7 +12,7 @@ let execute
     program
   =
   let module R =
-    Runtime.Make (Source) (Store)
+    Runtime.Make (Source) (Store) (Lwt_main)
       (struct
         let config = config
         let branch = Option.value ~default:"master" branch

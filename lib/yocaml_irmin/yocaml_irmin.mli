@@ -11,6 +11,7 @@ val execute
         with type branch = string
          and type key = string list
          and type contents = string)
+  -> (module Runtime.LWT_RUN)
   -> ?branch:string
   -> ?author:string
   -> ?author_email:string

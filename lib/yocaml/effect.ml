@@ -28,16 +28,16 @@ type (_, 'a) effects =
 
 module Freer = Preface.Make.Freer_monad.Over (struct
   type 'a t =
-    ( < file_exists : e
-      ; target_exists : e
-      ; get_modification_time : e
-      ; target_modification_time : e
-      ; read_file : e
-      ; write_file : e
-      ; read_dir : e
-      ; log : e
-      ; throw : e
-      ; raise_ : e >
+    ( < file_exists : unit
+      ; target_exists : unit
+      ; get_modification_time : unit
+      ; target_modification_time : unit
+      ; read_file : unit
+      ; write_file : unit
+      ; read_dir : unit
+      ; log : unit
+      ; throw : unit
+      ; raise_ : unit >
     , 'a )
     effects
 end)

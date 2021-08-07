@@ -7,6 +7,10 @@ module type CONFIG = sig
   val author_email : string option
 end
 
+module type LWT_RUN = sig
+  val run : 'a Lwt.t -> 'a
+end
+
 let set_error = function
   | Ok x -> Try.ok x
   | Error (`Conflict conflict) ->
@@ -24,6 +28,7 @@ module Make
                with type branch = string
                 and type key = string list
                 and type contents = string)
+    (Lwt_main : LWT_RUN)
     (Config : CONFIG) =
 struct
   let commit_author =
@@ -45,6 +50,8 @@ struct
     ()
   ;;
 
+  let get_time () = 0.0
+
   let target_exists filepath =
     let path = path_of filepath in
     let task =
@@ -56,8 +63,10 @@ struct
   ;;
 
   let write_file filepath content =
-    let info =
-      Irmin_unix.info ~author:commit_author "create file [%s]" filepath
+    let date = Int64.of_float $ Source.get_time () in
+    let info () =
+      Irmin.Info.v ~date ~author:commit_author
+      $ Format.asprintf "create file [%s]" filepath
     in
     let path = path_of filepath in
     let task =

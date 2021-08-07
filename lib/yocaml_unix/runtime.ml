@@ -1,5 +1,6 @@
 open Yocaml.Util
 
+let get_time () = Unix.gettimeofday ()
 let file_exists = Sys.file_exists
 let is_directory = Sys.is_directory
 let target_exists = file_exists

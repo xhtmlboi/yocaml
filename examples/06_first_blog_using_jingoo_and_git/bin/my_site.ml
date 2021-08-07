@@ -100,6 +100,7 @@ let () =
   Yocaml_irmin.execute
     (module Yocaml_unix)
     (module Store)
+    (module Lwt_main)
     ~author:"xvw"
     ~author_email:"xaviervdw@gmail.com"
     config
