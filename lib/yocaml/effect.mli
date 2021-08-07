@@ -95,7 +95,7 @@ val file_exists : Filepath.t -> bool Freer.t
 
 (** [target_exists path] should be interpreted as returning [true] if the file
     denoted by the file path [path] exists, [false] otherwise. *)
-val target_exists : filepath -> bool Freer.t
+val target_exists : Filepath.t -> bool Freer.t
 
 (** [get_modification_time path] should be interpreted as returning, as an
     integer, the Unix time ([mtime] corresponding to the modification date of
@@ -105,7 +105,7 @@ val get_modification_time : Filepath.t -> int Try.t Freer.t
 (** [target_modification_time path] should be interpreted as returning, as an
     integer, the Unix time ([mtime] corresponding to the modification date of
     the file denoted by the file path [path]. *)
-val target_modification_time : filepath -> int Try.t Freer.t
+val target_modification_time : Filepath.t -> int Try.t Freer.t
 
 (** [read_file path] should be interpreted as trying to read the contents of
     the file denoted by the file path [path]. At the moment I'm using strings

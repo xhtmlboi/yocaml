@@ -25,7 +25,7 @@ module type RUNTIME = sig
   val file_exists : Filepath.t -> bool
 
   (** Same of [file_exists] but acting on the target. *)
-  val target_exists : filepath -> bool
+  val target_exists : Filepath.t -> bool
 
   (** [is_directory path] should returns [true] if [path] is an existing file
       and if the file is a directory, [false] otherwise. *)
@@ -37,7 +37,7 @@ module type RUNTIME = sig
   val get_modification_time : Filepath.t -> int Try.t
 
   (** Same of [get_modification_time] but acting on the target. *)
-  val target_modification_time : filepath -> int Try.t
+  val target_modification_time : Filepath.t -> int Try.t
 
   (** [read_file path] should returns a [Try.t] containing the content (as a
       string) of the given file. The function may fail.*)
