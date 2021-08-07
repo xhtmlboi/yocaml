@@ -1,0 +1,36 @@
+opam-version: "2.0"
+version: "dev"
+synopsis: "YOCaml Runtime using Irmin as target"
+maintainer: "xhtmlboi@gmail.com"
+authors: [
+  "The XHTMLBoy <xhtmlboi@gmail.com>"
+  "Xavier Van de Woestyne <xaviervdw@gmail.com>"
+]
+
+build: [
+  [ "dune" "subst" ] {dev}
+  [ "dune" "build" "-p" name "-j" jobs ]
+  [ "dune" "runtest" "-p" name ] {with-test}
+  [ "dune" "build" "@doc" "-p" name ] {with-doc}
+]
+
+license: "GPL-3.0-or-later"
+tags: [ "shell" "bin" "make" "static" "blog" "generator" ]
+homepage: "https://github.com/xhtmlboi/yocaml"
+dev-repo: "git://github.com/xhtmlboi/yocaml.git"
+bug-reports: "https://github.com/xhtmlboi/yocaml/issues"
+
+depends: [
+  "ocaml" { >= "4.11.1" }
+  "dune" { >= "2.8" }
+  "odoc" {with-doc}
+  "preface" { >= "0.1.0" }
+  "lwt" { >= "5.4.2" }
+  "irmin" { >= "2.7.2" }
+  "irmin-unix" { >= "2.7.2" }
+  "yocaml" {pinned}
+]
+
+pin-depends: [
+  ["yocaml.dev" "git://github.com/xhtmlboi/yocaml.git"]
+]
