@@ -73,6 +73,6 @@ let rec equal x y =
   | Invalid_day a, Invalid_day b -> Int.equal a b
   | Invalid_month a, Invalid_month b -> Int.equal a b
   | Invalid_range (a, b, c), Invalid_range (aa, bb, cc) ->
-    List.equal Int.equal [ a; b; c ] [ aa; bb; cc ]
+    Preface.List.equal Int.equal [ a; b; c ] [ aa; bb; cc ]
   | _ -> false
 ;;
