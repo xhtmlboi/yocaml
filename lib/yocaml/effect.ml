@@ -1,34 +1,35 @@
-open Aliases
 open Util
 
 type (_, 'a) effects =
-  | File_exists : filepath -> (< file_exists : e ; .. >, bool) effects
+  | File_exists : Filepath.t -> (< file_exists : unit ; .. >, bool) effects
   | Get_modification_time :
-      filepath
-      -> (< get_modification_time : e ; .. >, int Try.t) effects
-  | Read_file : filepath -> (< read_file : e ; .. >, string Try.t) effects
+      Filepath.t
+      -> (< get_modification_time : unit ; .. >, int Try.t) effects
+  | Read_file :
+      Filepath.t
+      -> (< read_file : unit ; .. >, string Try.t) effects
   | Write_file :
-      (filepath * string)
-      -> (< write_file : e ; .. >, unit Try.t) effects
+      (Filepath.t * string)
+      -> (< write_file : unit ; .. >, unit Try.t) effects
   | Read_dir :
-      (filepath
+      (Filepath.t
       * [< `Files | `Directories | `Both ]
-      * filepath Preface.Predicate.t)
-      -> (< read_dir : e ; .. >, filepath list) effects
-  | Log : (log_level * string) -> (< log : e ; .. >, unit) effects
-  | Throw : Error.t -> (< throw : e ; .. >, 'a) effects
-  | Raise : exn -> (< raise_ : e ; .. >, 'a) effects
+      * Filepath.t Preface.Predicate.t)
+      -> (< read_dir : unit ; .. >, Filepath.t list) effects
+  | Log : (Log.level * string) -> (< log : unit ; .. >, unit) effects
+  | Throw : Error.t -> (< throw : unit ; .. >, 'a) effects
+  | Raise : exn -> (< raise_ : unit ; .. >, 'a) effects
 
 module Freer = Preface.Make.Freer_monad.Over (struct
   type 'a t =
-    ( < file_exists : e
-      ; get_modification_time : e
-      ; read_file : e
-      ; write_file : e
-      ; read_dir : e
-      ; log : e
-      ; throw : e
-      ; raise_ : e >
+    ( < file_exists : unit
+      ; get_modification_time : unit
+      ; read_file : unit
+      ; write_file : unit
+      ; read_dir : unit
+      ; log : unit
+      ; throw : unit
+      ; raise_ : unit >
     , 'a )
     effects
 end)

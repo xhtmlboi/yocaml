@@ -11,8 +11,6 @@
     because a Freer Monad is also a (logical) monad, so you can easily
     traverse them which makes the implementation of the engine much simpler. *)
 
-open Aliases
-
 (** {1 Runtime definition}
 
     The signature describes the set of primitives to be implemented to build
@@ -21,37 +19,37 @@ open Aliases
 module type RUNTIME = sig
   (** [file_exists path] should returns [true] if [path] exists (as a file or
       a directory), [false] otherwise. *)
-  val file_exists : filepath -> bool
+  val file_exists : Filepath.t -> bool
 
   (** [is_directory path] should returns [true] if [path] is an existing file
       and if the file is a directory, [false] otherwise. *)
-  val is_directory : filepath -> bool
+  val is_directory : Filepath.t -> bool
 
   (** [get_modification_time path] should returns a [Try.t] containing the
       modification time (as an integer) of the given file. The function may
       fail. *)
-  val get_modification_time : filepath -> int Try.t
+  val get_modification_time : Filepath.t -> int Try.t
 
   (** [read_file path] should returns a [Try.t] containing the content (as a
       string) of the given file. The function may fail.*)
-  val read_file : filepath -> string Try.t
+  val read_file : Filepath.t -> string Try.t
 
   (** [write_file path content] should write (create or overwrite) [content]
       into the given path. The function may fail. *)
-  val write_file : filepath -> string -> unit Try.t
+  val write_file : Filepath.t -> string -> unit Try.t
 
   (** [read_dir path] should returns a list of children. The function is
       pretty optimistic if the directory does not exist, or for any other
       possible reason the function should fail, it will return an empty list. *)
-  val read_dir : filepath -> filepath list
+  val read_dir : Filepath.t -> Filepath.t list
 
   (** [create_dir path] is an optimistic version of [mkdir -p], the function
       extract the directory of a file and create it if it does not exists
       without any failure. *)
-  val create_dir : ?file_perm:int -> filepath -> unit
+  val create_dir : ?file_perm:int -> Filepath.t -> unit
 
   (** [log level message] justs dump a message on stdout. *)
-  val log : Aliases.log_level -> string -> unit
+  val log : Log.level -> string -> unit
 end
 
 (** {1 Helpers} *)

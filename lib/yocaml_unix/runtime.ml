@@ -66,11 +66,11 @@ let level_to_string =
   let open Preface.Fun in
   let open Yocaml in
   (function
-    | Aliases.Trace -> "trace"
-    | Aliases.Debug -> "debug"
-    | Aliases.Info -> "info"
-    | Aliases.Warning -> "warning"
-    | Aliases.Alert -> "alert")
+    | Log.Trace -> "trace"
+    | Log.Debug -> "debug"
+    | Log.Info -> "info"
+    | Log.Warning -> "warning"
+    | Log.Alert -> "alert")
   %> String.uppercase_ascii
 ;;
 
@@ -79,18 +79,18 @@ let fmt s x = "\027[" ^ s ^ "m" ^ x ^ "\027[0m"
 let colorize =
   let open Yocaml in
   function
-  | Aliases.Trace -> "97", "100;37"
-  | Aliases.Debug -> "36", "46;30"
-  | Aliases.Info -> "32", "42;30"
-  | Aliases.Warning -> "33", "43;30"
-  | Aliases.Alert -> "31", "41;30"
+  | Log.Trace -> "97", "100;37"
+  | Log.Debug -> "36", "46;30"
+  | Log.Info -> "32", "42;30"
+  | Log.Warning -> "33", "43;30"
+  | Log.Alert -> "31", "41;30"
 ;;
 
 let print_level =
   let open Yocaml in
   function
-  | Aliases.Trace | Aliases.Debug | Aliases.Info -> Format.printf
-  | Aliases.Warning | Aliases.Alert -> Format.eprintf
+  | Log.Trace | Log.Debug | Log.Info -> Format.printf
+  | Log.Warning | Log.Alert -> Format.eprintf
 ;;
 
 let log level message =

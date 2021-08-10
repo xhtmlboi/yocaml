@@ -63,15 +63,7 @@ end
     A rather naive representation of dates. *)
 
 module Date : sig
-  type t
-
-  val make : int -> int -> int -> t
-  val to_string : t -> string
-  val from_string : string -> t Try.t
-  val from : (module VALIDABLE with type t = 'a) -> 'a -> t Validate.t
-  val pp : Format.formatter -> t -> unit
-  val equal : t -> t -> bool
-  val compare : t -> t -> int
+  type t = Date.t
 
   include INJECTABLE with type t := t
 end

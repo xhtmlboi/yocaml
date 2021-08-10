@@ -1,7 +1,6 @@
-open Aliases
 open Util
 
-type kind = File of filepath
+type kind = File of Filepath.t
 
 module Deps_set = Set.Make (struct
   type t = kind

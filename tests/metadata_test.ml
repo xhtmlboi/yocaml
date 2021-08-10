@@ -216,15 +216,17 @@ date: 2021-12-03
     |> Metadata.Article.from_string (module Yocaml_yaml)
   in
   let expected =
-    Validate.valid
-    $ Metadata.Article.make
-        "My First Article"
-        "Hello, this is my first article, I guess that it is interesting, \
-         but I don't think so!"
-        []
-        (Metadata.Date.make 2021 12 3)
-        (Some "Blog - an article")
-        None
+    let open Validate.Monad in
+    Date.make 2021 Dec 3
+    >|= fun date ->
+    Metadata.Article.make
+      "My First Article"
+      "Hello, this is my first article, I guess that it is interesting, but \
+       I don't think so!"
+      []
+      date
+      (Some "Blog - an article")
+      None
   in
   check valid_article_testable "should be equal" expected obj
 ;;
@@ -251,15 +253,17 @@ date: 2021-12-03
     |> Metadata.Article.from_string (module Yocaml_yaml)
   in
   let expected =
-    Validate.valid
-    $ Metadata.Article.make
-        "My First Article"
-        "Hello, this is my first article, I guess that it is interesting, \
-         but I don't think so!"
-        [ "bohr"; "church"; "mclane" ]
-        (Metadata.Date.make 2021 12 3)
-        (Some "Blog - an article")
-        None
+    let open Validate.Monad in
+    Date.make 2021 Dec 3
+    >|= fun date ->
+    Metadata.Article.make
+      "My First Article"
+      "Hello, this is my first article, I guess that it is interesting, but \
+       I don't think so!"
+      [ "bohr"; "church"; "mclane" ]
+      date
+      (Some "Blog - an article")
+      None
   in
   check valid_article_testable "should be equal" expected obj
 ;;

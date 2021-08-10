@@ -32,41 +32,29 @@ module type READABLE = sig
 end
 
 module Date = struct
-  type t = int * int * int
-
-  let make y m d = y, m, d
-  let pp ppf (y, m, d) = Format.fprintf ppf "%04d-%02d-%02d" y m d
-  let to_string d = Format.asprintf "%a" pp d
-
-  let equal (y, m, d) (yy, mm, dd) =
-    Preface.List.equal Int.equal [ y; m; d ] [ yy; mm; dd ]
-  ;;
-
-  let compare (a, b, c) (x, y, z) =
-    let f a b c = (a * 10000) + (b * 100) + c in
-    Int.compare (f a b c) (f x y z)
-  ;;
-
-  let from_string str =
-    let open Try.Monad in
-    try Scanf.sscanf str "%04d-%02d-%02d" (fun y m d -> return (y, m, d)) with
-    | _ -> Error.(to_try $ Invalid_date str)
-  ;;
+  include Date
 
   let from (type a) (module V : VALIDABLE with type t = a) obj =
     let open Validate.Monad in
-    let open Preface.Fun.Infix in
-    V.string obj >>= Try.to_validate % from_string
+    V.string obj >>= Date.from_string
   ;;
 
-  let inject (type a) (module D : Key_value.DESCRIBABLE with type t = a)
-    = function
-    | (y, m, d) as date ->
-      [ "canonical", D.string (to_string date)
-      ; "year", D.string (string_of_int y)
-      ; "month", D.string (string_of_int m)
-      ; "day", D.string (string_of_int d)
-      ]
+  let inject (type a) (module D : Key_value.DESCRIBABLE with type t = a) date =
+    let (y, m, d), time = to_pair date in
+    [ "canonical", D.string $ to_string date
+    ; "year", D.string $ string_of_int y
+    ; "month", D.string (string_of_int $ Date.month_to_int m)
+    ; "day", D.string $ string_of_int d
+    ; "month_repr", D.string $ month_to_string m
+    ]
+    @ Option.fold
+        ~none:[ "hour", D.null; "min", D.null; "sec", D.null ]
+        ~some:(fun (h, m, s) ->
+          [ "hour", D.string $ string_of_int h
+          ; "min", D.string $ string_of_int m
+          ; "sec", D.string $ string_of_int s
+          ])
+        time
   ;;
 end
 

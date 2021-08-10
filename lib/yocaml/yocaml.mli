@@ -43,6 +43,7 @@ module Validate = Validate
     When we generate pages statically, we often want to be able to attach
     metadata to them to give the documents more context. *)
 
+module Date = Date
 module Metadata = Metadata
 
 (** This module describes operations to query key-value objects abstractly.
@@ -51,6 +52,15 @@ module Metadata = Metadata
 
 module Key_value = Key_value
 
+(** {1 Utils}
+
+    Useful tools for developing a YOCaml generator. *)
+
+module Filepath = Filepath
+module Log = Log
+module Util = Util
+module Lexicon = Lexicon
+
 (** {1 Runtime}
 
     A YOCaml program is a pure application that has, a priori, no dependence
@@ -58,15 +68,6 @@ module Key_value = Key_value
     run (as declared in the [yocaml_unix] package). *)
 
 module Runtime = Runtime
-
-(** {1 Misc}
-
-    Modules serving only internal interests. They are documented (and public)
-    only for the purpose of clarifying the documentation. *)
-
-module Lexicon = Lexicon
-module Aliases = Aliases
-module Util = Util
 
 (** {1 Included general stuff}
 

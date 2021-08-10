@@ -12,7 +12,7 @@
 val apply_as_template
   :  (module Yocaml.Metadata.INJECTABLE with type t = 'a)
   -> ?strict:bool
-  -> Yocaml.Aliases.filepath
+  -> Yocaml.Filepath.t
   -> ('a * string, 'a * string) Yocaml.Build.t
 
 (** {1 Types} *)

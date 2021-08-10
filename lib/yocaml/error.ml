@@ -10,6 +10,10 @@ type t =
   | Yaml of string
   | Mustache of string
   | Invalid_date of string
+  | Invalid_year of int
+  | Invalid_day of int
+  | Invalid_month of int
+  | Invalid_range of int * int * int
   | Unknown of string
 
 exception Error of t
@@ -28,6 +32,11 @@ let rec pp formater error =
   | Required_metadata list ->
     ppf "Required_metadata (%a)" (Preface.List.pp Format.pp_print_string) list
   | Invalid_date str -> ppf "Invalid_date (%s)" str
+  | Invalid_year x -> ppf "Invalid_year (%d)" x
+  | Invalid_day x -> ppf "Invalid_day (%d)" x
+  | Invalid_month x -> ppf "Invalid_month (%d)" x
+  | Invalid_range (x, min, max) ->
+    ppf "Invalid_range (%d, [%d, %d[)" x min max
   | List nonempty_list ->
     ppf "List (%a)" (Preface.Nonempty_list.pp pp) nonempty_list
   | Labelled_list (message, nonempty_list) ->
@@ -60,5 +69,10 @@ let rec equal x y =
   | Required_metadata a, Required_metadata b ->
     Preface.List.equal String.equal a b
   | Invalid_date a, Invalid_date b -> String.equal a b
+  | Invalid_year a, Invalid_year b -> Int.equal a b
+  | Invalid_day a, Invalid_day b -> Int.equal a b
+  | Invalid_month a, Invalid_month b -> Int.equal a b
+  | Invalid_range (a, b, c), Invalid_range (aa, bb, cc) ->
+    List.equal Int.equal [ a; b; c ] [ aa; bb; cc ]
   | _ -> false
 ;;
