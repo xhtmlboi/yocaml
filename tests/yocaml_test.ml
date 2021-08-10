@@ -7,5 +7,6 @@ let () =
     ; Util_test.cases
     ; Key_value_test.cases
     ; Metadata_test.cases
+    ; Date_test.cases
     ]
 ;;

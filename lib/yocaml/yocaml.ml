@@ -9,6 +9,7 @@ module Lexicon = Lexicon
 module Filepath = Filepath
 module Log = Log
 module Util = Util
+module Date = Date
 module Metadata = Metadata
 module Key_value = Key_value
 include Util

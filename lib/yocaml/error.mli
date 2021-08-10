@@ -22,6 +22,10 @@ type t =
   | Yaml of string
   | Mustache of string
   | Invalid_date of string
+  | Invalid_year of int
+  | Invalid_day of int
+  | Invalid_month of int
+  | Invalid_range of int * int * int
   | Unknown of string (** An unq\ualified error (probably due to laziness). *)
 
 (** Represents an [Error.t] in [exception]. *)

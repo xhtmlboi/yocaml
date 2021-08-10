@@ -43,6 +43,7 @@ module Validate = Validate
     When we generate pages statically, we often want to be able to attach
     metadata to them to give the documents more context. *)
 
+module Date = Date
 module Metadata = Metadata
 
 (** This module describes operations to query key-value objects abstractly.
