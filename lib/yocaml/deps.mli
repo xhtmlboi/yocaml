@@ -1,8 +1,6 @@
 (** [Deps] is an attempt to represent (without much effort) a set of
     dependencies to build a file. *)
 
-open Aliases
-
 (** {1 Types} *)
 
 (** Describes a collection of dependencies (where each dependency is a value
@@ -12,18 +10,18 @@ type t
 
 (**A [Deps] can take many forms. For the moment, I only handle the case where
    the dependency is a file. *)
-type kind = File of filepath
+type kind = File of Filepath.t
 
 (** {1 Helpers} *)
 
-(** [file path] turns a {!type:filepath} into a {!type:kind}. *)
-val file : filepath -> kind
+(** [file path] turns a {!type:Filepath.t} into a {!type:kind}. *)
+val file : Filepath.t -> kind
 
 (** [to_list deps] turns a {!type:t} into a [List] of {!type:kind}. *)
 val to_list : t -> kind list
 
-(** Translate [kind] to [filepath]. *)
-val to_filepath : kind -> filepath
+(** Translate [kind] to [Filepath.t]. *)
+val to_filepath : kind -> Filepath.t
 
 (** {1 Effects Helpers}
 
@@ -40,9 +38,9 @@ val get_modification_time : kind -> int Try.t Effect.t
     included in the dependencies.. *)
 val get_max_modification_time : t -> int option Try.t Effect.t
 
-(** Defines whether a {!type:Aliases.filepath} should be updated according to
-    a {!type:t} using the effects management logic.*)
-val need_update : t -> filepath -> bool Try.t Effect.t
+(** Defines whether a {!type:Aliases.Filepath.t} should be updated according
+    to a {!type:t} using the effects management logic.*)
+val need_update : t -> Filepath.t -> bool Try.t Effect.t
 
 (** {1 Implementations} *)
 

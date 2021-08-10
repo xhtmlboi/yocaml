@@ -116,7 +116,7 @@ let put dummy message =
 
 let log dummy level message =
   let l =
-    let open Aliases in
+    let open Log in
     match level with
     | Trace -> "trace"
     | Debug -> "debug"

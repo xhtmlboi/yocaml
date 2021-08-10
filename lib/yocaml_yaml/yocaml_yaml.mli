@@ -9,7 +9,7 @@
     metadata is invalid, the arrow will throw an error. *)
 val read_file_with_metadata
   :  (module Yocaml.Metadata.READABLE with type t = 'a)
-  -> Yocaml.Aliases.filepath
+  -> Yocaml.Filepath.t
   -> (unit, 'a * string) Yocaml.Build.t
 
 (** {1 Types} *)

@@ -1,7 +1,5 @@
 (** Description of a build rule. *)
 
-open Aliases
-
 (** {1 Type}
 
     [('a, 'b) Build.t] describes a special case of a function. Indeed, it is a
@@ -29,30 +27,34 @@ val get_task : ('a, 'b) t -> 'a -> 'b Effect.t
     {[ let track_binary_update = watch Sys.argv.(0) ]}
 
     Which adds the generating binary to the list of dependencies. *)
-val watch : filepath -> (unit, unit) t
+val watch : Filepath.t -> (unit, unit) t
 
 (** [create_file target build_rule] executes the [build_rule] task if the
     dependencies are not up-to-date for [target] (or [target] does not exist). *)
-val create_file : filepath -> (unit, string) t -> unit Effect.t
+val create_file : Filepath.t -> (unit, string) t -> unit Effect.t
 
 val fold_dependencies
   :  ('a, 'b) t list
   -> (('c -> 'd Effect.t) -> ('c, 'd) t) * ('a -> 'b Effect.t) list
 
 (** Copy files from a destination to a source, taking account of dependencies. *)
-val copy_file : ?new_name:string -> filepath -> into:filepath -> unit Effect.t
+val copy_file
+  :  ?new_name:string
+  -> Filepath.t
+  -> into:Filepath.t
+  -> unit Effect.t
 
 (** Arrow version of a file reader. *)
-val read_file : filepath -> (unit, string) t
+val read_file : Filepath.t -> (unit, string) t
 
 (** Pipe an arrow to an other and concat the results. *)
-val pipe_content : ?separator:string -> filepath -> (string, string) t
+val pipe_content : ?separator:string -> Filepath.t -> (string, string) t
 
 (** Concat two files. *)
 val concat_files
   :  ?separator:string
-  -> filepath
-  -> filepath
+  -> Filepath.t
+  -> Filepath.t
   -> (unit, string) t
 
 (** Read a file and parse metadata in the header. If the metadata is invalid,
@@ -63,7 +65,7 @@ val concat_files
 val read_file_with_metadata
   :  (module Metadata.VALIDABLE)
   -> (module Metadata.READABLE with type t = 'a)
-  -> filepath
+  -> Filepath.t
   -> (unit, 'a * string) t
 
 (** Applies a file as a template. (and replacing the metadata). Once the
@@ -76,7 +78,7 @@ val apply_as_template
   :  (module Metadata.INJECTABLE with type t = 'a)
   -> (module Metadata.RENDERABLE)
   -> ?strict:bool
-  -> filepath
+  -> Filepath.t
   -> ('a * string, 'a * string) t
 
 (** When a template should be applied without body. *)
