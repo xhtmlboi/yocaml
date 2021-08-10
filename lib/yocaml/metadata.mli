@@ -65,6 +65,8 @@ end
 module Date : sig
   type t = Date.t
 
+  val from : (module VALIDABLE with type t = 'a) -> 'a -> t Validate.t
+
   include INJECTABLE with type t := t
 end
 
