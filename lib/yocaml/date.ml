@@ -30,6 +30,15 @@ type t =
   ; time : (hour * min * sec) option
   }
 
+type day_of_week =
+  | Mon
+  | Tue
+  | Wed
+  | Thu
+  | Fri
+  | Sat
+  | Sun
+
 let is_leap year =
   if year mod 100 = 0 then year mod 400 = 0 else year mod 4 = 0
 ;;
@@ -194,3 +203,44 @@ let from_string s =
 ;;
 
 let to_pair date = (date.year, date.month, date.day), date.time
+
+let month_value = function
+  | Jan -> 0
+  | Feb -> 3
+  | Mar -> 3
+  | Apr -> 6
+  | May -> 1
+  | Jun -> 4
+  | Jul -> 6
+  | Aug -> 2
+  | Sep -> 5
+  | Oct -> 0
+  | Nov -> 3
+  | Dec -> 5
+;;
+
+let day_of_week date =
+  let d = date.day
+  and m = date.month
+  and y = date.year in
+  let yy = y mod 100 in
+  let cc = (y - yy) / 100 in
+  let c_code = [| 6; 4; 2; 0 |].(cc mod 4) in
+  let y_code = (yy + (yy / 4)) mod 7 in
+  let m_code =
+    let v = month_value m in
+    if is_leap y && (m = Jan || m = Feb) then v - 1 else v
+  in
+  let index = (c_code + y_code + m_code + d) mod 7 in
+  [| Sun; Mon; Tue; Wed; Thu; Fri; Sat |].(index)
+;;
+
+let day_of_week_to_string = function
+  | Mon -> "Mon"
+  | Tue -> "Tue"
+  | Wed -> "Wed"
+  | Thu -> "Thu"
+  | Fri -> "Fri"
+  | Sat -> "Sat"
+  | Sun -> "Sun"
+;;
