@@ -124,20 +124,26 @@ let month_to_int = function
   | Dec -> 12
 ;;
 
-let month_to_string = function
-  | Jan -> "Jan"
-  | Feb -> "Feb"
-  | Mar -> "Mar"
-  | Apr -> "Apr"
-  | May -> "May"
-  | Jun -> "Jun"
-  | Jul -> "Jul"
-  | Aug -> "Aug"
-  | Sep -> "Sep"
-  | Oct -> "Oct"
-  | Nov -> "Nov"
-  | Dec -> "Dec"
+let pp_month ppf m =
+  Format.fprintf
+    ppf
+    "%s"
+    (match m with
+    | Jan -> "Jan"
+    | Feb -> "Feb"
+    | Mar -> "Mar"
+    | Apr -> "Apr"
+    | May -> "May"
+    | Jun -> "Jun"
+    | Jul -> "Jul"
+    | Aug -> "Aug"
+    | Sep -> "Sep"
+    | Oct -> "Oct"
+    | Nov -> "Nov"
+    | Dec -> "Dec")
 ;;
+
+let month_to_string = Format.asprintf "%a" pp_month
 
 let month_from_int x =
   if x > 0 && x <= 12
@@ -235,12 +241,42 @@ let day_of_week date =
   [| Sun; Mon; Tue; Wed; Thu; Fri; Sat |].(index)
 ;;
 
-let day_of_week_to_string = function
-  | Mon -> "Mon"
-  | Tue -> "Tue"
-  | Wed -> "Wed"
-  | Thu -> "Thu"
-  | Fri -> "Fri"
-  | Sat -> "Sat"
-  | Sun -> "Sun"
+let pp_day_of_week ppf d =
+  Format.fprintf
+    ppf
+    "%s"
+    (match d with
+    | Mon -> "Mon"
+    | Tue -> "Tue"
+    | Wed -> "Wed"
+    | Thu -> "Thu"
+    | Fri -> "Fri"
+    | Sat -> "Sat"
+    | Sun -> "Sun")
+;;
+
+let day_of_week_to_string = Format.asprintf "%a" pp_day_of_week
+
+let pp_time ?(default = 10, 0, 0) ppf t =
+  let h, m, s =
+    match t with
+    | None -> default
+    | Some x -> x
+  in
+  Format.fprintf ppf "%02d:%02d:%02d" h m s
+;;
+
+let pp_rfc822 ?(default_time = 10, 0, 0) ppf t =
+  let dow = day_of_week t in
+  Format.fprintf
+    ppf
+    "%a, %02d %a %04d %a"
+    pp_day_of_week
+    dow
+    t.day
+    pp_month
+    t.month
+    t.year
+    (pp_time ~default:default_time)
+    t.time
 ;;

@@ -97,10 +97,10 @@ let make_invalid =
 
 let make_day_of_week_1 =
   let open Alcotest in
-  List.mapi
-    (fun i (day, date) ->
+  List.map
+    (fun (day, date) ->
       test_case
-        (Format.asprintf "%d -  dow: %a" i (Validate.pp Date.pp) date)
+        (Format.asprintf "dow: %a" (Validate.pp Date.pp) date)
         `Quick
         (fun () ->
           let open Validate in

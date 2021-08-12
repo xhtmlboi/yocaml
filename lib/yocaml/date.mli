@@ -57,6 +57,7 @@ val compare : t -> t -> int
 
 val pp : Format.formatter -> t -> unit
 val to_string : t -> string
+val pp_rfc822 : ?default_time:int * int * int -> Format.formatter -> t -> unit
 
 (** {2 Retreive information} *)
 
