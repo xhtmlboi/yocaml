@@ -270,7 +270,7 @@ let pp_rfc822 ?(default_time = 10, 0, 0) ppf t =
   let dow = day_of_week t in
   Format.fprintf
     ppf
-    "%a, %02d %a %04d %a"
+    "%a, %02d %a %04d %a GMT"
     pp_day_of_week
     dow
     t.day
