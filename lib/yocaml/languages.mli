@@ -105,4 +105,5 @@ module ISO639 : sig
   val identifier : t -> string
   val pp : Format.formatter -> t -> unit
   val pp_name : Format.formatter -> t -> unit
+  val equal : t -> t -> bool
 end
