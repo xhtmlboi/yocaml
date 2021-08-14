@@ -45,7 +45,6 @@ module Validate = Validate
 
 module Date = Date
 module Metadata = Metadata
-module Rss = Rss
 
 (** This module describes operations to query key-value objects abstractly.
     The [Yocaml_yaml] plugin is an example implementation of this protocol.
@@ -53,12 +52,20 @@ module Rss = Rss
 
 module Key_value = Key_value
 
+(** {1 RSS handling}
+
+    Deploying RSS feeds should be standard in all blogs. This is why minimal
+    support for RSS is possible without using a plugin. *)
+
+module Rss = Rss
+module Languages = Languages
+module Mime = Mime
+
 (** {1 Utils}
 
     Useful tools for developing a YOCaml generator. *)
 
 module Filepath = Filepath
-module Languages = Languages
 module Log = Log
 module Util = Util
 module Lexicon = Lexicon
