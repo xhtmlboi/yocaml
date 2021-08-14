@@ -257,26 +257,23 @@ let pp_day_of_week ppf d =
 
 let day_of_week_to_string = Format.asprintf "%a" pp_day_of_week
 
-let pp_time ?(default = 10, 0, 0) ppf t =
-  let h, m, s =
-    match t with
-    | None -> default
-    | Some x -> x
-  in
-  Format.fprintf ppf "%02d:%02d:%02d" h m s
+let pp_time ppf t =
+  match t with
+  | None -> Format.fprintf ppf ""
+  | Some (h, m, s) -> Format.fprintf ppf " %02d:%02d:%02d GMT" h m s
 ;;
 
-let pp_rfc822 ?(default_time = 10, 0, 0) ppf t =
+let pp_rfc822 ppf t =
   let dow = day_of_week t in
   Format.fprintf
     ppf
-    "%a, %02d %a %04d %a GMT"
+    "%a, %02d %a %04d%a"
     pp_day_of_week
     dow
     t.day
     pp_month
     t.month
     t.year
-    (pp_time ~default:default_time)
+    pp_time
     t.time
 ;;
