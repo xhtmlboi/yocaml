@@ -1,0 +1,15 @@
+{%- autoescape false -%}
+{{ body }}
+{% endautoescape -%}
+
+<h3>Blog</h3>
+
+<ol reversed class="list-articles">
+{% for article in articles %}
+<li>
+  <span class="date">{{ article.date.canonical  }}</span>
+  <a href="{{ article.url }}">{{ article.article_title }}</a><br />
+  <p>{{ article.article_description }}</p>
+</li>
+{% endfor %}
+</ol>

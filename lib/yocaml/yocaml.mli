@@ -52,6 +52,15 @@ module Metadata = Metadata
 
 module Key_value = Key_value
 
+(** {1 RSS handling}
+
+    Deploying RSS feeds should be standard in all blogs. This is why minimal
+    support for RSS is possible without using a plugin. *)
+
+module Rss = Rss
+module Languages = Languages
+module Mime = Mime
+
 (** {1 Utils}
 
     Useful tools for developing a YOCaml generator. *)

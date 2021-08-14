@@ -30,6 +30,16 @@ type hour = int
 type min = int
 type sec = int
 
+(** Day of Week *)
+type day_of_week =
+  | Mon
+  | Tue
+  | Wed
+  | Thu
+  | Fri
+  | Sat
+  | Sun
+
 (** {1 API} *)
 
 (** [Date.make ~time:(hour, min, sec) year month day] tries to create a
@@ -48,6 +58,12 @@ val compare : t -> t -> int
 val pp : Format.formatter -> t -> unit
 val to_string : t -> string
 
+val pp_rfc822
+  :  ?default_time:hour * min * sec
+  -> Format.formatter
+  -> t
+  -> unit
+
 (** {2 Retreive information} *)
 
 val to_pair : t -> (year * month * day) * (hour * min * sec) option
@@ -57,3 +73,8 @@ val month_to_int : month -> int
 
 (** [Date.month_to_string Dec] is equal to ["Dec"]. *)
 val month_to_string : month -> string
+
+(** A Fragile function which seems works at least for 1600 and to 3000 :) *)
+val day_of_week : t -> day_of_week
+
+val day_of_week_to_string : day_of_week -> string

@@ -4,6 +4,17 @@ let destination = "_build"
 let css_destination = into destination "css"
 let images_destination = into destination "images"
 let track_binary_update = Build.watch Sys.argv.(0)
+let domain = "https://xhtmlboi.com"
+let feed_link = into domain "feed.xml"
+
+let rss_channel items () =
+  Rss.Channel.make
+    ~title:"My superb website"
+    ~link:domain
+    ~feed_link
+    ~description:"Yo"
+    items
+;;
 
 let may_process_markdown file =
   let open Build in
@@ -67,25 +78,38 @@ let images =
     (fun file -> Build.copy_file file ~into:images_destination)
 ;;
 
+let collect_articles_for_index =
+  let open Build in
+  collection
+    (read_child_files "articles/" (with_extension "md"))
+    (fun source ->
+      track_binary_update
+      >>> Yocaml_yaml.read_metadata (module Metadata.Article) source
+      >>^ fun x -> x, article_destination source)
+    (fun x (meta, content) ->
+      x
+      |> Metadata.Articles.make
+           ?title:(Metadata.Page.title meta)
+           ?description:(Metadata.Page.description meta)
+      |> Metadata.Articles.sort_articles_by_date
+      |> fun x -> x, content)
+;;
+
+let rss_feed =
+  let open Build in
+  collection
+    (read_child_files "articles/" (with_extension "md"))
+    (fun source ->
+      track_binary_update
+      >>> Yocaml_yaml.read_metadata (module Metadata.Article) source
+      >>^ Metadata.Article.to_rss_item
+            (into domain $ article_destination source))
+    rss_channel
+;;
+
 let index =
   let open Build in
-  let* articles =
-    collection
-      (read_child_files "articles/" (with_extension "md"))
-      (fun source ->
-        track_binary_update
-        >>> Yocaml_yaml.read_file_with_metadata
-              (module Metadata.Article)
-              source
-        >>^ fun (x, _) -> x, article_destination source)
-      (fun x (meta, content) ->
-        x
-        |> Metadata.Articles.make
-             ?title:(Metadata.Page.title meta)
-             ?description:(Metadata.Page.description meta)
-        |> Metadata.Articles.sort_articles_by_date
-        |> fun x -> x, content)
-  in
+  let* articles = collect_articles_for_index in
   create_file
     (into destination "index.html")
     (track_binary_update
@@ -101,4 +125,14 @@ let index =
     >>^ Stdlib.snd)
 ;;
 
-let () = Yocaml_unix.execute (pages >> css >> images >> articles >> index)
+let feed =
+  let open Build in
+  let* rss = rss_feed in
+  create_file
+    (into destination "feed.xml")
+    (track_binary_update >>> rss >>^ Rss.Channel.to_rss)
+;;
+
+let () =
+  Yocaml_unix.execute (pages >> css >> images >> articles >> index >> feed)
+;;

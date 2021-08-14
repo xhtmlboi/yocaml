@@ -128,6 +128,7 @@ module Article : sig
   val equal : t -> t -> bool
   val pp : Format.formatter -> t -> unit
   val compare_by_date : t -> t -> int
+  val to_rss_item : string -> t -> Rss.Item.t
 end
 
 (** {2 A page with a list of article} *)

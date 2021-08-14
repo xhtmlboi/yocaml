@@ -10,7 +10,10 @@ module Filepath = Filepath
 module Log = Log
 module Util = Util
 module Date = Date
+module Rss = Rss
 module Metadata = Metadata
+module Languages = Languages
+module Mime = Mime
 module Key_value = Key_value
 include Util
 include Effect
