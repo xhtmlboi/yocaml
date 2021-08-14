@@ -108,7 +108,7 @@ val without_body : 'a -> 'a * string
                    (module Metadata.Article)
                    source
              >>^ fun (x, _) -> x, article_destination source)
-           (fun x meta content ->
+           (fun x (meta, content) ->
              x
              |> Metadata.Articles.make
                   ?title:(Metadata.Page.title meta)
@@ -136,8 +136,8 @@ val without_body : 'a -> 'a * string
 val collection
   :  'a list Effect.t
   -> ('a -> (unit, 'b) t)
-  -> ('b list -> 'c -> 'd -> 'e)
-  -> ('c * 'd, 'e) t Effect.t
+  -> ('b list -> 'c -> 'e)
+  -> ('c, 'e) t Effect.t
 
 (** {1 Included Arrow combinators}
 

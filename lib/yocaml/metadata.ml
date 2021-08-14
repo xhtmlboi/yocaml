@@ -133,6 +133,17 @@ module Article = struct
     }
   ;;
 
+  let to_rss_item url article =
+    Rss.(
+      Item.make
+        ~title:article.article_title
+        ~link:url
+        ~pub_date:article.date
+        ~description:article.article_description
+        ~guid:(Guid.link url)
+        ())
+  ;;
+
   let from_string (module V : VALIDABLE) = function
     | None -> Validate.error $ Error.Required_metadata [ "Article" ]
     | Some str ->

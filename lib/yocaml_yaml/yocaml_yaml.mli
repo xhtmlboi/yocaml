@@ -5,12 +5,21 @@
 
 (** {1 Build additions} *)
 
-(** Read a file and parse metadata desribed in Yaml in the header. If the
-    metadata is invalid, the arrow will throw an error. *)
+(** Read a file and parse metadata desribed in Yaml in the header and returns
+    a pair with the metadate and the file. If the metadata is invalid, the
+    arrow will throw an error. *)
 val read_file_with_metadata
   :  (module Yocaml.Metadata.READABLE with type t = 'a)
   -> Yocaml.Filepath.t
   -> (unit, 'a * string) Yocaml.Build.t
+
+(** Read a file and parse metadata desribed in Yaml in the header and returns
+    only the metadata. If the metadata is invalid, the arrow will throw an
+    error. *)
+val read_metadata
+  :  (module Yocaml.Metadata.READABLE with type t = 'a)
+  -> Yocaml.Filepath.t
+  -> (unit, 'a) Yocaml.Build.t
 
 (** {1 Types} *)
 

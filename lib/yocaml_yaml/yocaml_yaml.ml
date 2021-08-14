@@ -17,4 +17,14 @@ let read_file_with_metadata
   Yocaml.Build.read_file_with_metadata (module Validable) (module R) path
 ;;
 
+let read_metadata
+    (type a)
+    (module R : Yocaml.Metadata.READABLE with type t = a)
+    path
+  =
+  let open Yocaml.Build in
+  read_file_with_metadata (module Validable) (module R) path
+  >>^ Preface.Pair.fst
+;;
+
 include Validable

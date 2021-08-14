@@ -173,8 +173,8 @@ let collection effect arrow process =
   effect
   >|= fold_dependencies % List.map arrow
   >|= fun (task, effects) ->
-  task (fun (meta, content) ->
+  task (fun result ->
       List.map (fun f -> f ()) effects
       |> Traverse.sequence
-      >|= fun x -> process x meta content)
+      >|= fun x -> process x result)
 ;;
