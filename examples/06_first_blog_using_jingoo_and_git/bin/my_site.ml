@@ -74,7 +74,7 @@ let index =
       (fun source ->
         Yocaml_yaml.read_file_with_metadata (module Metadata.Article) source
         >>^ fun (x, _) -> x, article_destination source)
-      (fun x meta content ->
+      (fun x (meta, content) ->
         x
         |> Metadata.Articles.make
              ?title:(Metadata.Page.title meta)
