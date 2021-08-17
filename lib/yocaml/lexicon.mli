@@ -17,6 +17,9 @@ type t = string
 (** Occurs when a target need to be built. *)
 val target_need_to_be_built : Filepath.t -> t
 
+(** Occurs when a target need to be read. *)
+val target_need_to_be_read : Filepath.t -> t
+
 (** Occurs when a target is up to date. *)
 val target_is_up_to_date : Filepath.t -> t
 

@@ -9,3 +9,4 @@ let oh_dear_there_is_an_error x =
 let crap_there_is_an_error = oh_dear_there_is_an_error Error.pp
 let crap_there_is_an_exception = oh_dear_there_is_an_error Preface.Exn.pp
 let target_need_to_be_built = Format.asprintf "Fresh: %s"
+let target_need_to_be_read = Format.asprintf "Read: %s"

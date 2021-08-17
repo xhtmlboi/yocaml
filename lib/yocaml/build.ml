@@ -70,17 +70,29 @@ module Arrow_choice =
 include (
   Arrow_choice : Preface_specs.ARROW_CHOICE with type ('a, 'b) t := ('a, 'b) t)
 
+let discard_if_error =
+  let open Effect in
+  function
+  | Error err -> alert (Lexicon.crap_there_is_an_error err) >> throw err
+  | Ok x -> return x
+;;
+
 let create_file target build_rule =
   perform_if_update_needed
     target
     build_rule.dependencies
     Effect.(
-      info (Lexicon.target_need_to_be_built target)
-      >> build_rule.task ()
-      >>= write_file target
+      trace (Lexicon.target_need_to_be_read target)
+      >>= build_rule.task
+      >>= content_changes target
+      >>= discard_if_error
       >>= function
-      | Error err -> alert (Lexicon.crap_there_is_an_error err) >> throw err
-      | Ok () -> return ())
+      | Either.Left content ->
+        info
+        $ Lexicon.target_need_to_be_built target
+        >> write_file target content
+        >>= discard_if_error
+      | Either.Right () -> return ())
     Effect.(trace (Lexicon.target_is_up_to_date target))
 ;;
 

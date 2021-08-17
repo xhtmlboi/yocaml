@@ -34,6 +34,11 @@ type (_, 'a) effects =
   | Read_file :
       Filepath.t
       -> (< read_file : unit ; .. >, string Try.t) effects
+  | Content_changes :
+      (string * Filepath.t)
+      -> ( < content_changes : unit ; .. >
+         , (string, unit) Either.t Try.t )
+         effects
   | Write_file :
       (Filepath.t * string)
       -> (< write_file : unit ; .. >, unit Try.t) effects
@@ -70,6 +75,7 @@ module Freer :
             ; target_modification_time : unit
             ; read_file : unit
             ; write_file : unit
+            ; content_changes : unit
             ; read_dir : unit
             ; log : unit
             ; throw : unit
@@ -112,6 +118,14 @@ val target_modification_time : Filepath.t -> int Try.t Freer.t
     mainly out of laziness, and as I'll probably be the only user of this
     library... it doesn't matter! *)
 val read_file : Filepath.t -> string Try.t Freer.t
+
+(** [content_changes content filepath] should be interpreted as trying to
+    check if the content of the file is different from the given content. (In
+    order to reduce the mtime modification) *)
+val content_changes
+  :  Filepath.t
+  -> string
+  -> (string, unit) Either.t Try.t Freer.t
 
 (** [write_file path content] should be interpreted as trying to write
     [content] to the file denoted by the file path [path]. In my understanding

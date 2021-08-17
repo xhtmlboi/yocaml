@@ -43,6 +43,10 @@ module type RUNTIME = sig
       string) of the given file. The function may fail.*)
   val read_file : Filepath.t -> string Try.t
 
+  (** [content_changes filepath new_content] check if the content of the file
+      has been changed. *)
+  val content_changes : Filepath.t -> string -> bool Try.t
+
   (** [write_file path content] should write (create or overwrite) [content]
       into the given path. The function may fail. *)
   val write_file : Filepath.t -> string -> unit Try.t

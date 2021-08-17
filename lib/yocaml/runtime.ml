@@ -8,6 +8,7 @@ module type RUNTIME = sig
   val get_modification_time : Filepath.t -> int Try.t
   val target_modification_time : Filepath.t -> int Try.t
   val read_file : Filepath.t -> string Try.t
+  val content_changes : Filepath.t -> string -> bool Try.t
   val write_file : Filepath.t -> string -> unit Try.t
   val read_dir : Filepath.t -> Filepath.t list
   val create_dir : ?file_perm:int -> Filepath.t -> unit
@@ -46,6 +47,14 @@ let execute (module R : RUNTIME) program =
             | Effect.File_exists path -> resume $ R.file_exists path
             | Effect.Target_exists path -> resume $ R.target_exists path
             | Effect.Read_file path -> resume $ R.read_file path
+            | Effect.Content_changes (path, content) ->
+              let result =
+                R.content_changes path content
+                |> Try.Functor.map (function
+                       | true -> Either.left content
+                       | false -> Either.right ())
+              in
+              resume result
             | Effect.Write_file (path, content) ->
               let () = R.create_dir $ Filename.dirname path in
               resume $ R.write_file path content
