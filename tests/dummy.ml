@@ -110,7 +110,10 @@ let get_file_mtime dummy = Filesystem.get_file_mtime dummy.filesystem
 let get_file_content dummy = Filesystem.get_file_content dummy.filesystem
 
 let content_changes dummy content file =
-  get_file_content dummy file |> Option.map (String.equal content)
+  Try.ok
+    (match get_file_content dummy file with
+    | Some x -> not (String.equal content x)
+    | None -> true)
 ;;
 
 let put dummy message =
@@ -158,7 +161,7 @@ let handle dummy program =
               resume $ perform_if_exists path (get_file_mtime dummy)
             | Content_changes (path, content) ->
               let result =
-                perform_if_exists path (content_changes dummy content)
+                content_changes dummy content path
                 |> Try.Functor.map (function
                        | true -> Either.left content
                        | false -> Either.right ())
