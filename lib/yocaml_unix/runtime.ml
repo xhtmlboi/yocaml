@@ -110,3 +110,16 @@ let read_dir path =
   try Sys.readdir path |> Array.to_list with
   | _ -> []
 ;;
+
+let hash value =
+  let open Cryptokit in
+  value |> hash_string (Hash.sha256 ()) |> transform_string (Hexa.encode ())
+;;
+
+let content_changes path new_content =
+  let open Yocaml.Try.Monad in
+  let+ old_content = read_file path in
+  let new_content_checksum = hash new_content
+  and old_content_checksum = hash old_content in
+  not (String.equal new_content_checksum old_content_checksum)
+;;

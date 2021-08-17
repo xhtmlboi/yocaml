@@ -94,6 +94,26 @@ struct
     Lwt_main.run task
   ;;
 
+  let content_changes filepath new_content =
+    let path = path_of filepath in
+    let hash s = Digestif.SHA256.digest_string s in
+    let task =
+      let open Lwt.Syntax in
+      let* active_branch = branch in
+      let* obj = Store.find active_branch path in
+      let new_hash = hash new_content in
+      Lwt.return
+        (Option.fold
+           ~none:(Ok true)
+           ~some:(fun old_content ->
+             let old_hash = hash old_content in
+             let f = not (Digestif.SHA256.equal new_hash old_hash) in
+             Ok f)
+           obj)
+    in
+    Lwt_main.run task
+  ;;
+
   (* Additional Runtime for dealing with a Source. *)
 
   let file_exists = Source.file_exists
