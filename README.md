@@ -31,5 +31,4 @@ And in the `dune` file of your executable:
 
 | Url                                                                          | Author                 | Sources                                                           |
 | ---------------------------------------------------------------------------- | ---------------------- | ----------------------------------------------------------------- |
-| [xhtmlboi.github.io](https://xhtmlboi.github.io)                             | **@xhtmlboi**          | [Github](https://github.com/xhtmlboi/blogger)                     |
 | [Angry Cusine Nerd](https://bastienduplessier.github.io/angry_cuisine_nerd/) | **@bastienDuplessier** | [Github](https://github.com/BastienDuplessier/angry_cuisine_nerd) |
