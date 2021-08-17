@@ -4,6 +4,7 @@ module Store = Irmin_unix.Git.FS.KV (Irmin.Contents.String)
 let destination = "_build"
 let css_destination = "css"
 let images_destination = "images"
+let track_binary_update = Build.watch Sys.argv.(0)
 let config = Irmin_git.config ~bare:true destination
 
 let may_process_markdown file =
@@ -23,7 +24,8 @@ let pages =
       let open Build in
       create_file
         target
-        (Yocaml_yaml.read_file_with_metadata (module Metadata.Page) file
+        (track_binary_update
+        >>> Yocaml_yaml.read_file_with_metadata (module Metadata.Page) file
         >>> may_process_markdown file
         >>> Yocaml_jingoo.apply_as_template
               (module Metadata.Page)
@@ -42,7 +44,8 @@ let articles =
       let target = article_destination file in
       create_file
         target
-        (Yocaml_yaml.read_file_with_metadata (module Metadata.Article) file
+        (track_binary_update
+        >>> Yocaml_yaml.read_file_with_metadata (module Metadata.Article) file
         >>> Yocaml_markdown.content_to_html ()
         >>> Yocaml_jingoo.apply_as_template
               (module Metadata.Article)
@@ -84,7 +87,8 @@ let index =
   in
   create_file
     "index.html"
-    (Yocaml_yaml.read_file_with_metadata (module Metadata.Page) "index.md"
+    (track_binary_update
+    >>> Yocaml_yaml.read_file_with_metadata (module Metadata.Page) "index.md"
     >>> Yocaml_markdown.content_to_html ()
     >>> articles
     >>> Yocaml_jingoo.apply_as_template
