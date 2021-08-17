@@ -26,16 +26,4 @@ module Functor = Preface.Validation.Functor (Error_list)
 module Applicative = Preface.Validation.Applicative (Error_list)
 module Selective = Preface.Validation.Selective (Error_list)
 module Monad = Preface.Validation.Monad (Error_list)
-
-module Alt =
-  Preface.Make.Alt.Over_functor
-    (Functor)
-    (struct
-      type nonrec 'a t = 'a t
-
-      let combine a b =
-        match a, b with
-        | Preface.Validation.Invalid _, result -> result
-        | Preface.Validation.Valid x, _ -> Preface.Validation.Valid x
-      ;;
-    end)
+module Alt = Preface.Validation.Alt (Error_list)
