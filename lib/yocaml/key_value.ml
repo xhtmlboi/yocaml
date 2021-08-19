@@ -159,8 +159,7 @@ module Make_validator (KV : VALIDABLE) = struct
 
   let text_and additional_validator subject =
     let error () = Validate.error $ Error.Invalid_field "Text expected" in
-    let open Validate.Monad in
-    let open Validate.Alt in
+    let open Validate.Infix in
     KV.as_string Validate.valid error subject
     <|> KV.as_atom Validate.valid error subject
     <|> (KV.as_boolean Validate.valid error subject >|= string_of_bool)

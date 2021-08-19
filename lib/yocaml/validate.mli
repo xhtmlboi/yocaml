@@ -59,3 +59,20 @@ module Selective : Preface_specs.SELECTIVE with type 'a t = 'a t
 (** [Validate] is also a [Monad] that (logically) implements [bind] and
     [return]. *)
 module Monad : Preface_specs.Traversable.API_OVER_MONAD with type 'a t = 'a t
+
+(** {1 Infix and Syntax operators}*)
+
+module Infix : sig
+  include Preface.Specs.Alt.INFIX with type 'a t := 'a t
+  include Preface.Specs.Selective.INFIX with type 'a t := 'a t
+  include Preface.Specs.Monad.INFIX with type 'a t := 'a t
+end
+
+module Syntax : sig
+  include Preface.Specs.Selective.SYNTAX with type 'a t := 'a t
+  include Preface.Specs.Monad.SYNTAX with type 'a t := 'a t
+end
+
+include module type of Infix (** @closed *)
+
+include module type of Syntax (** @closed *)

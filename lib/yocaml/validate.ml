@@ -27,3 +27,17 @@ module Applicative = Preface.Validation.Applicative (Error_list)
 module Selective = Preface.Validation.Selective (Error_list)
 module Monad = Preface.Validation.Monad (Error_list)
 module Alt = Preface.Validation.Alt (Error_list)
+
+module Infix = struct
+  include Selective.Infix
+  include Alt.Infix
+  include Monad.Infix
+end
+
+module Syntax = struct
+  include Selective.Syntax
+  include Monad.Syntax
+end
+
+include Infix
+include Syntax

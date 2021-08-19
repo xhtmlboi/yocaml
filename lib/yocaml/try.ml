@@ -18,3 +18,16 @@ let from_validate = function
 module Functor = Preface.Result.Functor (Error)
 module Applicative = Preface.Result.Applicative (Error)
 module Monad = Preface.Result.Monad (Error)
+
+module Infix = struct
+  include Applicative.Infix
+  include Monad.Infix
+end
+
+module Syntax = struct
+  include Applicative.Syntax
+  include Monad.Syntax
+end
+
+include Infix
+include Syntax
