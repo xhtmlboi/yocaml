@@ -40,7 +40,10 @@ val get_max_modification_time : t -> int option Try.t Effect.t
 
 (** Defines whether a {!type:Aliases.Filepath.t} should be updated according
     to a {!type:t} using the effects management logic.*)
-val need_update : t -> Filepath.t -> bool Try.t Effect.t
+val need_update
+  :  t
+  -> Filepath.t
+  -> [ `Need_creation | `Need_update | `Up_to_date ] Try.t Effect.t
 
 (** {1 Implementations} *)
 

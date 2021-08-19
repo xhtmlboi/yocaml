@@ -8,12 +8,14 @@ type ('a, 'b) t =
 let get_dependencies { dependencies; _ } = dependencies
 let get_task { task; _ } = task
 
-let perform_if_update_needed target deps do_something do_nothing =
+let perform_if_update_needed target deps need_creation need_update up_to_date =
   let open Effect in
   let* may_need_update = Deps.need_update deps target in
   match may_need_update with
   | Error err -> throw err
-  | Ok need_update -> if need_update then do_something else do_nothing
+  | Ok `Up_to_date -> up_to_date
+  | Ok `Need_creation -> need_creation
+  | Ok `Need_update -> need_update
 ;;
 
 module Category = Preface.Make.Category.Via_id_and_compose (struct
@@ -81,6 +83,11 @@ let create_file target build_rule =
   perform_if_update_needed
     target
     build_rule.dependencies
+    Effect.(
+      info (Lexicon.target_need_to_be_built target)
+      >>= build_rule.task
+      >>= write_file target
+      >>= discard_if_error)
     Effect.(
       trace (Lexicon.target_need_to_be_read target)
       >>= build_rule.task

@@ -49,11 +49,16 @@ let get_max_modification_time deps =
         % Nonempty_list_try.sequence
 ;;
 
+let bool_to_action = function
+  | true -> `Need_update
+  | false -> `Up_to_date
+;;
+
 let nel_for_one f =
   let open Preface.Nonempty_list in
   let rec loop = function
-    | Last x -> f x
-    | x :: xs -> if f x then true else loop xs
+    | Last x -> bool_to_action $ f x
+    | x :: xs -> if f x then `Need_update else loop xs
   in
   loop
 ;;
@@ -63,14 +68,14 @@ let need_update deps target =
   let open Effect.Monad in
   Effect.target_exists target
   >>= function
-  | false -> return $ Try.ok true
+  | false -> return $ Try.ok `Need_creation
   | true ->
     Effect.target_modification_time target
     >>= (function
     | Error err -> return $ Try.error err
     | Ok mtime ->
       (match deps |> to_list |> Preface.Nonempty_list.from_list with
-      | None -> return $ Try.ok false
+      | None -> return $ Try.ok `Up_to_date
       | Some deps_list ->
         Nonempty_list_effects.traverse get_modification_time deps_list
         >|= Try.Functor.map (nel_for_one (fun x -> x >= mtime))
