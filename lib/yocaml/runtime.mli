@@ -17,9 +17,15 @@
     an additional runtime. *)
 
 module type RUNTIME = sig
+  (** [get_time ()] should returns a float like [Unix.gettimeofday ()]. *)
+  val get_time : unit -> float
+
   (** [file_exists path] should returns [true] if [path] exists (as a file or
       a directory), [false] otherwise. *)
   val file_exists : Filepath.t -> bool
+
+  (** Same of [file_exists] but acting on the target. *)
+  val target_exists : Filepath.t -> bool
 
   (** [is_directory path] should returns [true] if [path] is an existing file
       and if the file is a directory, [false] otherwise. *)
@@ -30,9 +36,16 @@ module type RUNTIME = sig
       fail. *)
   val get_modification_time : Filepath.t -> int Try.t
 
+  (** Same of [get_modification_time] but acting on the target. *)
+  val target_modification_time : Filepath.t -> int Try.t
+
   (** [read_file path] should returns a [Try.t] containing the content (as a
       string) of the given file. The function may fail.*)
   val read_file : Filepath.t -> string Try.t
+
+  (** [content_changes filepath new_content] check if the content of the file
+      has been changed. *)
+  val content_changes : Filepath.t -> string -> bool Try.t
 
   (** [write_file path content] should write (create or overwrite) [content]
       into the given path. The function may fail. *)

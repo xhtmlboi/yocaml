@@ -1,10 +1,10 @@
 opam-version: "2.0"
 version: "dev"
-synopsis: "YOCaml Unix runtime"
+synopsis: "YOCaml Runtime using Irmin as target"
 maintainer: "xhtmlboi@gmail.com"
 authors: [
   "The XHTMLBoy <xhtmlboi@gmail.com>"
-  "Pierre Ruyter <grimfw@gmail.com>"
+  "Xavier Van de Woestyne <xaviervdw@gmail.com>"
 ]
 
 build: [
@@ -25,7 +25,9 @@ depends: [
   "dune" { >= "2.8" }
   "odoc" {with-doc}
   "preface" { >= "0.1.0" }
-  "cryptokit" { >= "1.16.1" }
+  "lwt" { >= "5.4.2" }
+  "irmin" { >= "2.7.2" }
+  "irmin-unix" { >= "2.7.2" }
   "yocaml" {pinned}
 ]
 

@@ -1,0 +1,7 @@
+(library
+ (name yocaml_irmin)
+ (public_name yocaml_irmin)
+ (libraries lwt irmin preface yocaml))
+
+(documentation
+ (package yocaml_irmin))

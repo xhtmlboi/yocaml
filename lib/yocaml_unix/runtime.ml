@@ -1,7 +1,9 @@
 open Yocaml.Util
 
+let get_time () = Unix.gettimeofday ()
 let file_exists = Sys.file_exists
 let is_directory = Sys.is_directory
+let target_exists = file_exists
 
 let get_modification_time path =
   let open Unix in
@@ -12,6 +14,8 @@ let get_modification_time path =
   | Unix_error (err, f, p) ->
     Yocaml.Error.(to_try (Unix (Unix.error_message err, f, p)))
 ;;
+
+let target_modification_time = get_modification_time
 
 let bytes_of_in_channel channel =
   let length = in_channel_length channel in
@@ -105,4 +109,17 @@ let log level message =
 let read_dir path =
   try Sys.readdir path |> Array.to_list with
   | _ -> []
+;;
+
+let hash value =
+  let open Cryptokit in
+  value |> hash_string (Hash.sha256 ()) |> transform_string (Hexa.encode ())
+;;
+
+let content_changes path new_content =
+  let open Yocaml.Try.Monad in
+  let+ old_content = read_file path in
+  let new_content_checksum = hash new_content
+  and old_content_checksum = hash old_content in
+  not (String.equal new_content_checksum old_content_checksum)
 ;;

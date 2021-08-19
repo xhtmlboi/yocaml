@@ -5,5 +5,12 @@
 
 (** {1 API} *)
 
-(** Executes an YOCaml program using the UNIX Runtime. *)
+(** Executes a YOCaml program using the UNIX Runtime. *)
 val execute : 'a Yocaml.Effect.t -> 'a
+
+(** {1 Runtime}
+
+    Inclusion of the runtime to be able to use [Yocaml_unix] as runtime
+    directly. *)
+
+include Yocaml.Runtime.RUNTIME (** @closed *)

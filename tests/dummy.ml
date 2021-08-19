@@ -109,6 +109,13 @@ let directory_exists dummy = Filesystem.directory_exists dummy.filesystem
 let get_file_mtime dummy = Filesystem.get_file_mtime dummy.filesystem
 let get_file_content dummy = Filesystem.get_file_content dummy.filesystem
 
+let content_changes dummy content file =
+  Try.ok
+    (match get_file_content dummy file with
+    | Some x -> not (String.equal content x)
+    | None -> true)
+;;
+
 let put dummy message =
   let new_stdout = Stdout.put dummy.stdout message in
   dummy.stdout <- new_stdout
@@ -147,8 +154,19 @@ let handle dummy program =
           let f : type b. (b -> 'a) -> b Effect.f -> 'a =
            fun resume -> function
             | File_exists path -> resume $ file_exists dummy path
+            | Target_exists path -> resume $ file_exists dummy path
+            | Target_modification_time path ->
+              resume $ perform_if_exists path (get_file_mtime dummy)
             | Get_modification_time path ->
               resume $ perform_if_exists path (get_file_mtime dummy)
+            | Content_changes (path, content) ->
+              let result =
+                content_changes dummy content path
+                |> Try.Functor.map (function
+                       | true -> Either.left content
+                       | false -> Either.right ())
+              in
+              resume result
             | Read_file path ->
               resume $ perform_if_exists path (get_file_content dummy)
             | Write_file (path, content) ->

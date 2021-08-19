@@ -8,12 +8,14 @@ type ('a, 'b) t =
 let get_dependencies { dependencies; _ } = dependencies
 let get_task { task; _ } = task
 
-let perform_if_update_needed target deps do_something do_nothing =
+let perform_if_update_needed target deps need_creation need_update up_to_date =
   let open Effect in
   let* may_need_update = Deps.need_update deps target in
   match may_need_update with
   | Error err -> throw err
-  | Ok need_update -> if need_update then do_something else do_nothing
+  | Ok `Up_to_date -> up_to_date
+  | Ok `Need_creation -> need_creation
+  | Ok `Need_update -> need_update
 ;;
 
 module Category = Preface.Make.Category.Via_id_and_compose (struct
@@ -70,17 +72,34 @@ module Arrow_choice =
 include (
   Arrow_choice : Preface_specs.ARROW_CHOICE with type ('a, 'b) t := ('a, 'b) t)
 
+let discard_if_error =
+  let open Effect in
+  function
+  | Error err -> alert (Lexicon.crap_there_is_an_error err) >> throw err
+  | Ok x -> return x
+;;
+
 let create_file target build_rule =
   perform_if_update_needed
     target
     build_rule.dependencies
     Effect.(
       info (Lexicon.target_need_to_be_built target)
-      >> build_rule.task ()
+      >>= build_rule.task
       >>= write_file target
+      >>= discard_if_error)
+    Effect.(
+      trace (Lexicon.target_need_to_be_read target)
+      >>= build_rule.task
+      >>= content_changes target
+      >>= discard_if_error
       >>= function
-      | Error err -> alert (Lexicon.crap_there_is_an_error err) >> throw err
-      | Ok () -> return ())
+      | Either.Left content ->
+        info
+        $ Lexicon.target_need_to_be_built target
+        >> write_file target content
+        >>= discard_if_error
+      | Either.Right () -> return ())
     Effect.(trace (Lexicon.target_is_up_to_date target))
 ;;
 

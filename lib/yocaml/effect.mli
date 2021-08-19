@@ -22,12 +22,23 @@
 
 type (_, 'a) effects =
   | File_exists : Filepath.t -> (< file_exists : unit ; .. >, bool) effects
+  | Target_exists :
+      Filepath.t
+      -> (< target_exists : unit ; .. >, bool) effects
   | Get_modification_time :
       Filepath.t
       -> (< get_modification_time : unit ; .. >, int Try.t) effects
+  | Target_modification_time :
+      Filepath.t
+      -> (< target_modification_time : unit ; .. >, int Try.t) effects
   | Read_file :
       Filepath.t
       -> (< read_file : unit ; .. >, string Try.t) effects
+  | Content_changes :
+      (string * Filepath.t)
+      -> ( < content_changes : unit ; .. >
+         , (string, unit) Either.t Try.t )
+         effects
   | Write_file :
       (Filepath.t * string)
       -> (< write_file : unit ; .. >, unit Try.t) effects
@@ -59,9 +70,12 @@ module Freer :
   Preface_specs.FREER_MONAD
     with type 'a f =
           ( < file_exists : unit
+            ; target_exists : unit
             ; get_modification_time : unit
+            ; target_modification_time : unit
             ; read_file : unit
             ; write_file : unit
+            ; content_changes : unit
             ; read_dir : unit
             ; log : unit
             ; throw : unit
@@ -85,16 +99,33 @@ module Freer :
     denoted by the file path [path] exists, [false] otherwise. *)
 val file_exists : Filepath.t -> bool Freer.t
 
+(** [target_exists path] should be interpreted as returning [true] if the file
+    denoted by the file path [path] exists, [false] otherwise. *)
+val target_exists : Filepath.t -> bool Freer.t
+
 (** [get_modification_time path] should be interpreted as returning, as an
     integer, the Unix time ([mtime] corresponding to the modification date of
     the file denoted by the file path [path]. *)
 val get_modification_time : Filepath.t -> int Try.t Freer.t
+
+(** [target_modification_time path] should be interpreted as returning, as an
+    integer, the Unix time ([mtime] corresponding to the modification date of
+    the file denoted by the file path [path]. *)
+val target_modification_time : Filepath.t -> int Try.t Freer.t
 
 (** [read_file path] should be interpreted as trying to read the contents of
     the file denoted by the file path [path]. At the moment I'm using strings
     mainly out of laziness, and as I'll probably be the only user of this
     library... it doesn't matter! *)
 val read_file : Filepath.t -> string Try.t Freer.t
+
+(** [content_changes content filepath] should be interpreted as trying to
+    check if the content of the file is different from the given content. (In
+    order to reduce the mtime modification) *)
+val content_changes
+  :  Filepath.t
+  -> string
+  -> (string, unit) Either.t Try.t Freer.t
 
 (** [write_file path content] should be interpreted as trying to write
     [content] to the file denoted by the file path [path]. In my understanding
