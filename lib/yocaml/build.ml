@@ -70,7 +70,7 @@ module Arrow_choice =
     end)
 
 include (
-  Arrow_choice : Preface_specs.ARROW_CHOICE with type ('a, 'b) t := ('a, 'b) t)
+  Arrow_choice : Preface.Specs.ARROW_CHOICE with type ('a, 'b) t := ('a, 'b) t)
 
 let discard_if_error =
   let open Effect in

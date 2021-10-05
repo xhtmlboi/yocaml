@@ -48,7 +48,7 @@ val need_update
 (** {1 Implementations} *)
 
 (** A [Deps.t] is a [Monoid].*)
-module Monoid : Preface_specs.MONOID with type t = t
+module Monoid : Preface.Specs.MONOID with type t = t
 
 (** {1 Included Set operations} *)
 

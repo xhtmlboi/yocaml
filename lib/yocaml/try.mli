@@ -46,10 +46,10 @@ module Functor : Preface.Specs.FUNCTOR with type 'a t = 'a t
 
 (** [Try] is an [Applicative] that (logically) implements [apply] and [pure]. *)
 module Applicative :
-  Preface_specs.Traversable.API_OVER_APPLICATIVE with type 'a t = 'a t
+  Preface.Specs.Traversable.API_OVER_APPLICATIVE with type 'a t = 'a t
 
 (** [Try] is also a [Monad] that (logically) implements [bind] and [return]. *)
-module Monad : Preface_specs.Traversable.API_OVER_MONAD with type 'a t = 'a t
+module Monad : Preface.Specs.Traversable.API_OVER_MONAD with type 'a t = 'a t
 
 (** {1 Infix and Syntax operators}*)
 

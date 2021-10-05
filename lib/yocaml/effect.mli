@@ -255,7 +255,7 @@ module Syntax : sig
 end
 
 include
-  Preface_specs.FREER_MONAD
+  Preface.Specs.FREER_MONAD
     with type 'a f = 'a Freer.f
      and type 'a t = 'a Freer.t
      and module Infix := Freer.Infix

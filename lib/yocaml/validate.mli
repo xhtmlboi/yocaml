@@ -42,23 +42,23 @@ val equal : ('a -> 'a -> bool) -> 'a t -> 'a t -> bool
     Some implementations of some abstractions offered by Preface. *)
 
 (** [Validate] is a [Functor] that (logically) implements [map]. *)
-module Functor : Preface_specs.FUNCTOR with type 'a t = 'a t
+module Functor : Preface.Specs.FUNCTOR with type 'a t = 'a t
 
 (** [Validate] is an [Applicative] that (logically) implements [apply] and
     [pure]. *)
 module Applicative :
-  Preface_specs.Traversable.API_OVER_APPLICATIVE with type 'a t = 'a t
+  Preface.Specs.Traversable.API_OVER_APPLICATIVE with type 'a t = 'a t
 
 (** [Validate] is an [Alt] that (logically) implements [combine]. *)
-module Alt : Preface_specs.Alt.API with type 'a t = 'a t
+module Alt : Preface.Specs.Alt.API with type 'a t = 'a t
 
 (** [Validate] is a [Selective] that (logically) implements [select] and
     [branch]. *)
-module Selective : Preface_specs.SELECTIVE with type 'a t = 'a t
+module Selective : Preface.Specs.SELECTIVE with type 'a t = 'a t
 
 (** [Validate] is also a [Monad] that (logically) implements [bind] and
     [return]. *)
-module Monad : Preface_specs.Traversable.API_OVER_MONAD with type 'a t = 'a t
+module Monad : Preface.Specs.Traversable.API_OVER_MONAD with type 'a t = 'a t
 
 (** {1 Infix and Syntax operators}*)
 
