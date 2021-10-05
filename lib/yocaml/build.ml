@@ -18,6 +18,9 @@ let perform_if_update_needed target deps need_creation need_update up_to_date =
   | Ok `Need_update -> need_update
 ;;
 
+let make dependencies task = { dependencies; task }
+let init deps = make deps Effect.return
+
 module Category = Preface.Make.Category.Via_id_and_compose (struct
   type nonrec ('a, 'b) t = ('a, 'b) t
 

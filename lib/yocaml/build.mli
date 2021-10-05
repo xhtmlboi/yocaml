@@ -16,6 +16,12 @@ val get_dependencies : ('a, 'b) t -> Deps.t
 (** [get_task rule] returns the task of the [rule]. *)
 val get_task : ('a, 'b) t -> 'a -> 'b Effect.t
 
+(** Create a task with fixed deps and without task. *)
+val init : Deps.t -> (unit, unit) t
+
+(** Create a new build rules. *)
+val make : Deps.t -> ('a -> 'b Effect.t) -> ('a, 'b) t
+
 (** {1 Building rules}
 
     Combiners to build rules (increasingly complex, to infinity and beyond). *)
