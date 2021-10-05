@@ -104,3 +104,16 @@ let process_files paths predicate effect =
   let effects = collect_child_files paths predicate in
   sequence effects (fun x _ -> effect x) (return ())
 ;;
+
+module Infix = struct
+  include Freer.Applicative.Infix
+  include Freer.Infix
+end
+
+module Syntax = struct
+  include Freer.Applicative.Syntax
+  include Freer.Syntax
+end
+
+include Infix
+include Syntax

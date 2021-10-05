@@ -67,7 +67,7 @@ type (_, 'a) effects =
     only.*)
 
 module Freer :
-  Preface_specs.FREER_MONAD
+  Preface.Specs.FREER_MONAD
     with type 'a f =
           ( < file_exists : unit
             ; target_exists : unit
@@ -244,12 +244,27 @@ val sequence
     interface in the toplevel of the [Effect] module. But as the interface is
     long and tiring to read, I place it at the end of the module! *)
 
+module Infix : sig
+  include Preface.Specs.Applicative.INFIX with type 'a t := 'a Freer.t
+  include Preface.Specs.Monad.INFIX with type 'a t := 'a Freer.t
+end
+
+module Syntax : sig
+  include Preface.Specs.Applicative.SYNTAX with type 'a t := 'a Freer.t
+  include Preface.Specs.Monad.SYNTAX with type 'a t := 'a Freer.t
+end
+
 include
   Preface_specs.FREER_MONAD
     with type 'a f = 'a Freer.f
      and type 'a t = 'a Freer.t
+     and module Infix := Freer.Infix
+     and module Syntax := Freer.Syntax
 
 module Traverse :
   Preface.Specs.TRAVERSABLE
     with type 'a t = 'a Freer.t
      and type 'a iter = 'a list
+
+include module type of Infix
+include module type of Syntax
