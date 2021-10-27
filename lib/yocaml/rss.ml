@@ -432,7 +432,10 @@ module Channel = struct
        ; body channel.ttl $ pp_opt pp_ttl
        ; body channel.webmaster $ pp_opt pp_webmaster
        ]
-      @ Item.expand channel.items)
+      @ Item.expand
+          (List.sort
+             (fun x y -> Date.compare y.Item.pub_date x.Item.pub_date)
+             channel.items))
   ;;
 
   let equal a b =
