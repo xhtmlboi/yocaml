@@ -81,3 +81,5 @@ let need_update deps target =
         >|= Try.Functor.map (nel_for_one (fun x -> x >= mtime))
             % Nonempty_list_try.sequence))
 ;;
+
+module Writer = Preface.Writer.Over (Monoid)

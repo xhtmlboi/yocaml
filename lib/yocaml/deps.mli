@@ -50,6 +50,9 @@ val need_update
 (** A [Deps.t] is a [Monoid].*)
 module Monoid : Preface.Specs.MONOID with type t = t
 
+(** A Writer monad over deps. *)
+module Writer : Preface.Specs.WRITER with type tape = t
+
 (** {1 Included Set operations} *)
 
 include Set.S with type t := t and type elt = kind

@@ -69,19 +69,19 @@ type (_, 'a) effects =
 module Freer :
   Preface.Specs.FREER_MONAD
     with type 'a f =
-          ( < file_exists : unit
-            ; target_exists : unit
-            ; get_modification_time : unit
-            ; target_modification_time : unit
-            ; read_file : unit
-            ; write_file : unit
-            ; content_changes : unit
-            ; read_dir : unit
-            ; log : unit
-            ; throw : unit
-            ; raise_ : unit >
-          , 'a )
-          effects
+      ( < file_exists : unit
+        ; target_exists : unit
+        ; get_modification_time : unit
+        ; target_modification_time : unit
+        ; read_file : unit
+        ; write_file : unit
+        ; content_changes : unit
+        ; read_dir : unit
+        ; log : unit
+        ; throw : unit
+        ; raise_ : unit >
+      , 'a )
+      effects
 
 (** {2 Performing effects}
 
