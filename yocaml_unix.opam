@@ -26,6 +26,8 @@ depends: [
   "odoc" {with-doc}
   "preface" { >= "0.1.0" }
   "cryptokit" { >= "1.16.1" }
+  "conduit-lwt" { >= "4.0.0" }
+  "cohttp-lwt-unix" { >= "4.0.0" }
   "yocaml" {pinned}
 ]
 
