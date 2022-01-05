@@ -1,4 +1,4 @@
 (executable
  (name my_site)
  (promote (until-clean))
- (libraries yocaml yocaml_yaml yocaml_mustache yocaml_unix))
+ (libraries logs yocaml yocaml_yaml yocaml_mustache yocaml_unix))

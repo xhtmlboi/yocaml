@@ -92,7 +92,7 @@ let create_file target build_rule =
       >>= write_file target
       >>= discard_if_error)
     Effect.(
-      trace (Lexicon.target_need_to_be_read target)
+      info (Lexicon.target_need_to_be_read target)
       >>= build_rule.task
       >>= content_changes target
       >>= discard_if_error
@@ -103,7 +103,7 @@ let create_file target build_rule =
         >> write_file target content
         >>= discard_if_error
       | Either.Right () -> return ())
-    Effect.(trace (Lexicon.target_is_up_to_date target))
+    Effect.(info (Lexicon.target_is_up_to_date target))
 ;;
 
 let read_file path =

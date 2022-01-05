@@ -101,6 +101,11 @@ let index =
 ;;
 
 let () =
+  Logs.set_level ~all:true (Some Logs.Debug);
+  Logs.set_reporter (Logs_fmt.reporter ())
+;;
+
+let () =
   Yocaml_irmin.execute
     (module Yocaml_unix)
     (module Store)

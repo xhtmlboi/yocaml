@@ -134,5 +134,10 @@ let feed =
 ;;
 
 let () =
+  Logs.set_level ~all:true (Some Logs.Debug);
+  Logs.set_reporter (Logs_fmt.reporter ())
+;;
+
+let () =
   Yocaml_unix.execute (pages >> css >> images >> articles >> index >> feed)
 ;;

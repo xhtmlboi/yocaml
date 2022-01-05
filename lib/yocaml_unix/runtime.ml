@@ -53,57 +53,19 @@ let write_file filename content =
   | _ -> Yocaml.Error.(to_try (Unreadable_file filename))
 ;;
 
-let time () =
-  let open Unix in
-  let t = gmtime $ time () in
-  Format.asprintf
-    "%d-%d-%d %d:%d;%d"
-    (t.tm_year + 1900)
-    (succ t.tm_mon)
-    t.tm_mday
-    t.tm_hour
-    t.tm_min
-    t.tm_sec
-;;
-
-let level_to_string =
-  let open Preface.Fun in
-  let open Yocaml in
-  (function
-    | Log.Trace -> "trace"
-    | Log.Debug -> "debug"
-    | Log.Info -> "info"
-    | Log.Warning -> "warning"
-    | Log.Alert -> "alert")
-  %> String.uppercase_ascii
-;;
-
-let fmt s x = "\027[" ^ s ^ "m" ^ x ^ "\027[0m"
-
-let colorize =
+let level_to_logs =
   let open Yocaml in
   function
-  | Log.Trace -> "97", "100;37"
-  | Log.Debug -> "36", "46;30"
-  | Log.Info -> "32", "42;30"
-  | Log.Warning -> "33", "43;30"
-  | Log.Alert -> "31", "41;30"
-;;
-
-let print_level =
-  let open Yocaml in
-  function
-  | Log.Trace | Log.Debug | Log.Info -> Format.printf
-  | Log.Warning | Log.Alert -> Format.eprintf
+  | Log.Trace -> Logs.App
+  | Log.Debug -> Logs.Debug
+  | Log.Info -> Logs.Info
+  | Log.Warning -> Logs.Warning
+  | Log.Alert -> Logs.Error
 ;;
 
 let log level message =
-  let l = level_to_string level in
-  let t = fmt "90" (time ()) in
-  let cm, cl = colorize level in
-  let m = fmt cm message in
-  let flag = fmt cl $ " " ^ String.make 1 l.[0] ^ " " in
-  print_level level "%s %s | %s\n" flag t m
+  let lvl = level_to_logs level in
+  Logs.msg lvl (fun pp -> pp "%s" message)
 ;;
 
 let read_dir path =

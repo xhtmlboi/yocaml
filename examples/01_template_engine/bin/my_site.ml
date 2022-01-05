@@ -15,4 +15,9 @@ let task =
         >>> pipe_content "templates/footer.html"))
 ;;
 
+let () =
+  Logs.set_level ~all:true (Some Logs.Debug);
+  Logs.set_reporter (Logs_fmt.reporter ())
+;;
+
 let () = Yocaml_unix.execute task
