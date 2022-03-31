@@ -8,9 +8,9 @@
 val execute
   :  (module Yocaml.Runtime.RUNTIME)
   -> (module Irmin.S
-        with type branch = string
-         and type key = string list
-         and type contents = string)
+        with type Schema.Branch.t = string
+         and type Schema.Path.t = string list
+         and type Schema.Contents.t = string)
   -> (module Runtime.LWT_RUN)
   -> ?branch:string
   -> ?author:string
