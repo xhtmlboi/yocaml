@@ -2,7 +2,7 @@
  (name my_site)
  (promote (until-clean))
  (libraries
-   logs
+  logs
   yocaml
   yocaml_markdown
   yocaml_yaml

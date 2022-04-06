@@ -12,8 +12,8 @@ end
 module Make
     (Source : Yocaml.Runtime.RUNTIME)
     (Store : Irmin.S
-        with type Schema.Branch.t = string
-         and type Schema.Path.t = string list
-         and type Schema.Contents.t = string)
+               with type Schema.Branch.t = string
+                and type Schema.Path.t = string list
+                and type Schema.Contents.t = string)
     (Lwt_main : LWT_RUN)
     (Config : CONFIG) : Yocaml.Runtime.RUNTIME

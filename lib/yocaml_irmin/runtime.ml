@@ -25,9 +25,9 @@ let path_of = String.split_on_char '/'
 module Make
     (Source : Yocaml.Runtime.RUNTIME)
     (Store : Irmin.S
-        with type Schema.Branch.t = string
-         and type Schema.Path.t = string list
-         and type Schema.Contents.t = string)
+               with type Schema.Branch.t = string
+                and type Schema.Path.t = string list
+                and type Schema.Contents.t = string)
     (Lwt_main : LWT_RUN)
     (Config : CONFIG) =
 struct
@@ -65,8 +65,10 @@ struct
   let write_file filepath content =
     let date = Int64.of_float $ Source.get_time () in
     let info () =
-      Store.Info.v ~author:commit_author
-        ~message:(Format.asprintf "create file [%s]" filepath) date
+      Store.Info.v
+        ~author:commit_author
+        ~message:(Format.asprintf "create file [%s]" filepath)
+        date
     in
     let path = path_of filepath in
     let task =
