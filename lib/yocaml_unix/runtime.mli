@@ -1,1 +1,1 @@
-include Yocaml.Runtime.RUNTIME
+include Yocaml.Runtime.RUNTIME with type 'a t = 'a

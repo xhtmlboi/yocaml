@@ -1,14 +1,12 @@
 open Yocaml
 
+module type RUNTIME = Yocaml.Runtime.RUNTIME with type 'a t = 'a
+
 module type CONFIG = sig
   val config : Irmin.config
   val branch : string
   val author : string option
   val author_email : string option
-end
-
-module type LWT_RUN = sig
-  val run : 'a Lwt.t -> 'a
 end
 
 let set_error = function
@@ -23,14 +21,18 @@ let set_error = function
 let path_of = String.split_on_char '/'
 
 module Make
-    (Source : Yocaml.Runtime.RUNTIME)
+    (Source : RUNTIME)
     (Store : Irmin.S
                with type Schema.Branch.t = string
                 and type Schema.Path.t = string list
                 and type Schema.Contents.t = string)
-    (Lwt_main : LWT_RUN)
     (Config : CONFIG) =
 struct
+  type 'a t = 'a Lwt.t
+
+  let bind = Lwt.bind
+  let return = Lwt.return
+
   let commit_author =
     let user = Option.value ~default:"yocaml" Config.author
     and mail = Option.value ~default:"admin@yocaml.io" Config.author_email in
@@ -47,19 +49,16 @@ struct
     (* Path are Keys in Irmin so [create_dir] is useless*)
     let _ = file_perm in
     (* Trick for avoiding warning on unused variable  *)
-    ()
+    Lwt.return ()
   ;;
 
-  let get_time () = 0.0
+  let get_time () = Lwt.return 0.0
 
   let target_exists filepath =
     let path = path_of filepath in
-    let task =
-      let open Lwt.Syntax in
-      let* active_branch = branch in
-      Store.mem active_branch path
-    in
-    Lwt_main.run task
+    let open Lwt.Syntax in
+    let* active_branch = branch in
+    Store.mem active_branch path
   ;;
 
   let write_file filepath content =
@@ -71,57 +70,52 @@ struct
         date
     in
     let path = path_of filepath in
-    let task =
-      let open Lwt.Syntax in
-      let* active_branch = branch in
-      let+ result = Store.set ~info active_branch path content in
-      set_error result
-    in
-    Lwt_main.run task
+    let open Lwt.Syntax in
+    let* active_branch = branch in
+    let+ result = Store.set ~info active_branch path content in
+    set_error result
   ;;
 
   let target_modification_time filepath =
     let path = path_of filepath in
-    let task =
-      let open Lwt.Syntax in
-      let* active_branch = branch in
-      let+ commits = Store.last_modified ~n:1 active_branch path in
-      match List.rev commits with
-      | [] -> Ok 0
-      | commit :: _ ->
-        let info = Store.Commit.info commit in
-        let date = Store.Info.date info in
-        Ok (Int64.to_int date)
-    in
-    Lwt_main.run task
+    let open Lwt.Syntax in
+    let* active_branch = branch in
+    let+ commits = Store.last_modified ~n:1 active_branch path in
+    match List.rev commits with
+    | [] -> Ok 0
+    | commit :: _ ->
+      let info = Store.Commit.info commit in
+      let date = Store.Info.date info in
+      Ok (Int64.to_int date)
   ;;
 
   let content_changes filepath new_content =
     let path = path_of filepath in
     let hash s = Digestif.SHA256.digest_string s in
-    let task =
-      let open Lwt.Syntax in
-      let* active_branch = branch in
-      let* obj = Store.find active_branch path in
-      let new_hash = hash new_content in
-      Lwt.return
-        (Option.fold
-           ~none:(Ok true)
-           ~some:(fun old_content ->
-             let old_hash = hash old_content in
-             let f = not (Digestif.SHA256.equal new_hash old_hash) in
-             Ok f)
-           obj)
-    in
-    Lwt_main.run task
+    let open Lwt.Syntax in
+    let* active_branch = branch in
+    let* obj = Store.find active_branch path in
+    let new_hash = hash new_content in
+    Lwt.return
+      (Option.fold
+         ~none:(Ok true)
+         ~some:(fun old_content ->
+           let old_hash = hash old_content in
+           let f = not (Digestif.SHA256.equal new_hash old_hash) in
+           Ok f)
+         obj)
   ;;
 
   (* Additional Runtime for dealing with a Source. *)
 
-  let file_exists = Source.file_exists
-  let is_directory = Source.is_directory
-  let get_modification_time = Source.get_modification_time
-  let read_file = Source.read_file
-  let read_dir = Source.read_dir
-  let log = Source.log
+  let file_exists filepath = Lwt.return (Source.file_exists filepath)
+  let is_directory filepath = Lwt.return (Source.is_directory filepath)
+
+  let get_modification_time filepath =
+    Lwt.return (Source.get_modification_time filepath)
+  ;;
+
+  let read_file filepath = Lwt.return (Source.read_file filepath)
+  let read_dir path = Lwt.return (Source.read_dir path)
+  let log level message = Lwt.return (Source.log level message)
 end

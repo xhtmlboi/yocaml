@@ -17,55 +17,62 @@
     an additional runtime. *)
 
 module type RUNTIME = sig
+  type 'a t
+
+  val bind : 'a t -> ('a -> 'b t) -> 'b t
+  val return : 'a -> 'a t
+
   (** [get_time ()] should returns a float like [Unix.gettimeofday ()]. *)
-  val get_time : unit -> float
+  val get_time : unit -> float t
 
   (** [file_exists path] should returns [true] if [path] exists (as a file or
       a directory), [false] otherwise. *)
-  val file_exists : Filepath.t -> bool
+  val file_exists : Filepath.t -> bool t
 
   (** Same of [file_exists] but acting on the target. *)
-  val target_exists : Filepath.t -> bool
+  val target_exists : Filepath.t -> bool t
 
   (** [is_directory path] should returns [true] if [path] is an existing file
       and if the file is a directory, [false] otherwise. *)
-  val is_directory : Filepath.t -> bool
+  val is_directory : Filepath.t -> bool t
 
   (** [get_modification_time path] should returns a [Try.t] containing the
       modification time (as an integer) of the given file. The function may
       fail. *)
-  val get_modification_time : Filepath.t -> int Try.t
+  val get_modification_time : Filepath.t -> int Try.t t
 
   (** Same of [get_modification_time] but acting on the target. *)
-  val target_modification_time : Filepath.t -> int Try.t
+  val target_modification_time : Filepath.t -> int Try.t t
 
   (** [read_file path] should returns a [Try.t] containing the content (as a
       string) of the given file. The function may fail.*)
-  val read_file : Filepath.t -> string Try.t
+  val read_file : Filepath.t -> string Try.t t
 
   (** [content_changes filepath new_content] check if the content of the file
       has been changed. *)
-  val content_changes : Filepath.t -> string -> bool Try.t
+  val content_changes : Filepath.t -> string -> bool Try.t t
 
   (** [write_file path content] should write (create or overwrite) [content]
       into the given path. The function may fail. *)
-  val write_file : Filepath.t -> string -> unit Try.t
+  val write_file : Filepath.t -> string -> unit Try.t t
 
   (** [read_dir path] should returns a list of children. The function is
       pretty optimistic if the directory does not exist, or for any other
       possible reason the function should fail, it will return an empty list. *)
-  val read_dir : Filepath.t -> Filepath.t list
+  val read_dir : Filepath.t -> Filepath.t list t
 
   (** [create_dir path] is an optimistic version of [mkdir -p], the function
       extract the directory of a file and create it if it does not exists
       without any failure. *)
-  val create_dir : ?file_perm:int -> Filepath.t -> unit
+  val create_dir : ?file_perm:int -> Filepath.t -> unit t
 
   (** [log level message] justs dump a message on stdout. *)
-  val log : Log.level -> string -> unit
+  val log : Log.level -> string -> unit t
 end
 
 (** {1 Helpers} *)
 
-(** Runs a YOCaml program with a specific runtime. *)
-val execute : (module RUNTIME) -> 'a Effect.t -> 'a
+module Make (R : RUNTIME) : sig
+  (** Runs a YOCaml program with a specific runtime. *)
+  val execute : 'a Effect.t -> 'a R.t
+end

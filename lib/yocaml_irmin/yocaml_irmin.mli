@@ -6,15 +6,14 @@
 (** Executes a YOCaml program using a given Runtime for processing with
     [Source] and using an [Irmin Store] as compilation target. *)
 val execute
-  :  (module Yocaml.Runtime.RUNTIME)
+  :  (module Runtime.RUNTIME)
   -> (module Irmin.S
         with type Schema.Branch.t = string
          and type Schema.Path.t = string list
          and type Schema.Contents.t = string)
-  -> (module Runtime.LWT_RUN)
   -> ?branch:string
   -> ?author:string
   -> ?author_email:string
   -> Irmin.config
   -> 'a Yocaml.Effect.t
-  -> 'a
+  -> 'a Lwt.t

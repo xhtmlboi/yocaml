@@ -1,5 +1,9 @@
 open Yocaml.Util
 
+type 'a t = 'a
+
+let bind x f = f x
+let return x = x
 let get_time () = Unix.gettimeofday ()
 let file_exists = Sys.file_exists
 let is_directory = Sys.is_directory
