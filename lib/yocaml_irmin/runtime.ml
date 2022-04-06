@@ -3,10 +3,12 @@ open Yocaml
 module type RUNTIME = Yocaml.Runtime.RUNTIME with type 'a t = 'a
 
 module type CONFIG = sig
-  val config : Irmin.config
+  type repo
+
   val branch : string
   val author : string option
   val author_email : string option
+  val repository : repo
 end
 
 let set_error = function
@@ -22,11 +24,12 @@ let path_of = String.split_on_char '/'
 
 module Make
     (Source : RUNTIME)
+    (Pclock : Mirage_clock.PCLOCK)
     (Store : Irmin.S
                with type Schema.Branch.t = string
                 and type Schema.Path.t = string list
                 and type Schema.Contents.t = string)
-    (Config : CONFIG) =
+    (Config : CONFIG with type repo = Store.repo) =
 struct
   type 'a t = 'a Lwt.t
 
@@ -39,11 +42,7 @@ struct
     Format.asprintf "%s <%s>" user mail
   ;;
 
-  let branch =
-    let open Lwt.Syntax in
-    let* repo = Store.Repo.v Config.config in
-    Store.of_branch repo Config.branch
-  ;;
+  let branch = Store.of_branch Config.repository Config.branch
 
   let create_dir ?(file_perm = 0) _ =
     (* Path are Keys in Irmin so [create_dir] is useless*)
@@ -52,7 +51,9 @@ struct
     Lwt.return ()
   ;;
 
-  let get_time () = Lwt.return 0.0
+  let get_time () =
+    Ptime.v (Pclock.now_d_ps ()) |> Ptime.to_float_s |> Lwt.return
+  ;;
 
   let target_exists filepath =
     let path = path_of filepath in

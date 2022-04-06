@@ -106,12 +106,16 @@ let () =
 ;;
 
 let () =
-  Yocaml_irmin.execute
-    (module Yocaml_unix)
-    (module Store)
-    ~author:"xvw"
-    ~author_email:"xaviervdw@gmail.com"
-    config
-    (pages >> css >> images >> articles >> index)
+  let open Lwt.Infix in
+  Store.Repo.v config
+  >>= (fun repo ->
+        Yocaml_irmin.execute
+          (module Yocaml_unix)
+          (module Pclock)
+          (module Store)
+          ~author:"xvw"
+          ~author_email:"xaviervdw@gmail.com"
+          repo
+          (pages >> css >> images >> articles >> index))
   |> Lwt_main.run
 ;;

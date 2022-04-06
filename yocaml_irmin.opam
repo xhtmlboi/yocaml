@@ -28,6 +28,7 @@ depends: [
   "lwt" { >= "5.4.2" }
   "irmin" { >= "3.2.0" }
   "irmin-unix" { >= "3.2.0" }
+  "mirage-clock"
   "yocaml" {pinned}
 ]
 

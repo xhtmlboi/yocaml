@@ -88,7 +88,7 @@ module Make (R : RUNTIME) = struct
         raise exn
     in
     let handler : type b. (b R.t -> 'a R.t) -> b Effect.f -> 'a R.t =
-     fun resume effect -> resume $ (perform effect)
+     fun resume effect -> resume $ perform effect
     in
     let handler : type b. (b -> 'a R.t) -> b Effect.f -> 'a R.t =
      fun resume effect ->
