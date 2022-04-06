@@ -1,9 +1,9 @@
 let execute
     (module Source : Yocaml.Runtime.RUNTIME)
     (module Store : Irmin.S
-        with type Schema.Branch.t = string
-         and type Schema.Path.t = string list
-         and type Schema.Contents.t = string)
+      with type Schema.Branch.t = string
+       and type Schema.Path.t = string list
+       and type Schema.Contents.t = string)
     (module Lwt_main : Runtime.LWT_RUN)
     ?branch
     ?author
