@@ -17,7 +17,7 @@ build: [
 license: "GPL-3.0-or-later"
 tags: [ "shell" "bin" "make" "static" "blog" "generator" ]
 homepage: "https://github.com/xhtmlboi/yocaml"
-dev-repo: "git://github.com/xhtmlboi/yocaml.git"
+dev-repo: "git+https://github.com/xhtmlboi/yocaml.git"
 bug-reports: "https://github.com/xhtmlboi/yocaml/issues"
 
 depends: [
@@ -33,5 +33,5 @@ depends: [
 ]
 
 pin-depends: [
-  ["yocaml.dev" "git://github.com/xhtmlboi/yocaml.git"]
+  ["yocaml.dev" "git+https://github.com/xhtmlboi/yocaml.git"]
 ]
