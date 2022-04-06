@@ -56,16 +56,14 @@ let handle_404 rootpath =
 ;;
 
 let server filepath port task =
+  let module R = Yocaml.Runtime.Make (Runtime) in
   let handler _conn request _body =
     let uri = request |> Request.uri in
     let path = Path.resolve_local_file ~docroot:filepath ~uri in
     let open Lwt.Syntax in
     let* strategy = define_strategy path in
     match strategy with
-    | File x ->
-      handle_file
-        (fun () -> Lwt.return (Yocaml.Runtime.execute (module Runtime) task))
-        x
+    | File x -> handle_file (fun () -> Lwt.return (R.execute task)) x
     | _ -> handle_404 filepath
   in
   Server.create ~mode:(`TCP (`Port port)) (Server.make ~callback:handler ())

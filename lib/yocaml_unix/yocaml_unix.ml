@@ -1,4 +1,6 @@
-let execute program = Yocaml.Runtime.execute (module Runtime) program
+module R = Yocaml.Runtime.Make (Runtime)
+
+let execute program = R.execute program
 
 let serve ~filepath ~port task =
   Logs.info (fun pp ->

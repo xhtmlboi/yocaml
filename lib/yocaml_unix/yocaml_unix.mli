@@ -19,4 +19,4 @@ val serve : filepath:string -> port:int -> unit Yocaml.t -> unit Lwt.t
     Inclusion of the runtime to be able to use [Yocaml_unix] as runtime
     directly. *)
 
-include Yocaml.Runtime.RUNTIME (** @closed *)
+include Yocaml.Runtime.RUNTIME with type 'a t = 'a (** @closed *)
