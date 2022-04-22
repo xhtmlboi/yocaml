@@ -47,6 +47,7 @@ type (_, 'a) effects =
       * [< `Files | `Directories | `Both ]
       * Filepath.t Preface.Predicate.t)
       -> (< read_dir : unit ; .. >, Filepath.t list) effects
+  | Command : string -> (< command : unit ; .. >, int) effects
   | Log : (Log.level * string) -> (< log : unit ; .. >, unit) effects
   | Throw : Error.t -> (< throw : unit ; .. >, 'a) effects
   | Raise : exn -> (< raise_ : unit ; .. >, 'a) effects
@@ -78,6 +79,7 @@ module Freer :
         ; content_changes : unit
         ; read_dir : unit
         ; log : unit
+        ; command : unit
         ; throw : unit
         ; raise_ : unit >
       , 'a )
@@ -178,6 +180,9 @@ val process_files
   -> Filepath.t Preface.Predicate.t
   -> (Filepath.t -> unit Freer.t)
   -> unit Freer.t
+
+(** [command cmd] performs a [shell commands] and returns the exit code. *)
+val command : string -> int Freer.t
 
 (** {3 Logging}
 

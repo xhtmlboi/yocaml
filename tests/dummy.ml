@@ -174,7 +174,7 @@ let handle dummy program =
               resume res
             | Log (level, message) -> resume $ log dummy level message
             | Read_dir (_path, _kind, _predicate) -> assert false
-            | Throw _ | Raise _ -> assert false
+            | Throw _ | Raise _ | Command _ -> assert false
           in
           f resume effect)
     }

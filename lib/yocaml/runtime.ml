@@ -17,6 +17,7 @@ module type RUNTIME = sig
   val read_dir : Filepath.t -> Filepath.t list t
   val create_dir : ?file_perm:int -> Filepath.t -> unit t
   val log : Log.level -> string -> unit t
+  val command : string -> int t
 end
 
 module Make (R : RUNTIME) = struct
@@ -80,6 +81,7 @@ module Make (R : RUNTIME) = struct
         let* children = R.read_dir path in
         filter_map (create_predicate path predicate kind) children
       | Effect.Log (level, message) -> R.log level message
+      | Effect.Command cmd -> R.command cmd
       | Effect.Throw error ->
         let* () = R.log Log.Alert (Lexicon.crap_there_is_an_error error) in
         Error.raise' error

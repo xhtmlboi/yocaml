@@ -119,4 +119,5 @@ struct
   let read_file filepath = Lwt.return (Source.read_file filepath)
   let read_dir path = Lwt.return (Source.read_dir path)
   let log level message = Lwt.return (Source.log level message)
+  let command cmd = Lwt.return (Source.command cmd)
 end

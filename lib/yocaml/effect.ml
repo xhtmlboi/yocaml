@@ -27,6 +27,7 @@ type (_, 'a) effects =
       * [< `Files | `Directories | `Both ]
       * Filepath.t Preface.Predicate.t)
       -> (< read_dir : unit ; .. >, Filepath.t list) effects
+  | Command : string -> (< command : unit ; .. >, int) effects
   | Log : (Log.level * string) -> (< log : unit ; .. >, unit) effects
   | Throw : Error.t -> (< throw : unit ; .. >, 'a) effects
   | Raise : exn -> (< raise_ : unit ; .. >, 'a) effects
@@ -42,6 +43,7 @@ module Freer = Preface.Make.Freer_monad.Over (struct
       ; content_changes : unit
       ; read_dir : unit
       ; log : unit
+      ; command : unit
       ; throw : unit
       ; raise_ : unit >
     , 'a )
@@ -79,6 +81,7 @@ let read_directory k path predicate =
 let read_children = read_directory `Both
 let read_child_files = read_directory `Files
 let read_child_directories = read_directory `Directories
+let command cmd = Freer.perform $ Command cmd
 
 module Traverse = Preface.List.Monad.Traversable (Freer)
 include Freer

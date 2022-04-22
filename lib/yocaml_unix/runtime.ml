@@ -89,3 +89,5 @@ let content_changes path new_content =
   and old_content_checksum = hash old_content in
   not (String.equal new_content_checksum old_content_checksum)
 ;;
+
+let command = Sys.command

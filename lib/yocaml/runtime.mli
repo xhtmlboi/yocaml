@@ -68,6 +68,9 @@ module type RUNTIME = sig
 
   (** [log level message] justs dump a message on stdout. *)
   val log : Log.level -> string -> unit t
+
+  (** [command cmd] performs a [shell commands] and returns the exit code. *)
+  val command : string -> int t
 end
 
 (** {1 Helpers} *)
