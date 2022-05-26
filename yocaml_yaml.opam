@@ -24,7 +24,7 @@ depends: [
   "ocaml" { >= "4.11.1" }
   "dune" { >= "2.8" }
   "odoc" {with-doc}
-  "preface" { >= "0.1.0" }
+  "preface" { >= "1.0.0" }
   "yaml" { >= "2.1.0" }
   "yocaml" {pinned}
 ]

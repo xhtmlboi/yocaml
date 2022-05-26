@@ -29,15 +29,25 @@ module Monad = Preface.Validation.Monad (Error_list)
 module Alt = Preface.Validation.Alt (Error_list)
 
 module Infix = struct
-  include Selective.Infix
-  include Alt.Infix
-  include Monad.Infix
+  type nonrec 'a t = 'a t
+
+  include (Alt.Infix : Preface.Specs.Alt.INFIX with type 'a t := 'a t)
+
+  include (
+    Selective.Infix : Preface.Specs.Selective.INFIX with type 'a t := 'a t)
+
+  include (Monad.Infix : Preface.Specs.Monad.INFIX with type 'a t := 'a t)
 end
 
 module Syntax = struct
-  include Selective.Syntax
-  include Monad.Syntax
+  type nonrec 'a t = 'a t
+
+  include (
+    Applicative.Syntax :
+      Preface.Specs.Applicative.SYNTAX with type 'a t := 'a t)
+
+  include (Monad.Syntax : Preface.Specs.Monad.SYNTAX with type 'a t := 'a t)
 end
 
-include Infix
-include Syntax
+include (Infix : module type of Infix with type 'a t := 'a t)
+include (Syntax : module type of Syntax with type 'a t := 'a t)
