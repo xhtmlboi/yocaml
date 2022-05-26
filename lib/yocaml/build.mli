@@ -30,7 +30,9 @@ val make : Deps.t -> ('a -> 'b Effect.t) -> ('a, 'b) t
     without reading it. It can be useful for making file generation dependent
     on other files. For example :
 
-    {[ let track_binary_update = watch Sys.argv.(0) ]}
+    {[
+      let track_binary_update = watch Sys.argv.(0)
+    ]}
 
     Which adds the generating binary to the list of dependencies. *)
 val watch : Filepath.t -> (unit, unit) t
