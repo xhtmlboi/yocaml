@@ -250,11 +250,15 @@ val sequence
     long and tiring to read, I place it at the end of the module! *)
 
 module Infix : sig
+  type 'a t = 'a Freer.t
+
   include Preface.Specs.Applicative.INFIX with type 'a t := 'a Freer.t
   include Preface.Specs.Monad.INFIX with type 'a t := 'a Freer.t
 end
 
 module Syntax : sig
+  type 'a t = 'a Freer.t
+
   include Preface.Specs.Applicative.SYNTAX with type 'a t := 'a Freer.t
   include Preface.Specs.Monad.SYNTAX with type 'a t := 'a Freer.t
 end
@@ -271,5 +275,5 @@ module Traverse :
     with type 'a t = 'a Freer.t
      and type 'a iter = 'a list
 
-include module type of Infix
-include module type of Syntax
+include module type of Infix with type 'a t := 'a Freer.t
+include module type of Syntax with type 'a t := 'a Freer.t

@@ -21,13 +21,13 @@ module Monad = Preface.Result.Monad (Error)
 
 module Infix = struct
   include Applicative.Infix
-  include Monad.Infix
+  include (Monad.Infix : Preface.Specs.Monad.INFIX with type 'a t := 'a t)
 end
 
 module Syntax = struct
   include Applicative.Syntax
-  include Monad.Syntax
+  include (Monad.Syntax : Preface.Specs.Monad.SYNTAX with type 'a t := 'a t)
 end
 
-include Infix
-include Syntax
+include (Infix : module type of Infix with type 'a t := 'a t)
+include (Syntax : module type of Syntax with type 'a t := 'a t)

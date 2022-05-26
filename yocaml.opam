@@ -22,5 +22,5 @@ depends: [
   "dune" { >= "2.8" }
   "odoc" {with-doc}
   "alcotest" {with-test}
-  "preface" { >= "0.1.0"}
+  "preface" { >= "1.0.0"}
 ]
