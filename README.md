@@ -30,8 +30,9 @@ And in the `dune` file of your executable:
 ## Websites using YOCaml
 
 | Url                                                                          | Author                                                     | Sources                                                           |
-| ---------------------------------------------------------------------------- | ---------------------------------------------------------- | ----------------------------------------------------------------- |
+|------------------------------------------------------------------------------|------------------------------------------------------------|-------------------------------------------------------------------|
 | [Angry Cusine Nerd](https://bastienduplessier.github.io/angry_cuisine_nerd/) | [@bastienDuplessier](https://github.com/BastienDuplessier) | [Github](https://github.com/BastienDuplessier/angry_cuisine_nerd) |
 | [XHTMLBoy's Website](https://xhtmlboi.github.io/)                            | [@xhtmlboi](https://github.com/xhtmlboi)                   | [Github](https://github.com/xhtmlboi/blogger)                     |
 | [LambdaLille History](https://github.com/lambdalille/talks)                  | [@xvw](https://github.com/xvw)                             | [Github](https://github.com/lambdalille/history)                  |
 | [blog.osau.re](https://blog.osau.re)                                         | [@dinosaure](https://github.com/dinosaure)                 | [Github](https://github.com/dinosaure/blogger)                    |
+| [xvw.capsule](https://xvw.github.io/capsule/)                                | [@xvw](https://github.com/xvw)                             | [Github](https://github.com/xvw/capsule)                          |
