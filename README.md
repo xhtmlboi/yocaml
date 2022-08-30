@@ -36,4 +36,7 @@ And in the `dune` file of your executable:
 | [LambdaLille History](https://github.com/lambdalille/talks)                  | [@xvw](https://github.com/xvw)                             | [Github](https://github.com/lambdalille/history)                  |
 | [blog.osau.re](https://blog.osau.re)                                         | [@dinosaure](https://github.com/dinosaure)                 | [Github](https://github.com/dinosaure/blogger)                    |
 | [xvw.capsule](https://xvw.github.io/capsule/)                                | [@xvw](https://github.com/xvw)                             | [Github](https://github.com/xvw/capsule)                          |
-| [Oxywa](https://hakimba.github.io/oxywa/)                                | [@hakimba](https://github.com/Hakimba)                             | [Github](https://github.com/Hakimba/oxywa)                          |
+| [Oxywa](https://hakimba.github.io/oxywa/)                                    | [@hakimba](https://github.com/Hakimba)                     | [Github](https://github.com/Hakimba/oxywa)                        |
+| [Guillaume Petiot](https://guillaumepetiot.com/)                             | [@gpetiot](https://github.com/gpetiot/)                    | [Github](https://github.com/gpetiot/blogger)                      |
+
+
