@@ -12,7 +12,12 @@ val execute : 'a Yocaml.Effect.t -> 'a
     server, a static directory ... in addition, the function takes an OCaml
     program and re-executes it on every HTTP request that does not point to a
     404. Very handy for continuous content development! *)
-val serve : filepath:string -> port:int -> unit Yocaml.t -> unit Lwt.t
+val serve
+  :  filepath:string
+  -> ?ipaddr:Ipaddr.V4.Prefix.t
+  -> port:int
+  -> unit Yocaml.t
+  -> unit Lwt.t
 
 (** {1 Runtime}
 

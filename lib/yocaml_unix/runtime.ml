@@ -78,8 +78,8 @@ let read_dir path =
 ;;
 
 let hash value =
-  let open Cryptokit in
-  value |> hash_string (Hash.sha256 ()) |> transform_string (Hexa.encode ())
+  let open Digestif.SHA256 in
+  digest_string value |> to_hex
 ;;
 
 let content_changes path new_content =

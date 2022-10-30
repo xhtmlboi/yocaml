@@ -1,7 +1,15 @@
 (library
  (name yocaml_unix)
  (public_name yocaml_unix)
- (libraries cryptokit unix yocaml logs cohttp-lwt-unix conduit-lwt))
+ (libraries
+  fpath
+  paf.mirage
+  conan-database
+  conan-unix
+  digestif.c
+  tcpip.stack-socket
+  yocaml
+  logs))
 
 (documentation
  (package yocaml_unix))

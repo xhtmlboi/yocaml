@@ -8,14 +8,7 @@
 val execute
   :  (module Runtime.RUNTIME)
   -> (module Mirage_clock.PCLOCK)
-  -> (module Irmin.S
-        with type Schema.Branch.t = string
-         and type Schema.Path.t = string list
-         and type Schema.Contents.t = string
-         and type repo = 'repo)
-  -> ?branch:string
-  -> ?author:string
-  -> ?author_email:string
-  -> 'repo
+  -> ctx:Mimic.ctx
+  -> string
   -> 'a Yocaml.Effect.t
   -> 'a Lwt.t
