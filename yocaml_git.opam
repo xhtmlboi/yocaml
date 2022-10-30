@@ -32,5 +32,5 @@ depends: [
 ]
 
 pin-depends: [
-  "git-kv.dev" "git+https://git.robur.io/robur/git-kv#fix-batch"
+  "git-kv.dev" "git+https://git.robur.io/robur/git-kv#64fc2402ab2e2f6b5d98bec194df921424f1f012"
 ]
