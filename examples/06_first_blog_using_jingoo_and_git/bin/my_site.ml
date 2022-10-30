@@ -1,11 +1,9 @@
 open Yocaml
-module Store = Irmin_unix.Git.FS.KV (Irmin.Contents.String)
 
 let destination = "_build"
 let css_destination = "css"
 let images_destination = "images"
 let track_binary_update = Build.watch Sys.argv.(0)
-let config = Irmin_git.config ~bare:true destination
 
 let may_process_markdown file =
   let open Build in
@@ -106,16 +104,13 @@ let () =
 ;;
 
 let () =
-  let open Lwt.Infix in
-  Store.Repo.v config
-  >>= (fun repo ->
-        Yocaml_irmin.execute
-          (module Yocaml_unix)
-          (module Pclock)
-          (module Store)
-          ~author:"xvw"
-          ~author_email:"xaviervdw@gmail.com"
-          repo
-          (pages >> css >> images >> articles >> index))
+  Lwt.Syntax.(
+    let* ctx = Git_unix.ctx (Happy_eyeballs_lwt.create ()) in
+    Yocaml_git.execute
+      (module Yocaml_unix)
+      (module Pclock)
+      ~ctx
+      "git://localhost/my_site.git"
+      (pages >> css >> images >> articles >> index))
   |> Lwt_main.run
 ;;

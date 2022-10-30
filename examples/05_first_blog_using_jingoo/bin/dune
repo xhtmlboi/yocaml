@@ -3,6 +3,7 @@
  (promote (until-clean))
  (libraries
   logs
+  logs.fmt
   yocaml
   yocaml_markdown
   yocaml_yaml
