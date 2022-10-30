@@ -27,11 +27,7 @@ depends: [
   "preface" { >= "1.0.0" }
   "cryptokit" { >= "1.16.1" }
   "logs" {>= "0.7.0" }
-  "conduit-lwt" { >= "4.0.0" }
-  "cohttp-lwt-unix" { >= "4.0.0" }
-  "yocaml" {pinned}
-]
-
-pin-depends: [
-  ["yocaml.dev" "git+https://github.com/xhtmlboi/yocaml.git"]
+  "paf" {>= "0.3.0"}
+  "tcpip"
+  "yocaml" {= version}
 ]

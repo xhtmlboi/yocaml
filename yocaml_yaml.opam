@@ -26,9 +26,5 @@ depends: [
   "odoc" {with-doc}
   "preface" { >= "1.0.0" }
   "yaml" { >= "2.1.0" }
-  "yocaml" {pinned}
-]
-
-pin-depends: [
-  ["yocaml.dev" "git+https://github.com/xhtmlboi/yocaml.git"]
+  "yocaml" {= version}
 ]

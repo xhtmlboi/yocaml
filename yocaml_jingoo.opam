@@ -26,9 +26,5 @@ depends: [
   "odoc" {with-doc}
   "preface" { >= "1.0.0"}
   "jingoo" { >= "1.4.3" }
-  "yocaml" {pinned}
-]
-
-pin-depends: [
-  ["yocaml.dev" "git+https://github.com/xhtmlboi/yocaml.git"]
+  "yocaml" {= version}
 ]
