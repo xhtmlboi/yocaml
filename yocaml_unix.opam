@@ -26,6 +26,8 @@ depends: [
   "odoc" {with-doc}
   "preface" { >= "1.0.0" }
   "digestif"
+  "conan-database"
+  "conan-unix"
   "logs" {>= "0.7.0" }
   "paf" {>= "0.3.0"}
   "tcpip"
