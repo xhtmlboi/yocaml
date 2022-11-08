@@ -26,11 +26,7 @@ depends: [
   "odoc" {with-doc}
   "preface" { >= "1.0.0" }
   "lwt" { >= "5.4.2" }
-  "git-kv"
+  "git-kv" { >= "0.0.1" }
   "mirage-clock"
   "yocaml" {= version}
-]
-
-pin-depends: [
-  "git-kv.dev" "git+https://git.robur.io/robur/git-kv#64fc2402ab2e2f6b5d98bec194df921424f1f012"
 ]
