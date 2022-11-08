@@ -22,21 +22,38 @@ let file_to_bytes filename =
   Bytes.unsafe_to_string rs
 ;;
 
+let mime_type =
+  let tbl = Hashtbl.create 0x100 in
+  fun path ->
+    match Hashtbl.find tbl path with
+    | mime_type -> mime_type
+    | exception Not_found ->
+      let mime_type =
+        Result.map
+          Conan.Metadata.mime
+          (Conan_unix.run_with_tree mime_database path)
+      in
+      let mime_type = Result.value ~default:None mime_type in
+      Hashtbl.replace tbl path mime_type;
+      mime_type
+;;
+
 let handle_file ?(status = `OK) path reqd =
   let bytes = file_to_bytes path in
-  let mime =
-    match Conan_unix.run_with_tree mime_database bytes with
-    | Ok m ->
-      Option.value ~default:"application/octet-stream" (Conan.Metadata.mime m)
-    | Error _ -> "application/octet-stream"
-  in
   let open Httpaf in
   let headers =
-    Headers.of_list
-      [ "content-type", mime
-      ; "content-length", string_of_int (String.length bytes)
-      ; "connection", "close"
-      ]
+    match mime_type path with
+    | Some mime_type ->
+      Headers.of_list
+        [ "content-type", mime_type
+        ; "content-length", string_of_int (String.length bytes)
+        ; "connection", "close"
+        ]
+    | None ->
+      Headers.of_list
+        [ "content-length", string_of_int (String.length bytes)
+        ; "connection", "close"
+        ]
   in
   let response = Response.create ~headers status in
   Reqd.respond_with_string reqd response bytes
