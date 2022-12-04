@@ -29,9 +29,5 @@ depends: [
   "irmin" { >= "3.2.0" }
   "irmin-unix" { >= "3.2.0" }
   "mirage-clock"
-  "yocaml" {pinned}
-]
-
-pin-depends: [
-  ["yocaml.dev" "git+https://github.com/xhtmlboi/yocaml.git"]
+  "yocaml" {= version}
 ]
