@@ -26,8 +26,8 @@ depends: [
   "odoc" {with-doc}
   "preface" { >= "1.0.0" }
   "lwt" { >= "5.4.2" }
-  "irmin" { >= "3.2.0" }
-  "irmin-unix" { >= "3.2.0" }
+  "git-kv"
+  "git-unix"
   "mirage-clock"
   "yocaml" {= version}
 ]

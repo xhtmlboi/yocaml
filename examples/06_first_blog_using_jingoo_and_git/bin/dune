@@ -9,7 +9,6 @@
   yocaml_yaml
   yocaml_jingoo
   yocaml_unix
-  yocaml_irmin
-  irmin-git
-  irmin-unix
+  yocaml_git
+  git-unix
   lwt.unix))
