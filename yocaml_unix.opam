@@ -27,7 +27,7 @@ depends: [
   "preface" { >= "1.0.0" }
   "cryptokit" { >= "1.16.1" }
   "logs" {>= "0.7.0" }
-  "paf" {>= "0.3.0"}
-  "tcpip"
+  "conduit-lwt" { >= "4.0.0" }
+  "cohttp-lwt-unix" { >= "4.0.0" }
   "yocaml" {= version}
 ]
