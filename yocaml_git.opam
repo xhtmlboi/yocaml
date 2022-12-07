@@ -1,6 +1,6 @@
 opam-version: "2.0"
 version: "dev"
-synopsis: "YOCaml Runtime using Irmin as target"
+synopsis: "YOCaml Runtime using Git as target"
 maintainer: "xhtmlboi@gmail.com"
 authors: [
   "The XHTMLBoy <xhtmlboi@gmail.com>"

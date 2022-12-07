@@ -47,8 +47,7 @@ context. This separation allows to have a pure and platform agnostic kernel (the
 only a UNIX runtime.
 
 - {{:../yocaml_unix/index.html} Yocaml_unix} An UNIX Runtime for YOCaml
-- {{:../yocaml_irmin/index.html} Yocaml_irmin} Uses {{:https://irmin.org} Irmin}
-  as a compilation target
+- {{:../yocaml_git/index.html} Yocaml_git} Uses Git as a compilation target
 
 {2 Plugins}
 

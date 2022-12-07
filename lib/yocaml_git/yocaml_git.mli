@@ -1,5 +1,4 @@
-(** Allows you to define a Runtime that uses an Irmin [Store] (e.g. Git) as a
-    compilation target. *)
+(** Allows you to define a Runtime that uses Git as a compilation target. *)
 
 (** {1 API} *)
 
