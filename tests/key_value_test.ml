@@ -105,14 +105,14 @@ let validate obj =
 
 let validate_with_assoc =
   J.object_and (fun assoc ->
-      let open Validate.Applicative in
-      let open J in
-      make_user
-      <$> required_assoc string "firstname" assoc
-      <*> required_assoc string "lastname" assoc
-      <*> required_assoc integer "age" assoc
-      <*> optional_assoc_or ~default:false boolean "activated" assoc
-      <*> optional_assoc string "email" assoc)
+    let open Validate.Applicative in
+    let open J in
+    make_user
+    <$> required_assoc string "firstname" assoc
+    <*> required_assoc string "lastname" assoc
+    <*> required_assoc integer "age" assoc
+    <*> optional_assoc_or ~default:false boolean "activated" assoc
+    <*> optional_assoc string "email" assoc)
 ;;
 
 let jsonm_validate_user_valid_with_only_requirement =

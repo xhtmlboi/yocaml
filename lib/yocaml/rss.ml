@@ -237,17 +237,17 @@ module Item = struct
     }
 
   let make
-      ?author
-      ?(categories = [])
-      ?comments
-      ?enclosure
-      ?source
-      ~title
-      ~link
-      ~pub_date
-      ~description
-      ~guid
-      ()
+    ?author
+    ?(categories = [])
+    ?comments
+    ?enclosure
+    ?source
+    ~title
+    ~link
+    ~pub_date
+    ~description
+    ~guid
+    ()
     =
     { title
     ; link
@@ -326,9 +326,9 @@ module Cloud = struct
       ppf
       "%s"
       (match x with
-      | Xml_rpc -> "xml-rpc"
-      | Soap -> "soap"
-      | Http_post -> "http-post")
+       | Xml_rpc -> "xml-rpc"
+       | Soap -> "soap"
+       | Http_post -> "http-post")
   ;;
 
   let pp ppf cloud =
@@ -375,22 +375,22 @@ module Channel = struct
     }
 
   let make
-      ?pub_date
-      ?last_build_date
-      ?category
-      ?image
-      ?cloud
-      ?copyright
-      ?docs
-      ?generator
-      ?managing_editor
-      ?ttl
-      ?webmaster
-      ~title
-      ~link
-      ~feed_link
-      ~description
-      items
+    ?pub_date
+    ?last_build_date
+    ?category
+    ?image
+    ?cloud
+    ?copyright
+    ?docs
+    ?generator
+    ?managing_editor
+    ?ttl
+    ?webmaster
+    ~title
+    ~link
+    ~feed_link
+    ~description
+    items
     =
     { pub_date
     ; last_build_date
@@ -458,10 +458,10 @@ module Channel = struct
   ;;
 
   let pp_rss
-      ?(xml_version = "1.0")
-      ?(encoding = "UTF-8")
-      ?(default_time = 10, 0, 0)
-      ppf
+    ?(xml_version = "1.0")
+    ?(encoding = "UTF-8")
+    ?(default_time = 10, 0, 0)
+    ppf
     =
     Format.fprintf
       ppf
@@ -473,9 +473,9 @@ module Channel = struct
   ;;
 
   let to_rss
-      ?(xml_version = "1.0")
-      ?(encoding = "UTF-8")
-      ?(default_time = 10, 0, 0)
+    ?(xml_version = "1.0")
+    ?(encoding = "UTF-8")
+    ?(default_time = 10, 0, 0)
     =
     Format.asprintf "%a" $ pp_rss ~xml_version ~encoding ~default_time
   ;;

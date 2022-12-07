@@ -75,11 +75,11 @@ let need_update deps target =
     | Error err -> return $ Try.error err
     | Ok mtime ->
       (match deps |> to_list |> Preface.Nonempty_list.from_list with
-      | None -> return $ Try.ok `Up_to_date
-      | Some deps_list ->
-        Nonempty_list_effects.traverse get_modification_time deps_list
-        >|= Try.Functor.map (nel_for_one (fun x -> x >= mtime))
-            % Nonempty_list_try.sequence))
+       | None -> return $ Try.ok `Up_to_date
+       | Some deps_list ->
+         Nonempty_list_effects.traverse get_modification_time deps_list
+         >|= Try.Functor.map (nel_for_one (fun x -> x >= mtime))
+             % Nonempty_list_try.sequence))
 ;;
 
 module Writer = Preface.Writer.Over (Monoid)

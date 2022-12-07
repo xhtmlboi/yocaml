@@ -38,25 +38,25 @@ let article_destination file =
 
 let articles =
   process_files [ "articles/" ] (with_extension "md") (fun file ->
-      let open Build in
-      let target = article_destination file in
-      create_file
-        target
-        (track_binary_update
-        >>> Yocaml_yaml.read_file_with_metadata (module Metadata.Article) file
-        >>> Yocaml_markdown.content_to_html ()
-        >>> Yocaml_jingoo.apply_as_template
-              (module Metadata.Article)
-              "templates/article.html"
-        >>> Yocaml_jingoo.apply_as_template
-              (module Metadata.Article)
-              "templates/layout.html"
-        >>^ Stdlib.snd))
+    let open Build in
+    let target = article_destination file in
+    create_file
+      target
+      (track_binary_update
+      >>> Yocaml_yaml.read_file_with_metadata (module Metadata.Article) file
+      >>> Yocaml_markdown.content_to_html ()
+      >>> Yocaml_jingoo.apply_as_template
+            (module Metadata.Article)
+            "templates/article.html"
+      >>> Yocaml_jingoo.apply_as_template
+            (module Metadata.Article)
+            "templates/layout.html"
+      >>^ Stdlib.snd))
 ;;
 
 let css =
   process_files [ "css/" ] (with_extension "css") (fun file ->
-      Build.copy_file file ~into:css_destination)
+    Build.copy_file file ~into:css_destination)
 ;;
 
 let images =

@@ -10,10 +10,10 @@ end
 include Renderable
 
 let apply_as_template
-    (type a)
-    (module I : Yocaml.Metadata.INJECTABLE with type t = a)
-    ?(strict = true)
-    template
+  (type a)
+  (module I : Yocaml.Metadata.INJECTABLE with type t = a)
+  ?(strict = true)
+  template
   =
   Yocaml.Build.apply_as_template
     (module I)

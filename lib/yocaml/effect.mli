@@ -58,7 +58,7 @@ type (_, 'a) effects =
     them with handlers (interpreters/runtime) for all effects modelled in type
     [t].
     {e (So absolutely not taking advantage of the slicing capability... It was
-       well worth it!)} *)
+      well worth it!)} *)
 
 (** {2 Freer monad over effects}
 

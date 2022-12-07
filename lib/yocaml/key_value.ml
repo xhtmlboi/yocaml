@@ -118,12 +118,12 @@ module Make_validator (KV : VALIDABLE) = struct
 
   let object_and additional_validator =
     KV.as_object additional_validator (fun () ->
-        Validate.error $ Error.Invalid_field "Object expected")
+      Validate.error $ Error.Invalid_field "Object expected")
   ;;
 
   let list_and additional_validator =
     KV.as_list additional_validator (fun () ->
-        Validate.error $ Error.Invalid_field "List expected")
+      Validate.error $ Error.Invalid_field "List expected")
   ;;
 
   let list_of inner_validator subject =
@@ -134,27 +134,27 @@ module Make_validator (KV : VALIDABLE) = struct
 
   let atom_and additional_validator =
     KV.as_atom additional_validator (fun () ->
-        Validate.error $ Error.Invalid_field "Atom expected")
+      Validate.error $ Error.Invalid_field "Atom expected")
   ;;
 
   let string_and additional_validator =
     KV.as_string additional_validator (fun () ->
-        Validate.error $ Error.Invalid_field "String expected")
+      Validate.error $ Error.Invalid_field "String expected")
   ;;
 
   let boolean_and additional_validator =
     KV.as_boolean additional_validator (fun () ->
-        Validate.error $ Error.Invalid_field "Boolean expected")
+      Validate.error $ Error.Invalid_field "Boolean expected")
   ;;
 
   let integer_and additional_validator =
     KV.as_integer additional_validator (fun () ->
-        Validate.error $ Error.Invalid_field "Integer expected")
+      Validate.error $ Error.Invalid_field "Integer expected")
   ;;
 
   let float_and additional_validator =
     KV.as_float additional_validator (fun () ->
-        Validate.error $ Error.Invalid_field "Float expected")
+      Validate.error $ Error.Invalid_field "Float expected")
   ;;
 
   let text_and additional_validator subject =
@@ -170,7 +170,7 @@ module Make_validator (KV : VALIDABLE) = struct
 
   let null_and additional_validator =
     KV.as_null additional_validator (fun () ->
-        Validate.error $ Error.Invalid_field "Null expected")
+      Validate.error $ Error.Invalid_field "Null expected")
   ;;
 
   let object_ = object_and Validate.valid
@@ -201,11 +201,11 @@ module Make_validator (KV : VALIDABLE) = struct
   ;;
 
   let optional_field_or
-      ?(case_sensitive = false)
-      ~default
-      validator
-      key
-      subject
+    ?(case_sensitive = false)
+    ~default
+    validator
+    key
+    subject
     =
     let open Validate.Monad in
     optional_field ~case_sensitive validator key subject
@@ -227,11 +227,11 @@ module Make_validator (KV : VALIDABLE) = struct
   ;;
 
   let optional_assoc_or
-      ?(case_sensitive = false)
-      ~default
-      validator
-      key
-      subject
+    ?(case_sensitive = false)
+    ~default
+    validator
+    key
+    subject
     =
     let open Validate.Monad in
     optional_assoc ~case_sensitive validator key subject

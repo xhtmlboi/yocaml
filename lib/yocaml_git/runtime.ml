@@ -9,9 +9,9 @@ end
 let path_of = Mirage_kv.Key.v
 
 module Make
-    (Source : RUNTIME)
-    (Pclock : Mirage_clock.PCLOCK)
-    (Config : CONFIG) =
+  (Source : RUNTIME)
+  (Pclock : Mirage_clock.PCLOCK)
+  (Config : CONFIG) =
 struct
   module Store = Git_kv.Make (Pclock)
 

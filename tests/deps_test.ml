@@ -5,9 +5,9 @@ let pp_act ppf s =
     ppf
     "%s"
     (match s with
-    | `Need_creation -> "`Need_creation"
-    | `Need_update -> "`Need_update"
-    | `Up_to_date -> "`Up_to_date")
+     | `Need_creation -> "`Need_creation"
+     | `Need_update -> "`Need_update"
+     | `Up_to_date -> "`Up_to_date")
 ;;
 
 let eq_act a b =

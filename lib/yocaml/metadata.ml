@@ -67,9 +67,9 @@ module Page = struct
   let make title description = { title; description }
 
   let inject
-      (type a)
-      (module D : Key_value.DESCRIBABLE with type t = a)
-      { title; description }
+    (type a)
+    (module D : Key_value.DESCRIBABLE with type t = a)
+    { title; description }
     =
     [ "title", Option.fold ~none:D.null ~some:D.string title
     ; "description", Option.fold ~none:D.null ~some:D.string description
@@ -82,10 +82,10 @@ module Page = struct
       let open Validate.Monad in
       V.from_string str
       >>= V.object_and (fun assoc ->
-              let open Validate.Applicative in
-              make
-              <$> V.(optional_assoc string) "title" assoc
-              <*> V.(optional_assoc string) "description" assoc)
+            let open Validate.Applicative in
+            make
+            <$> V.(optional_assoc string) "title" assoc
+            <*> V.(optional_assoc string) "description" assoc)
       |> (function
       | Preface.Validation.Invalid _ -> Validate.valid $ make None None
       | x -> x)
@@ -150,22 +150,22 @@ module Article = struct
       let open Validate.Monad in
       V.from_string str
       >>= V.object_and (fun assoc ->
-              let open Validate.Applicative in
-              make
-              <$> V.(required_assoc string) "article_title" assoc
-              <*> V.(required_assoc string) "article_description" assoc
-              <*> V.(optional_assoc_or ~default:[] (list_of string))
-                    "tags"
-                    assoc
-              <*> V.required_assoc (Date.from (module V)) "date" assoc
-              <*> V.(optional_assoc string) "title" assoc
-              <*> V.(optional_assoc string) "description" assoc)
+            let open Validate.Applicative in
+            make
+            <$> V.(required_assoc string) "article_title" assoc
+            <*> V.(required_assoc string) "article_description" assoc
+            <*> V.(optional_assoc_or ~default:[] (list_of string))
+                  "tags"
+                  assoc
+            <*> V.required_assoc (Date.from (module V)) "date" assoc
+            <*> V.(optional_assoc string) "title" assoc
+            <*> V.(optional_assoc string) "description" assoc)
   ;;
 
   let inject
-      (type a)
-      (module D : Key_value.DESCRIBABLE with type t = a)
-      { article_title; article_description; tags; date; title; description }
+    (type a)
+    (module D : Key_value.DESCRIBABLE with type t = a)
+    { article_title; article_description; tags; date; title; description }
     =
     [ "article_title", D.string article_title
     ; "article_description", D.string article_description
@@ -176,8 +176,8 @@ module Article = struct
   ;;
 
   let pp
-      ppf
-      { article_title; article_description; tags; date; title; description }
+    ppf
+    { article_title; article_description; tags; date; title; description }
     =
     let p_opt = Preface.Option.pp Format.pp_print_string in
     Format.fprintf
@@ -250,9 +250,9 @@ module Articles = struct
   ;;
 
   let inject
-      (type a)
-      (module D : Key_value.DESCRIBABLE with type t = a)
-      { articles; title; description }
+    (type a)
+    (module D : Key_value.DESCRIBABLE with type t = a)
+    { articles; title; description }
     =
     ( "articles"
     , D.list

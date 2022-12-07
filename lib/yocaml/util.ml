@@ -40,10 +40,10 @@ let split_metadata s =
             , String.sub s (i + 3) (len - (i + 3)) )
           | _ ->
             (match consume_until '\n' i s len with
-            | Some (i, b) ->
-              let () = Buffer.add_buffer buffer b in
-              loop i
-            | _ -> None, s))
+             | Some (i, b) ->
+               let () = Buffer.add_buffer buffer b in
+               loop i
+             | _ -> None, s))
       in
       loop index)
   else None, s

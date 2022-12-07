@@ -52,8 +52,8 @@ module Make (R : RUNTIME) = struct
       | hd :: tl ->
         let* hd = f hd in
         (match hd with
-        | Some v -> (go [@tailcall]) (v :: acc) tl
-        | None -> (go [@tailcall]) acc tl)
+         | Some v -> (go [@tailcall]) (v :: acc) tl
+         | None -> (go [@tailcall]) acc tl)
     in
     go [] l
   ;;
@@ -71,8 +71,8 @@ module Make (R : RUNTIME) = struct
         R.return
           (Try.Functor.map
              (function
-               | true -> Either.left content
-               | false -> Either.right ())
+              | true -> Either.left content
+              | false -> Either.right ())
              v)
       | Effect.Write_file (path, content) ->
         let* () = R.create_dir $ Filename.dirname path in

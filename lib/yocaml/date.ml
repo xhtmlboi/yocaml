@@ -129,18 +129,18 @@ let pp_month ppf m =
     ppf
     "%s"
     (match m with
-    | Jan -> "Jan"
-    | Feb -> "Feb"
-    | Mar -> "Mar"
-    | Apr -> "Apr"
-    | May -> "May"
-    | Jun -> "Jun"
-    | Jul -> "Jul"
-    | Aug -> "Aug"
-    | Sep -> "Sep"
-    | Oct -> "Oct"
-    | Nov -> "Nov"
-    | Dec -> "Dec")
+     | Jan -> "Jan"
+     | Feb -> "Feb"
+     | Mar -> "Mar"
+     | Apr -> "Apr"
+     | May -> "May"
+     | Jun -> "Jun"
+     | Jul -> "Jul"
+     | Aug -> "Aug"
+     | Sep -> "Sep"
+     | Oct -> "Oct"
+     | Nov -> "Nov"
+     | Dec -> "Dec")
 ;;
 
 let month_to_string = Format.asprintf "%a" pp_month
@@ -195,17 +195,16 @@ let from_string s =
       (String.trim s)
       "%04d-%02d-%02d %02d:%02d:%02d"
       (fun y m d hour min sec ->
-        let open Validate.Monad in
-        month_from_int m
-        >>= fun month -> make ~time:(hour, min, sec) y month d)
+      let open Validate.Monad in
+      month_from_int m >>= fun month -> make ~time:(hour, min, sec) y month d)
   with
   | _ ->
     (try
        Scanf.sscanf (String.trim s) "%04d-%02d-%02d" (fun y m d ->
-           let open Validate.Monad in
-           month_from_int m >>= fun month -> make y month d)
+         let open Validate.Monad in
+         month_from_int m >>= fun month -> make y month d)
      with
-    | _ -> Validate.error $ Error.Invalid_date s)
+     | _ -> Validate.error $ Error.Invalid_date s)
 ;;
 
 let to_pair date = (date.year, date.month, date.day), date.time
@@ -246,13 +245,13 @@ let pp_day_of_week ppf d =
     ppf
     "%s"
     (match d with
-    | Mon -> "Mon"
-    | Tue -> "Tue"
-    | Wed -> "Wed"
-    | Thu -> "Thu"
-    | Fri -> "Fri"
-    | Sat -> "Sat"
-    | Sun -> "Sun")
+     | Mon -> "Mon"
+     | Tue -> "Tue"
+     | Wed -> "Wed"
+     | Thu -> "Thu"
+     | Fri -> "Fri"
+     | Sat -> "Sat"
+     | Sun -> "Sun")
 ;;
 
 let day_of_week_to_string = Format.asprintf "%a" pp_day_of_week

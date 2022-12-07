@@ -38,11 +38,11 @@ module Filesystem = struct
   let write_file fs ?mtime filename content =
     let elt mtime = filename, mtime, content, true in
     (match Fs_set.find_opt (elt 1) fs with
-    | None -> Try.ok (Option.value ~default:1 mtime, fs)
-    | Some ((_, x, _, is_file) as e) ->
-      if is_file
-      then Try.ok (Option.value ~default:(succ x) mtime, Fs_set.remove e fs)
-      else Error.(to_try $ Unreadable_file filename))
+     | None -> Try.ok (Option.value ~default:1 mtime, fs)
+     | Some ((_, x, _, is_file) as e) ->
+       if is_file
+       then Try.ok (Option.value ~default:(succ x) mtime, Fs_set.remove e fs)
+       else Error.(to_try $ Unreadable_file filename))
     |> Try.Functor.map (fun (time, tmp) -> Fs_set.add (elt time) tmp)
   ;;
 
@@ -112,8 +112,8 @@ let get_file_content dummy = Filesystem.get_file_content dummy.filesystem
 let content_changes dummy content file =
   Try.ok
     (match get_file_content dummy file with
-    | Some x -> not (String.equal content x)
-    | None -> true)
+     | Some x -> not (String.equal content x)
+     | None -> true)
 ;;
 
 let put dummy message =
@@ -163,8 +163,8 @@ let handle dummy program =
               let result =
                 content_changes dummy content path
                 |> Try.Functor.map (function
-                       | true -> Either.left content
-                       | false -> Either.right ())
+                     | true -> Either.left content
+                     | false -> Either.right ())
               in
               resume result
             | Read_file path ->

@@ -155,10 +155,10 @@ let concat_files ?separator first_file second_file =
 ;;
 
 let read_file_with_metadata
-    (type a)
-    (module V : Metadata.VALIDABLE)
-    (module R : Metadata.READABLE with type t = a)
-    path
+  (type a)
+  (module V : Metadata.VALIDABLE)
+  (module R : Metadata.READABLE with type t = a)
+  path
   =
   let open Preface.Fun in
   read_file path
@@ -166,16 +166,16 @@ let read_file_with_metadata
       % split_metadata
   >>^ (fun (m, c) -> Validate.Monad.(m >|= flip Preface.Pair.( & ) c))
   >>> lift_task (function
-          | Preface.Validation.Valid x -> Effect.return x
-          | Preface.Validation.Invalid x -> Effect.throw (Error.List x))
+        | Preface.Validation.Valid x -> Effect.return x
+        | Preface.Validation.Invalid x -> Effect.throw (Error.List x))
 ;;
 
 let apply_as_template
-    (type a)
-    (module I : Metadata.INJECTABLE with type t = a)
-    (module R : Metadata.RENDERABLE)
-    ?(strict = true)
-    template
+  (type a)
+  (module I : Metadata.INJECTABLE with type t = a)
+  (module R : Metadata.RENDERABLE)
+  ?(strict = true)
+  template
   =
   let piped = Preface.(Fun.flip Pair.( & ) ()) in
   let action ((obj, content), tpl_content) =
@@ -196,7 +196,7 @@ let collection effect arrow process =
   >|= fold_dependencies % List.map arrow
   >|= fun (task, effects) ->
   task (fun result ->
-      List.map (fun f -> f ()) effects
-      |> Traverse.sequence
-      >|= fun x -> process x result)
+    List.map (fun f -> f ()) effects
+    |> Traverse.sequence
+    >|= fun x -> process x result)
 ;;
