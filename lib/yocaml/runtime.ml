@@ -37,7 +37,7 @@ module Make (R : RUNTIME) = struct
         let p = x |> into path in
         let* file_exists = R.file_exists p in
         let* is_directory = R.is_directory p in
-        if file_exists && (not is_directory) && pred x
+        if file_exists && is_directory && pred x
         then R.return (Some p)
         else R.return None
     | `Both ->
