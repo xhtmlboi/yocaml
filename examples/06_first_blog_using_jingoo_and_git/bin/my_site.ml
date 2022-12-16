@@ -113,4 +113,5 @@ let () =
       "git@git:username/repository.git"
       (pages >> css >> images >> articles >> index))
   |> Lwt_main.run
+  |> Result.iter_error (fun (`Msg err) -> invalid_arg err)
 ;;

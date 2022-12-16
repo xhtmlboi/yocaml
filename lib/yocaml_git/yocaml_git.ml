@@ -1,6 +1,6 @@
 let execute
   :  (module Runtime.RUNTIME) -> (module Mirage_clock.PCLOCK) -> ctx:Mimic.ctx
-  -> string -> 'a Yocaml.Effect.t -> 'a Lwt.t
+  -> string -> 'a Yocaml.Effect.t -> ('a, [> `Msg of string ]) result Lwt.t
   =
  fun (module Source) (module Pclock) ~ctx remote program ->
   let open Lwt.Syntax in
