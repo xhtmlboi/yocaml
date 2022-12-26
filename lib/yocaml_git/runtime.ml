@@ -59,7 +59,7 @@ struct
     let open Lwt.Infix in
     Store.last_modified Config.store path
     >|= function
-    | Ok (timestamp, _tz) -> Try.ok timestamp
+    | Ok v -> Try.ok (Float.to_int (Ptime.to_float_s v))
     | Error err ->
       Error.to_try
       $ Message (Fmt.str "target_modification_time: %a" Store.pp_error err)

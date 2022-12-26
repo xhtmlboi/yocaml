@@ -14,6 +14,8 @@ val execute
   :  (module Runtime.RUNTIME)
   -> (module Mirage_clock.PCLOCK)
   -> ctx:Mimic.ctx
+  -> ?author:string
+  -> ?email:string
   -> string
   -> 'a Yocaml.Effect.t
-  -> 'a Lwt.t
+  -> ('a, [> `Msg of string ]) result Lwt.t
