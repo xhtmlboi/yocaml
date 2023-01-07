@@ -36,7 +36,7 @@ struct
     let open Lwt.Infix in
     Store.exists Config.store path
     >|= function
-    | Ok _ -> true
+    | Ok v -> Option.is_some v
     | Error _ -> false
   ;;
 
