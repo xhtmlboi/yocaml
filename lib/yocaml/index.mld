@@ -257,7 +257,7 @@ You can now create several pages, for example, [index.html],
 Let's go back to our [my_site.ml] file to create our generator!
 
 {[
-open YOCaml
+open Yocaml
 
 let destination = "_build"
 
@@ -278,7 +278,7 @@ we are reading and piping it with the [footer.html] template.
 Most of the functions we will use are in the {!module:Yocaml.Build} module.
 
 {[
-open YOCaml
+open Yocaml
 
 let destination = "_build"
 
@@ -311,7 +311,7 @@ execution function, for that I refer you to
     the guide on the Preface effect handlers}).
 
 {[
-open YOCaml
+open Yocaml
 
 let destination = "_build"
 
@@ -348,7 +348,7 @@ to consider that a file has to be regenerated. Fortunately the
 dependencies without reading it, so we can modify our [task] in this way:
 
 {[
-open YOCaml
+open Yocaml
 
 let destination = "_build"
 let track_binary_update = Build.watch Sys.argv.(0)
