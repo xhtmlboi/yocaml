@@ -38,5 +38,4 @@ And in the `dune` file of your executable:
 | [xvw.capsule](https://xvw.github.io/capsule/)                                | [@xvw](https://github.com/xvw)                             | [Github](https://github.com/xvw/capsule)                          |
 | [Oxywa](https://hakimba.github.io/oxywa/)                                    | [@hakimba](https://github.com/Hakimba)                     | [Github](https://github.com/Hakimba/oxywa)                        |
 | [Guillaume Petiot](https://guillaumepetiot.com/)                             | [@gpetiot](https://github.com/gpetiot/)                    | [Github](https://github.com/gpetiot/blogger)                      |
-
-
+| [gemini://heyplzlookat.me/](gemini://heyplzlookat.me/)                       | [@Psi-prod](https://github.com/Psi-Prod/)                  | [Github](https://github.com/Psi-Prod/Capsule)                     |
