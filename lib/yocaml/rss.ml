@@ -465,18 +465,14 @@ module Channel = struct
     =
     Format.fprintf
       ppf
-      "<?xml version=\"%s\" encoding=\"%s\" ?><rss version=\"2.0\" \
+      "<?xml version=%S encoding=%S ?><rss version=\"2.0\" \
        xmlns:atom=\"http://www.w3.org/2005/Atom\">%a</rss>"
       xml_version
       encoding
       (pp ~default_time)
   ;;
 
-  let to_rss
-    ?(xml_version = "1.0")
-    ?(encoding = "UTF-8")
-    ?(default_time = 10, 0, 0)
-    =
-    Format.asprintf "%a" $ pp_rss ~xml_version ~encoding ~default_time
+  let to_rss ?xml_version ?encoding ?(default_time = 10, 0, 0) =
+    Format.asprintf "%a" $ pp_rss ?xml_version ?encoding ~default_time
   ;;
 end

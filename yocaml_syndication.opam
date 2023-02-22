@@ -1,0 +1,29 @@
+opam-version: "2.0"
+version: "dev"
+synopsis: "YOCaml Syndication"
+maintainer: "xhtmlboi@gmail.com"
+authors: [
+  "The XHTMLBoy <xhtmlboi@gmail.com>"
+  "Xavier Van de Woestyne <xaviervdw@gmail.com>"
+]
+
+build: [
+  [ "dune" "subst" ] {dev}
+  [ "dune" "build" "-p" name "-j" jobs ]
+  [ "dune" "runtest" "-p" name ] {with-test}
+  [ "dune" "build" "@doc" "-p" name ] {with-doc}
+]
+
+license: "GPL-3.0-or-later"
+tags: [ "shell" "bin" "make" "static" "blog" "generator" ]
+homepage: "https://github.com/xhtmlboi/yocaml"
+dev-repo: "git+https://github.com/xhtmlboi/yocaml.git"
+bug-reports: "https://github.com/xhtmlboi/yocaml/issues"
+
+depends: [
+  "ocaml" { >= "4.11.1" }
+  "dune" { >= "2.8" }
+  "odoc" {with-doc}
+  "syndic" { >= "1.6.1"}
+  "yocaml" {= version}
+]
