@@ -9,6 +9,7 @@ module Atom : sig
     :  ?authors:Syndic.Atom.author list
     -> ?categories:Syndic.Atom.category list
     -> ?contributors:Syndic.Atom.author list
+    -> ?generator:Syndic.Atom.generator
     -> ?icon:Uri.t
     -> ?links:Syndic.Atom.link list
     -> ?logo:Uri.t

@@ -1,13 +1,40 @@
 module Atom = struct
   type t = Syndic.Atom.feed
 
-  let make =
+  let default_generator =
+    { Syndic.Atom.version = Some "dev"
+    ; uri = Some (Uri.of_string "https://github.com/xhtmlboi/yocaml")
+    ; content = "YOcaml"
+    }
+  ;;
+
+  let make
+    ?authors
+    ?categories
+    ?contributors
+    ?(generator = default_generator)
+    ?icon
+    ?links
+    ?logo
+    ?rights
+    ?subtitle
+    ~id
+    ~title
+    ~updated
+    =
     Syndic.Atom.feed
-      ~generator:
-        { version = Some "dev"
-        ; uri = Some (Uri.of_string "https://github.com/xhtmlboi/yocaml")
-        ; content = "YOcaml"
-        }
+      ?authors
+      ?categories
+      ?contributors
+      ?icon
+      ~generator
+      ?links
+      ?logo
+      ?rights
+      ?subtitle
+      ~id
+      ~title
+      ~updated
   ;;
 
   let pp ppf feed =
