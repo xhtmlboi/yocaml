@@ -3,6 +3,8 @@
 (** {1 Describe an Atom feed} *)
 
 module Atom : sig
+  (** See http://cumulus.github.io/Syndic/syndic/Syndic__/Syndic_atom/index.html. *)
+
   type t = Syndic.Atom.feed
 
   val make
