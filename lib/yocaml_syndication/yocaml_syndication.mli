@@ -31,5 +31,10 @@ module Atom : sig
     -> unit
 
   val to_atom : ?xml_version:string -> ?encoding:string -> t -> string
-  val entry_of_article : Yocaml.Metadata.Article.t -> Syndic.Atom.entry
+
+  val entry_of_article
+    :  Uri.t
+    -> Syndic.Atom.author * Syndic.Atom.author list
+    -> Yocaml.Metadata.Article.t
+    -> Syndic.Atom.entry
 end
