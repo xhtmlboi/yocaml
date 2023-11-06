@@ -47,7 +47,10 @@ module Atom = struct
       "<?xml version=%S encoding=%S?>%s"
       xml_version
       encoding
-      (Syndic.Atom.to_xml feed |> Syndic.XML.to_string)
+      (Syndic.Atom.to_xml feed
+      |> Syndic.XML.to_string ~ns_prefix:(function
+           | "http://www.w3.org/2005/Atom" -> Some ""
+           | _ -> Some "http://www.w3.org/2005/Atom"))
   ;;
 
   let to_atom ?xml_version ?encoding feed =
