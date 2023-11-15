@@ -16,6 +16,7 @@ val execute
   -> ctx:Mimic.ctx
   -> ?author:string
   -> ?email:string
+  -> ?comment:string
   -> string
   -> 'a Yocaml.Effect.t
   -> ('a, [> `Msg of string ]) result Lwt.t
