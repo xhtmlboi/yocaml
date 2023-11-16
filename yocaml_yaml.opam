@@ -27,4 +27,5 @@ depends: [
   "preface" { >= "1.0.0" }
   "yaml" { >= "2.1.0" }
   "yocaml" {= version}
+  "alcotest" {with-test}
 ]
