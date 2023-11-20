@@ -29,3 +29,4 @@ depends: [
   "yocaml" {= version}
   "alcotest" {with-test}
 ]
+conflicts: [ "result" {< "1.5"} ]
