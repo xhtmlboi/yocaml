@@ -1,0 +1,3 @@
+(library
+  (name yocaml)
+  (package yocaml))
