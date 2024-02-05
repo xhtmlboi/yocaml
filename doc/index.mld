@@ -1,0 +1,18 @@
+{0 YOCaml}
+
+{!module:Yocaml} is a framework for building construction rules. Its
+implementation is biased towards facilitating the construction of static site
+(or document) generators. Conceptually, it is fairly close to version 3 of
+{{:https://jaspervdj.be/hakyll/} Hakyll}, a generator written in
+{{:https://www.haskell.org/} Haskell}.
+
+This page serves as an index of documents describing and justifying certain {i
+design} choices, as well as guides on how to use YOCaml to build projects.
+
+The YOCaml API (full documentation) can be accessed via {{!module:Yocaml} this
+link}. The various plugins are accessible via the {{: ../index.html}
+documentation root}.
+
+{1 Design choices}
+
+- {{!page:effect} Effects abstraction}
