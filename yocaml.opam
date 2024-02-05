@@ -9,7 +9,7 @@ license: "GPL-3.0-or-later"
 homepage: "https://gitlab.com/funkywork/yocaml"
 bug-reports: "https://gitlab.com/funkywork/yocaml/-/issues"
 depends: [
-  "ocaml" {>= "5.1.0"}
+  "ocaml" {>= "5.1.1"}
   "dune" {>= "3.0" & >= "3.0.0"}
   "odoc" {with-doc}
   "ocamlformat" {with-dev-setup}

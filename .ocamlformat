@@ -1,0 +1,5 @@
+version = 0.26.1
+profile = default
+parse-docstrings
+break-separators = before
+break-infix = fit-or-vertical

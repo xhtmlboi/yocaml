@@ -1,3 +1,7 @@
 (library
-  (name yocaml)
-  (package yocaml))
+ (name yocaml)
+ (public_name yocaml)
+ (synopsis "The core engine of YOCaml"))
+
+(documentation
+ (package yocaml))
