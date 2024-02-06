@@ -17,6 +17,7 @@
    (ocaml (>= 5.1.1))
    (dune (>= 3.0.0))
    (odoc :with-doc)
+   (alcotest :with-test)
    (ocamlformat :with-dev-setup)
    (ocp-indent :with-dev-setup)
    (merlin :with-dev-setup)
