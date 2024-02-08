@@ -17,6 +17,20 @@
 (** [Yocaml] is the entry point for a YOCaml program. It describes the
     core/engine of the framework. *)
 
+(** {1 Elements}
+
+    Modules describing the elements {i constituting} YOCaml, for example file
+    paths etc. *)
+
+module Path = Path
+
+(** {1 Building rules}
+
+    Modules for describing construction rules. Tasks to be executed, sets of
+    dependencies, etc. *)
+
+module Deps = Deps
+
 (** {1 Effects abstraction}
 
     Modules relating to the

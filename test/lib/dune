@@ -1,4 +1,4 @@
 (library
-  (name test_lib)
-  (synopsis "A library for internal YOCaml tests")
-  (libraries alcotest yocaml))
+ (name test_lib)
+ (synopsis "A library for internal YOCaml tests")
+ (libraries alcotest yocaml))
