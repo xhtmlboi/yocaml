@@ -14,4 +14,5 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-let () = Alcotest.run "Yocaml test" [ Fs_test.cases; Path_test.cases ]
+val cases : string * unit Alcotest.test_case list
+(** Returns the list of test cases. *)

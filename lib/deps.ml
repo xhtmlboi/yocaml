@@ -13,5 +13,3 @@
 
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
-
-let () = Alcotest.run "Yocaml test" [ Fs_test.cases; Path_test.cases ]
