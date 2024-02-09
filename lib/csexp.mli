@@ -50,6 +50,34 @@ val to_buffer : Buffer.t -> t -> unit
 val to_string : t -> string
 (** [to_string csexp] converts a [csexp] to a string. *)
 
+(** {1 Desrialization} *)
+
+val from_seq :
+     char Seq.t
+  -> ( t
+     , [> `Nonterminated_atom of int
+       | `Expected_number_or_colon of char * int
+       | `Expected_number of char * int
+       | `Unexepected_character of char * int
+       | `Premature_end_of_atom of int * int
+       | `Nonterminated_node of int ] )
+     result
+(** [from_seq s] Try deserializing a sequence of characters in CSexp. The use of
+    a sequence can serve as a basis for easily constructing other sources
+    ([string] or [in_channel] for example). *)
+
+val from_string :
+     string
+  -> ( t
+     , [> `Nonterminated_atom of int
+       | `Expected_number_or_colon of char * int
+       | `Expected_number of char * int
+       | `Unexepected_character of char * int
+       | `Premature_end_of_atom of int * int
+       | `Nonterminated_node of int ] )
+     result
+(** [from_string str] Try deserializing a string in CSexp. *)
+
 (** {1 Utils} *)
 
 val equal : t -> t -> bool
