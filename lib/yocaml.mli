@@ -38,3 +38,11 @@ module Deps = Deps
       abstraction and performance of effects}. *)
 
 module Eff = Eff
+
+(** {1 Serialization}
+
+    As the new version of YOCaml uses a cache based on the previous generation,
+    it is important to be able to serialise (and deserialise) arbitrary data
+    structures. *)
+
+module Csexp = Csexp
