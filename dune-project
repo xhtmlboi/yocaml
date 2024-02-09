@@ -18,6 +18,8 @@
    (dune (>= 3.0.0))
    (odoc :with-doc)
    (alcotest :with-test)
+   (qcheck :with-test)
+   (qcheck-alcotest :with-test)
    (ocamlformat :with-dev-setup)
    (ocp-indent :with-dev-setup)
    (merlin :with-dev-setup)

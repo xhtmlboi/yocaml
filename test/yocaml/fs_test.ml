@@ -14,11 +14,13 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
+open Test_lib
+
 let test_get =
   let open Alcotest in
   test_case "Ensures that the [get] primitive behaves as expected" `Quick
     (fun () ->
-      let open Test_lib.Fs in
+      let open Fs in
       let root =
         dir "."
           [
@@ -33,36 +35,36 @@ let test_get =
       in
       let file_system = from_list [ root ] in
       let () =
-        check (option testable_item) "should be equal" (Some root)
+        check (option Testable.fs_item) "should be equal" (Some root)
           file_system.%{"."}
       in
       let () =
-        check (option testable_item) "should be equal"
+        check (option Testable.fs_item) "should be equal"
           (Some (file ~mtime:2 "hello.txt" "Hello, World!"))
           file_system.%{"./hello.txt"}
       in
       let () =
-        check (option testable_item) "should be equal"
+        check (option Testable.fs_item) "should be equal"
           (Some (file ~mtime:4 "index.md" "First post"))
           file_system.%{"./posts/index.md"}
       in
       let () =
-        check (option testable_item) "should be equal"
+        check (option Testable.fs_item) "should be equal"
           (Some (file ~mtime:1 "second.md" "Second post"))
           file_system.%{"./posts/second.md"}
       in
       let () =
-        check (option testable_item) "should be equal"
+        check (option Testable.fs_item) "should be equal"
           (Some (dir "images" [ file ~mtime:1 "foo.png" "An image" ]))
           file_system.%{"./posts/images"}
       in
       let () =
-        check (option testable_item) "should be equal"
+        check (option Testable.fs_item) "should be equal"
           (Some (file ~mtime:1 "foo.png" "An image"))
           file_system.%{"./posts/images/foo.png"}
       in
       let () =
-        check (option testable_item) "should be equal" None
+        check (option Testable.fs_item) "should be equal" None
           file_system.%{"./foo/bar/baz"}
       in
       ())
@@ -71,7 +73,7 @@ let test_update_file =
   let open Alcotest in
   test_case "Ensure that the [update] primitive behaves as expected" `Quick
     (fun () ->
-      let open Test_lib.Fs in
+      let open Fs in
       let root =
         dir "."
           [
@@ -90,7 +92,7 @@ let test_update_file =
           (fun ~target ~previous_item ->
             let () = check string "should be equal" "hello.txt" target in
             let () =
-              check (option testable_item) "should be equal"
+              check (option Testable.fs_item) "should be equal"
                 (Some (file ~mtime:2 "hello.txt" "Hello, World!"))
                 previous_item
             in
@@ -103,7 +105,7 @@ let test_update_file =
             Option.map (rename "pictures") previous_item)
       in
       let () =
-        check testable "should be equal"
+        check Testable.fs "should be equal"
           (from_list
              [
                dir "."
