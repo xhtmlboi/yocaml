@@ -14,6 +14,8 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
+open Test_lib
+
 let test_length_1 =
   let open Alcotest in
   test_case "serialized length case 1" `Quick (fun () ->
@@ -61,7 +63,7 @@ let test_to_string_1 =
 
 let test_to_string_2 =
   let open Alcotest in
-  test_case "to_string case 1" `Quick (fun () ->
+  test_case "to_string case 2" `Quick (fun () ->
       let open Yocaml.Csexp in
       let expected = "9:foobarbaz"
       and computed = atom "foobarbaz" |> to_string in
@@ -69,7 +71,7 @@ let test_to_string_2 =
 
 let test_to_string_3 =
   let open Alcotest in
-  test_case "to_string case 1" `Quick (fun () ->
+  test_case "to_string case 3" `Quick (fun () ->
       let open Yocaml.Csexp in
       let expected = "(3:foo3:bar(17:Lorem Ipsum Dolor)(6:foobar6:foobaz))"
       and computed =
@@ -84,6 +86,97 @@ let test_to_string_3 =
       in
       check string "should be equal" expected computed)
 
+let test_from_string_1 =
+  let open Alcotest in
+  test_case "from_string case 1" `Quick (fun () ->
+      let open Yocaml.Csexp in
+      let expected = Result.ok @@ node [] and computed = "" |> from_string in
+      check (Testable.csexp_result ()) "should be equal" expected computed)
+
+let test_from_string_2 =
+  let open Alcotest in
+  test_case "from_string case 2" `Quick (fun () ->
+      let open Yocaml.Csexp in
+      let expected = Result.ok @@ atom "" and computed = "0:" |> from_string in
+      check (Testable.csexp_result ()) "should be equal" expected computed)
+
+let test_from_string_3 =
+  let open Alcotest in
+  test_case "from_string case 3" `Quick (fun () ->
+      let open Yocaml.Csexp in
+      let expected = Result.ok @@ node [] and computed = "()" |> from_string in
+      check (Testable.csexp_result ()) "should be equal" expected computed)
+
+let test_from_string_4 =
+  let open Alcotest in
+  test_case "from_string case 4" `Quick (fun () ->
+      let open Yocaml.Csexp in
+      let expected = Result.ok @@ node [ atom ""; atom "a"; atom "foo" ]
+      and computed = "0:1:a3:foo" |> from_string in
+      check (Testable.csexp_result ()) "should be equal" expected computed)
+
+let test_from_string_5 =
+  let open Alcotest in
+  test_case "from_string case 5" `Quick (fun () ->
+      let open Yocaml.Csexp in
+      let expected =
+        Result.ok @@ node [ atom ""; atom "a"; node [ atom "foo" ] ]
+      and computed = "(0:1:a(3:foo))" |> from_string in
+      check (Testable.csexp_result ()) "should be equal" expected computed)
+
+let test_from_string_6 =
+  let open Alcotest in
+  test_case "from_string case 6" `Quick (fun () ->
+      let open Yocaml.Csexp in
+      let expected =
+        Result.ok
+        @@ node
+             [
+               atom "foo"
+             ; atom "bar"
+             ; node [ atom "Lorem Ipsum Dolor" ]
+             ; node [ atom "foobar"; atom "foobaz" ]
+             ]
+      and computed =
+        "(3:foo3:bar(17:Lorem Ipsum Dolor)(6:foobar6:foobaz))" |> from_string
+      in
+      check (Testable.csexp_result ()) "should be equal" expected computed)
+
+let test_from_string_7 =
+  let open Alcotest in
+  test_case "from_string case 7" `Quick (fun () ->
+      let open Yocaml.Csexp in
+      let expected = Result.error @@ `Nonterminated_node 12
+      and computed = "(0:1:a(3:foo)" |> from_string in
+      check (Testable.csexp_result ()) "should be equal" expected computed)
+
+let test_from_string_8 =
+  let open Alcotest in
+  test_case "from_string case 8" `Quick (fun () ->
+      let open Yocaml.Csexp in
+      let expected = Result.ok @@ atom "foo"
+      and computed = "3:foo" |> from_string in
+      check (Testable.csexp_result ()) "should be equal" expected computed)
+
+let test_from_string_9 =
+  let open Alcotest in
+  test_case "from_string case 9" `Quick (fun () ->
+      let open Yocaml.Csexp in
+      let expected = Result.error @@ `Premature_end_of_atom (4, 3)
+      and computed = "4:foo" |> from_string in
+      check (Testable.csexp_result ()) "should be equal" expected computed)
+
+let test_to_string_from_string_roundtrip =
+  QCheck2.Test.make ~name:"to_string -> from_string roundtrip" ~count:10
+    ~print:(fun x -> Format.asprintf "%a" Yocaml.Csexp.pp x)
+    Gen.csexp
+    (fun csexp ->
+      let open Yocaml.Csexp in
+      let result = csexp |> to_string |> from_string in
+      let expected = Ok csexp in
+      Alcotest.equal (Testable.csexp_result ()) expected result)
+  |> QCheck_alcotest.to_alcotest ~colors:true ~verbose:true
+
 let cases =
   ( "Yocaml.Csexp"
   , [
@@ -94,4 +187,14 @@ let cases =
     ; test_to_string_1
     ; test_to_string_2
     ; test_to_string_3
+    ; test_from_string_1
+    ; test_from_string_2
+    ; test_from_string_3
+    ; test_from_string_4
+    ; test_from_string_5
+    ; test_from_string_6
+    ; test_from_string_7
+    ; test_from_string_8
+    ; test_from_string_9
+    ; test_to_string_from_string_roundtrip
     ] )
