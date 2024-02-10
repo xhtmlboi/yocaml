@@ -18,3 +18,4 @@ module Csexp = Csexp
 module Path = Path
 module Eff = Eff
 module Deps = Deps
+module Task = Task
