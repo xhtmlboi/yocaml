@@ -24,12 +24,13 @@
 
 module Path = Path
 
-(** {1 Building rules}
+(** {1 Building tasks}
 
     Modules for describing construction rules. Tasks to be executed, sets of
     dependencies, etc. *)
 
 module Deps = Deps
+module Task = Task
 
 (** {1 Effects abstraction}
 
