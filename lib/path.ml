@@ -111,3 +111,10 @@ let add_extension extension =
 let change_extension extension =
   update_last_fragment (fun fragment ->
       fragment |> Filename.remove_extension |> fragment_add_extension extension)
+
+let compare a b =
+  match (a, b) with
+  | Absolute _, Relative _ -> -1
+  | Relative _, Absolute _ -> 1
+  | Absolute a, Absolute b | Relative a, Relative b ->
+      List.compare String.compare a b

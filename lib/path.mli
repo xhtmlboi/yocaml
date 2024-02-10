@@ -96,6 +96,10 @@ val pp_fragment : Format.formatter -> fragment -> unit
 val equal_fragment : fragment -> fragment -> bool
 (** Equality function for {!type:fragment} values. *)
 
+val compare : t -> t -> int
+(** Comparisons between {!type:t}. An absolute path will always be smaller than
+    a relative path (for arbitrary and unhelpful reasons). *)
+
 val to_string : t -> string
 (** [to_string path] lift a path into a string. *)
 
