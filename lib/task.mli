@@ -121,6 +121,104 @@ val split : ('a, 'b) t -> ('c, 'd) t -> ('a * 'c, 'b * 'd) t
 val fan_out : ('a, 'b) t -> ('a, 'c) t -> ('a, 'b * 'c) t
 (** Send the input to both argument arrows and combine their output.*)
 
+(** {2 Application operations}
+
+    Implement function application capabilities using Arrow Apply. *)
+
+val apply : (('a, 'b) t * 'a, 'b) t
+(** Application of a task to a given input. *)
+
+(** {1 Covariant API}
+
+    Removing the contravariant component of the profunctor, we have a covariant
+    component that can be treated as a regular Functor. This makes it possible
+    to have linking operators and to make the API potentially less conflicting.*)
+
+type 'a ct = (unit, 'a) t
+(** Just a type alias for reducing signatures verbosity *)
+
+val map : ('a -> 'b) -> 'a ct -> 'b ct
+(** Regular mapping on a task. Since {!type:t} is also a Functor. *)
+
+val pure : 'a -> 'a ct
+(** Lift a regular value into a task.*)
+
+val ap : ('a -> 'b) ct -> 'a ct -> 'b ct
+(** Regular apply on a task. Since {!type:t} is also an Applicative. *)
+
+val zip : 'a ct -> 'b ct -> ('a * 'b) ct
+(** Monoidal product between two applicatives. *)
+
+val replace : 'a -> 'b ct -> 'a ct
+(** [replace x e] replace the value of [e] by [x]. *)
+
+val void : 'a ct -> unit ct
+(** [void e] replace the value of [e] by [unit]. *)
+
+val select : ('a, 'b) Either.t ct -> ('a -> 'b) ct -> 'b ct
+(** [select e f] apply [f] if [e] is [Left]. It allow to skip effect using
+    [Right]. *)
+
+val branch : ('a, 'b) Either.t ct -> ('a -> 'c) ct -> ('b -> 'c) ct -> 'c ct
+(** [branch x f g ] if [x] is [Left], it performs [f], otherwise it performs
+    [g]. *)
+
+val map2 : ('a -> 'b -> 'c) -> 'a ct -> 'b ct -> 'c ct
+(** Lift a 2-ary function. *)
+
+val map3 : ('a -> 'b -> 'c -> 'd) -> 'a ct -> 'b ct -> 'c ct -> 'd ct
+(** Lift a 3-ary function. *)
+
+val map4 :
+  ('a -> 'b -> 'c -> 'd -> 'e) -> 'a ct -> 'b ct -> 'c ct -> 'd ct -> 'e ct
+(** Lift a 4-ary function. *)
+
+val map5 :
+     ('a -> 'b -> 'c -> 'd -> 'e -> 'f)
+  -> 'a ct
+  -> 'b ct
+  -> 'c ct
+  -> 'd ct
+  -> 'e ct
+  -> 'f ct
+(** Lift a 5-ary function. *)
+
+val map6 :
+     ('a -> 'b -> 'c -> 'd -> 'e -> 'f -> 'g)
+  -> 'a ct
+  -> 'b ct
+  -> 'c ct
+  -> 'd ct
+  -> 'e ct
+  -> 'f ct
+  -> 'g ct
+(** Lift a 6-ary function. *)
+
+val map7 :
+     ('a -> 'b -> 'c -> 'd -> 'e -> 'f -> 'g -> 'h)
+  -> 'a ct
+  -> 'b ct
+  -> 'c ct
+  -> 'd ct
+  -> 'e ct
+  -> 'f ct
+  -> 'g ct
+  -> 'h ct
+(** Lift a 7-ary function. *)
+
+val map8 :
+     ('a -> 'b -> 'c -> 'd -> 'e -> 'f -> 'g -> 'h -> 'i)
+  -> 'a ct
+  -> 'b ct
+  -> 'c ct
+  -> 'd ct
+  -> 'e ct
+  -> 'f ct
+  -> 'g ct
+  -> 'h ct
+  -> 'i ct
+(** Lift a 8-ary function. *)
+
 (** {1 Infix operators} *)
 
 module Infix : sig
@@ -154,7 +252,29 @@ module Infix : sig
 
   val ( &&& ) : ('a, 'b) t -> ('a, 'c) t -> ('a, 'b * 'c) t
   (** [t1 &&& t2] is [fan_out t1 t2]. *)
+
+  val ( <$> ) : ('a -> 'b) -> 'a ct -> 'b ct
+  (** [f <$> t] is [map f t]. *)
+
+  val ( <*> ) : ('a -> 'b) ct -> 'a ct -> 'b ct
+  (** [ft <*> t] is [apply ft t]. *)
+
+  val ( <*? ) : ('a, 'b) Either.t ct -> ('a -> 'b) ct -> 'b ct
+  (** [c <*? f] is [select c f]*)
 end
 
 include module type of Infix
+(** @inline *)
+
+(** {1 Binding operators} *)
+
+module Syntax : sig
+  val ( let+ ) : 'a ct -> ('a -> 'b) -> 'b ct
+  (** [let+ x = t in f x] is [f <$> f]. *)
+
+  val ( and+ ) : 'a ct -> 'b ct -> ('a * 'b) ct
+  (** [let+ x = t1 and+ y = t2 in f x y] is [f <$> t1 <*> t2]. *)
+end
+
+include module type of Syntax
 (** @inline *)

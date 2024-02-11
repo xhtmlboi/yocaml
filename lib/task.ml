@@ -15,6 +15,7 @@
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
 type ('a, 'b) t = { dependencies : Deps.t; action : 'a -> 'b Eff.t }
+type 'a ct = (unit, 'a) t
 
 let make dependencies action = { dependencies; action }
 
@@ -78,6 +79,45 @@ let split t1 t2 = rcompose (first t1) (second t2)
 let uncurry t = rmap (fun (f, x) -> f x) (first t)
 let fan_out t1 t2 = pre_rcompose (fun x -> (x, x)) (split t1 t2)
 
+let apply =
+  let dependencies = Deps.empty in
+  (* the apply is a little bit controversial since, logically, it does not
+     handle dependecies of underlying arrow. An issue related to dynamic
+     dependencies. *)
+  let action ({ action; _ }, x) = action x in
+
+  { dependencies; action }
+
+let pure x = lift (fun _ -> x)
+let map f x = post_rcompose x f
+let ap t1 t2 = pre_compose (fun (f, x) -> f x) (fan_out t1 t2)
+
+let select f t =
+  rcompose f
+    (fan_in
+       (post_rcompose
+          (pre_rcompose (fun x -> ((), x)) (first t))
+          (fun (f, x) -> f x))
+       (lift (fun x -> x)))
+
+let branch s l r =
+  select
+    (select
+       (map Either.(map_right left) s)
+       (map (fun f x -> Either.right @@ f x) l))
+    r
+
+let replace x t = map (fun _ -> x) t
+let void t = replace () t
+let zip t1 t2 = ap (map (fun a b -> (a, b)) t1) t2
+let map2 fu a b = ap (map fu a) b
+let map3 fu a b c = ap (map2 fu a b) c
+let map4 fu a b c d = ap (map3 fu a b c) d
+let map5 fu a b c d e = ap (map4 fu a b c d) e
+let map6 fu a b c d e f = ap (map5 fu a b c d e) f
+let map7 fu a b c d e f g = ap (map6 fu a b c d e f) g
+let map8 fu a b c d e f g h = ap (map7 fu a b c d e f g) h
+
 module Infix = struct
   let ( <<< ) = compose
   let ( >>> ) = rcompose
@@ -89,6 +129,15 @@ module Infix = struct
   let ( ||| ) = fan_in
   let ( *** ) = split
   let ( &&& ) = fan_out
+  let ( <$> ) = map
+  let ( <*> ) = ap
+  let ( <*? ) = select
+end
+
+module Syntax = struct
+  let ( let+ ) x f = map f x
+  let ( and+ ) = zip
 end
 
 include Infix
+include Syntax
