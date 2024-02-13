@@ -31,6 +31,7 @@ module Path = Path
 
 module Deps = Deps
 module Task = Task
+module Pipeline = Pipeline
 
 (** {1 Effects abstraction}
 
