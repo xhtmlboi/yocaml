@@ -46,6 +46,17 @@ let map6 fu a b c d e f = apply (map5 fu a b c d e) f
 let map7 fu a b c d e f g = apply (map6 fu a b c d e f) g
 let map8 fu a b c d e f g h = apply (map7 fu a b c d e f g) h
 
+module List = struct
+  let traverse f l =
+    let rec aux acc = function
+      | [] -> map Stdlib.List.rev acc
+      | x :: xs -> aux (map2 Stdlib.List.cons (f x) acc) xs
+    in
+    aux (return []) l
+
+  let sequence l = traverse Fun.id l
+end
+
 module Infix = struct
   let ( <$> ) = map
   let ( <*> ) = apply
@@ -72,12 +83,28 @@ type _ Effect.t +=
       ([ `App | `Error | `Warning | `Info | `Debug ] * string)
       -> unit Effect.t
   | Yocaml_failwith : exn -> 'a Effect.t
+  | Yocaml_file_exists : [ `Target | `Source ] * Path.t -> bool Effect.t
+  | Yocaml_read_file : [ `Target | `Source ] * Path.t -> string Effect.t
+  | Yocaml_get_mtime : [ `Target | `Source ] * Path.t -> int Effect.t
 
 let perform raw_effect = return @@ Effect.perform raw_effect
 
 let run handler arrow input =
-  Effect.Deep.try_with (fun () -> arrow input ()) () handler
+  Effect.Deep.try_with (fun input -> arrow input ()) input handler
+
+exception File_not_exists of Path.t
 
 let log ?(level = `Debug) message = perform @@ Yocaml_log (level, message)
 let raise exn = perform @@ Yocaml_failwith exn
 let failwith message = perform @@ Yocaml_failwith (Failure message)
+let file_exists ~on path = perform @@ Yocaml_file_exists (on, path)
+
+let ensure_file_exists ~on f path =
+  let* exists = file_exists ~on path in
+  if exists then f path else raise (File_not_exists path)
+
+let read_file ~on =
+  ensure_file_exists ~on (fun path -> perform @@ Yocaml_read_file (on, path))
+
+let mtime ~on =
+  ensure_file_exists ~on (fun path -> perform @@ Yocaml_get_mtime (on, path))

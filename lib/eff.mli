@@ -141,6 +141,20 @@ val map8 :
   -> 'i t
 (** Lift a 8-ary function. *)
 
+(** {2 Traversable}
+
+    Enables traversable structures to be traversed on effects. *)
+
+module List : sig
+  val traverse : ('a -> 'b t) -> 'a list -> 'b list t
+  (** Map each element of a structure to an action, evaluate these actions from
+      left to right, and collect the results. *)
+
+  val sequence : 'a t list -> 'a list t
+  (** Evaluate each action in the structure from left to right, and collect the
+      results *)
+end
+
 (** {2 Infix operators}
 
     Comfort infix operators for composing programmes that produce effects. *)
@@ -200,7 +214,15 @@ include module type of Syntax
 
     Description of the effects that can be propagated by a YOCaml program. All
     effects are prefixed with [Yocaml_] to avoid conflicts with another program
-    propagating different effects. *)
+    propagating different effects.
+
+    Some effects are common (for example those used to log or propagate errors),
+    some are used to act on the original filesystem and uses a parameter
+    [`Source] and others act on the target and uses a parameter [`Target]. This
+    makes it possible, for example, to generate in a target different from the
+    source. This is useful, for example, when generating a site in a git
+    repository, which uses a Unix file system as its source and a git repo as
+    its target. *)
 
 type _ Effect.t +=
   | Yocaml_log :
@@ -212,6 +234,12 @@ type _ Effect.t +=
             library. *)
   | Yocaml_failwith : exn -> 'a Effect.t
         (** Effect that propagates an error. *)
+  | Yocaml_file_exists : [ `Target | `Source ] * Path.t -> bool Effect.t
+        (** Effect that check if a file exists. *)
+  | Yocaml_read_file : [ `Target | `Source ] * Path.t -> string Effect.t
+        (** Effect that read a file from a given filepath on the source*)
+  | Yocaml_get_mtime : [ `Target | `Source ] * Path.t -> int Effect.t
+        (** Effect that get the modification time of a source filepath. *)
 
 val perform : 'a Effect.t -> 'a t
 (** [perform effect] colours an effect performance as impure. Replaces
@@ -221,6 +249,13 @@ val run : 'b Effect.Deep.effect_handler -> ('a -> 'b t) -> 'a -> 'b
 (** [run handler kleisli_arrow input] interprets a Kleisli Arrow
     ([kleisli_arrow]) for an effect handler ([effect_handler]) given as an
     argument ([input]). *)
+
+(** {2 Exceptions}
+
+    Exception that can be propagated by the performance of effects. *)
+
+exception File_not_exists of Path.t
+(** Exception raised when a file does not exists. *)
 
 (** {2 Helpers for performing effects}
 
@@ -237,3 +272,17 @@ val raise : exn -> 'a t
 val failwith : string -> 'a t
 (** [failwith message] perform the effect [Yocaml_failwith] with a message that
     produces an error wrapped into a [Failure] exception. *)
+
+val file_exists : on:[ `Target | `Source ] -> Path.t -> bool t
+(** [file_exists path] perform the effect [Yocaml_file_exists] with a given
+    [path] return [true] if the file exists, [false] if not. *)
+
+val read_file : on:[ `Target | `Source ] -> Path.t -> string t
+(** [source_read_file path] perform the effect [Yocaml_read_file] with a given
+    [path] and try to read it. Perform [Yocaml_failwith] with
+    {!exception:File_not_exists} if the file does not exists. *)
+
+val mtime : on:[ `Target | `Source ] -> Path.t -> int t
+(** [source_mtime path] perform the effect [Yocaml_source_get_mtime] with a
+    given [path] and try to get the modification time. Perform [Yocaml_failwith]
+    with {!exception:File_not_exists} if the file does not exists. *)
