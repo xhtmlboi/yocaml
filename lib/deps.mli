@@ -38,6 +38,25 @@ val empty : t
 val reduce : t list -> t
 (** [reduce sets] merge many sets in one. *)
 
+(** {1 Building} *)
+
+val singleton : Path.t -> t
+(** [singleton] is a set with only one dependency. *)
+
+val from_list : Path.t list -> t
+(** [from_list list] build a set from a given list of path. *)
+
+(** {1 Compute deps}
+
+    Retrieves information about sets of dependencies. *)
+
+(** describes whether a target needs to be built, updated or is already up to
+    date. *)
+type required_action = Nothing | Create | Update
+
+val need_update : t -> Path.t -> required_action Eff.t
+(** [need_update deps target] returns the corresponding {!type:required_action}.*)
+
 (** {1 Utils} *)
 
 val pp : Format.formatter -> t -> unit

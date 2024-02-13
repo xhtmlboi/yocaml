@@ -21,7 +21,25 @@ type t = Path_set.t
 let concat = Path_set.union
 let empty = Path_set.empty
 let reduce = List.fold_left concat empty
+let singleton = Path_set.singleton
+let from_list = Path_set.of_list
 let equal = Path_set.equal
+
+type required_action = Nothing | Create | Update
+
+let get_mtimes deps =
+  deps |> Path_set.elements |> Eff.(List.traverse @@ mtime ~on:`Source)
+
+let need_update deps target =
+  let open Eff.Syntax in
+  let* exists = Eff.file_exists ~on:`Target target in
+  if exists then
+    let+ mtime_target = Eff.mtime ~on:`Target target
+    and+ mtime_deps = get_mtimes deps in
+    if List.exists (fun mtime_dep -> mtime_dep >= mtime_target) mtime_deps then
+      Update
+    else Nothing
+  else Eff.return Create
 
 let pp ppf deps =
   Format.fprintf ppf "Deps [@[<v 0>%a@]]"

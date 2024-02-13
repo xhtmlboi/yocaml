@@ -14,23 +14,5 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-(** Testable for use with {{:https://ocaml.org/p/alcotest/latest} Alcotest}. *)
-
-val fs : Fs.t Alcotest.testable
-val fs_item : Fs.item Alcotest.testable
-val csexp : Yocaml.Csexp.t Alcotest.testable
-
-val csexp_result :
-     unit
-  -> ( Yocaml.Csexp.t
-     , [> `Nonterminated_atom of int
-       | `Expected_number_or_colon of char * int
-       | `Expected_number of char * int
-       | `Unexepected_character of char * int
-       | `Premature_end_of_atom of int * int
-       | `Nonterminated_node of int ] )
-     result
-     Alcotest.testable
-
-val deps : Yocaml.Deps.t Alcotest.testable
-val required_action : Yocaml.Deps.required_action Alcotest.testable
+val cases : string * unit Alcotest.test_case list
+(** Returns the list of test cases. *)
