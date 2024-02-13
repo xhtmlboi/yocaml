@@ -14,9 +14,20 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-module Csexp = Csexp
-module Path = Path
-module Eff = Eff
-module Deps = Deps
-module Task = Task
-module Pipeline = Pipeline
+(** A pipeline is a succession of {!module:Task} that enable concrete elements
+    to be built. Building a construction system generally consists of composing
+    pipelines together. *)
+
+val track_file : Path.t -> (unit, unit) Task.t
+(** [track_file filepath] is a dummy task that just add a file to a dependcies
+    set and do nothing.
+
+    It useful to watch file modification, like binaries just, for example, to
+    replay a task if the binary was recompiled. *)
+
+val track_files : Path.t list -> (unit, unit) Task.t
+(** [track_files list_of_filepath] is like {!val:track_file} but for multiple
+    files. *)
+
+val read_file : Path.t -> (unit, string) Task.t
+(** [read_file path] is a task that read the content of a file. *)

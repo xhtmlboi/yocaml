@@ -14,9 +14,8 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-module Csexp = Csexp
-module Path = Path
-module Eff = Eff
-module Deps = Deps
-module Task = Task
-module Pipeline = Pipeline
+let track_files list = Task.make (Deps.from_list list) Eff.return
+let track_file file = track_files [ file ]
+
+let read_file file =
+  Task.make (Deps.singleton file) (fun () -> Eff.read_file ~on:`Source file)
