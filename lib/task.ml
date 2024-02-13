@@ -18,6 +18,7 @@ type ('a, 'b) t = { dependencies : Deps.t; action : 'a -> 'b Eff.t }
 type 'a ct = (unit, 'a) t
 
 let make dependencies action = { dependencies; action }
+let dependencies_of { dependencies; _ } = dependencies
 
 let lift f =
   let dependencies = Deps.empty in
