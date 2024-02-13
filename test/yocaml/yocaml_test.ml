@@ -16,4 +16,10 @@
 
 let () =
   Alcotest.run "Yocaml test"
-    [ Fs_test.cases; Path_test.cases; Csexp_test.cases ]
+    [
+      Fs_test.cases
+    ; Path_test.cases
+    ; Csexp_test.cases
+    ; Deps_test.cases
+    ; Pipeline_test.cases
+    ]
