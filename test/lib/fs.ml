@@ -129,3 +129,82 @@ let ( .%{}<- ) fs path callback =
 let rename name = function
   | File f -> File { f with name }
   | Dir d -> Dir { d with name }
+
+type mutable_trace = { mutable system : t; mutable trace : string list }
+
+let system { system; _ } = system
+let trace { trace; _ } = trace |> List.rev
+let create_trace system = { system; trace = [] }
+
+let push_trace mutable_trace trace =
+  mutable_trace.trace <- trace :: mutable_trace.trace
+
+let push_log trace level message =
+  let level =
+    match level with
+    | `App -> "App"
+    | `Error -> "Error"
+    | `Warning -> "Warning"
+    | `Info -> "Info"
+    | `Debug -> "Debug"
+  in
+  push_trace trace @@ Format.asprintf "[LOG][%s]%s" level message
+
+let on_pp ppf = function
+  | `Target -> Format.fprintf ppf "Target"
+  | `Source -> Format.fprintf ppf "Source"
+
+let push_file_exists trace on path =
+  push_trace trace
+  @@ Format.asprintf "[FILE_EXISTS][%a]%a" on_pp on Yocaml.Path.pp path
+
+let push_read_file trace on path =
+  push_trace trace
+  @@ Format.asprintf "[READ_FILE][%a]%a" on_pp on Yocaml.Path.pp path
+
+let push_mtime trace on path =
+  push_trace trace
+  @@ Format.asprintf "[MTIME][%a]%a" on_pp on Yocaml.Path.pp path
+
+let run ~mutable_trace program input =
+  let handler =
+    Effect.Deep.
+      {
+        effc =
+          (fun (type a) (eff : a Effect.t) ->
+            let open Yocaml.Eff in
+            match eff with
+            | Yocaml_failwith exn -> Some (fun _ -> Stdlib.raise exn)
+            | Yocaml_log (level, message) ->
+                Some
+                  (fun (k : (a, _) continuation) ->
+                    let () = push_log mutable_trace level message in
+                    continue k ())
+            | Yocaml_file_exists (on, path) ->
+                Some
+                  (fun (k : (a, _) continuation) ->
+                    let () = push_file_exists mutable_trace on path in
+                    let path = Yocaml.Path.to_list path in
+                    let ex = Option.is_some @@ get mutable_trace.system path in
+                    continue k ex)
+            | Yocaml_read_file (on, path) ->
+                Some
+                  (fun (k : (a, _) continuation) ->
+                    let () = push_read_file mutable_trace on path in
+                    let path = Yocaml.Path.to_list path in
+                    match get mutable_trace.system path with
+                    | Some (File { content; _ }) -> continue k content
+                    | _ -> continue k "")
+            | Yocaml_get_mtime (on, path) ->
+                Some
+                  (fun (k : (a, _) continuation) ->
+                    let () = push_mtime mutable_trace on path in
+                    let path = Yocaml.Path.to_list path in
+                    match get mutable_trace.system path with
+                    | Some (File { mtime; _ } | Dir { mtime; _ }) ->
+                        continue k mtime
+                    | _ -> continue k 0)
+            | _ -> None)
+      }
+  in
+  Yocaml.Eff.run handler program input
