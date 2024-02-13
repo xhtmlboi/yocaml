@@ -63,14 +63,12 @@ let pp ppf path =
       Format.fprintf ppf "%s" (Buffer.contents buf)
 
 let to_string = Format.asprintf "%a" pp
+let to_list = function Absolute xs -> "/" :: xs | Relative xs -> "." :: xs
 
 let append path fragments =
   match path with
   | Relative f -> Relative (f @ fragments)
   | Absolute f -> Absolute (f @ fragments)
-
-let ( ++ ) = append
-let ( / ) path fragment = append path [ fragment ]
 
 let extension path =
   let fragments = get_fragments path in
@@ -118,3 +116,11 @@ let compare a b =
   | Relative _, Absolute _ -> 1
   | Absolute a, Absolute b | Relative a, Relative b ->
       List.compare String.compare a b
+
+module Infix = struct
+  let ( ++ ) = append
+  let ( / ) path fragment = append path [ fragment ]
+  let ( ~/ ) = rel
+end
+
+include Infix

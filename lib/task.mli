@@ -278,3 +278,8 @@ end
 
 include module type of Syntax
 (** @inline *)
+
+(** {1 Utils} *)
+
+val dependencies_of : (_, _) t -> Deps.t
+(** [dependencies_of t] returns the dependencies set of a task. *)

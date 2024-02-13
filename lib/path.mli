@@ -103,14 +103,27 @@ val compare : t -> t -> int
 val to_string : t -> string
 (** [to_string path] lift a path into a string. *)
 
+val to_list : t -> fragment list
+(** [to_list path] returns a path into a list of fragment (and use [.] for
+    [relative] path and [/] for [absolute] path). *)
+
 (** {1 Infix operators}
 
     As paths are used somewhat invasively in YOCaml to describe resources and
     targets, certain infix operators make it easier to manipulate them. *)
 
-val ( ++ ) : t -> fragment list -> t
-(** [path ++ fragments] is [append path fragments] (the function is
-    [left-associative] allowing chain). *)
+module Infix : sig
+  val ( ++ ) : t -> fragment list -> t
+  (** [path ++ fragments] is [append path fragments] (the function is
+      [left-associative] allowing chain). *)
 
-val ( / ) : t -> fragment -> t
-(** [path / fragment ] is [append path [fragment]]. *)
+  val ( / ) : t -> fragment -> t
+  (** [path / fragment ] is [append path [fragment]]. *)
+
+  val ( ~/ ) : fragment list -> t
+  (** [~/["a"; "b"]] is [rel ["a; b"]]. A conveinent shortcut for expressing
+      relative path. *)
+end
+
+include module type of Infix
+(** @inline *)
