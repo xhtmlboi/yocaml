@@ -1,7 +1,7 @@
 (library
  (name yocaml_unix)
  (public_name yocaml_unix)
- (libraries cryptokit unix yocaml logs cohttp-lwt-unix conduit-lwt))
+ (libraries digestif unix yocaml logs cohttp-lwt-unix conduit-lwt))
 
 (documentation
  (package yocaml_unix))
