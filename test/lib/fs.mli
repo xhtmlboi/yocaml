@@ -109,18 +109,18 @@ val name_of : item -> string
 
 (** {1 Dummy interpreter} *)
 
-type mutable_trace
-(** Describes a mutable filesystem, used into the effect interpretation. *)
+type trace
+(** Describes a filesystem, used into the effect interpretation. *)
 
-val create_trace : t -> mutable_trace
-(** [create_trace fs] build a new mutable trace on top of a file system. *)
+val create_trace : t -> trace
+(** [create_trace fs] build a new trace on top of a file system. *)
 
-val system : mutable_trace -> t
-(** [system mtrace] returns the modified file system. *)
+val system : trace -> t
+(** [system trace] returns the modified file system. *)
 
-val trace : mutable_trace -> string list
-(** [trace mtrace] get the instruction trace. *)
+val execution_trace : trace -> string list
+(** [execution_trace trace] get the instruction trace. *)
 
-val run : mutable_trace:mutable_trace -> ('a -> 'b Yocaml.Eff.t) -> 'a -> 'b
-(** [run ~mutable_trace program input] run a given [program] (with a given
-    [input]) using the dummy file system and updating the [mutable_trace]. *)
+val run : trace:trace -> ('a -> 'b Yocaml.Eff.t) -> 'a -> trace * 'b
+(** [run ~trace program input] run a given [program] (with a given [input])
+    using the dummy file system and updating the [trace]. *)

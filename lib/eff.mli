@@ -245,7 +245,7 @@ val perform : 'a Effect.t -> 'a t
 (** [perform effect] colours an effect performance as impure. Replaces
     [Stdlib.Effect.perform x].*)
 
-val run : 'b Effect.Deep.effect_handler -> ('a -> 'b t) -> 'a -> 'b
+val run : ('b, 'c) Effect.Deep.handler -> ('a -> 'b t) -> 'a -> 'c
 (** [run handler kleisli_arrow input] interprets a Kleisli Arrow
     ([kleisli_arrow]) for an effect handler ([effect_handler]) given as an
     argument ([input]). *)

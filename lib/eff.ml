@@ -90,7 +90,7 @@ type _ Effect.t +=
 let perform raw_effect = return @@ Effect.perform raw_effect
 
 let run handler arrow input =
-  Effect.Deep.try_with (fun input -> arrow input ()) input handler
+  Effect.Deep.match_with (fun input -> arrow input ()) input handler
 
 exception File_not_exists of Path.t
 
