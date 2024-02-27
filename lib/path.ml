@@ -117,6 +117,30 @@ let compare a b =
   | Absolute a, Absolute b | Relative a, Relative b ->
       List.compare String.compare a b
 
+let to_csexp path =
+  let ctor, fragments =
+    match path with Relative x -> ("rel", x) | Absolute x -> ("abs", x)
+  in
+  Csexp.(node [ atom ctor; node @@ List.map atom fragments ])
+
+let all_are_nodes csexp node =
+  List.fold_left
+    (fun acc value ->
+      Result.bind acc (fun acc ->
+          match value with
+          | Csexp.Atom x -> Ok (x :: acc)
+          | _ -> Error (`Invalid_csexp (csexp, `Path))))
+    (Ok []) node
+  |> Result.map List.rev
+
+let from_csexp csexp =
+  match csexp with
+  | Csexp.(Node [ Atom "rel"; Node fragments ]) ->
+      Result.map rel (all_are_nodes csexp fragments)
+  | Csexp.(Node [ Atom "abs"; Node fragments ]) ->
+      Result.map abs (all_are_nodes csexp fragments)
+  | _ -> Error (`Invalid_csexp (csexp, `Path))
+
 module Infix = struct
   let ( ++ ) = append
   let ( / ) path fragment = append path [ fragment ]

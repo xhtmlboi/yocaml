@@ -55,7 +55,20 @@ val from_list : Path.t list -> t
 type required_action = Nothing | Create | Update
 
 val need_update : t -> Path.t -> required_action Eff.t
-(** [need_update deps target] returns the corresponding {!type:required_action}.*)
+(** [need_update deps target] returns the corresponding {!type:required_action}. *)
+
+(** {1 Serialization/Deserialization}
+
+    Supports serialization and deserialization of dependency sets. *)
+
+val to_csexp : t -> Csexp.t
+(** [to_csexp deps] Converts a set of dependencies, [deps], into a
+    {!module:Csexp}. *)
+
+val from_csexp :
+  Csexp.t -> (t, [> `Invalid_csexp of Csexp.t * [> `Deps ] ]) result
+(** [from_csexp csexp] try to converts a {!module:Csexp} into a set of
+    dependencies. *)
 
 (** {1 Utils} *)
 
