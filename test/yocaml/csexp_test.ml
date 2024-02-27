@@ -167,7 +167,7 @@ let test_from_string_9 =
       check (Testable.csexp_result ()) "should be equal" expected computed)
 
 let test_to_string_from_string_roundtrip =
-  QCheck2.Test.make ~name:"to_string -> from_string roundtrip" ~count:10
+  QCheck2.Test.make ~name:"to_string -> from_string roundtrip" ~count:100
     ~print:(fun x -> Format.asprintf "%a" Yocaml.Csexp.pp x)
     Gen.csexp
     (fun csexp ->

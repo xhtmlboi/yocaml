@@ -14,7 +14,7 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-let path_testable = Alcotest.testable Yocaml.Path.pp Yocaml.Path.equal
+open Test_lib
 
 let test_to_string_rel =
   let open Alcotest in
@@ -127,7 +127,7 @@ let test_remove_extension_on_path_with_extension =
       let open Yocaml.Path in
       let expected = rel [ "foo"; "bar"; "baz" ]
       and computed = rel [ "foo"; "bar"; "baz.ml" ] |> remove_extension in
-      check path_testable "should be equal" expected computed)
+      check Testable.path "should be equal" expected computed)
 
 let test_remove_extension_on_path_without_extension =
   let open Alcotest in
@@ -138,7 +138,7 @@ let test_remove_extension_on_path_without_extension =
       let open Yocaml.Path in
       let expected = rel [ "foo"; "bar"; "baz" ] in
       let computed = expected |> remove_extension in
-      check path_testable "should be equal" expected computed)
+      check Testable.path "should be equal" expected computed)
 
 let test_add_extension_without_dot =
   let open Alcotest in
@@ -149,7 +149,7 @@ let test_add_extension_without_dot =
       let open Yocaml.Path in
       let expected = rel [ "foo"; "bar"; "baz.ml" ]
       and computed = rel [ "foo"; "bar"; "baz" ] |> add_extension "ml" in
-      check path_testable "should be equal" expected computed)
+      check Testable.path "should be equal" expected computed)
 
 let test_add_extension_with_dot =
   let open Alcotest in
@@ -160,7 +160,7 @@ let test_add_extension_with_dot =
       let open Yocaml.Path in
       let expected = rel [ "foo"; "bar"; "baz.ml" ]
       and computed = rel [ "foo"; "bar"; "baz" ] |> add_extension ".ml" in
-      check path_testable "should be equal" expected computed)
+      check Testable.path "should be equal" expected computed)
 
 let test_add_extension_with_empty_extension =
   let open Alcotest in
@@ -171,7 +171,7 @@ let test_add_extension_with_empty_extension =
       let open Yocaml.Path in
       let expected = rel [ "foo"; "bar"; "baz" ]
       and computed = rel [ "foo"; "bar"; "baz" ] |> add_extension "" in
-      check path_testable "should be equal" expected computed)
+      check Testable.path "should be equal" expected computed)
 
 let test_add_extension_with_dot_extension =
   let open Alcotest in
@@ -182,17 +182,17 @@ let test_add_extension_with_dot_extension =
       let open Yocaml.Path in
       let expected = rel [ "foo"; "bar"; "baz" ]
       and computed = rel [ "foo"; "bar"; "baz" ] |> add_extension "." in
-      check path_testable "should be equal" expected computed)
+      check Testable.path "should be equal" expected computed)
 
 let test_add_extension_on_root_or_pwd =
   let open Alcotest in
   test_case "add_extension on root or pwd should do nothing" `Quick (fun () ->
       let open Yocaml.Path in
       let () =
-        check path_testable "should be equal" pwd (pwd |> add_extension ".ml")
+        check Testable.path "should be equal" pwd (pwd |> add_extension ".ml")
       in
       let () =
-        check path_testable "should be equal" root (root |> add_extension ".ml")
+        check Testable.path "should be equal" root (root |> add_extension ".ml")
       in
       ())
 
@@ -207,7 +207,7 @@ let test_change_extension_valid_case_no_dot =
       and computed =
         rel [ "foo"; "bar"; "baz.html" ] |> change_extension "ml"
       in
-      check path_testable "should be equal" expected computed)
+      check Testable.path "should be equal" expected computed)
 
 let test_change_extension_valid_case_dot =
   let open Alcotest in
@@ -220,7 +220,17 @@ let test_change_extension_valid_case_dot =
       and computed =
         rel [ "foo"; "bar"; "baz.html" ] |> change_extension ".ml"
       in
-      check path_testable "should be equal" expected computed)
+      check Testable.path "should be equal" expected computed)
+
+let to_csexp_from_csexp_roundtrip =
+  QCheck2.Test.make ~name:"to_csexp -> from_csexp roundtrip" ~count:100
+    ~print:(fun x -> Format.asprintf "%a" Yocaml.Path.pp x)
+    Gen.path
+    (fun p ->
+      let open Yocaml.Path in
+      let expected = Ok p and computed = p |> to_csexp |> from_csexp in
+      Alcotest.equal Testable.(from_csexp path) expected computed)
+  |> QCheck_alcotest.to_alcotest ~colors:true ~verbose:true
 
 let cases =
   ( "Yocaml.Path"
@@ -245,4 +255,5 @@ let cases =
     ; test_add_extension_on_root_or_pwd
     ; test_change_extension_valid_case_no_dot
     ; test_change_extension_valid_case_dot
+    ; to_csexp_from_csexp_roundtrip
     ] )

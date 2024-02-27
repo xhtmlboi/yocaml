@@ -14,13 +14,16 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-let () =
-  Alcotest.run "Yocaml test"
-    [
-      Fs_test.cases
-    ; Path_test.cases
-    ; Csexp_test.cases
-    ; Deps_test.cases
-    ; Cache_test.cases
-    ; Pipeline_test.cases
-    ]
+open Test_lib
+
+let to_csexp_from_csexp_roundtrip =
+  QCheck2.Test.make ~name:"to_csexp -> from_csexp roundtrip" ~count:100
+    ~print:(fun x -> Format.asprintf "%a" Yocaml.Cache.pp x)
+    Gen.cache
+    (fun p ->
+      let open Yocaml.Cache in
+      let expected = Ok p and computed = p |> to_csexp |> from_csexp in
+      Alcotest.equal Testable.(from_csexp cache) expected computed)
+  |> QCheck_alcotest.to_alcotest ~colors:true ~verbose:true
+
+let cases = ("Yocaml.Cache", [ to_csexp_from_csexp_roundtrip ])
