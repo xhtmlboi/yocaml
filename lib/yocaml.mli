@@ -29,6 +29,7 @@ module Path = Path
     Modules for describing construction rules. Tasks to be executed, sets of
     dependencies, etc. *)
 
+module Cache = Cache
 module Deps = Deps
 module Task = Task
 module Pipeline = Pipeline
