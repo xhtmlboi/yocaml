@@ -64,6 +64,8 @@ let required_action = Alcotest.testable required_action_pp required_action_equal
 
 let from_csexp_error_subject_pp ppf = function
   | `Path -> Format.fprintf ppf "`Path"
+  | `Deps -> Format.fprintf ppf "`Deps"
+  | `Cache -> Format.fprintf ppf "`Cache"
   | _ -> Format.fprintf ppf "Unknown subject"
 
 let from_csexp_error_ppf ppf = function
@@ -73,7 +75,9 @@ let from_csexp_error_ppf ppf = function
   | _ -> Format.fprintf ppf "Unknown error"
 
 let from_csexp_error_subject_equal a b =
-  match (a, b) with `Path, `Path -> true | _ -> true
+  match (a, b) with
+  | `Path, `Path | `Deps, `Deps | `Cache, `Cache -> true
+  | _ -> true
 
 let from_csexp_error_equal a b =
   match (a, b) with
