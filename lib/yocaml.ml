@@ -16,6 +16,7 @@
 
 module Csexp = Csexp
 module Path = Path
+module Cache = Cache
 module Eff = Eff
 module Deps = Deps
 module Task = Task
