@@ -38,7 +38,9 @@ val required_action : Yocaml.Deps.required_action Alcotest.testable
 
 val from_csexp :
      'a Alcotest.testable
-  -> ('a, [> `Invalid_csexp of Yocaml.Csexp.t * [> `Path ] ]) result
+  -> ( 'a
+     , [> `Invalid_csexp of Yocaml.Csexp.t * [> `Path | `Deps | `Cache ] ] )
+     result
      Alcotest.testable
 
 val cache : Yocaml.Cache.t Alcotest.testable
