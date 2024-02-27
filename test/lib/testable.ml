@@ -61,3 +61,30 @@ let required_action_pp ppf = function
   | Yocaml.Deps.Update -> Format.fprintf ppf "Update"
 
 let required_action = Alcotest.testable required_action_pp required_action_equal
+
+let from_csexp_error_subject_pp ppf = function
+  | `Path -> Format.fprintf ppf "`Path"
+  | _ -> Format.fprintf ppf "Unknown subject"
+
+let from_csexp_error_ppf ppf = function
+  | `Invalid_csexp (expr, subject) ->
+      Format.fprintf ppf "`Invalid_csexp (%a, %a)" Yocaml.Csexp.pp expr
+        from_csexp_error_subject_pp subject
+  | _ -> Format.fprintf ppf "Unknown error"
+
+let from_csexp_error_subject_equal a b =
+  match (a, b) with `Path, `Path -> true | _ -> true
+
+let from_csexp_error_equal a b =
+  match (a, b) with
+  | `Invalid_csexp (expr_a, subject_a), `Invalid_csexp (expr_b, subject_b) ->
+      Yocaml.Csexp.equal expr_a expr_b
+      && from_csexp_error_subject_equal subject_a subject_b
+  | _ -> false
+
+let from_csexp a =
+  let err = Alcotest.testable from_csexp_error_ppf from_csexp_error_equal in
+  Alcotest.result a err
+
+let path = Alcotest.testable Yocaml.Path.pp Yocaml.Path.equal
+let cache = Alcotest.testable Yocaml.Cache.pp Yocaml.Cache.equal

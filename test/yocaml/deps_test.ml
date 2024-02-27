@@ -122,5 +122,21 @@ let test_need_update_3 =
       in
       ())
 
+let to_csexp_from_csexp_roundtrip =
+  QCheck2.Test.make ~name:"to_csexp -> from_csexp roundtrip" ~count:100
+    ~print:(fun x -> Format.asprintf "%a" Yocaml.Deps.pp x)
+    Gen.deps
+    (fun p ->
+      let open Yocaml.Deps in
+      let expected = Ok p and computed = p |> to_csexp |> from_csexp in
+      Alcotest.equal Testable.(from_csexp deps) expected computed)
+  |> QCheck_alcotest.to_alcotest ~colors:true ~verbose:true
+
 let cases =
-  ("Yocaml.Deps", [ test_need_update_1; test_need_update_2; test_need_update_3 ])
+  ( "Yocaml.Deps"
+  , [
+      test_need_update_1
+    ; test_need_update_2
+    ; test_need_update_3
+    ; to_csexp_from_csexp_roundtrip
+    ] )
