@@ -107,6 +107,17 @@ val to_list : t -> fragment list
 (** [to_list path] returns a path into a list of fragment (and use [.] for
     [relative] path and [/] for [absolute] path). *)
 
+(** {1 Serialization/Deserialization}
+
+    Supports serialization and deserialization of paths. *)
+
+val to_csexp : t -> Csexp.t
+(** [to_csexp path] Converts a [path] into a {!module:Csexp}. *)
+
+val from_csexp :
+  Csexp.t -> (t, [> `Invalid_csexp of Csexp.t * [> `Path ] ]) result
+(** [from_csexp csexp] try to converts a {!module:Csexp} into a [path]. *)
+
 (** {1 Infix operators}
 
     As paths are used somewhat invasively in YOCaml to describe resources and

@@ -41,6 +41,22 @@ let need_update deps target =
     else Nothing
   else Eff.return Create
 
+let to_csexp deps =
+  deps |> Path_set.to_list |> List.map Path.to_csexp |> Csexp.node
+
+let all_path_nodes csexp node =
+  List.fold_left
+    (fun acc value ->
+      Result.bind acc (fun acc ->
+          value |> Path.from_csexp |> Result.map (fun p -> p :: acc)))
+    (Ok []) node
+  |> Result.map_error (fun _ -> `Invalid_csexp (csexp, `Deps))
+
+let from_csexp csexp =
+  match csexp with
+  | Csexp.(Node paths) -> paths |> all_path_nodes csexp |> Result.map from_list
+  | _ -> Error (`Invalid_csexp (csexp, `Deps))
+
 let pp ppf deps =
   Format.fprintf ppf "Deps [@[<v 0>%a@]]"
     (Format.pp_print_list
