@@ -112,7 +112,7 @@ val name_of : item -> string
 type trace
 (** Describes a filesystem, used into the effect interpretation. *)
 
-val create_trace : ?mtime:int -> t -> trace
+val create_trace : ?time:int -> t -> trace
 (** [create_trace fs] build a new trace on top of a file system. *)
 
 val trace_system : trace -> t
@@ -121,7 +121,7 @@ val trace_system : trace -> t
 val trace_execution : trace -> string list
 (** [trace_execution trace] get the instruction trace. *)
 
-val trace_mtime : trace -> int
+val trace_time : trace -> int
 (** [trace_mtime trace] get the current modification time of a trace. *)
 
 (** {2 Additional effects}

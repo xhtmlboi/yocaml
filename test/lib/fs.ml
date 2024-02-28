@@ -131,18 +131,18 @@ let rename name = function
   | File f -> File { f with name }
   | Dir d -> Dir { d with name }
 
-type trace = { system : t; execution_trace : string list; mtime : int }
+type trace = { system : t; execution_trace : string list; time : int }
 
 let trace_system { system; _ } = system
 let trace_execution { execution_trace; _ } = execution_trace |> List.rev
-let trace_mtime { mtime; _ } = mtime
-let create_trace ?(mtime = 0) system = { system; execution_trace = []; mtime }
+let trace_time { time; _ } = time
+let create_trace ?(time = 0) system = { system; execution_trace = []; time }
 
 let push_trace trace action =
   { trace with execution_trace = action :: trace.execution_trace }
 
 let update_system trace system = { trace with system }
-let increase_mtime trace amount = { trace with mtime = trace.mtime + amount }
+let update_time trace amount = { trace with time = trace.time + amount }
 
 let push_log trace level message =
   let level =
@@ -203,7 +203,7 @@ let run ~trace program input =
                   (fun (k : (a, _) continuation) ->
                     (* We do not track the execution here because it is not
                        revelant for tests. *)
-                    let () = trace := increase_mtime !trace amount in
+                    let () = trace := update_time !trace amount in
                     continue k ())
             | Yocaml_failwith exn -> Some (fun _ -> Stdlib.raise exn)
             | Yocaml_log (level, message) ->
@@ -249,7 +249,7 @@ let run ~trace program input =
                     let path = Yocaml.Path.to_list gpath in
                     let new_fs =
                       update !trace.system path (fun ~target ~previous_item:_ ->
-                          let mtime = !trace.mtime in
+                          let mtime = !trace.time in
                           Some (file ~mtime target content))
                     in
                     let () = trace := update_system !trace new_fs in
