@@ -25,6 +25,16 @@ let entry hashed_content dynamic_dependencies =
 let empty = Cache_map.empty
 let from_list = Cache_map.of_list
 
+let update cache path ?(deps = Deps.empty) content =
+  let entry = entry content deps in
+  Cache_map.add path entry cache
+
+let get cache path =
+  Option.map
+    (fun { hashed_content; dynamic_dependencies } ->
+      (hashed_content, dynamic_dependencies))
+    (Cache_map.find_opt path cache)
+
 let entry_to_csexp { hashed_content; dynamic_dependencies } =
   let open Csexp in
   node [ atom hashed_content; Deps.to_csexp dynamic_dependencies ]
