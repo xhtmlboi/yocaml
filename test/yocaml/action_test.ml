@@ -47,7 +47,7 @@ let test_action_create_file_1 =
                 ]
             ])
       in
-      let trace = Fs.create_trace ~mtime:0 base_file_system in
+      let trace = Fs.create_trace ~time:0 base_file_system in
       let program () =
         let open Yocaml in
         let cache = Cache.empty in
@@ -155,7 +155,7 @@ let test_action_create_file_2 =
                 ]
             ])
       in
-      let trace = Fs.create_trace ~mtime:0 base_file_system in
+      let trace = Fs.create_trace ~time:0 base_file_system in
       let program () =
         let open Yocaml in
         let cache = Cache.empty in
@@ -256,7 +256,7 @@ let test_action_create_file_3 =
                 ]
             ])
       in
-      let trace = Fs.create_trace ~mtime:0 base_file_system in
+      let trace = Fs.create_trace ~time:0 base_file_system in
       let program cache =
         let open Yocaml in
         let open Eff in
