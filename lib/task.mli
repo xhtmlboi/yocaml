@@ -283,3 +283,10 @@ include module type of Syntax
 
 val dependencies_of : (_, _) t -> Deps.t
 (** [dependencies_of t] returns the dependencies set of a task. *)
+
+val action_of : ('a, 'b) t -> 'a -> 'b Eff.t
+(** [action_of t] returns the effectful function of a task. *)
+
+val destruct : ('a, 'b) t -> Deps.t * ('a -> 'b Eff.t)
+(** [destruct t] returns the pair of a dependencies set and an effectful
+    callback. [destruct] is [dependencies_of t, action_of t]*)
