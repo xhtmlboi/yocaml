@@ -222,6 +222,70 @@ let test_change_extension_valid_case_dot =
       in
       check Testable.path "should be equal" expected computed)
 
+let test_basename1 =
+  let open Alcotest in
+  test_case "basename test 1" `Quick (fun () ->
+      let open Yocaml.Path in
+      let expected = Some "index.png"
+      and computed = ~/[ "foo"; "bar"; "baz"; "index.png" ] |> basename in
+      check (option string) "should be equal" expected computed)
+
+let test_basename2 =
+  let open Alcotest in
+  test_case "basename test 2" `Quick (fun () ->
+      let open Yocaml.Path in
+      let expected = None and computed = ~/[] |> basename in
+      check (option string) "should be equal" expected computed)
+
+let test_basename3 =
+  let open Alcotest in
+  test_case "basename test 1" `Quick (fun () ->
+      let open Yocaml.Path in
+      let expected = Some "index.png"
+      and computed = ~/[ "index.png" ] |> basename in
+      check (option string) "should be equal" expected computed)
+
+let test_dirname1 =
+  let open Alcotest in
+  test_case "dirname test 1" `Quick (fun () ->
+      let open Yocaml.Path in
+      let expected = ~/[ "foo"; "bar"; "baz" ]
+      and computed = ~/[ "foo"; "bar"; "baz"; "index.png" ] |> dirname in
+      check Testable.path "should be equal" expected computed)
+
+let test_dirname2 =
+  let open Alcotest in
+  test_case "dirname test 2" `Quick (fun () ->
+      let open Yocaml.Path in
+      let expected = ~/[] and computed = ~/[ "foo" ] |> dirname in
+      check Testable.path "should be equal" expected computed)
+
+let test_dirname3 =
+  let open Alcotest in
+  test_case "dirname test 2" `Quick (fun () ->
+      let open Yocaml.Path in
+      let expected = ~/[] and computed = ~/[] |> dirname in
+      check Testable.path "should be equal" expected computed)
+
+let test_move1 =
+  let open Alcotest in
+  test_case "move test 1" `Quick (fun () ->
+      let open Yocaml.Path in
+      let expected = Some ~/[ "oof"; "rab"; "zab"; "index.png" ]
+      and computed =
+        ~/[ "foo"; "bar"; "baz"; "index.png" ]
+        |> move ~into:~/[ "oof"; "rab"; "zab" ]
+      in
+      check (option Testable.path) "should be equal" expected computed)
+
+let test_move2 =
+  let open Alcotest in
+  test_case "move test 2" `Quick (fun () ->
+      let open Yocaml.Path in
+      let expected = None
+      and computed = ~/[] |> move ~into:~/[ "oof"; "rab"; "zab" ] in
+      check (option Testable.path) "should be equal" expected computed)
+
 let to_csexp_from_csexp_roundtrip =
   QCheck2.Test.make ~name:"to_csexp -> from_csexp roundtrip" ~count:100
     ~print:(fun x -> Format.asprintf "%a" Yocaml.Path.pp x)
@@ -255,5 +319,13 @@ let cases =
     ; test_add_extension_on_root_or_pwd
     ; test_change_extension_valid_case_no_dot
     ; test_change_extension_valid_case_dot
+    ; test_basename1
+    ; test_basename2
+    ; test_basename3
+    ; test_dirname1
+    ; test_dirname2
+    ; test_dirname3
+    ; test_move1
+    ; test_move2
     ; to_csexp_from_csexp_roundtrip
     ] )
