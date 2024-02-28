@@ -37,6 +37,16 @@ val empty : t
 val from_list : (Path.t * entry) list -> t
 (** [from_list l] creates a cache from a list. *)
 
+(** {1 Cache interaction} *)
+
+val update : t -> Path.t -> ?deps:Deps.t -> string -> t
+(** [update cache path ?deps content] updates the cache for the [path] entry. If
+    an entry already existed at the given key, it will be deleted. *)
+
+val get : t -> Path.t -> (string * Deps.t) option
+(** [get cache path] returns the associated hash content and deps set for a
+    given path. *)
+
 (** {1 Serialization/Deserialization}
 
     Supports serialization and deserialization of cache. *)
