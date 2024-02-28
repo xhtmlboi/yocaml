@@ -55,7 +55,8 @@ let rec pp_item ppf = function
       Format.fprintf ppf "└─⟢ %s (mtime: %d) -> \"%s\"" (name f) (mtime f)
         (content f)
   | Dir d ->
-      Format.fprintf ppf "└─⟤ %s/@[<v -10>@;%a@]" (name d)
+      Format.fprintf ppf "└─⟤ %s (mtime: %d) /@[<v -10>@;%a@]" (name d)
+        (mtime d)
         (Format.pp_print_list pp_item)
         (content d)
 
@@ -182,6 +183,9 @@ type _ Effect.t += Yocaml_test_increase_time : int -> unit Effect.t
 
 let increase_time amount =
   Yocaml.Eff.perform @@ Yocaml_test_increase_time amount
+
+let increase_time_with amount cache =
+  Yocaml.Eff.(increase_time amount >>= Fun.const @@ return cache)
 
 let run ~trace program input =
   let handler =
