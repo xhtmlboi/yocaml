@@ -14,6 +14,8 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
+type t = Cache.t -> Cache.t Eff.t
+
 let perform_writing cache target fc hc =
   let open Eff.Syntax in
   let* () = Lexicon.target_is_written target in
