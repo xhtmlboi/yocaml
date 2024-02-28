@@ -17,13 +17,13 @@
 (** Actions consume {!module:Pipeline} to produce artifacts. This is the entry
     point for a {b construction rule}. *)
 
-val write_file : Cache.t -> Path.t -> (unit, string) Task.t -> Cache.t Eff.t
+val write_file : Path.t -> (unit, string) Task.t -> Cache.t -> Cache.t Eff.t
 (** [write_file cache target task] Writes [target] file with content generated
     by [task] if necessary. Returns the modified cache once the action has been
     performed. *)
 
 val copy_file :
-  ?new_name:Path.fragment -> into:Path.t -> Cache.t -> Path.t -> Cache.t Eff.t
+  ?new_name:Path.fragment -> into:Path.t -> Path.t -> Cache.t -> Cache.t Eff.t
 (** [copy_file ?new_name ~into:target cache source] Copies the [source] file to
     the [target] directory (potentially giving it a new name), taking account of
     dependencies. *)

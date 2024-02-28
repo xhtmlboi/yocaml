@@ -135,6 +135,9 @@ type _ Effect.t +=
 val increase_time : int -> unit Yocaml.Eff.t
 (** [increase_time x] perform the effect [Yocaml_test_increase_time]. *)
 
+val increase_time_with : int -> 'a -> 'a Yocaml.Eff.t
+(** [increase_time_with] is [increase_time] allowing to pass a state. *)
+
 (** {2 Run effectful program} *)
 
 val run : trace:trace -> ('a -> 'b Yocaml.Eff.t) -> 'a -> trace * 'b

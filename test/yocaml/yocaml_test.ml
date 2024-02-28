@@ -23,4 +23,5 @@ let () =
     ; Deps_test.cases
     ; Cache_test.cases
     ; Pipeline_test.cases
+    ; Action_test.cases
     ]
