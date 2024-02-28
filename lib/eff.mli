@@ -237,9 +237,14 @@ type _ Effect.t +=
   | Yocaml_file_exists : [ `Target | `Source ] * Path.t -> bool Effect.t
         (** Effect that check if a file exists. *)
   | Yocaml_read_file : [ `Target | `Source ] * Path.t -> string Effect.t
-        (** Effect that read a file from a given filepath on the source*)
+        (** Effect that read a file from a given filepath. *)
   | Yocaml_get_mtime : [ `Target | `Source ] * Path.t -> int Effect.t
-        (** Effect that get the modification time of a source filepath. *)
+        (** Effect that get the modification time of a filepath. *)
+  | Yocaml_hash_content : string -> string Effect.t
+        (** Effect that hashes a string (used to hide the result of a
+            transformation). *)
+  | Yocaml_write_file : [ `Target | `Source ] * Path.t * string -> unit Effect.t
+        (** Effect which describes the writing of a file *)
 
 val perform : 'a Effect.t -> 'a t
 (** [perform effect] colours an effect performance as impure. Replaces
@@ -257,6 +262,9 @@ val run : ('b, 'c) Effect.Deep.handler -> ('a -> 'b t) -> 'a -> 'c
 exception File_not_exists of Path.t
 (** Exception raised when a file does not exists. *)
 
+exception Invalid_path of Path.t
+(** Exception raised when a file does not has a basename. *)
+
 (** {2 Helpers for performing effects}
 
     Functions producing defined effects. *)
@@ -266,6 +274,13 @@ val log :
 (** [log ~level message] performs the effect [Yocaml_log] with a given [level]
     and a [message]. *)
 
+val logf :
+     ?level:[ `App | `Error | `Warning | `Info | `Debug ]
+  -> ('a, Format.formatter, unit, unit t) format4
+  -> 'a
+(** [logf ~level format] performs the effect [Yocaml_log] with a given [level]
+    and using a format (like Printf). *)
+
 val raise : exn -> 'a t
 (** [raise exn] performs the effect [Yocaml_failwith] with a given [exn]. *)
 
@@ -274,15 +289,22 @@ val failwith : string -> 'a t
     produces an error wrapped into a [Failure] exception. *)
 
 val file_exists : on:[ `Target | `Source ] -> Path.t -> bool t
-(** [file_exists path] perform the effect [Yocaml_file_exists] with a given
+(** [file_exists ~on path] perform the effect [Yocaml_file_exists] with a given
     [path] return [true] if the file exists, [false] if not. *)
 
 val read_file : on:[ `Target | `Source ] -> Path.t -> string t
-(** [source_read_file path] perform the effect [Yocaml_read_file] with a given
-    [path] and try to read it. Perform [Yocaml_failwith] with
+(** [source_read_file ~on path] perform the effect [Yocaml_read_file] with a
+    given [path] and try to read it. Perform [Yocaml_failwith] with
     {!exception:File_not_exists} if the file does not exists. *)
 
 val mtime : on:[ `Target | `Source ] -> Path.t -> int t
-(** [source_mtime path] perform the effect [Yocaml_source_get_mtime] with a
+(** [source_mtime ~on path] perform the effect [Yocaml_source_get_mtime] with a
     given [path] and try to get the modification time. Perform [Yocaml_failwith]
     with {!exception:File_not_exists} if the file does not exists. *)
+
+val hash : string -> string t
+(** [hash str] perform the effect [Yocaml_hash_content] on a given string. *)
+
+val write_file : on:[ `Target | `Source ] -> Path.t -> string -> unit t
+(** [write_file ~on target content] performs the effect that writes a file to a
+    given target. *)
