@@ -82,6 +82,15 @@ val change_extension : string -> t -> t
     function follows the same scheme of [add_extension]. If the extension is
     invalid, it will returns the path with the extension removed. *)
 
+val basename : t -> fragment option
+(** [basename path] returns the last fragment of a path. *)
+
+val dirname : t -> t
+(** [dirname path] returns the path without the last fragment. *)
+
+val move : into:t -> t -> t option
+(** [move source ~into:target] attempts to move the [source] to the [target]. *)
+
 (** {1 Utils} *)
 
 val pp : Format.formatter -> t -> unit

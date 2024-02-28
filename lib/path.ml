@@ -110,6 +110,23 @@ let change_extension extension =
   update_last_fragment (fun fragment ->
       fragment |> Filename.remove_extension |> fragment_add_extension extension)
 
+let basename path =
+  let fragments = get_fragments path in
+  let rec aux = function [] -> None | [ x ] -> Some x | _ :: xs -> aux xs in
+  aux fragments
+
+let dirname path =
+  let ctor, fragments = get_ctor_and_fragments path in
+  let rec aux acc = function
+    | [] -> []
+    | [ _ ] -> List.rev acc
+    | x :: xs -> aux (x :: acc) xs
+  in
+  ctor (aux [] fragments)
+
+let move ~into source =
+  Option.map (fun x -> append into [ x ]) (basename source)
+
 let compare a b =
   match (a, b) with
   | Absolute _, Relative _ -> -1
