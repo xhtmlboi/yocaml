@@ -36,7 +36,7 @@ let test_need_update_1 =
       let deps = Deps.from_list [ ~/[ "content"; "foo.md" ] ] in
       let program () = Deps.need_update deps ~/[ "_build"; "foo.html" ] in
       let mtrace, computed_action = Fs.run ~trace:mtrace program () in
-      let computed_trace = Fs.execution_trace mtrace in
+      let computed_trace = Fs.trace_execution mtrace in
       let () =
         check Testable.required_action "should be equal" Deps.Create
           computed_action
@@ -67,7 +67,7 @@ let test_need_update_2 =
       let deps = Deps.from_list [ ~/[ "content"; "foo.md" ] ] in
       let program () = Deps.need_update deps ~/[ "_build"; "foo.html" ] in
       let mtrace, computed_action = Fs.run ~trace:mtrace program () in
-      let computed_trace = Fs.execution_trace mtrace in
+      let computed_trace = Fs.trace_execution mtrace in
       let () =
         check Testable.required_action "should be equal" Deps.Nothing
           computed_action
@@ -104,7 +104,7 @@ let test_need_update_3 =
       let deps = Deps.from_list [ ~/[ "content"; "foo.md" ] ] in
       let program () = Deps.need_update deps ~/[ "_build"; "foo.html" ] in
       let mtrace, computed_action = Fs.run ~trace:mtrace program () in
-      let computed_trace = Fs.execution_trace mtrace in
+      let computed_trace = Fs.trace_execution mtrace in
       let () =
         check Testable.required_action "should be equal" Deps.Update
           computed_action

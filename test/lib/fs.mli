@@ -112,14 +112,30 @@ val name_of : item -> string
 type trace
 (** Describes a filesystem, used into the effect interpretation. *)
 
-val create_trace : t -> trace
+val create_trace : ?mtime:int -> t -> trace
 (** [create_trace fs] build a new trace on top of a file system. *)
 
-val system : trace -> t
-(** [system trace] returns the modified file system. *)
+val trace_system : trace -> t
+(** [trace_system trace] returns the modified file system. *)
 
-val execution_trace : trace -> string list
-(** [execution_trace trace] get the instruction trace. *)
+val trace_execution : trace -> string list
+(** [trace_execution trace] get the instruction trace. *)
+
+val trace_mtime : trace -> int
+(** [trace_mtime trace] get the current modification time of a trace. *)
+
+(** {2 Additional effects}
+
+    Controlling time from a test is possible by defining additional effects. *)
+
+type _ Effect.t +=
+  | Yocaml_test_increase_time : int -> unit Effect.t
+        (** An effect that allows to increase time. *)
+
+val increase_time : int -> unit Yocaml.Eff.t
+(** [increase_time x] perform the effect [Yocaml_test_increase_time]. *)
+
+(** {2 Run effectful program} *)
 
 val run : trace:trace -> ('a -> 'b Yocaml.Eff.t) -> 'a -> trace * 'b
 (** [run ~trace program input] run a given [program] (with a given [input])

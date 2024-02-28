@@ -132,14 +132,16 @@ let rename name = function
 
 type trace = { system : t; execution_trace : string list; mtime : int }
 
-let system { system; _ } = system
-let execution_trace { execution_trace; _ } = execution_trace |> List.rev
-let create_trace system = { system; execution_trace = []; mtime = 0 }
+let trace_system { system; _ } = system
+let trace_execution { execution_trace; _ } = execution_trace |> List.rev
+let trace_mtime { mtime; _ } = mtime
+let create_trace ?(mtime = 0) system = { system; execution_trace = []; mtime }
 
 let push_trace trace action =
   { trace with execution_trace = action :: trace.execution_trace }
 
 let update_system trace system = { trace with system }
+let increase_mtime trace amount = { trace with mtime = trace.mtime + amount }
 
 let push_log trace level message =
   let level =
@@ -176,6 +178,11 @@ let push_write_file trace on path content =
   @@ Format.asprintf "[WRITE_FILE][%a][%a]%s" on_pp on Yocaml.Path.pp path
        content
 
+type _ Effect.t += Yocaml_test_increase_time : int -> unit Effect.t
+
+let increase_time amount =
+  Yocaml.Eff.perform @@ Yocaml_test_increase_time amount
+
 let run ~trace program input =
   let handler =
     let trace = ref trace in
@@ -187,6 +194,13 @@ let run ~trace program input =
           (fun (type a) (eff : a Effect.t) ->
             let open Yocaml.Eff in
             match eff with
+            | Yocaml_test_increase_time amount ->
+                Some
+                  (fun (k : (a, _) continuation) ->
+                    (* We do not track the execution here because it is not
+                       revelant for tests. *)
+                    let () = trace := increase_mtime !trace amount in
+                    continue k ())
             | Yocaml_failwith exn -> Some (fun _ -> Stdlib.raise exn)
             | Yocaml_log (level, message) ->
                 Some
