@@ -20,19 +20,28 @@
 (** {1 Elements}
 
     Modules describing the elements {i constituting} YOCaml, for example file
-    paths etc. *)
+    paths, dependencies set, cache etc. *)
 
 module Path = Path
+module Cache = Cache
+module Deps = Deps
 
 (** {1 Building tasks}
 
-    Modules for describing construction rules. Tasks to be executed, sets of
-    dependencies, etc. *)
+    Modules for describing construction rules. Tasks to be executed, pipelines,
+    action etc.
 
-module Cache = Cache
-module Deps = Deps
+    The logic of modular distribution may seem strange (and a little excessive),
+    but it respects this lattice:
+
+    - A {!type:Task.t} is the fundamental building block for building
+      {!module:Pipeline}
+    - {!module:Pipeline} describes concrete, composable sets of steps
+    - {!module:Action} consumes {!module:Pipeline} to build {b artifacts}. *)
+
 module Task = Task
 module Pipeline = Pipeline
+module Action = Action
 
 (** {1 Effects abstraction}
 
