@@ -86,6 +86,8 @@ type _ Effect.t +=
   | Yocaml_file_exists : [ `Target | `Source ] * Path.t -> bool Effect.t
   | Yocaml_read_file : [ `Target | `Source ] * Path.t -> string Effect.t
   | Yocaml_get_mtime : [ `Target | `Source ] * Path.t -> int Effect.t
+  | Yocaml_hash_content : string -> string Effect.t
+  | Yocaml_write_file : [ `Target | `Source ] * Path.t * string -> unit Effect.t
 
 let perform raw_effect = return @@ Effect.perform raw_effect
 
@@ -93,11 +95,13 @@ let run handler arrow input =
   Effect.Deep.match_with (fun input -> arrow input ()) input handler
 
 exception File_not_exists of Path.t
+exception Invalid_path of Path.t
 
 let log ?(level = `Debug) message = perform @@ Yocaml_log (level, message)
 let raise exn = perform @@ Yocaml_failwith exn
 let failwith message = perform @@ Yocaml_failwith (Failure message)
 let file_exists ~on path = perform @@ Yocaml_file_exists (on, path)
+let logf ?(level = `Debug) = Format.kasprintf (fun result -> log ~level result)
 
 let ensure_file_exists ~on f path =
   let* exists = file_exists ~on path in
@@ -108,3 +112,8 @@ let read_file ~on =
 
 let mtime ~on =
   ensure_file_exists ~on (fun path -> perform @@ Yocaml_get_mtime (on, path))
+
+let hash str = perform @@ Yocaml_hash_content str
+
+let write_file ~on path content =
+  perform @@ Yocaml_write_file (on, path, content)
