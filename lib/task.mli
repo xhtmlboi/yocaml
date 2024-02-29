@@ -20,7 +20,7 @@
 
 (** {1 Types} *)
 
-type ('a, 'b) t
+type (-'a, 'b) t
 (** A task is a particular type of function, which produces an effect,
     associated with a set of dependencies. That's why it's a type parameterised
     by an input and an output. *)
@@ -232,13 +232,25 @@ module Infix : sig
   (** [f ^<< t1] is [pre_compose f t1]. *)
 
   val ( <<| ) : ('b, 'c) t -> ('a -> 'b) -> ('a, 'c) t
-  (** [t1 <<^ f] is [post_compose t1 f]. *)
+  (** [t1 <<| f] is [post_compose t1 f]. *)
+
+  val ( *<< ) : ('b -> 'c Eff.t) -> ('a, 'b) t -> ('a, 'c) t
+  (** [f *<< t1] is [compose (make Deps.empty f) t1]. *)
+
+  val ( <<* ) : ('b, 'c) t -> ('a -> 'b Eff.t) -> ('a, 'c) t
+  (** [t1 <<* f] is [compose t1 (make Deps.empty f)]. *)
 
   val ( |>> ) : ('a -> 'b) -> ('b, 'c) t -> ('a, 'c) t
   (** [f |>> t1] is [pre_rcompose f t1]. *)
 
   val ( >>| ) : ('a, 'b) t -> ('b -> 'c) -> ('a, 'c) t
   (** [t1 >>| f] is [post_rcompose t1 f]. *)
+
+  val ( *>> ) : ('a -> 'b Eff.t) -> ('b, 'c) t -> ('a, 'c) t
+  (** [f *>> t1] is [compose (make Deps.empty f) t1]. *)
+
+  val ( >>* ) : ('a, 'b) t -> ('b -> 'c Eff.t) -> ('a, 'c) t
+  (** [t1 >>* f] is [compose t1 (make Deps.empty f)]. *)
 
   val ( +++ ) :
     ('a, 'b) t -> ('c, 'd) t -> (('a, 'c) Either.t, ('b, 'd) Either.t) t

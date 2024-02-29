@@ -14,7 +14,7 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-type ('a, 'b) t = { dependencies : Deps.t; action : 'a -> 'b Eff.t }
+type (-'a, 'b) t = { dependencies : Deps.t; action : 'a -> 'b Eff.t }
 type 'a ct = (unit, 'a) t
 
 let make dependencies action = { dependencies; action }
@@ -124,8 +124,12 @@ let map8 fu a b c d e f g h = ap (map7 fu a b c d e f g) h
 module Infix = struct
   let ( <<< ) = compose
   let ( >>> ) = rcompose
+  let ( *<< ) f t = make Deps.empty f <<< t
+  let ( <<* ) t f = t <<< make Deps.empty f
   let ( |<< ) = pre_compose
   let ( <<| ) = post_compose
+  let ( *>> ) f t = make Deps.empty f >>> t
+  let ( >>* ) t f = t >>> make Deps.empty f
   let ( |>> ) = pre_rcompose
   let ( >>| ) = post_rcompose
   let ( +++ ) = choose
