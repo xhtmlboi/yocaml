@@ -1,6 +1,6 @@
 # YOCaml
 
-> YOCaml is a static site generator, mostly written in OCaml.
+> YOCaml is a static site generator, written in OCaml.
 
 ## Dev setup
 
@@ -9,9 +9,8 @@ environment.
 
 ```ocaml
 opam update
-opam switch create . ocaml-base-compiler.5.1.1 --deps-only -y
+opam switch create . --deps-only --with-doc --with-test --with-dev-setup -y
 eval $(opam env)
-opam install . --deps-only --with-doc --with-test --with-dev-setup -y
 ```
 
 When the environment is prepared, `dune build` should build the project.
