@@ -92,4 +92,6 @@ let copy_file ?new_name ~into path cache =
   | Some fragment ->
       let name = Option.value ~default:fragment new_name in
       let dest = Path.(into / name) in
-      write_file dest Task.(Pipeline.(no_dynamic_deps <$> read_file path)) cache
+      write_file dest
+        Task.(Pipeline.(read_file path >>> no_dynamic_deps ()))
+        cache

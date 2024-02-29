@@ -339,16 +339,15 @@ let test_action_with_dynamic_dependencies_1 =
         let open Yocaml in
         let open Task in
         let t =
-          Pipeline.read_file ~/[ "index.txt" ]
-          >>> make Deps.empty (fun content ->
-                  let open Eff in
-                  let files =
-                    content
-                    |> String.split_on_char ';'
-                    |> Stdlib.List.map (fun file -> ~/[ "includes" ] / file)
-                  in
-                  let* content = List.traverse (read_file ~on:`Source) files in
-                  return (content |> String.concat "", Deps.from_list files))
+          Pipeline.read_file ~/[ "index.txt" ] >>* fun content ->
+          let open Eff in
+          let files =
+            content
+            |> String.split_on_char ';'
+            |> Stdlib.List.map (fun file -> ~/[ "includes" ] / file)
+          in
+          let* content = List.traverse (read_file ~on:`Source) files in
+          return (content |> String.concat "", Deps.from_list files)
         in
 
         Eff.(return cache >>= Action.write_file ~/[ "_build"; "index.txt" ] t)
