@@ -24,6 +24,7 @@ let reduce = List.fold_left concat empty
 let singleton = Path_set.singleton
 let from_list = Path_set.of_list
 let equal = Path_set.equal
+let is_empty = Path_set.is_empty
 
 type required_action = Nothing | Create | Update
 

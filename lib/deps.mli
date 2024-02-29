@@ -77,3 +77,7 @@ val pp : Format.formatter -> t -> unit
 
 val equal : t -> t -> bool
 (** Equality between {!type:t}. *)
+
+val is_empty : t -> bool
+(** [is_empty deps] returns [true] if the dependencies set is empty, [false] if
+    not. *)

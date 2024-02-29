@@ -22,12 +22,15 @@ type t = Cache.t -> Cache.t Eff.t
     production phases, an action is a function that takes a cache and returns
     the modified cache, wrapped in an effect. *)
 
-val write_file : Path.t -> (unit, string) Task.t -> t
-(** [write_file cache target task] Writes [target] file with content generated
+val write_file : Path.t -> (unit, string * Deps.t) Task.t -> t
+(** [write_file target task cache] Writes [target] file with content generated
     by [task] if necessary. Returns the modified cache once the action has been
-    performed. *)
+    performed.
+
+    The task passed as an argument returns the contents of the file to be built
+    and the dynamic dependencies produced by the task (which will be cached). *)
 
 val copy_file : ?new_name:Path.fragment -> into:Path.t -> Path.t -> t
-(** [copy_file ?new_name ~into:target cache source] Copies the [source] file to
+(** [copy_file ?new_name ~into:target source cache] Copies the [source] file to
     the [target] directory (potentially giving it a new name), taking account of
     dependencies. *)
