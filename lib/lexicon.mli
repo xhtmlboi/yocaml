@@ -23,3 +23,5 @@ val target_is_written : Path.t -> unit Eff.t
 val target_was_written : Path.t -> unit Eff.t
 val target_hash_is_unchanged : Path.t -> unit Eff.t
 val target_hash_is_changed : Path.t -> unit Eff.t
+val found_dynamic_dependencies : Path.t -> unit Eff.t
+val target_not_in_cache : Path.t -> unit Eff.t
