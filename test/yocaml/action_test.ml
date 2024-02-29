@@ -114,7 +114,7 @@ let test_action_create_file_2 =
   let open Alcotest in
   test_case
     "test of a complete action exection - updating one file and producing new \
-     files"
+     files. Since the cache is empty, it has to rewrite everything."
     `Quick (fun () ->
       let open Yocaml.Path.Infix in
       let base_file_system =
@@ -210,12 +210,12 @@ let test_action_create_file_2 =
                     ; file ~mtime:5 "about.html" "about page"
                     ; dir ~mtime:5 "js"
                         [ file ~mtime:5 "client.js" "js client" ]
-                    ; dir ~mtime:1 "css"
-                        [ file ~mtime:1 "style.css" "stylesheet" ]
-                    ; dir ~mtime:1 "images"
+                    ; dir ~mtime:5 "css"
+                        [ file ~mtime:5 "style.css" "stylesheet" ]
+                    ; dir ~mtime:5 "images"
                         [
-                          file ~mtime:1 "ocaml.png" "ocaml-logo"
-                        ; file ~mtime:1 "yocaml.svg" "yocaml-logo"
+                          file ~mtime:5 "ocaml.png" "ocaml-logo"
+                        ; file ~mtime:5 "yocaml.svg" "yocaml-logo"
                         ]
                     ]
                 ]

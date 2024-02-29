@@ -31,3 +31,6 @@ val track_files : Path.t list -> (unit, unit) Task.t
 
 val read_file : Path.t -> (unit, string) Task.t
 (** [read_file path] is a task that read the content of a file. *)
+
+val no_dynamic_deps : 'a -> 'a * Deps.t
+(** [no_dynamic_deps <$> eff] lift [eff] do not produce any dynamic deps. *)
