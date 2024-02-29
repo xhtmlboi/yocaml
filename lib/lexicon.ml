@@ -36,3 +36,9 @@ let target_hash_is_unchanged target =
 let target_hash_is_changed target =
   Eff.logf ~level:`Info "`%a` has a different hash, need to be built" Path.pp
     target
+
+let found_dynamic_dependencies target =
+  Eff.logf ~level:`Info "`%a` has dynamic dependencies" Path.pp target
+
+let target_not_in_cache target =
+  Eff.logf ~level:`Info "`%a` is not present in the cache" Path.pp target

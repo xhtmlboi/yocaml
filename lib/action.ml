@@ -31,7 +31,7 @@ let perform_update target cache eff =
   match Cache.get cache target with
   | Some (pred_h, _) when String.equal hc pred_h ->
       let+ () = Lexicon.target_hash_is_unchanged target in
-      cache
+      Cache.update ~deps:dynamic_deps cache target pred_h
   | _ ->
       let* () = Lexicon.target_hash_is_changed target in
       perform_writing target cache fc hc dynamic_deps
@@ -55,6 +55,7 @@ let write_file target task cache =
             (* If an entry exists in the cache and the target is attached to
                dynamic dependencies, try to rebuild the file taking into account
                the dynamic dependencies. *)
+            let* () = Lexicon.found_dynamic_dependencies target in
             aux dynamic_deps true
         | None, false ->
             (* If there's no information in the cache, it's annoying and dynamic
@@ -64,6 +65,7 @@ let write_file target task cache =
                event of corruption or concurrent access. So it's a loss that's
                considered acceptable... sorry about that, but I'm not sure
                there's a "panacea". *)
+            let* () = Lexicon.target_not_in_cache target in
             perform_update target cache eff
         | _ ->
             (* As a generic case, it would seem that there's nothing to be
