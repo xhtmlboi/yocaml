@@ -153,6 +153,9 @@ module List : sig
   val sequence : 'a t list -> 'a list t
   (** Evaluate each action in the structure from left to right, and collect the
       results *)
+
+  val filter_map : ('a -> 'b option t) -> 'a list -> 'b list t
+  (** [filter_map] that acts on effectful predicates. *)
 end
 
 (** {2 Infix operators}

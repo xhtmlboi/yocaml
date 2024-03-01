@@ -55,6 +55,17 @@ module List = struct
     aux (return []) l
 
   let sequence l = traverse Fun.id l
+
+  let filter_map f l =
+    let rec aux acc = function
+      | [] -> return @@ Stdlib.List.rev acc
+      | x :: xs ->
+          bind (function
+            | None -> (aux [@tailcall]) acc xs
+            | Some x -> (aux [@tailcall]) (x :: acc) xs)
+          @@ f x
+    in
+    aux [] l
 end
 
 module Infix = struct
