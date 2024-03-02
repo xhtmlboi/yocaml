@@ -68,6 +68,10 @@ val extension : t -> string
 val extension_opt : t -> string option
 (** Like {!val:extension} but wrap the result in an option. *)
 
+val has_extension : string -> t -> bool
+(** [has_extension ext path] returns [true] if the given [path] has the
+    extension, [ext], [false] otherwise. *)
+
 val remove_extension : t -> t
 (** Remove the extension of the last fragment. If the last fragment has no
     extension, it keep the original path. *)
@@ -88,7 +92,7 @@ val basename : t -> fragment option
 val dirname : t -> t
 (** [dirname path] returns the path without the last fragment. *)
 
-val move : into:t -> t -> t option
+val move : into:t -> t -> t
 (** [move source ~into:target] attempts to move the [source] to the [target]. *)
 
 (** {1 Utils} *)

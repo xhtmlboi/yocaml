@@ -179,6 +179,14 @@ let push_write_file trace on path content =
   @@ Format.asprintf "[WRITE_FILE][%a][%a]%s" on_pp on Yocaml.Path.pp path
        content
 
+let push_is_directory trace on path =
+  push_trace trace
+  @@ Format.asprintf "[IS_DIRECTORY][%a]%a" on_pp on Yocaml.Path.pp path
+
+let push_read_directory trace on path =
+  push_trace trace
+  @@ Format.asprintf "[READ_DIRECTORY][%a]%a" on_pp on Yocaml.Path.pp path
+
 type _ Effect.t += Yocaml_test_increase_time : int -> unit Effect.t
 
 let increase_time amount =
@@ -254,6 +262,35 @@ let run ~trace program input =
                     in
                     let () = trace := update_system !trace new_fs in
                     continue k ())
+            | Yocaml_is_directory (on, gpath) ->
+                Some
+                  (fun (k : (a, _) continuation) ->
+                    let () = trace := push_is_directory !trace on gpath in
+                    let path = Yocaml.Path.to_list gpath in
+                    let res =
+                      match get !trace.system path with
+                      | Some (Dir _) -> true
+                      | _ -> false
+                      (* We suppose that if a file does not exists,
+                         it is not a directory... *)
+                    in
+                    continue k res)
+            | Yocaml_read_dir (on, gpath) ->
+                Some
+                  (fun (k : (a, _) continuation) ->
+                    let () = trace := push_read_directory !trace on gpath in
+                    let path = Yocaml.Path.to_list gpath in
+                    let res =
+                      match get !trace.system path with
+                      | Some (Dir { content; _ }) ->
+                          Stdlib.List.map name_of content
+                      | _ -> []
+                      (* If the given path is not a directory, we naïvely
+                         returns an empty list, but it fact, this case is
+                         already catched by the read_directory
+                         function. *)
+                    in
+                    continue k res)
             | _ -> None)
       }
   in

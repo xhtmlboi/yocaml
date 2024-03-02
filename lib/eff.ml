@@ -89,16 +89,20 @@ end
 include Infix
 include Syntax
 
+type filesystem = [ `Source | `Target ]
+
 type _ Effect.t +=
   | Yocaml_log :
       ([ `App | `Error | `Warning | `Info | `Debug ] * string)
       -> unit Effect.t
   | Yocaml_failwith : exn -> 'a Effect.t
-  | Yocaml_file_exists : [ `Target | `Source ] * Path.t -> bool Effect.t
-  | Yocaml_read_file : [ `Target | `Source ] * Path.t -> string Effect.t
-  | Yocaml_get_mtime : [ `Target | `Source ] * Path.t -> int Effect.t
+  | Yocaml_file_exists : filesystem * Path.t -> bool Effect.t
+  | Yocaml_read_file : filesystem * Path.t -> string Effect.t
+  | Yocaml_get_mtime : filesystem * Path.t -> int Effect.t
   | Yocaml_hash_content : string -> string Effect.t
-  | Yocaml_write_file : [ `Target | `Source ] * Path.t * string -> unit Effect.t
+  | Yocaml_write_file : filesystem * Path.t * string -> unit Effect.t
+  | Yocaml_is_directory : filesystem * Path.t -> bool Effect.t
+  | Yocaml_read_dir : filesystem * Path.t -> Path.fragment list Effect.t
 
 let perform raw_effect = return @@ Effect.perform raw_effect
 
@@ -107,19 +111,29 @@ let run handler arrow input =
 
 exception File_not_exists of Path.t
 exception Invalid_path of Path.t
+exception File_is_a_directory of Path.t
+exception Directory_not_exists of Path.t
 
 let log ?(level = `Debug) message = perform @@ Yocaml_log (level, message)
 let raise exn = perform @@ Yocaml_failwith exn
 let failwith message = perform @@ Yocaml_failwith (Failure message)
 let file_exists ~on path = perform @@ Yocaml_file_exists (on, path)
 let logf ?(level = `Debug) = Format.kasprintf (fun result -> log ~level result)
+let is_directory ~on path = perform @@ Yocaml_is_directory (on, path)
+
+let is_file ~on path =
+  let+ is_dir = is_directory ~on path in
+  not is_dir
 
 let ensure_file_exists ~on f path =
   let* exists = file_exists ~on path in
   if exists then f path else raise (File_not_exists path)
 
 let read_file ~on =
-  ensure_file_exists ~on (fun path -> perform @@ Yocaml_read_file (on, path))
+  ensure_file_exists ~on (fun path ->
+      let* is_file = is_file ~on path in
+      if is_file then perform @@ Yocaml_read_file (on, path)
+      else raise @@ File_is_a_directory path)
 
 let mtime ~on =
   ensure_file_exists ~on (fun path -> perform @@ Yocaml_get_mtime (on, path))
@@ -128,3 +142,22 @@ let hash str = perform @@ Yocaml_hash_content str
 
 let write_file ~on path content =
   perform @@ Yocaml_write_file (on, path, content)
+
+let read_directory ~on ?(only = `Both) ?(where = fun __ -> true) path =
+  let* is_dir = is_directory ~on path in
+  if is_dir then
+    let predicate child =
+      let file = Path.(path / child) in
+      let* exists = file_exists ~on file in
+      let+ is_dir = is_directory ~on file in
+      let predicate =
+        match only with
+        | `Files -> exists && (not is_dir) && where file
+        | `Directories -> exists && is_dir && where file
+        | `Both -> exists && where file
+      in
+      if predicate then Some file else None
+    in
+    let* children = perform @@ Yocaml_read_dir (on, path) in
+    List.filter_map predicate children
+  else raise @@ Directory_not_exists path
