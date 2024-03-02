@@ -227,6 +227,8 @@ include module type of Syntax
     repository, which uses a Unix file system as its source and a git repo as
     its target. *)
 
+type filesystem = [ `Source | `Target ]
+
 type _ Effect.t +=
   | Yocaml_log :
       ([ `App | `Error | `Warning | `Info | `Debug ] * string)
@@ -237,17 +239,23 @@ type _ Effect.t +=
             library. *)
   | Yocaml_failwith : exn -> 'a Effect.t
         (** Effect that propagates an error. *)
-  | Yocaml_file_exists : [ `Target | `Source ] * Path.t -> bool Effect.t
+  | Yocaml_file_exists : filesystem * Path.t -> bool Effect.t
         (** Effect that check if a file exists. *)
-  | Yocaml_read_file : [ `Target | `Source ] * Path.t -> string Effect.t
+  | Yocaml_read_file : filesystem * Path.t -> string Effect.t
         (** Effect that read a file from a given filepath. *)
-  | Yocaml_get_mtime : [ `Target | `Source ] * Path.t -> int Effect.t
+  | Yocaml_get_mtime : filesystem * Path.t -> int Effect.t
         (** Effect that get the modification time of a filepath. *)
   | Yocaml_hash_content : string -> string Effect.t
         (** Effect that hashes a string (used to hide the result of a
             transformation). *)
-  | Yocaml_write_file : [ `Target | `Source ] * Path.t * string -> unit Effect.t
+  | Yocaml_write_file : filesystem * Path.t * string -> unit Effect.t
         (** Effect which describes the writing of a file *)
+  | Yocaml_is_directory : filesystem * Path.t -> bool Effect.t
+        (** Effect that returns check if a file is a directory or not. *)
+  | Yocaml_read_dir : filesystem * Path.t -> Path.fragment list Effect.t
+        (** Effect that returns a list of names of files (and directory) present
+            in the given directory. (Names should be not prefixed by the given
+            path). *)
 
 val perform : 'a Effect.t -> 'a t
 (** [perform effect] colours an effect performance as impure. Replaces
@@ -267,6 +275,12 @@ exception File_not_exists of Path.t
 
 exception Invalid_path of Path.t
 (** Exception raised when a file does not has a basename. *)
+
+exception File_is_a_directory of Path.t
+(** Exception raised when we try to use a directory as a regular file. *)
+
+exception Directory_not_exists of Path.t
+(** Exception raised when we try to use a directory as a regular file. *)
 
 (** {2 Helpers for performing effects}
 
@@ -291,16 +305,16 @@ val failwith : string -> 'a t
 (** [failwith message] perform the effect [Yocaml_failwith] with a message that
     produces an error wrapped into a [Failure] exception. *)
 
-val file_exists : on:[ `Target | `Source ] -> Path.t -> bool t
+val file_exists : on:filesystem -> Path.t -> bool t
 (** [file_exists ~on path] perform the effect [Yocaml_file_exists] with a given
     [path] return [true] if the file exists, [false] if not. *)
 
-val read_file : on:[ `Target | `Source ] -> Path.t -> string t
+val read_file : on:filesystem -> Path.t -> string t
 (** [source_read_file ~on path] perform the effect [Yocaml_read_file] with a
     given [path] and try to read it. Perform [Yocaml_failwith] with
     {!exception:File_not_exists} if the file does not exists. *)
 
-val mtime : on:[ `Target | `Source ] -> Path.t -> int t
+val mtime : on:filesystem -> Path.t -> int t
 (** [source_mtime ~on path] perform the effect [Yocaml_source_get_mtime] with a
     given [path] and try to get the modification time. Perform [Yocaml_failwith]
     with {!exception:File_not_exists} if the file does not exists. *)
@@ -308,6 +322,24 @@ val mtime : on:[ `Target | `Source ] -> Path.t -> int t
 val hash : string -> string t
 (** [hash str] perform the effect [Yocaml_hash_content] on a given string. *)
 
-val write_file : on:[ `Target | `Source ] -> Path.t -> string -> unit t
-(** [write_file ~on target content] performs the effect that writes a file to a
-    given target. *)
+val write_file : on:filesystem -> Path.t -> string -> unit t
+(** [write_file ~on target content] performs the effect [Yocaml_write_file] that
+    should writes a file to a given target. *)
+
+val is_directory : on:filesystem -> Path.t -> bool t
+(** [is_directory ~on target] performs the effect [Yocaml_is_directory] that
+    should check if a file is a directory or not. *)
+
+val is_file : on:filesystem -> Path.t -> bool t
+(** [is_file ~on target] performs the effect [Yocaml_is_directory] and if the
+    file is not a directory, it return [true], [false] otherwise. *)
+
+val read_directory :
+     on:filesystem
+  -> ?only:[ `Files | `Directories | `Both ]
+  -> ?where:(Path.t -> bool)
+  -> Path.t
+  -> Path.t list t
+(** [read_directory ~on ?only ?where path] returns a list of children (as a pair
+    of the full path and the name ([fragment]) of the child) of the given
+    directory, performing [Yocaml_read_dir]. *)

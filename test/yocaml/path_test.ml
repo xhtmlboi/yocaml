@@ -271,20 +271,20 @@ let test_move1 =
   let open Alcotest in
   test_case "move test 1" `Quick (fun () ->
       let open Yocaml.Path in
-      let expected = Some ~/[ "oof"; "rab"; "zab"; "index.png" ]
+      let expected = ~/[ "oof"; "rab"; "zab"; "index.png" ]
       and computed =
         ~/[ "foo"; "bar"; "baz"; "index.png" ]
         |> move ~into:~/[ "oof"; "rab"; "zab" ]
       in
-      check (option Testable.path) "should be equal" expected computed)
+      check Testable.path "should be equal" expected computed)
 
 let test_move2 =
   let open Alcotest in
   test_case "move test 2" `Quick (fun () ->
       let open Yocaml.Path in
-      let expected = None
+      let expected = ~/[ "oof"; "rab"; "zab" ]
       and computed = ~/[] |> move ~into:~/[ "oof"; "rab"; "zab" ] in
-      check (option Testable.path) "should be equal" expected computed)
+      check Testable.path "should be equal" expected computed)
 
 let to_csexp_from_csexp_roundtrip =
   QCheck2.Test.make ~name:"to_csexp -> from_csexp roundtrip" ~count:100

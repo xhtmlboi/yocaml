@@ -82,6 +82,18 @@ let extension path =
 let extension_opt path =
   match extension path with "" -> None | ext -> Some ext
 
+let make_extension extension =
+  let len = String.length extension in
+  if len = 0 then ""
+  else if len = 1 && String.equal extension "." then ""
+  else if len > 1 && extension.[0] = '.' then extension
+  else "." ^ extension
+
+let has_extension ext path =
+  let ext = make_extension ext in
+  let fex = extension path in
+  String.equal ext fex
+
 let update_last_fragment callback path =
   let f, fragments = get_ctor_and_fragments path in
   let rec aux acc = function
@@ -92,16 +104,7 @@ let update_last_fragment callback path =
   aux [] fragments
 
 let remove_extension = update_last_fragment Filename.remove_extension
-
-let fragment_add_extension extension fragment =
-  let len = String.length extension in
-  let ext =
-    if len = 0 then ""
-    else if len = 1 && String.equal extension "." then ""
-    else if len > 1 && extension.[0] = '.' then extension
-    else "." ^ extension
-  in
-  fragment ^ ext
+let fragment_add_extension ext fragment = fragment ^ make_extension ext
 
 let add_extension extension =
   update_last_fragment (fragment_add_extension extension)
@@ -125,7 +128,7 @@ let dirname path =
   ctor (aux [] fragments)
 
 let move ~into source =
-  Option.map (fun x -> append into [ x ]) (basename source)
+  match basename source with None -> into | Some x -> append into [ x ]
 
 let compare a b =
   match (a, b) with
