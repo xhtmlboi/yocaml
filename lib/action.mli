@@ -34,3 +34,12 @@ val copy_file : ?new_name:Path.fragment -> into:Path.t -> Path.t -> t
 (** [copy_file ?new_name ~into:target source cache] Copies the [source] file to
     the [target] directory (potentially giving it a new name), taking account of
     dependencies. *)
+
+val batch :
+     ?only:[ `Files | `Directories | `Both ]
+  -> ?where:(Path.t -> bool)
+  -> Path.t
+  -> (Path.t -> t)
+  -> t
+(** [batch ?only ?where path action cache] Executes the given action on all
+    child files of the given path. The cache is passed from call to call. *)
