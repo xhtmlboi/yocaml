@@ -95,3 +95,10 @@ let copy_file ?new_name ~into path cache =
       write_file dest
         Task.(Pipeline.(read_file path >>> no_dynamic_deps ()))
         cache
+
+let batch ?only ?where path action cache =
+  let open Eff in
+  let* children = read_directory ~on:`Source ?only ?where path in
+  Stdlib.List.fold_left
+    (fun cache file -> cache >>= action file)
+    (return cache) children

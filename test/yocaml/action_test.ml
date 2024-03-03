@@ -537,6 +537,107 @@ let test_action_with_dynamic_dependencies_1 =
 
       ())
 
+let test_batch_1 =
+  let open Alcotest in
+  test_case "batch should performs action on multiple files, relaying the cache"
+    `Quick (fun () ->
+      let open Yocaml in
+      let open Path.Infix in
+      let base_file_system =
+        Fs.(
+          from_list
+            [
+              dir ~mtime:0 "."
+                [
+                  file ~mtime:0 "index.md" "an index"
+                ; file ~mtime:0 "about.md" "about page"
+                ; dir ~mtime:0 "articles"
+                    [
+                      file ~mtime:0 "hello.md" "hello world"
+                    ; file ~mtime:0 "yocaml.md" "article about YOCaml"
+                    ]
+                ; dir ~mtime:0 "static"
+                    [
+                      dir ~mtime:0 "images"
+                        [
+                          file ~mtime:0 "ocaml.png" "ocaml-logo"
+                        ; file ~mtime:0 "yocaml.svg" "yocaml-logo"
+                        ]
+                    ; file ~mtime:0 "client.bc.js" "js client"
+                    ; file ~mtime:0 "style.css" "stylesheet"
+                    ]
+                ]
+            ])
+      in
+      let program cache =
+        let open Eff.Infix in
+        Eff.return cache
+        >>= Action.batch ~only:`Files ~/[] ~where:(Path.has_extension ".md")
+              (Action.copy_file ~into:~/[ "_build" ])
+        >>= Action.batch ~only:`Files
+              ~/[ "static"; "images" ]
+              (Action.copy_file ~into:~/[ "_build"; "images" ])
+        >>= Action.batch ~only:`Files ~/[ "static" ]
+              ~where:(Path.has_extension ".css")
+              (Action.copy_file ~into:~/[ "_build"; "css" ])
+        >>= Action.batch ~only:`Files ~/[ "static" ]
+              ~where:(Path.has_extension ".js")
+              (Action.copy_file ~into:~/[ "_build"; "js" ])
+      in
+      let trace = Fs.create_trace ~time:1 base_file_system in
+      let trace, cache = Fs.run ~trace program Cache.empty in
+      let expected_file_system =
+        Fs.(
+          from_list
+            [
+              dir ~mtime:1 "."
+                [
+                  file ~mtime:0 "index.md" "an index"
+                ; file ~mtime:0 "about.md" "about page"
+                ; dir ~mtime:1 "_build"
+                    [
+                      file ~mtime:1 "index.md" "an index"
+                    ; file ~mtime:1 "about.md" "about page"
+                    ; dir ~mtime:1 "images"
+                        [
+                          file ~mtime:1 "ocaml.png" "ocaml-logo"
+                        ; file ~mtime:1 "yocaml.svg" "yocaml-logo"
+                        ]
+                    ; dir ~mtime:1 "js"
+                        [ file ~mtime:1 "client.bc.js" "js client" ]
+                    ; dir ~mtime:1 "css"
+                        [ file ~mtime:1 "style.css" "stylesheet" ]
+                    ]
+                ; dir ~mtime:0 "articles"
+                    [
+                      file ~mtime:0 "hello.md" "hello world"
+                    ; file ~mtime:0 "yocaml.md" "article about YOCaml"
+                    ]
+                ; dir ~mtime:0 "static"
+                    [
+                      dir ~mtime:0 "images"
+                        [
+                          file ~mtime:0 "ocaml.png" "ocaml-logo"
+                        ; file ~mtime:0 "yocaml.svg" "yocaml-logo"
+                        ]
+                    ; file ~mtime:0 "client.bc.js" "js client"
+                    ; file ~mtime:0 "style.css" "stylesheet"
+                    ]
+                ]
+            ])
+      in
+      let computed_file_system = Fs.trace_system trace in
+
+      let () =
+        check Testable.fs "everything should be copied" expected_file_system
+          computed_file_system
+      in
+      let trace = Fs.create_trace ~time:1 base_file_system in
+      let trace, _cache = Fs.run ~trace program cache in
+      let computed_file_system = Fs.trace_system trace in
+      check Testable.fs "Nothing should be done" expected_file_system
+        computed_file_system)
+
 let cases =
   ( "Yocaml.Action"
   , [
@@ -544,4 +645,5 @@ let cases =
     ; test_action_create_file_2
     ; test_action_create_file_3
     ; test_action_with_dynamic_dependencies_1
+    ; test_batch_1
     ] )
