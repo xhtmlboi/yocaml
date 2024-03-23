@@ -1,2 +1,7 @@
 (documentation
  (package yocaml))
+
+(mdx
+ (files *.mld)
+ (libraries yocaml)
+ (preludes prelude.ml))
