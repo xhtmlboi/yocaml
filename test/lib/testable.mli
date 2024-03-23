@@ -45,3 +45,40 @@ val from_csexp :
      Alcotest.testable
 
 val cache : Yocaml.Cache.t Alcotest.testable
+val data : Yocaml.Data.t Alcotest.testable
+
+val value_error :
+     ?custom_handler:
+       (Format.formatter -> Yocaml.Data.Validation.custom_error -> unit)
+       * (   Yocaml.Data.Validation.custom_error
+          -> Yocaml.Data.Validation.custom_error
+          -> bool)
+  -> unit
+  -> Yocaml.Data.Validation.value_error Alcotest.testable
+
+val record_error :
+     ?custom_handler:
+       (Format.formatter -> Yocaml.Data.Validation.custom_error -> unit)
+       * (   Yocaml.Data.Validation.custom_error
+          -> Yocaml.Data.Validation.custom_error
+          -> bool)
+  -> unit
+  -> Yocaml.Data.Validation.record_error Alcotest.testable
+
+val validated_value :
+     ?custom_handler:
+       (Format.formatter -> Yocaml.Data.Validation.custom_error -> unit)
+       * (   Yocaml.Data.Validation.custom_error
+          -> Yocaml.Data.Validation.custom_error
+          -> bool)
+  -> 'a Alcotest.testable
+  -> 'a Yocaml.Data.Validation.validated_value Alcotest.testable
+
+val validated_record :
+     ?custom_handler:
+       (Format.formatter -> Yocaml.Data.Validation.custom_error -> unit)
+       * (   Yocaml.Data.Validation.custom_error
+          -> Yocaml.Data.Validation.custom_error
+          -> bool)
+  -> 'a Alcotest.testable
+  -> 'a Yocaml.Data.Validation.validated_record Alcotest.testable
