@@ -92,3 +92,143 @@ let from_csexp a =
 
 let path = Alcotest.testable Yocaml.Path.pp Yocaml.Path.equal
 let cache = Alcotest.testable Yocaml.Cache.pp Yocaml.Cache.equal
+let data = Alcotest.testable Yocaml.Data.pp Yocaml.Data.equal
+let pp_list s = Fmt.brackets (Fmt.list ~sep:Fmt.semi s)
+let pp_nel s = Fmt.using Yocaml.Nel.to_list (pp_list s)
+
+let nel t =
+  let pp = Alcotest.pp t and equal = Alcotest.equal t in
+  Alcotest.testable (pp_nel pp) (Yocaml.Nel.equal equal)
+
+let rec pp_value_error cst ppf err =
+  let open Yocaml.Data.Validation in
+  let open Fmt in
+  match err with
+  | Custom err ->
+      braces
+        (record
+           [
+             field "kind" (Fun.const "custom") string; field "error" Fun.id cst
+           ])
+        ppf err
+  | With_message { given; message } ->
+      braces
+        (record
+           [
+             field "kind" (Fun.const "with_message") string
+           ; field "given" snd (quote string)
+           ; field "message" fst (quote string)
+           ])
+        ppf (message, given)
+  | Invalid_shape { expected; given } ->
+      braces
+        (record
+           [
+             field "kind" (Fun.const "Invalid_shape") string
+           ; field "expected" fst string
+           ; field "given" snd (parens Yocaml.Data.pp)
+           ])
+        ppf (expected, given)
+  | Invalid_list { errors; given } ->
+      braces
+        (record
+           [
+             field "kind" (Fun.const "invalid_list") string
+           ; field "errors" fst
+               (pp_nel
+               @@ record
+                    [
+                      field "index" fst int
+                    ; field "error" snd (pp_value_error cst)
+                    ])
+           ; field "given" snd (pp_list Yocaml.Data.pp)
+           ])
+        ppf (errors, given)
+  | Invalid_record { errors; given } ->
+      braces
+        (record
+           [
+             field "kind" (Fun.const "invalid_record") string
+           ; field "errors" fst (pp_nel (pp_record_error cst))
+           ; field "given" snd
+               (pp_list @@ pair ~sep:comma string (parens Yocaml.Data.pp))
+           ])
+        ppf (errors, given)
+
+and pp_record_error cst ppf err =
+  let open Yocaml.Data.Validation in
+  let open Fmt in
+  match err with
+  | Missing_field { field = f } ->
+      braces
+        (record
+           [
+             field "kind" (Fun.const "missing_field") string
+           ; field "field" id (quote string)
+           ])
+        ppf f
+  | Invalid_field { given; field = f; error } ->
+      braces
+        (record
+           [
+             field "kind" (Fun.const "invalid_field") string
+           ; field "field" (fun (f, _, _) -> f) (quote string)
+           ; field "error" (fun (_, e, _) -> e) (parens (pp_value_error cst))
+           ; field "given" (fun (_, _, g) -> g) (parens Yocaml.Data.pp)
+           ])
+        ppf (f, error, given)
+
+let rec equal_value_error cst a b =
+  let open Yocaml.Data.Validation in
+  match (a, b) with
+  | ( Invalid_shape { expected = ea; given = ga }
+    , Invalid_shape { expected = eb; given = gb } ) ->
+      String.equal ea eb && Yocaml.Data.equal ga gb
+  | ( Invalid_list { errors = ea; given = ga }
+    , Invalid_list { errors = eb; given = gb } ) ->
+      Yocaml.Nel.equal
+        (fun (ia, va) (ib, vb) ->
+          Int.equal ia ib && equal_value_error cst va vb)
+        ea eb
+      && List.equal Yocaml.Data.equal ga gb
+  | ( Invalid_record { errors = ea; given = ga }
+    , Invalid_record { errors = eb; given = gb } ) ->
+      Yocaml.Nel.equal (equal_record_error cst) ea eb
+      && List.equal
+           (fun (ka, va) (kb, vb) ->
+             String.equal ka kb && Yocaml.Data.equal va vb)
+           ga gb
+  | ( With_message { given = ga; message = ma }
+    , With_message { given = gb; message = mb } ) ->
+      String.equal ga gb && String.equal ma mb
+  | Custom a, Custom b -> cst a b
+  | _ -> false
+
+and equal_record_error cst a b =
+  let open Yocaml.Data.Validation in
+  match (a, b) with
+  | Missing_field { field = fa }, Missing_field { field = fb } ->
+      String.equal fa fb
+  | ( Invalid_field { given = ga; field = fa; error = ea }
+    , Invalid_field { given = gb; field = fb; error = eb } ) ->
+      String.equal fa fb
+      && Yocaml.Data.equal ga gb
+      && equal_value_error cst ea eb
+  | _ -> false
+
+let default_cst_handler =
+  ((fun ppf _ -> Format.fprintf ppf "<abstr>"), fun _ _ -> false)
+
+let value_error ?(custom_handler = default_cst_handler) () =
+  let pp_cst, eq_cst = custom_handler in
+  Alcotest.testable (pp_value_error pp_cst) (equal_value_error eq_cst)
+
+let record_error ?(custom_handler = default_cst_handler) () =
+  let pp_cst, eq_cst = custom_handler in
+  Alcotest.testable (pp_record_error pp_cst) (equal_record_error eq_cst)
+
+let validated_value ?(custom_handler = default_cst_handler) t =
+  Alcotest.result t (value_error ~custom_handler ())
+
+let validated_record ?(custom_handler = default_cst_handler) t =
+  Alcotest.result t (nel @@ record_error ~custom_handler ())
