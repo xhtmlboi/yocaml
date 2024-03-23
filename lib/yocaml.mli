@@ -22,6 +22,7 @@
     Modules describing the elements {i constituting} YOCaml, for example file
     paths, dependencies set, cache etc. *)
 
+module Nel = Nel
 module Path = Path
 module Cache = Cache
 module Deps = Deps

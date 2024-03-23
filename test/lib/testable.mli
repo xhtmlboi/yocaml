@@ -32,6 +32,7 @@ val csexp_result :
      result
      Alcotest.testable
 
+val nel : 'a Alcotest.testable -> 'a Yocaml.Nel.t Alcotest.testable
 val deps : Yocaml.Deps.t Alcotest.testable
 val path : Yocaml.Path.t Alcotest.testable
 val required_action : Yocaml.Deps.required_action Alcotest.testable
