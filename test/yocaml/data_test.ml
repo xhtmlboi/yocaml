@@ -540,6 +540,559 @@ let test_record_5 =
         @@ pair (pair string (option int)) (pair (option bool) (list int)))
         "should be equal" expected computed)
 
+let test_option_1 =
+  let open Alcotest in
+  test_case "option - validate a null value" `Quick (fun () ->
+      let expected = Ok None and computed = V.option V.string D.null in
+      check
+        (Testable.validated_value @@ option string)
+        "should be equal" expected computed)
+
+let test_option_2 =
+  let open Alcotest in
+  test_case "option - validate a filled value" `Quick (fun () ->
+      let expected = Ok (Some "foo")
+      and computed = V.option V.string (D.string "foo") in
+      check
+        (Testable.validated_value @@ option string)
+        "should be equal" expected computed)
+
+let test_option_3 =
+  let open Alcotest in
+  test_case "option - validate with an invalid value" `Quick (fun () ->
+      let expected =
+        Error V.(Invalid_shape { expected = "strict-string"; given = D.int 12 })
+      and computed = V.option V.string (D.int 12) in
+      check
+        (Testable.validated_value @@ option string)
+        "should be equal" expected computed)
+
+let test_pair_1 =
+  let open Alcotest in
+  test_case "pair - validate a generated value" `Quick (fun () ->
+      let given = D.pair D.int D.string (42, "foo") in
+      let expected = Ok (42, "foo")
+      and computed = V.pair V.int V.string given in
+      check
+        (Testable.validated_value @@ pair int string)
+        "should be equal" expected computed)
+
+let test_pair_2 =
+  let open Alcotest in
+  test_case "pair - validate an invalid value" `Quick (fun () ->
+      let given = D.int 42 in
+      let expected = Error V.(Invalid_shape { expected = "pair"; given })
+      and computed = V.pair V.int V.string given in
+      check
+        (Testable.validated_value @@ pair int string)
+        "should be equal" expected computed)
+
+let test_pair_3 =
+  let open Alcotest in
+  test_case "pair - validate an invalid on fst member" `Quick (fun () ->
+      let given = D.pair D.string D.string ("foo", "bar") in
+      let expected =
+        Error
+          V.(
+            Invalid_record
+              {
+                errors =
+                  nel
+                    [
+                      Invalid_field
+                        {
+                          field = "fst"
+                        ; error =
+                            Invalid_shape
+                              { expected = "int"; given = D.string "foo" }
+                        ; given = D.string "foo"
+                        }
+                    ]
+              ; given = [ ("fst", D.string "foo"); ("snd", D.string "bar") ]
+              })
+      and computed = V.pair V.int V.string given in
+      check
+        (Testable.validated_value @@ pair int string)
+        "should be equal" expected computed)
+
+let test_pair_4 =
+  let open Alcotest in
+  test_case "pair - validate an invalid on snd member" `Quick (fun () ->
+      let given = D.pair D.int D.int (42, 43) in
+      let expected =
+        Error
+          V.(
+            Invalid_record
+              {
+                errors =
+                  nel
+                    [
+                      Invalid_field
+                        {
+                          field = "snd"
+                        ; error =
+                            Invalid_shape
+                              { expected = "strict-string"; given = D.int 43 }
+                        ; given = D.int 43
+                        }
+                    ]
+              ; given = [ ("fst", D.int 42); ("snd", D.int 43) ]
+              })
+      and computed = V.pair V.int V.string given in
+      check
+        (Testable.validated_value @@ pair int string)
+        "should be equal" expected computed)
+
+let test_pair_5 =
+  let open Alcotest in
+  test_case "pair - validate an invalid on snd member" `Quick (fun () ->
+      let given = D.pair D.string D.int ("42", 43) in
+      let expected =
+        Error
+          V.(
+            Invalid_record
+              {
+                errors =
+                  nel
+                    [
+                      Invalid_field
+                        {
+                          field = "fst"
+                        ; error =
+                            Invalid_shape
+                              { expected = "int"; given = D.string "42" }
+                        ; given = D.string "42"
+                        }
+                    ; Invalid_field
+                        {
+                          field = "snd"
+                        ; error =
+                            Invalid_shape
+                              { expected = "strict-string"; given = D.int 43 }
+                        ; given = D.int 43
+                        }
+                    ]
+              ; given = [ ("fst", D.string "42"); ("snd", D.int 43) ]
+              })
+      and computed = V.pair V.int V.string given in
+      check
+        (Testable.validated_value @@ pair int string)
+        "should be equal" expected computed)
+
+let test_triple_1 =
+  let open Alcotest in
+  test_case "triple - validate a generated value" `Quick (fun () ->
+      let given = D.triple D.int D.string D.bool (42, "foo", false) in
+      let expected = Ok (42, "foo", false)
+      and computed = V.triple V.int V.string V.bool given in
+      check
+        (Testable.validated_value @@ triple int string bool)
+        "should be equal" expected computed)
+
+let test_quad_1 =
+  let open Alcotest in
+  test_case "quad - validate a generated value" `Quick (fun () ->
+      let given =
+        D.quad D.int D.string D.bool D.float (42, "foo", false, 12.7)
+      in
+      let expected = Ok ((42, "foo", false), 12.7)
+      and computed =
+        given
+        |> V.quad V.int V.string V.bool V.float
+        |> Result.map (fun (a, b, c, d) -> ((a, b, c), d))
+      in
+      check
+        (Testable.validated_value @@ pair (triple int string bool) (float 2.0))
+        "should be equal" expected computed)
+
+(* We do not test errors on triple and quad since it's relaying on pair. *)
+
+let test_sum_1 =
+  let open Alcotest in
+  test_case "sum - validate sums" `Quick (fun () ->
+      let sum =
+        D.sum (function
+          | `A s -> ("a", D.string s)
+          | `B i -> ("b", D.int i)
+          | `C b -> ("c", D.bool b)
+          | `D -> ("d", D.null))
+      in
+      let v_sum =
+        V.(
+          sum
+            [
+              ("a", string $ fun x -> `A x)
+            ; ("b", int $ fun x -> `B x)
+            ; ("c", bool $ fun x -> `C x)
+            ; ("d", null $ fun () -> `D)
+            ])
+      in
+      let testable =
+        Alcotest.testable
+          (fun ppf -> function
+            | `A x -> Format.fprintf ppf "`A %s" x
+            | `B x -> Format.fprintf ppf "`B %d" x
+            | `C x -> Format.fprintf ppf "`C %b" x
+            | `D -> Format.fprintf ppf "`D")
+          (fun a b ->
+            match (a, b) with
+            | `A a, `A b -> String.equal a b
+            | `B a, `B b -> Int.equal a b
+            | `C a, `C b -> Bool.equal a b
+            | `D, `D -> true
+            | _ -> false)
+      in
+      let () =
+        check
+          (Testable.validated_value testable)
+          "`A foo: should be equal"
+          (Ok (`A "foo"))
+          (v_sum (sum @@ `A "foo"))
+      in
+      let () =
+        check
+          (Testable.validated_value testable)
+          "`B 42: should be equal"
+          (Ok (`B 42))
+          (v_sum (sum @@ `B 42))
+      in
+      let () =
+        check
+          (Testable.validated_value testable)
+          "`C false: should be equal"
+          (Ok (`C false))
+          (v_sum (sum @@ `C false))
+      in
+      let () =
+        check
+          (Testable.validated_value testable)
+          "`D: should be equal" (Ok `D)
+          (v_sum (sum @@ `D))
+      in
+      let () =
+        check
+          (Testable.validated_value testable)
+          "Invalid shape"
+          (Error
+             V.(
+               Invalid_shape
+                 {
+                   expected = "A <abstr> | B <abstr> | C <abstr> | D <abstr>"
+                 ; given = D.int 45
+                 }))
+          (v_sum (D.int 45))
+      in
+      let () =
+        check
+          (Testable.validated_value testable)
+          "Invalid constructor"
+          (Error
+             V.(
+               Invalid_shape
+                 {
+                   expected = "A <abstr> | B <abstr> | C <abstr> | D <abstr>"
+                 ; given =
+                     D.record [ ("constr", D.string "e"); ("value", D.int 10) ]
+                 }))
+          (v_sum (D.sum (function `E x -> ("e", D.int x)) (`E 10)))
+      in
+      let () =
+        check
+          (Testable.validated_value testable)
+          "Invalid validation"
+          (Error
+             V.(
+               Invalid_shape
+                 { expected = "strict-string"; given = D.float 32.0 }))
+          (v_sum
+             (D.record [ ("constr", D.string "a"); ("value", D.float 32.0) ]))
+      in
+      ())
+
+let test_positive =
+  let open Alcotest in
+  test_case "positive - validate positive" `Quick (fun () ->
+      let v = V.(int & positive) in
+      let () =
+        check
+          (Testable.validated_value int)
+          "should be equal" (Ok 10)
+          (v @@ D.int 10)
+      in
+      let () =
+        check
+          (Testable.validated_value int)
+          "should be equal"
+          (Error
+             V.(With_message { given = "-35"; message = "should be positive" }))
+          (v @@ D.int (-35))
+      in
+      ())
+
+let test_positive_f =
+  let open Alcotest in
+  test_case "positive' - validate positive" `Quick (fun () ->
+      let v = V.(float & positive') in
+      let () =
+        check
+          (Testable.validated_value @@ float 2.0)
+          "should be equal" (Ok 10.65)
+          (v @@ D.float 10.65)
+      in
+      let () =
+        check
+          (Testable.validated_value @@ float 2.0)
+          "should be equal"
+          (Error
+             V.(
+               With_message { given = "-35.3"; message = "should be positive" }))
+          (v @@ D.float (-35.3))
+      in
+      ())
+
+let test_bounded =
+  let open Alcotest in
+  test_case "bounded - validate bounded" `Quick (fun () ->
+      let v = V.(int & bounded ~min:2 ~max:8) in
+      let () =
+        check
+          (Testable.validated_value int)
+          "should be equal" (Ok 7)
+          (v @@ D.int 7)
+      in
+      let () =
+        check
+          (Testable.validated_value int)
+          "should be equal"
+          (Error
+             V.(
+               With_message
+                 { given = "-35"; message = "not included into [2; 8]" }))
+          (v @@ D.int (-35))
+      in
+      let () =
+        check
+          (Testable.validated_value int)
+          "should be equal"
+          (Error
+             V.(
+               With_message
+                 { given = "35"; message = "not included into [2; 8]" }))
+          (v @@ D.int 35)
+      in
+      ())
+
+let test_bounded_f =
+  let open Alcotest in
+  test_case "bounded' - validate bounded" `Quick (fun () ->
+      let v = V.(float & bounded' ~min:2.1 ~max:8.1) in
+      let () =
+        check
+          (Testable.validated_value @@ float 2.0)
+          "should be equal" (Ok 8.01)
+          (v @@ D.float 8.01)
+      in
+      let () =
+        check
+          (Testable.validated_value @@ float 2.0)
+          "should be equal"
+          (Error
+             V.(
+               With_message
+                 {
+                   given = "-35."
+                 ; message = "not included into [2.100000; 8.100000]"
+                 }))
+          (v @@ D.float (-35.0))
+      in
+      let () =
+        check
+          (Testable.validated_value @@ float 2.0)
+          "should be equal"
+          (Error
+             V.(
+               With_message
+                 {
+                   given = "8.2"
+                 ; message = "not included into [2.100000; 8.100000]"
+                 }))
+          (v @@ D.float 8.2)
+      in
+      ())
+
+let test_non_empty =
+  let open Alcotest in
+  test_case "non_empty - validate non_empty" `Quick (fun () ->
+      let check =
+        check (Testable.validated_value @@ list int) "should be equal"
+      in
+      let v = V.(list_of int & non_empty) in
+      let () = check (Ok [ 1; 2 ]) (v @@ D.list_of D.int [ 1; 2 ]) in
+      let () =
+        check
+          (Error
+             V.(
+               With_message
+                 { given = "[]"; message = "list should not be empty" }))
+          (v @@ D.list_of D.int [])
+      in
+      ())
+
+let test_equal =
+  let open Alcotest in
+  test_case "equal - validate equal" `Quick (fun () ->
+      let check = check (Testable.validated_value int) "should be equal" in
+      let v = V.(int & equal ~pp:Format.pp_print_int ~equal:Int.equal 10) in
+      let () = check (Ok 10) (v @@ D.int 10) in
+      let () =
+        check
+          (Error
+             V.(
+               With_message { given = "11"; message = "should be equal to 10" }))
+          (v @@ D.int 11)
+      in
+      ())
+
+let test_not_equal =
+  let open Alcotest in
+  test_case "not_equal - validate not_equal" `Quick (fun () ->
+      let check = check (Testable.validated_value int) "should be equal" in
+      let v = V.(int & not_equal ~pp:Format.pp_print_int ~equal:Int.equal 10) in
+      let () = check (Ok 11) (v @@ D.int 11) in
+      let () =
+        check
+          (Error
+             V.(
+               With_message
+                 { given = "10"; message = "should not be equal to 10" }))
+          (v @@ D.int 10)
+      in
+      ())
+
+let test_gt =
+  let open Alcotest in
+  test_case "gt - validate gt" `Quick (fun () ->
+      let check = check (Testable.validated_value int) "should be equal" in
+      let v = V.(int & gt ~pp:Format.pp_print_int ~compare:Int.compare 10) in
+      let () = check (Ok 11) (v @@ D.int 11) in
+      let () =
+        check
+          (Error
+             V.(
+               With_message
+                 { given = "10"; message = "should be greater than 10" }))
+          (v @@ D.int 10)
+      in
+      ())
+
+let test_ge =
+  let open Alcotest in
+  test_case "ge - validate ge" `Quick (fun () ->
+      let check = check (Testable.validated_value int) "should be equal" in
+      let v = V.(int & ge ~pp:Format.pp_print_int ~compare:Int.compare 10) in
+      let () = check (Ok 11) (v @@ D.int 11) in
+      let () = check (Ok 10) (v @@ D.int 10) in
+      let () =
+        check
+          (Error
+             V.(
+               With_message
+                 { given = "7"; message = "should be greater or equal to 10" }))
+          (v @@ D.int 7)
+      in
+      ())
+
+let test_lt =
+  let open Alcotest in
+  test_case "lt - validate lt" `Quick (fun () ->
+      let check = check (Testable.validated_value int) "should be equal" in
+      let v = V.(int & lt ~pp:Format.pp_print_int ~compare:Int.compare 10) in
+      let () = check (Ok 9) (v @@ D.int 9) in
+      let () =
+        check
+          (Error
+             V.(
+               With_message
+                 { given = "10"; message = "should be lesser than 10" }))
+          (v @@ D.int 10)
+      in
+      ())
+
+let test_le =
+  let open Alcotest in
+  test_case "le - validate le" `Quick (fun () ->
+      let check = check (Testable.validated_value int) "should be equal" in
+      let v = V.(int & le ~pp:Format.pp_print_int ~compare:Int.compare 10) in
+      let () = check (Ok 9) (v @@ D.int 9) in
+      let () = check (Ok 10) (v @@ D.int 10) in
+      let () =
+        check
+          (Error
+             V.(
+               With_message
+                 { given = "11"; message = "should be lesser or equal to 10" }))
+          (v @@ D.int 11)
+      in
+      ())
+
+let test_one_of =
+  let open Alcotest in
+  test_case "one_of - validate one_of" `Quick (fun () ->
+      let check = check (Testable.validated_value string) "should be equal" in
+      let v = V.(string & one_of' [ "foo"; "bar"; "baz" ]) in
+      let () = check (Ok "foo") (v @@ D.string "foo") in
+      let () = check (Ok "bar") (v @@ D.string "bar") in
+      let () = check (Ok "baz") (v @@ D.string "baz") in
+      let () =
+        check
+          (Error
+             V.(
+               With_message
+                 {
+                   given = "foobar"
+                 ; message = "not included in [foo; bar; baz]"
+                 }))
+          (v @@ D.string "foobar")
+      in
+      ())
+
+let test_where_or_const =
+  let open Alcotest in
+  test_case "multi-combinators tests" `Quick (fun () ->
+      let check = check (Testable.validated_value string) "should be equal" in
+      let v =
+        let open V in
+        (string & one_of' [ "foo"; "bar" ])
+        / ((int & where ~pp:Format.pp_print_int (fun x -> x mod 2 = 0))
+          $ string_of_int)
+        / ((float
+           & where ~pp:Format.pp_print_float (fun x -> Float.floor x >= 3.0))
+          & const "a float")
+      in
+      let () = check (Ok "foo") (v @@ D.string "foo") in
+      let () = check (Ok "bar") (v @@ D.string "bar") in
+      let () = check (Ok "4") (v @@ D.int 4) in
+      let () = check (Ok "a float") (v @@ D.float 3.65) in
+      let () =
+        check
+          (Error
+             V.(Invalid_shape { expected = "float"; given = D.string "baz" }))
+          (v @@ D.string "baz")
+      in
+      let () =
+        check
+          (Error V.(Invalid_shape { expected = "float"; given = D.int 5 }))
+          (v @@ D.int 5)
+      in
+      let () =
+        check
+          (Error
+             V.(
+               With_message { given = "1.6"; message = "unsatisfied predicate" }))
+          (v @@ D.float 1.6)
+      in
+      ())
+
 let cases =
   ( "Yocaml.Data"
   , [
@@ -571,4 +1124,28 @@ let cases =
     ; test_record_3
     ; test_record_4
     ; test_record_5
+    ; test_option_1
+    ; test_option_2
+    ; test_option_3
+    ; test_pair_1
+    ; test_pair_2
+    ; test_pair_3
+    ; test_pair_4
+    ; test_pair_5
+    ; test_triple_1
+    ; test_quad_1
+    ; test_sum_1
+    ; test_positive
+    ; test_positive_f
+    ; test_bounded
+    ; test_bounded_f
+    ; test_non_empty
+    ; test_equal
+    ; test_not_equal
+    ; test_gt
+    ; test_ge
+    ; test_lt
+    ; test_le
+    ; test_one_of
+    ; test_where_or_const
     ] )
