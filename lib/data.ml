@@ -148,7 +148,7 @@ module Validation = struct
 
   let float = function
     | Float f -> Ok f
-    | invalid_value -> invalid_shape "bool" invalid_value
+    | invalid_value -> invalid_shape "float" invalid_value
 
   let string ?(strict = true) = function
     | String s -> Ok s
@@ -299,7 +299,7 @@ module Validation = struct
         |> snd
         |> Result.map List.rev
         |> Result.map_error (fun errors -> Invalid_list { errors; given = li })
-    | invalid_value -> invalid_shape "int" invalid_value
+    | invalid_value -> invalid_shape "list" invalid_value
 
   let record validator = function
     | Record li ->
