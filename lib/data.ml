@@ -198,42 +198,42 @@ module Validation = struct
       let pp = mk_pp pp in
       fail_with ~given:(Format.asprintf "%a" pp y)
       @@ Format.asprintf "should be equal to %a" pp x
-    else Ok x
+    else Ok y
 
   let not_equal ?pp ?(equal = ( = )) x y =
     if equal x y then
       let pp = mk_pp pp in
       fail_with ~given:(Format.asprintf "%a" pp y)
       @@ Format.asprintf "should not be equal to %a" pp x
-    else Ok x
+    else Ok y
 
   let gt ?pp ?(compare = Stdlib.compare) x y =
     if compare y x <= 0 then
       let pp = mk_pp pp in
       fail_with ~given:(Format.asprintf "%a" pp y)
       @@ Format.asprintf "should be greater than %a" pp x
-    else Ok x
+    else Ok y
 
   let ge ?pp ?(compare = Stdlib.compare) x y =
     if compare y x < 0 then
       let pp = mk_pp pp in
       fail_with ~given:(Format.asprintf "%a" pp y)
       @@ Format.asprintf "should be greater or equal to %a" pp x
-    else Ok x
+    else Ok y
 
   let lt ?pp ?(compare = Stdlib.compare) x y =
-    if compare y x > 0 then
-      let pp = mk_pp pp in
-      fail_with ~given:(Format.asprintf "%a" pp y)
-      @@ Format.asprintf "should be lesser than %a" pp x
-    else Ok x
-
-  let le ?pp ?(compare = Stdlib.compare) x y =
     if compare y x >= 0 then
       let pp = mk_pp pp in
       fail_with ~given:(Format.asprintf "%a" pp y)
+      @@ Format.asprintf "should be lesser than %a" pp x
+    else Ok y
+
+  let le ?pp ?(compare = Stdlib.compare) x y =
+    if compare y x > 0 then
+      let pp = mk_pp pp in
+      fail_with ~given:(Format.asprintf "%a" pp y)
       @@ Format.asprintf "should be lesser or equal to %a" pp x
-    else Ok x
+    else Ok y
 
   let one_of ?pp ?(equal = ( = )) li value =
     match List.find_opt (equal value) li with
