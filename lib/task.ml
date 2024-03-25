@@ -14,49 +14,66 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-type (-'a, 'b) t = { dependencies : Deps.t; action : 'a -> 'b Eff.t }
+type (-'a, 'b) t = {
+    has_dynamic_dependencies : bool
+  ; dependencies : Deps.t
+  ; action : 'a -> 'b Eff.t
+}
+
 type 'a ct = (unit, 'a) t
 
-let make dependencies action = { dependencies; action }
+let make dependencies action =
+  { dependencies; action; has_dynamic_dependencies = true }
+
 let dependencies_of { dependencies; _ } = dependencies
 let action_of { action; _ } = action
-let destruct { dependencies; action } = (dependencies, action)
+
+let has_dynamic_dependencies { has_dynamic_dependencies; _ } =
+  has_dynamic_dependencies
+
+let destruct { dependencies; action; has_dynamic_dependencies } =
+  (dependencies, action, has_dynamic_dependencies)
 
 let lift f =
   let dependencies = Deps.empty in
   let action x = Eff.return (f x) in
-  { dependencies; action }
+  { dependencies; action; has_dynamic_dependencies = true }
 
 let id =
   let dependencies = Deps.empty in
   let action = Eff.return in
-  { dependencies; action }
+  { dependencies; action; has_dynamic_dependencies = true }
 
-let dimap f g { dependencies; action } =
+let dimap f g { dependencies; action; has_dynamic_dependencies } =
   let action x = Eff.map g (action (f x)) in
-  { dependencies; action }
+  { dependencies; action; has_dynamic_dependencies }
 
 let lmap f x = dimap f Fun.id x
 let rmap f x = dimap Fun.id f x
 
-let left { dependencies; action } =
+let left { dependencies; action; has_dynamic_dependencies } =
   let action = function
     | Either.Left x -> Eff.map Either.left (action x)
     | Either.Right x -> Eff.(map Either.right (return x))
   in
-  { dependencies; action }
+  { dependencies; action; has_dynamic_dependencies }
 
-let right { dependencies; action } =
+let right { dependencies; action; has_dynamic_dependencies } =
   let action = function
     | Either.Right x -> Eff.map Either.right (action x)
     | Either.Left x -> Eff.(map Either.left (return x))
   in
-  { dependencies; action }
+  { dependencies; action; has_dynamic_dependencies }
 
 let compose t2 t1 =
   let dependencies = Deps.concat t1.dependencies t2.dependencies in
   let action = Eff.(t1.action >=> t2.action) in
-  { dependencies; action }
+  {
+    dependencies
+  ; action
+  ; has_dynamic_dependencies =
+      t1.has_dynamic_dependencies || t2.has_dynamic_dependencies
+  }
 
 let rcompose t1 t2 = compose t2 t1
 let pre_compose f t = compose (lift f) t
@@ -70,26 +87,27 @@ let fan_in t1 t2 =
     | Either.Left x -> x
     | Either.Right x -> x)
 
-let first { dependencies; action } =
+let first { dependencies; action; has_dynamic_dependencies } =
   let action (x, y) = Eff.map (fun x -> (x, y)) (action x) in
-  { dependencies; action }
+  { dependencies; action; has_dynamic_dependencies }
 
-let second { dependencies; action } =
+let second { dependencies; action; has_dynamic_dependencies } =
   let action (x, y) = Eff.map (fun y -> (x, y)) (action y) in
-  { dependencies; action }
+  { dependencies; action; has_dynamic_dependencies }
 
 let split t1 t2 = rcompose (first t1) (second t2)
 let uncurry t = rmap (fun (f, x) -> f x) (first t)
 let fan_out t1 t2 = pre_rcompose (fun x -> (x, x)) (split t1 t2)
 
 let apply =
+  let has_dynamic_dependencies = true in
   let dependencies = Deps.empty in
   (* the apply is a little bit controversial since, logically, it does not
      handle dependecies of underlying arrow. An issue related to dynamic
      dependencies. *)
   let action ({ action; _ }, x) = action x in
 
-  { dependencies; action }
+  { dependencies; action; has_dynamic_dependencies }
 
 let pure x = lift (fun _ -> x)
 let map f x = post_rcompose x f
@@ -121,6 +139,11 @@ let map6 fu a b c d e f = ap (map5 fu a b c d e) f
 let map7 fu a b c d e f g = ap (map6 fu a b c d e f) g
 let map8 fu a b c d e f g h = ap (map7 fu a b c d e f g) h
 
+let no_dynamic_deps t =
+  rcompose
+    { t with has_dynamic_dependencies = false }
+    (lift (fun x -> (x, Deps.empty)))
+
 module Infix = struct
   let ( <<< ) = compose
   let ( >>> ) = rcompose
@@ -139,6 +162,7 @@ module Infix = struct
   let ( <$> ) = map
   let ( <*> ) = ap
   let ( <*? ) = select
+  let ( ||> ) x f = f x
 end
 
 module Syntax = struct
