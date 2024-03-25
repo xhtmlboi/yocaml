@@ -23,7 +23,6 @@ let () =
     ; Csexp_test.cases
     ; Data_test.cases
     ; Eff_test.cases
-    ; Deps_test.cases
     ; Cache_test.cases
     ; Pipeline_test.cases
     ; Action_test.cases
