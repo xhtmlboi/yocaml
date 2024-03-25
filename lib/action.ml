@@ -21,7 +21,7 @@ let need_update cache has_dynamic_deps deps target =
   let open Eff.Syntax in
   let* exists = Eff.file_exists ~on:`Target target in
   if exists then
-    let need_shortcut, deps =
+    let* need_shortcut, deps =
       if has_dynamic_deps then
         match Cache.get cache target with
         | None ->
@@ -32,13 +32,16 @@ let need_update cache has_dynamic_deps deps target =
                event of corruption or concurrent access. So it's a loss that's
                considered acceptable... sorry about that, but I'm not sure
                there's a "panacea". *)
+            let+ () = Lexicon.target_not_in_cache target in
             (true, deps)
-        | Some (_, dynamic_deps) ->
+        | Some (_, dynamic_deps) when not (Deps.is_empty dynamic_deps) ->
             (* If an entry exists in the cache and the target is attached to
                dynamic dependencies, try to rebuild the file taking into account
                the dynamic dependencies. *)
+            let+ () = Lexicon.found_dynamic_dependencies target in
             (false, Deps.concat deps dynamic_deps)
-      else (false, deps)
+        | _ -> Eff.return (false, deps)
+      else Eff.return (false, deps)
     in
     if need_shortcut then Eff.return Update
     else
