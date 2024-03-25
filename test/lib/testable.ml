@@ -48,20 +48,6 @@ let csexp_error () = Alcotest.testable csexp_error_pp csexp_error_equal
 let csexp_result () = Alcotest.result csexp (csexp_error ())
 let deps = Alcotest.testable Yocaml.Deps.pp Yocaml.Deps.equal
 
-let required_action_equal a b =
-  match (a, b) with
-  | Yocaml.Deps.Nothing, Yocaml.Deps.Nothing -> true
-  | Yocaml.Deps.Create, Yocaml.Deps.Create -> true
-  | Yocaml.Deps.Update, Yocaml.Deps.Update -> true
-  | _ -> false
-
-let required_action_pp ppf = function
-  | Yocaml.Deps.Nothing -> Format.fprintf ppf "Nothing"
-  | Yocaml.Deps.Create -> Format.fprintf ppf "Create"
-  | Yocaml.Deps.Update -> Format.fprintf ppf "Update"
-
-let required_action = Alcotest.testable required_action_pp required_action_equal
-
 let from_csexp_error_subject_pp ppf = function
   | `Path -> Format.fprintf ppf "`Path"
   | `Deps -> Format.fprintf ppf "`Deps"
