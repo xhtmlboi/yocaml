@@ -19,5 +19,3 @@ let track_file file = track_files [ file ]
 
 let read_file file =
   Task.make (Deps.singleton file) (fun () -> Eff.read_file ~on:`Source file)
-
-let no_dynamic_deps () = Task.lift (fun x -> (x, Deps.empty))

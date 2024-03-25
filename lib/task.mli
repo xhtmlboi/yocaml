@@ -222,6 +222,9 @@ val map8 :
 (** {1 Infix operators} *)
 
 module Infix : sig
+  val ( ||> ) : 'a -> ('a -> 'b) -> 'b
+  (** [x ||> f] is [f x]. *)
+
   val ( <<< ) : ('b, 'c) t -> ('a, 'b) t -> ('a, 'c) t
   (** [t2 <<< t1] is [compose t2 t1]. *)
 
@@ -293,12 +296,21 @@ include module type of Syntax
 
 (** {1 Utils} *)
 
+val has_dynamic_dependencies : (_, _) t -> bool
+(** [has_dynamic_dependencies t] returns [true] if task has dynamic
+    dependencies, [false] otherwise. *)
+
 val dependencies_of : (_, _) t -> Deps.t
 (** [dependencies_of t] returns the dependencies set of a task. *)
 
 val action_of : ('a, 'b) t -> 'a -> 'b Eff.t
 (** [action_of t] returns the effectful function of a task. *)
 
-val destruct : ('a, 'b) t -> Deps.t * ('a -> 'b Eff.t)
-(** [destruct t] returns the pair of a dependencies set and an effectful
-    callback. [destruct] is [dependencies_of t, action_of t]*)
+val destruct : ('a, 'b) t -> Deps.t * ('a -> 'b Eff.t) * bool
+(** [destruct t] returns the triple of a dependencies set and an effectful
+    callback and if the task is associated to dynamic dependencies. [destruct]
+    is [dependencies_of t, action_of t, has_dynamic_dependencies t]*)
+
+val no_dynamic_deps : ('a, 'b) t -> ('a, 'b * Deps.t) t
+(** [no_dynamic_deps] makes an arrow static (does not attach it to any dynamic
+    dependency set). *)
