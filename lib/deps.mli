@@ -50,12 +50,9 @@ val from_list : Path.t list -> t
 
     Retrieves information about sets of dependencies. *)
 
-(** describes whether a target needs to be built, updated or is already up to
-    date. *)
-type required_action = Nothing | Create | Update
-
-val need_update : t -> Path.t -> required_action Eff.t
-(** [need_update deps target] returns the corresponding {!type:required_action}. *)
+val get_mtimes : t -> int list Eff.t
+(** [get_mtimes deps] Returns a list of modification dates for a set of
+    dependencies. *)
 
 (** {1 Serialization/Deserialization}
 
