@@ -33,6 +33,19 @@
 (** S-Expression AST. *)
 type t = Atom of string | Node of t list
 
+(** Errors that can occur when parsing S-expressions. *)
+type parsing_error =
+  | Nonterminated_node of int
+  | Nonterminated_atom of int
+  | Expected_number_or_colon of char * int
+  | Expected_number of char * int
+  | Unexepected_character of char * int
+  | Premature_end_of_atom of int * int
+
+(** Used to describe an invalid S-expression (correctly parsed but does not
+    respect a schema). *)
+type invalid = Invalid_sexp of t * string
+
 val atom : string -> t
 (** [atom x] lift a given string, [x], into a {!type:t}. *)
 
@@ -46,41 +59,23 @@ val node : t list -> t
 val to_string : t -> string
 (** convert a [S-expression] to a string (with indent). *)
 
-val from_string : string -> (t, [> `Nonterminated_node of int ]) result
-(** [from_string str] Try deserializing a string in Sexp. *)
-
-val from_seq : char Seq.t -> (t, [> `Nonterminated_node of int ]) result
-(** [from_string str] Try deserializing a string in Sexp. *)
-
 (** {1 Deserialization} *)
+
+val from_string : string -> (t, parsing_error) result
+(** [from_string str] Try deserializing a string in Sexp. *)
+
+val from_seq : char Seq.t -> (t, parsing_error) result
+(** [from_string str] Try deserializing a string in Sexp. *)
 
 module Canonical : sig
   (** S-Canonical expression used to describe compressed data sources. *)
 
   (** {1 Deserialization} *)
 
-  val from_string :
-       string
-    -> ( t
-       , [> `Nonterminated_atom of int
-         | `Expected_number_or_colon of char * int
-         | `Expected_number of char * int
-         | `Unexepected_character of char * int
-         | `Premature_end_of_atom of int * int
-         | `Nonterminated_node of int ] )
-       result
+  val from_string : string -> (t, parsing_error) result
   (** [from_string str] Try deserializing a string in Csexp. *)
 
-  val from_seq :
-       char Seq.t
-    -> ( t
-       , [> `Nonterminated_atom of int
-         | `Expected_number_or_colon of char * int
-         | `Expected_number of char * int
-         | `Unexepected_character of char * int
-         | `Premature_end_of_atom of int * int
-         | `Nonterminated_node of int ] )
-       result
+  val from_seq : char Seq.t -> (t, parsing_error) result
   (** [from_seq s] Try deserializing a sequence of characters in Csexp. The use
       of a sequence can serve as a basis for easily constructing other sources
       ([string] or [in_channel] for example). *)

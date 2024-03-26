@@ -19,58 +19,42 @@ let fs_item = Fs.testable_item
 let sexp = Alcotest.testable Yocaml.Sexp.pp Yocaml.Sexp.equal
 
 let csexp_error_equal a b =
+  let open Yocaml.Sexp in
   match (a, b) with
-  | `Nonterminated_atom a, `Nonterminated_atom b
-  | `Nonterminated_node a, `Nonterminated_node b ->
+  | Nonterminated_atom a, Nonterminated_atom b
+  | Nonterminated_node a, Nonterminated_node b ->
       Int.equal a b
-  | `Expected_number_or_colon (ca, la), `Expected_number_or_colon (cb, lb)
-  | `Expected_number (ca, la), `Expected_number (cb, lb)
-  | `Unexepected_character (ca, la), `Unexepected_character (cb, lb) ->
+  | Expected_number_or_colon (ca, la), Expected_number_or_colon (cb, lb)
+  | Expected_number (ca, la), Expected_number (cb, lb)
+  | Unexepected_character (ca, la), Unexepected_character (cb, lb) ->
       Char.equal ca cb && Int.equal la lb
-  | `Premature_end_of_atom (la, ia), `Premature_end_of_atom (lb, ib) ->
+  | Premature_end_of_atom (la, ia), Premature_end_of_atom (lb, ib) ->
       Int.equal la lb && Int.equal ia ib
   | _ -> false
 
-let csexp_error_pp ppf = function
-  | `Nonterminated_atom a -> Format.fprintf ppf "`Nonterminated_atom %d" a
-  | `Nonterminated_node a -> Format.fprintf ppf "`Nonterminated_node %d" a
-  | `Expected_number_or_colon (c, i) ->
-      Format.fprintf ppf "`Expected_number_or_colon (%c, %d)" c i
-  | `Expected_number (c, i) ->
-      Format.fprintf ppf "`Expected_number (%c, %d)" c i
-  | `Unexepected_character (c, i) ->
-      Format.fprintf ppf "`Unexepected_character (%c, %d)" c i
-  | `Premature_end_of_atom (a, b) ->
-      Format.fprintf ppf "`Premature_end_of_atom (%d, %d)" a b
-  | _ -> Format.fprintf ppf "Unknown error"
+let csexp_error_pp ppf =
+  let open Yocaml.Sexp in
+  function
+  | Nonterminated_atom a -> Format.fprintf ppf "Nonterminated_atom %d" a
+  | Nonterminated_node a -> Format.fprintf ppf "Nonterminated_node %d" a
+  | Expected_number_or_colon (c, i) ->
+      Format.fprintf ppf "Expected_number_or_colon (%c, %d)" c i
+  | Expected_number (c, i) -> Format.fprintf ppf "Expected_number (%c, %d)" c i
+  | Unexepected_character (c, i) ->
+      Format.fprintf ppf "Unexepected_character (%c, %d)" c i
+  | Premature_end_of_atom (a, b) ->
+      Format.fprintf ppf "Premature_end_of_atom (%d, %d)" a b
 
 let csexp_error () = Alcotest.testable csexp_error_pp csexp_error_equal
 let csexp_result () = Alcotest.result sexp (csexp_error ())
 let deps = Alcotest.testable Yocaml.Deps.pp Yocaml.Deps.equal
 
-let from_sexp_error_subject_pp ppf = function
-  | `Path -> Format.fprintf ppf "`Path"
-  | `Deps -> Format.fprintf ppf "`Deps"
-  | `Cache -> Format.fprintf ppf "`Cache"
-  | _ -> Format.fprintf ppf "Unknown subject"
+let from_sexp_error_ppf ppf (Yocaml.Sexp.Invalid_sexp (sexp, subject)) =
+  Format.fprintf ppf "Invalid_sexp (%a, %s)" Yocaml.Sexp.pp_pretty sexp subject
 
-let from_sexp_error_ppf ppf = function
-  | `Invalid_sexp (expr, subject) ->
-      Format.fprintf ppf "`Invalid_sexp (%a, %a)" Yocaml.Sexp.pp expr
-        from_sexp_error_subject_pp subject
-  | _ -> Format.fprintf ppf "Unknown error"
-
-let from_sexp_error_subject_equal a b =
-  match (a, b) with
-  | `Path, `Path | `Deps, `Deps | `Cache, `Cache -> true
-  | _ -> true
-
-let from_sexp_error_equal a b =
-  match (a, b) with
-  | `Invalid_sexp (expr_a, subject_a), `Invalid_sexp (expr_b, subject_b) ->
-      Yocaml.Sexp.equal expr_a expr_b
-      && from_sexp_error_subject_equal subject_a subject_b
-  | _ -> false
+let from_sexp_error_equal (Yocaml.Sexp.Invalid_sexp (sexp_a, subject_a))
+    (Yocaml.Sexp.Invalid_sexp (sexp_b, subject_b)) =
+  Yocaml.Sexp.equal sexp_a sexp_b && String.equal subject_a subject_b
 
 let from_sexp a =
   let err = Alcotest.testable from_sexp_error_ppf from_sexp_error_equal in

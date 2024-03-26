@@ -38,12 +38,12 @@ let all_path_nodes sexp node =
       Result.bind acc (fun acc ->
           value |> Path.from_sexp |> Result.map (fun p -> p :: acc)))
     (Ok []) node
-  |> Result.map_error (fun _ -> `Invalid_sexp (sexp, `Deps))
+  |> Result.map_error (fun _ -> Sexp.Invalid_sexp (sexp, "deps"))
 
 let from_sexp sexp =
   match sexp with
   | Sexp.(Node paths) -> paths |> all_path_nodes sexp |> Result.map from_list
-  | _ -> Error (`Invalid_sexp (sexp, `Deps))
+  | _ -> Error (Sexp.Invalid_sexp (sexp, "deps"))
 
 let pp ppf deps =
   Format.fprintf ppf "Deps [@[<v 0>%a@]]"

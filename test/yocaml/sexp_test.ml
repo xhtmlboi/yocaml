@@ -150,7 +150,7 @@ let test_from_string_7_canonical =
   let open Alcotest in
   test_case "canonical from_string case 7" `Quick (fun () ->
       let open Yocaml.Sexp in
-      let expected = Result.error @@ `Nonterminated_node 12
+      let expected = Result.error @@ Nonterminated_node 12
       and computed = "(0:1:a(3:foo)" |> Canonical.from_string in
       check (Testable.csexp_result ()) "should be equal" expected computed)
 
@@ -166,7 +166,7 @@ let test_from_string_9_canonical =
   let open Alcotest in
   test_case "canonical from_string case 9" `Quick (fun () ->
       let open Yocaml.Sexp in
-      let expected = Result.error @@ `Premature_end_of_atom (4, 3)
+      let expected = Result.error @@ Premature_end_of_atom (4, 3)
       and computed = "4:foo" |> Canonical.from_string in
       check (Testable.csexp_result ()) "should be equal" expected computed)
 

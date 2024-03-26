@@ -16,6 +16,16 @@
 
 type t = Atom of string | Node of t list
 
+type parsing_error =
+  | Nonterminated_node of int
+  | Nonterminated_atom of int
+  | Expected_number_or_colon of char * int
+  | Expected_number of char * int
+  | Unexepected_character of char * int
+  | Premature_end_of_atom of int * int
+
+type invalid = Invalid_sexp of t * string
+
 let atom x = Atom x
 let node x = Node x
 
@@ -82,7 +92,7 @@ module Canonical = struct
       if i = len then Ok (atom @@ Buffer.contents buf, seq)
       else
         match Seq.uncons seq with
-        | None -> Error (`Premature_end_of_atom (len, i))
+        | None -> Error (Premature_end_of_atom (len, i))
         | Some (c, xs) ->
             let () = Buffer.add_char buf c in
             aux (i + 1) xs
@@ -92,14 +102,14 @@ module Canonical = struct
   let parse_atom lex_pos seq =
     let rec aux lex_pos acc seq =
       match (Seq.uncons seq, acc) with
-      | None, _ -> Error (`Nonterminated_atom lex_pos)
+      | None, _ -> Error (Nonterminated_atom lex_pos)
       | Some (':', xs), Some x ->
           Result.map (fun (a, xs) -> (a, lex_pos + x, xs)) (collect_string x xs)
       | Some (('0' .. '9' as c), xs), acc ->
           let acc = (Option.value ~default:0 acc * 10) + char_to_int c in
           aux (lex_pos + 1) (Some acc) xs
-      | Some (c, _), Some _ -> Error (`Expected_number_or_colon (c, lex_pos))
-      | Some (c, _), None -> Error (`Expected_number (c, lex_pos))
+      | Some (c, _), Some _ -> Error (Expected_number_or_colon (c, lex_pos))
+      | Some (c, _), None -> Error (Expected_number (c, lex_pos))
     in
     aux lex_pos None seq
 
@@ -108,7 +118,7 @@ module Canonical = struct
       match Seq.uncons seq with
       | None ->
           if level = 0 then Ok (List.rev acc, lex_pos, Seq.empty)
-          else Error (`Nonterminated_node lex_pos)
+          else Error (Nonterminated_node lex_pos)
       | Some (('0' .. '9' as c), xs) ->
           Result.bind
             (parse_atom lex_pos (Seq.cons c xs))
@@ -118,7 +128,7 @@ module Canonical = struct
           Result.bind
             (aux (level + 1) lex_pos [] xs)
             (fun (n, lex_pos, xs) -> aux level (lex_pos + 1) (node n :: acc) xs)
-      | Some (c, _) -> Error (`Unexepected_character (c, lex_pos))
+      | Some (c, _) -> Error (Unexepected_character (c, lex_pos))
     in
     Result.map
       (fun (r, _, _) -> match r with [ e ] -> e | _ -> node r)
@@ -148,7 +158,7 @@ let from_seq seq =
     match Seq.uncons seq with
     | None ->
         if level = 0 then Ok (List.rev acc, lex_pos, Seq.empty)
-        else Error (`Nonterminated_node lex_pos)
+        else Error (Nonterminated_node lex_pos)
     | Some (('\t' | ' ' | '\n'), xs) -> aux level (lex_pos + 1) acc xs
     | Some (')', xs) -> Ok (List.rev acc, lex_pos + 1, xs)
     | Some ('(', xs) ->

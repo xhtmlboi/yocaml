@@ -21,27 +21,14 @@ val fs_item : Fs.item Alcotest.testable
 val sexp : Yocaml.Sexp.t Alcotest.testable
 
 val csexp_result :
-     unit
-  -> ( Yocaml.Sexp.t
-     , [> `Nonterminated_atom of int
-       | `Expected_number_or_colon of char * int
-       | `Expected_number of char * int
-       | `Unexepected_character of char * int
-       | `Premature_end_of_atom of int * int
-       | `Nonterminated_node of int ] )
-     result
-     Alcotest.testable
+  unit -> (Yocaml.Sexp.t, Yocaml.Sexp.parsing_error) result Alcotest.testable
 
 val nel : 'a Alcotest.testable -> 'a Yocaml.Nel.t Alcotest.testable
 val deps : Yocaml.Deps.t Alcotest.testable
 val path : Yocaml.Path.t Alcotest.testable
 
 val from_sexp :
-     'a Alcotest.testable
-  -> ( 'a
-     , [> `Invalid_sexp of Yocaml.Sexp.t * [> `Path | `Deps | `Cache ] ] )
-     result
-     Alcotest.testable
+  'a Alcotest.testable -> ('a, Yocaml.Sexp.invalid) result Alcotest.testable
 
 val cache : Yocaml.Cache.t Alcotest.testable
 val data : Yocaml.Data.t Alcotest.testable

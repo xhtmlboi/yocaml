@@ -149,7 +149,7 @@ let all_are_nodes sexp node =
       Result.bind acc (fun acc ->
           match value with
           | Sexp.Atom x -> Ok (x :: acc)
-          | _ -> Error (`Invalid_sexp (sexp, `Path))))
+          | _ -> Error (Sexp.Invalid_sexp (sexp, "path"))))
     (Ok []) node
   |> Result.map List.rev
 
@@ -159,7 +159,7 @@ let from_sexp sexp =
       Result.map rel (all_are_nodes sexp fragments)
   | Sexp.(Node [ Atom "abs"; Node fragments ]) ->
       Result.map abs (all_are_nodes sexp fragments)
-  | _ -> Error (`Invalid_sexp (sexp, `Path))
+  | _ -> Error (Sexp.Invalid_sexp (sexp, "path"))
 
 module Infix = struct
   let ( ++ ) = append

@@ -62,7 +62,7 @@ val to_sexp : t -> Sexp.t
 (** [to_sexp deps] Converts a set of dependencies, [deps], into a
     {!module:Sexp}. *)
 
-val from_sexp : Sexp.t -> (t, [> `Invalid_sexp of Sexp.t * [> `Deps ] ]) result
+val from_sexp : Sexp.t -> (t, Sexp.invalid) result
 (** [from_sexp sexp] try to converts a {!module:Sexp} into a set of
     dependencies. *)
 
