@@ -127,7 +127,7 @@ val to_list : t -> fragment list
 val to_sexp : t -> Sexp.t
 (** [to_sexp path] Converts a [path] into a {!module:Sexp}. *)
 
-val from_sexp : Sexp.t -> (t, [> `Invalid_sexp of Sexp.t * [> `Path ] ]) result
+val from_sexp : Sexp.t -> (t, Sexp.invalid) result
 (** [from_sexp sexp] try to converts a {!module:Sexp} into a [path]. *)
 
 (** {1 Infix operators}

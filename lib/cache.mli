@@ -54,7 +54,7 @@ val get : t -> Path.t -> (string * Deps.t) option
 val to_sexp : t -> Sexp.t
 (** [to_sexp cache] Converts a [cache] into a {!module:Sexp}. *)
 
-val from_sexp : Sexp.t -> (t, [> `Invalid_sexp of Sexp.t * [> `Cache ] ]) result
+val from_sexp : Sexp.t -> (t, Sexp.invalid) result
 (** [from_sexp sexp] try to converts a {!module:Sexp} into a [cache]. *)
 
 (** {1 Utils} *)

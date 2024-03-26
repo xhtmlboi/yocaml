@@ -45,9 +45,9 @@ let entry_from_sexp sexp =
       let entry = entry hashed_content in
       potential_deps
       |> Deps.from_sexp
-      |> Result.map_error (fun _ -> `Invalid_sexp (sexp, `Cache))
+      |> Result.map_error (fun _ -> Sexp.Invalid_sexp (sexp, "cache"))
       |> Result.map entry
-  | _ -> Error (`Invalid_sexp (sexp, `Cache))
+  | _ -> Error (Sexp.Invalid_sexp (sexp, "cache"))
 
 let to_sexp cache =
   Cache_map.fold
@@ -63,8 +63,8 @@ let key_value_from_sexp sexp =
   | Sexp.(Node [ key; value ]) ->
       Result.bind (Path.from_sexp key) (fun key ->
           value |> entry_from_sexp |> Result.map (fun value -> (key, value)))
-      |> Result.map_error (fun _ -> `Invalid_sexp (sexp, `Cache))
-  | _ -> Error (`Invalid_sexp (sexp, `Cache))
+      |> Result.map_error (fun _ -> Sexp.Invalid_sexp (sexp, "cache"))
+  | _ -> Error (Sexp.Invalid_sexp (sexp, "cache"))
 
 let from_sexp sexp =
   match sexp with
@@ -75,7 +75,7 @@ let from_sexp sexp =
               line |> key_value_from_sexp |> Result.map (fun x -> x :: acc)))
         (Ok []) entries
       |> Result.map Cache_map.of_list
-  | _ -> Error (`Invalid_sexp (sexp, `Cache))
+  | _ -> Error (Sexp.Invalid_sexp (sexp, "cache"))
 
 let entry_equal { hashed_content = hashed_a; dynamic_dependencies = deps_a }
     { hashed_content = hashed_b; dynamic_dependencies = deps_b } =
