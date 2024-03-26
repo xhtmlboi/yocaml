@@ -24,3 +24,5 @@ module Deps = Deps
 module Task = Task
 module Pipeline = Pipeline
 module Action = Action
+module Required = Required
+module Metadata = Metadata

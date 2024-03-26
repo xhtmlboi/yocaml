@@ -17,6 +17,12 @@
 (** [Yocaml] is the entry point for a YOCaml program. It describes the
     core/engine of the framework. *)
 
+(** {1 Requirements}
+
+    All the interfaces needed to build behaviour. *)
+
+module Required = Required
+
 (** {1 Elements}
 
     Modules describing the elements {i constituting} YOCaml, for example file
@@ -26,6 +32,7 @@ module Nel = Nel
 module Path = Path
 module Cache = Cache
 module Deps = Deps
+module Metadata = Metadata
 
 (** {1 Building tasks}
 
