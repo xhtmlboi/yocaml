@@ -124,12 +124,11 @@ val to_list : t -> fragment list
 
     Supports serialization and deserialization of paths. *)
 
-val to_csexp : t -> Csexp.t
-(** [to_csexp path] Converts a [path] into a {!module:Csexp}. *)
+val to_sexp : t -> Sexp.t
+(** [to_sexp path] Converts a [path] into a {!module:Sexp}. *)
 
-val from_csexp :
-  Csexp.t -> (t, [> `Invalid_csexp of Csexp.t * [> `Path ] ]) result
-(** [from_csexp csexp] try to converts a {!module:Csexp} into a [path]. *)
+val from_sexp : Sexp.t -> (t, [> `Invalid_sexp of Sexp.t * [> `Path ] ]) result
+(** [from_sexp sexp] try to converts a {!module:Sexp} into a [path]. *)
 
 (** {1 Infix operators}
 

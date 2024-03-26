@@ -18,11 +18,11 @@
 
 val fs : Fs.t Alcotest.testable
 val fs_item : Fs.item Alcotest.testable
-val csexp : Yocaml.Csexp.t Alcotest.testable
+val sexp : Yocaml.Sexp.t Alcotest.testable
 
 val csexp_result :
      unit
-  -> ( Yocaml.Csexp.t
+  -> ( Yocaml.Sexp.t
      , [> `Nonterminated_atom of int
        | `Expected_number_or_colon of char * int
        | `Expected_number of char * int
@@ -36,10 +36,10 @@ val nel : 'a Alcotest.testable -> 'a Yocaml.Nel.t Alcotest.testable
 val deps : Yocaml.Deps.t Alcotest.testable
 val path : Yocaml.Path.t Alcotest.testable
 
-val from_csexp :
+val from_sexp :
      'a Alcotest.testable
   -> ( 'a
-     , [> `Invalid_csexp of Yocaml.Csexp.t * [> `Path | `Deps | `Cache ] ] )
+     , [> `Invalid_sexp of Yocaml.Sexp.t * [> `Path | `Deps | `Cache ] ] )
      result
      Alcotest.testable
 
@@ -81,3 +81,5 @@ val validated_record :
           -> bool)
   -> 'a Alcotest.testable
   -> 'a Yocaml.Data.Validation.validated_record Alcotest.testable
+
+val with_metadata : (string option * string) Alcotest.testable

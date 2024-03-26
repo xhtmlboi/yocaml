@@ -16,14 +16,14 @@
 
 open Test_lib
 
-let to_csexp_from_csexp_roundtrip =
-  QCheck2.Test.make ~name:"to_csexp -> from_csexp roundtrip" ~count:100
+let to_sexp_from_sexp_roundtrip =
+  QCheck2.Test.make ~name:"to_sexp -> from_sexp roundtrip" ~count:100
     ~print:(fun x -> Format.asprintf "%a" Yocaml.Cache.pp x)
     Gen.cache
     (fun p ->
       let open Yocaml.Cache in
-      let expected = Ok p and computed = p |> to_csexp |> from_csexp in
-      Alcotest.equal Testable.(from_csexp cache) expected computed)
+      let expected = Ok p and computed = p |> to_sexp |> from_sexp in
+      Alcotest.equal Testable.(from_sexp cache) expected computed)
   |> QCheck_alcotest.to_alcotest ~colors:true ~verbose:true
 
-let cases = ("Yocaml.Cache", [ to_csexp_from_csexp_roundtrip ])
+let cases = ("Yocaml.Cache", [ to_sexp_from_sexp_roundtrip ])

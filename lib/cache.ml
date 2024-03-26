@@ -35,47 +35,47 @@ let get cache path =
       (hashed_content, dynamic_dependencies))
     (Cache_map.find_opt path cache)
 
-let entry_to_csexp { hashed_content; dynamic_dependencies } =
-  let open Csexp in
-  node [ atom hashed_content; Deps.to_csexp dynamic_dependencies ]
+let entry_to_sexp { hashed_content; dynamic_dependencies } =
+  let open Sexp in
+  node [ atom hashed_content; Deps.to_sexp dynamic_dependencies ]
 
-let entry_from_csexp csexp =
-  match csexp with
-  | Csexp.(Node [ Atom hashed_content; potential_deps ]) ->
+let entry_from_sexp sexp =
+  match sexp with
+  | Sexp.(Node [ Atom hashed_content; potential_deps ]) ->
       let entry = entry hashed_content in
       potential_deps
-      |> Deps.from_csexp
-      |> Result.map_error (fun _ -> `Invalid_csexp (csexp, `Cache))
+      |> Deps.from_sexp
+      |> Result.map_error (fun _ -> `Invalid_sexp (sexp, `Cache))
       |> Result.map entry
-  | _ -> Error (`Invalid_csexp (csexp, `Cache))
+  | _ -> Error (`Invalid_sexp (sexp, `Cache))
 
-let to_csexp cache =
+let to_sexp cache =
   Cache_map.fold
     (fun key entry acc ->
-      let k = Path.to_csexp key in
-      let v = entry_to_csexp entry in
-      Csexp.node [ k; v ] :: acc)
+      let k = Path.to_sexp key in
+      let v = entry_to_sexp entry in
+      Sexp.node [ k; v ] :: acc)
     cache []
-  |> Csexp.node
+  |> Sexp.node
 
-let key_value_from_csexp csexp =
-  match csexp with
-  | Csexp.(Node [ key; value ]) ->
-      Result.bind (Path.from_csexp key) (fun key ->
-          value |> entry_from_csexp |> Result.map (fun value -> (key, value)))
-      |> Result.map_error (fun _ -> `Invalid_csexp (csexp, `Cache))
-  | _ -> Error (`Invalid_csexp (csexp, `Cache))
+let key_value_from_sexp sexp =
+  match sexp with
+  | Sexp.(Node [ key; value ]) ->
+      Result.bind (Path.from_sexp key) (fun key ->
+          value |> entry_from_sexp |> Result.map (fun value -> (key, value)))
+      |> Result.map_error (fun _ -> `Invalid_sexp (sexp, `Cache))
+  | _ -> Error (`Invalid_sexp (sexp, `Cache))
 
-let from_csexp csexp =
-  match csexp with
-  | Csexp.(Node entries) ->
+let from_sexp sexp =
+  match sexp with
+  | Sexp.(Node entries) ->
       List.fold_left
         (fun acc line ->
           Result.bind acc (fun acc ->
-              line |> key_value_from_csexp |> Result.map (fun x -> x :: acc)))
+              line |> key_value_from_sexp |> Result.map (fun x -> x :: acc)))
         (Ok []) entries
       |> Result.map Cache_map.of_list
-  | _ -> Error (`Invalid_csexp (csexp, `Cache))
+  | _ -> Error (`Invalid_sexp (sexp, `Cache))
 
 let entry_equal { hashed_content = hashed_a; dynamic_dependencies = deps_a }
     { hashed_content = hashed_b; dynamic_dependencies = deps_b } =

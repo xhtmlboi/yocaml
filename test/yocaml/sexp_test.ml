@@ -19,28 +19,28 @@ open Test_lib
 let test_length_1 =
   let open Alcotest in
   test_case "serialized length case 1" `Quick (fun () ->
-      let open Yocaml.Csexp in
-      let expected = 2 and computed = node [] |> length in
+      let open Yocaml.Sexp in
+      let expected = 2 and computed = node [] |> Canonical.length in
       check int "should be equal" expected computed)
 
 let test_length_2 =
   let open Alcotest in
   test_case "serialized length case 2" `Quick (fun () ->
-      let open Yocaml.Csexp in
-      let expected = 2 and computed = atom "" |> length in
+      let open Yocaml.Sexp in
+      let expected = 2 and computed = atom "" |> Canonical.length in
       check int "should be equal" expected computed)
 
 let test_length_3 =
   let open Alcotest in
   test_case "serialized length case 3" `Quick (fun () ->
-      let open Yocaml.Csexp in
-      let expected = 7 and computed = node [ atom "foo" ] |> length in
+      let open Yocaml.Sexp in
+      let expected = 7 and computed = node [ atom "foo" ] |> Canonical.length in
       check int "should be equal" expected computed)
 
 let test_length_4 =
   let open Alcotest in
   test_case "serialized length case 4" `Quick (fun () ->
-      let open Yocaml.Csexp in
+      let open Yocaml.Sexp in
       let expected = 52
       and computed =
         node
@@ -50,29 +50,29 @@ let test_length_4 =
           ; node [ atom "Lorem Ipsum Dolor" ]
           ; node [ atom "foobar"; atom "foobaz" ]
           ]
-        |> length
+        |> Canonical.length
       in
       check int "should be equal" expected computed)
 
 let test_to_string_1 =
   let open Alcotest in
   test_case "to_string case 1" `Quick (fun () ->
-      let open Yocaml.Csexp in
-      let expected = "0:" and computed = atom "" |> to_string in
+      let open Yocaml.Sexp in
+      let expected = "0:" and computed = atom "" |> Canonical.to_string in
       check string "should be equal" expected computed)
 
 let test_to_string_2 =
   let open Alcotest in
   test_case "to_string case 2" `Quick (fun () ->
-      let open Yocaml.Csexp in
+      let open Yocaml.Sexp in
       let expected = "9:foobarbaz"
-      and computed = atom "foobarbaz" |> to_string in
+      and computed = atom "foobarbaz" |> Canonical.to_string in
       check string "should be equal" expected computed)
 
 let test_to_string_3 =
   let open Alcotest in
   test_case "to_string case 3" `Quick (fun () ->
-      let open Yocaml.Csexp in
+      let open Yocaml.Sexp in
       let expected = "(3:foo3:bar(17:Lorem Ipsum Dolor)(6:foobar6:foobaz))"
       and computed =
         node
@@ -82,52 +82,55 @@ let test_to_string_3 =
           ; node [ atom "Lorem Ipsum Dolor" ]
           ; node [ atom "foobar"; atom "foobaz" ]
           ]
-        |> to_string
+        |> Canonical.to_string
       in
       check string "should be equal" expected computed)
 
 let test_from_string_1 =
   let open Alcotest in
   test_case "from_string case 1" `Quick (fun () ->
-      let open Yocaml.Csexp in
-      let expected = Result.ok @@ node [] and computed = "" |> from_string in
+      let open Yocaml.Sexp in
+      let expected = Result.ok @@ node []
+      and computed = "" |> Canonical.from_string in
       check (Testable.csexp_result ()) "should be equal" expected computed)
 
 let test_from_string_2 =
   let open Alcotest in
   test_case "from_string case 2" `Quick (fun () ->
-      let open Yocaml.Csexp in
-      let expected = Result.ok @@ atom "" and computed = "0:" |> from_string in
+      let open Yocaml.Sexp in
+      let expected = Result.ok @@ atom ""
+      and computed = "0:" |> Canonical.from_string in
       check (Testable.csexp_result ()) "should be equal" expected computed)
 
 let test_from_string_3 =
   let open Alcotest in
   test_case "from_string case 3" `Quick (fun () ->
-      let open Yocaml.Csexp in
-      let expected = Result.ok @@ node [] and computed = "()" |> from_string in
+      let open Yocaml.Sexp in
+      let expected = Result.ok @@ node []
+      and computed = "()" |> Canonical.from_string in
       check (Testable.csexp_result ()) "should be equal" expected computed)
 
 let test_from_string_4 =
   let open Alcotest in
   test_case "from_string case 4" `Quick (fun () ->
-      let open Yocaml.Csexp in
+      let open Yocaml.Sexp in
       let expected = Result.ok @@ node [ atom ""; atom "a"; atom "foo" ]
-      and computed = "0:1:a3:foo" |> from_string in
+      and computed = "0:1:a3:foo" |> Canonical.from_string in
       check (Testable.csexp_result ()) "should be equal" expected computed)
 
 let test_from_string_5 =
   let open Alcotest in
   test_case "from_string case 5" `Quick (fun () ->
-      let open Yocaml.Csexp in
+      let open Yocaml.Sexp in
       let expected =
         Result.ok @@ node [ atom ""; atom "a"; node [ atom "foo" ] ]
-      and computed = "(0:1:a(3:foo))" |> from_string in
+      and computed = "(0:1:a(3:foo))" |> Canonical.from_string in
       check (Testable.csexp_result ()) "should be equal" expected computed)
 
 let test_from_string_6 =
   let open Alcotest in
   test_case "from_string case 6" `Quick (fun () ->
-      let open Yocaml.Csexp in
+      let open Yocaml.Sexp in
       let expected =
         Result.ok
         @@ node
@@ -138,47 +141,48 @@ let test_from_string_6 =
              ; node [ atom "foobar"; atom "foobaz" ]
              ]
       and computed =
-        "(3:foo3:bar(17:Lorem Ipsum Dolor)(6:foobar6:foobaz))" |> from_string
+        "(3:foo3:bar(17:Lorem Ipsum Dolor)(6:foobar6:foobaz))"
+        |> Canonical.from_string
       in
       check (Testable.csexp_result ()) "should be equal" expected computed)
 
 let test_from_string_7 =
   let open Alcotest in
   test_case "from_string case 7" `Quick (fun () ->
-      let open Yocaml.Csexp in
+      let open Yocaml.Sexp in
       let expected = Result.error @@ `Nonterminated_node 12
-      and computed = "(0:1:a(3:foo)" |> from_string in
+      and computed = "(0:1:a(3:foo)" |> Canonical.from_string in
       check (Testable.csexp_result ()) "should be equal" expected computed)
 
 let test_from_string_8 =
   let open Alcotest in
   test_case "from_string case 8" `Quick (fun () ->
-      let open Yocaml.Csexp in
+      let open Yocaml.Sexp in
       let expected = Result.ok @@ atom "foo"
-      and computed = "3:foo" |> from_string in
+      and computed = "3:foo" |> Canonical.from_string in
       check (Testable.csexp_result ()) "should be equal" expected computed)
 
 let test_from_string_9 =
   let open Alcotest in
   test_case "from_string case 9" `Quick (fun () ->
-      let open Yocaml.Csexp in
+      let open Yocaml.Sexp in
       let expected = Result.error @@ `Premature_end_of_atom (4, 3)
-      and computed = "4:foo" |> from_string in
+      and computed = "4:foo" |> Canonical.from_string in
       check (Testable.csexp_result ()) "should be equal" expected computed)
 
 let test_to_string_from_string_roundtrip =
   QCheck2.Test.make ~name:"to_string -> from_string roundtrip" ~count:100
-    ~print:(fun x -> Format.asprintf "%a" Yocaml.Csexp.pp x)
-    Gen.csexp
-    (fun csexp ->
-      let open Yocaml.Csexp in
-      let result = csexp |> to_string |> from_string in
-      let expected = Ok csexp in
+    ~print:(fun x -> Format.asprintf "%a" Yocaml.Sexp.pp x)
+    Gen.sexp
+    (fun sexp ->
+      let open Yocaml.Sexp in
+      let result = sexp |> Canonical.to_string |> Canonical.from_string in
+      let expected = Ok sexp in
       Alcotest.equal (Testable.csexp_result ()) expected result)
   |> QCheck_alcotest.to_alcotest ~colors:true ~verbose:true
 
 let cases =
-  ( "Yocaml.Csexp"
+  ( "Yocaml.Sexp"
   , [
       test_length_1
     ; test_length_2

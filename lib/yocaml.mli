@@ -58,5 +58,5 @@ module Eff = Eff
     it is important to be able to serialise (and deserialise) arbitrary data
     structures. *)
 
-module Csexp = Csexp
+module Sexp = Sexp
 module Data = Data
