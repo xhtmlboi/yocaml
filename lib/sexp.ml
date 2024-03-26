@@ -27,11 +27,11 @@ let rec equal a b =
 
 let rec pp ppf = function
   | Atom x -> Format.fprintf ppf {|Atom "%s"|} x
-  | Node x -> Format.fprintf ppf {|Node [ %a ]|} (Format.pp_print_list pp) x
+  | Node x -> Format.fprintf ppf {|Node [@[%a@]]|} (Format.pp_print_list pp) x
 
 let rec pp_pretty ppf = function
   | Atom x -> Format.fprintf ppf "%s" x
-  | Node x -> Format.fprintf ppf "(@[<hov 1>%a@])" pp_pretty_list x
+  | Node x -> Format.fprintf ppf "@[<hov 1>(%a)@]" pp_pretty_list x
 
 and pp_pretty_list ppf = function
   | x :: (_ :: _ as xs) ->
@@ -117,7 +117,7 @@ module Canonical = struct
       | Some ('(', xs) ->
           Result.bind
             (aux (level + 1) lex_pos [] xs)
-            (fun (n, lex_pos, x) -> aux level (lex_pos + 1) (node n :: acc) x)
+            (fun (n, lex_pos, xs) -> aux level (lex_pos + 1) (node n :: acc) xs)
       | Some (c, _) -> Error (`Unexepected_character (c, lex_pos))
     in
     Result.map
@@ -126,3 +126,41 @@ module Canonical = struct
 
   let from_string str = str |> String.to_seq |> from_seq
 end
+
+let from_seq seq =
+  let parse_atom lex_pos seq =
+    let buf = Buffer.create 1 in
+    let rec aux escaped lex_pos seq =
+      match Seq.uncons seq with
+      | None ->
+          (buf |> Buffer.to_bytes |> Bytes.to_string, lex_pos + 1, Seq.empty)
+      | Some ('\\', xs) -> aux true (lex_pos + 1) xs
+      | Some (((' ' | '\t' | '\n' | ')' | '(') as c), xs) when not escaped ->
+          (buf |> Buffer.to_bytes |> Bytes.to_string, lex_pos, Seq.cons c xs)
+      | Some (c, xs) ->
+          let () = Buffer.add_char buf c in
+          aux false (lex_pos + 1) xs
+    in
+    aux false lex_pos seq
+  in
+
+  let rec aux level lex_pos acc seq =
+    match Seq.uncons seq with
+    | None ->
+        if level = 0 then Ok (List.rev acc, lex_pos, Seq.empty)
+        else Error (`Nonterminated_node lex_pos)
+    | Some (('\t' | ' ' | '\n'), xs) -> aux level (lex_pos + 1) acc xs
+    | Some (')', xs) -> Ok (List.rev acc, lex_pos + 1, xs)
+    | Some ('(', xs) ->
+        Result.bind
+          (aux (level + 1) lex_pos [] xs)
+          (fun (n, lex_pos, xs) -> aux level (lex_pos + 1) (node n :: acc) xs)
+    | Some (c, xs) ->
+        let atm, lex_pos, xs = parse_atom lex_pos (Seq.cons c xs) in
+        aux level lex_pos (atom atm :: acc) xs
+  in
+  Result.map
+    (fun (r, _, _) -> match r with [ e ] -> e | _ -> node r)
+    (aux 0 0 [] seq)
+
+let from_string str = str |> String.to_seq |> from_seq

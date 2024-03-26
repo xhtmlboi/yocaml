@@ -46,12 +46,18 @@ val node : t list -> t
 val to_string : t -> string
 (** convert a [S-expression] to a string (with indent). *)
 
-(** {1 Desrialization} *)
+val from_string : string -> (t, [> `Nonterminated_node of int ]) result
+(** [from_string str] Try deserializing a string in Sexp. *)
+
+val from_seq : char Seq.t -> (t, [> `Nonterminated_node of int ]) result
+(** [from_string str] Try deserializing a string in Sexp. *)
+
+(** {1 Deserialization} *)
 
 module Canonical : sig
   (** S-Canonical expression used to describe compressed data sources. *)
 
-  (** {1 Desrialization} *)
+  (** {1 Deserialization} *)
 
   val from_string :
        string
@@ -63,7 +69,7 @@ module Canonical : sig
          | `Premature_end_of_atom of int * int
          | `Nonterminated_node of int ] )
        result
-  (** [from_string str] Try deserializing a string in Sexp. *)
+  (** [from_string str] Try deserializing a string in Csexp. *)
 
   val from_seq :
        char Seq.t
@@ -75,20 +81,20 @@ module Canonical : sig
          | `Premature_end_of_atom of int * int
          | `Nonterminated_node of int ] )
        result
-  (** [from_seq s] Try deserializing a sequence of characters in Sexp. The use
+  (** [from_seq s] Try deserializing a sequence of characters in Csexp. The use
       of a sequence can serve as a basis for easily constructing other sources
       ([string] or [in_channel] for example). *)
 
   (** {1 Serialization} *)
 
   val to_buffer : Buffer.t -> t -> unit
-  (** [to_buffer buf sexp] outputs [sexp] into the given buffer, [buf]. *)
+  (** [to_buffer buf sexp] outputs [csexp] into the given buffer, [buf]. *)
 
   val to_string : t -> string
-  (** [to_string sexp] converts a [sexp] to a string. *)
+  (** [to_string sexp] converts a [csexp] to a string. *)
 
   val length : t -> int
-  (** [length sexp] gives the length of [sexp] after serialization. *)
+  (** [length sexp] gives the length of [csexp] after serialization. *)
 end
 
 (** {1 Utils} *)
