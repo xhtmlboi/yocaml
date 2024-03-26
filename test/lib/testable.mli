@@ -70,3 +70,12 @@ val validated_record :
   -> 'a Yocaml.Data.Validation.validated_record Alcotest.testable
 
 val with_metadata : (string option * string) Alcotest.testable
+
+val validated_metadata :
+     ?custom_handler:
+       (Format.formatter -> Yocaml.Data.Validation.custom_error -> unit)
+       * (   Yocaml.Data.Validation.custom_error
+          -> Yocaml.Data.Validation.custom_error
+          -> bool)
+  -> 'a Alcotest.testable
+  -> 'a Yocaml.Metadata.validated Alcotest.testable
