@@ -204,3 +204,54 @@ let validated_record ?(custom_handler = default_cst_handler) t =
   Alcotest.result t (nel @@ record_error ~custom_handler ())
 
 let with_metadata = Alcotest.(pair (option string) string)
+
+let pp_provider_error custom_handler ppf =
+  let open Yocaml.Required in
+  let open Fmt in
+  function
+  | Parsing_error { given; message } ->
+      let pp ppf () =
+        braces
+          (record
+             [
+               field "given" fst (quote string)
+             ; field "message" snd (quote string)
+             ])
+          ppf (given, message)
+      in
+      pf ppf "Parsing_error %a" pp ()
+  | Validation_error { entity; error } ->
+      let pp ppf () =
+        braces
+          (record
+             [
+               field "entity" fst (quote string)
+             ; field "error" snd (pp_value_error custom_handler)
+             ])
+          ppf (entity, error)
+      in
+      pf ppf "Validation_error %a" pp ()
+  | Required_metadata { entity } ->
+      pf ppf "Required_metadata %a" (quote string) entity
+
+let equal_provider_error custom_handler a b =
+  let open Yocaml.Required in
+  match (a, b) with
+  | ( Parsing_error { given = given_a; message = message_a }
+    , Parsing_error { given = given_b; message = message_b } ) ->
+      String.equal given_a given_b && String.equal message_a message_b
+  | ( Validation_error { entity = entity_a; error = error_a }
+    , Validation_error { entity = entity_b; error = error_b } ) ->
+      String.equal entity_a entity_b
+      && equal_value_error custom_handler error_a error_b
+  | ( Required_metadata { entity = entity_a }
+    , Required_metadata { entity = entity_b } ) ->
+      String.equal entity_a entity_b
+  | _ -> false
+
+let provider_error ?(custom_handler = default_cst_handler) () =
+  let pp_cst, eq_cst = custom_handler in
+  Alcotest.testable (pp_provider_error pp_cst) (equal_provider_error eq_cst)
+
+let validated_metadata ?(custom_handler = default_cst_handler) meta =
+  Alcotest.result meta (provider_error ~custom_handler ())

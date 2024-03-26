@@ -241,6 +241,66 @@ let test_to_string_from_string_roundtrip =
       Alcotest.equal (Testable.csexp_result ()) expected result)
   |> QCheck_alcotest.to_alcotest ~colors:true ~verbose:true
 
+let test_provider_normalize_1 =
+  let open Alcotest in
+  test_case "Provider.normalize case 1" `Quick (fun () ->
+      let expected =
+        let open Yocaml.Data in
+        list []
+      and computed =
+        let open Yocaml.Sexp in
+        node [] |> Provider.normalize
+      in
+      check Testable.data "should be equal" expected computed)
+
+let test_provider_normalize_2 =
+  let open Alcotest in
+  test_case "Provider.normalize case 2" `Quick (fun () ->
+      let expected =
+        let open Yocaml.Data in
+        record
+          [
+            ("foo", int 12)
+          ; ("bar", bool true)
+          ; ("baz", float 3.14)
+          ; ("foobar", string "Hello World")
+          ; ( "aList"
+            , list
+                [
+                  record [ ("a", bool false); ("b", int 42) ]
+                ; int 64
+                ; string "foo"
+                ; string "bar"
+                ] )
+          ]
+      and computed =
+        let open Yocaml.Sexp in
+        node
+          [
+            node [ atom "foo"; atom "12" ]
+          ; node [ atom "bar"; atom "true" ]
+          ; node [ atom "baz"; atom "3.14" ]
+          ; node [ atom "foobar"; atom "Hello World" ]
+          ; node
+              [
+                atom "aList"
+              ; node
+                  [
+                    node
+                      [
+                        node [ atom "a"; atom "false" ]
+                      ; node [ atom "b"; atom "42" ]
+                      ]
+                  ; atom "64"
+                  ; atom "foo"
+                  ; atom "bar"
+                  ]
+              ]
+          ]
+        |> Provider.normalize
+      in
+      check Testable.data "should be equal" expected computed)
+
 let cases =
   ( "Yocaml.Sexp"
   , [
@@ -268,4 +328,6 @@ let cases =
     ; test_from_string_5
     ; test_from_string_6
     ; test_to_string_from_string_roundtrip
+    ; test_provider_normalize_1
+    ; test_provider_normalize_2
     ] )

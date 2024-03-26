@@ -174,3 +174,53 @@ let from_seq seq =
     (aux 0 0 [] seq)
 
 let from_string str = str |> String.to_seq |> from_seq
+
+module Provider = struct
+  type nonrec t = t
+
+  let error_to_string = function
+    | Nonterminated_node x -> Format.asprintf "non-terminated node on [%d]" x
+    | Nonterminated_atom x -> Format.asprintf "non-terminated atom on [%d]" x
+    | Unexepected_character (c, x) ->
+        Format.asprintf "unexpected character [%c] on [%d]" c x
+    | Expected_number_or_colon (c, x) ->
+        Format.asprintf "expected number or colon on [%d], given: [%c]" x c
+    | Expected_number (c, x) ->
+        Format.asprintf "expected number on [%d], given: [%c]" x c
+    | Premature_end_of_atom (len, x) ->
+        Format.asprintf "premature end of atom, expected length [%d] on [%d]"
+          len x
+
+  let from_string str =
+    str
+    |> from_string
+    |> Result.map_error (fun error ->
+           let given = str in
+           let message = error_to_string error in
+           Required.Parsing_error { given; message })
+
+  let ( <|> ) a b =
+    match (a, b) with Some x, _ -> Some x | None, Some y -> Some y | _ -> None
+
+  let normalize_atom x =
+    bool_of_string_opt x
+    |> Option.map Data.bool
+    <|> (int_of_string_opt x |> Option.map Data.int)
+    <|> (float_of_string_opt x |> Option.map Data.float)
+    |> Option.value ~default:(Data.string x)
+
+  let is_record =
+    List.for_all (function Node [ Atom _; _ ] -> true | _ -> false)
+
+  let rec normalize = function
+    | Atom x -> normalize_atom x
+    | Node [] -> Data.list []
+    | Node node when is_record node ->
+        Data.record
+          (List.concat_map
+             (function
+               | Node [ Atom k; value ] -> [ (k, normalize value) ]
+               | _ (* not reachable *) -> [])
+             node)
+    | Node node -> Data.list_of normalize node
+end
