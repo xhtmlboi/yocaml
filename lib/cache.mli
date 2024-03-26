@@ -51,12 +51,11 @@ val get : t -> Path.t -> (string * Deps.t) option
 
     Supports serialization and deserialization of cache. *)
 
-val to_csexp : t -> Csexp.t
-(** [to_csexp cache] Converts a [cache] into a {!module:Csexp}. *)
+val to_sexp : t -> Sexp.t
+(** [to_sexp cache] Converts a [cache] into a {!module:Sexp}. *)
 
-val from_csexp :
-  Csexp.t -> (t, [> `Invalid_csexp of Csexp.t * [> `Cache ] ]) result
-(** [from_csexp csexp] try to converts a {!module:Csexp} into a [cache]. *)
+val from_sexp : Sexp.t -> (t, [> `Invalid_sexp of Sexp.t * [> `Cache ] ]) result
+(** [from_sexp sexp] try to converts a {!module:Sexp} into a [cache]. *)
 
 (** {1 Utils} *)
 

@@ -292,8 +292,8 @@ let to_csexp_from_csexp_roundtrip =
     Gen.path
     (fun p ->
       let open Yocaml.Path in
-      let expected = Ok p and computed = p |> to_csexp |> from_csexp in
-      Alcotest.equal Testable.(from_csexp path) expected computed)
+      let expected = Ok p and computed = p |> to_sexp |> from_sexp in
+      Alcotest.equal Testable.(from_sexp path) expected computed)
   |> QCheck_alcotest.to_alcotest ~colors:true ~verbose:true
 
 let cases =

@@ -29,21 +29,21 @@ let is_empty = Path_set.is_empty
 let get_mtimes deps =
   deps |> Path_set.elements |> Eff.(List.traverse @@ mtime ~on:`Source)
 
-let to_csexp deps =
-  deps |> Path_set.to_list |> List.map Path.to_csexp |> Csexp.node
+let to_sexp deps =
+  deps |> Path_set.to_list |> List.map Path.to_sexp |> Sexp.node
 
-let all_path_nodes csexp node =
+let all_path_nodes sexp node =
   List.fold_left
     (fun acc value ->
       Result.bind acc (fun acc ->
-          value |> Path.from_csexp |> Result.map (fun p -> p :: acc)))
+          value |> Path.from_sexp |> Result.map (fun p -> p :: acc)))
     (Ok []) node
-  |> Result.map_error (fun _ -> `Invalid_csexp (csexp, `Deps))
+  |> Result.map_error (fun _ -> `Invalid_sexp (sexp, `Deps))
 
-let from_csexp csexp =
-  match csexp with
-  | Csexp.(Node paths) -> paths |> all_path_nodes csexp |> Result.map from_list
-  | _ -> Error (`Invalid_csexp (csexp, `Deps))
+let from_sexp sexp =
+  match sexp with
+  | Sexp.(Node paths) -> paths |> all_path_nodes sexp |> Result.map from_list
+  | _ -> Error (`Invalid_sexp (sexp, `Deps))
 
 let pp ppf deps =
   Format.fprintf ppf "Deps [@[<v 0>%a@]]"

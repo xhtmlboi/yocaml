@@ -14,7 +14,7 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-module Csexp = Csexp
+module Sexp = Sexp
 module Data = Data
 module Nel = Nel
 module Path = Path

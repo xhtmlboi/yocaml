@@ -14,10 +14,10 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-let csexp =
+let sexp =
   let open QCheck2.Gen in
-  let atom = small_string ~gen:printable |> map Yocaml.Csexp.atom in
-  let node self n = small_list (self (n / 10)) |> map Yocaml.Csexp.node in
+  let atom = small_string ~gen:printable |> map Yocaml.Sexp.atom in
+  let node self n = small_list (self (n / 10)) |> map Yocaml.Sexp.node in
   fix (fun self -> function
     | 0 -> atom | n -> frequency [ (1, atom); (5, node self n) ])
   |> sized

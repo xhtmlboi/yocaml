@@ -14,7 +14,9 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-(** A Csexp is a fairly loose implementation of
+(** A Sexp is a fairly loose implementation of
+    {{:https://en.wikipedia.org/wiki/S-expression} S-expression} that support
+    serialization to
     {{:https://en.wikipedia.org/wiki/Canonical_S-expressions} Canonical
       S-Expressions} used to serialise (and persist to disk) arbitrary OCaml
     data structures.
@@ -39,44 +41,55 @@ val node : t list -> t
 
 (** {1 Serialization}
 
-    Tools for serializing a Csexp. *)
-
-val length : t -> int
-(** [length csexp] gives the length of [csexp] after serialization. *)
-
-val to_buffer : Buffer.t -> t -> unit
-(** [to_buffer buf csexp] outputs [csexp] into the given buffer, [buf]. *)
+    Tools for serializing a Sexp. *)
 
 val to_string : t -> string
-(** [to_string csexp] converts a [csexp] to a string. *)
+(** convert a [S-expression] to a string (with indent). *)
 
 (** {1 Desrialization} *)
 
-val from_seq :
-     char Seq.t
-  -> ( t
-     , [> `Nonterminated_atom of int
-       | `Expected_number_or_colon of char * int
-       | `Expected_number of char * int
-       | `Unexepected_character of char * int
-       | `Premature_end_of_atom of int * int
-       | `Nonterminated_node of int ] )
-     result
-(** [from_seq s] Try deserializing a sequence of characters in CSexp. The use of
-    a sequence can serve as a basis for easily constructing other sources
-    ([string] or [in_channel] for example). *)
+module Canonical : sig
+  (** S-Canonical expression used to describe compressed data sources. *)
 
-val from_string :
-     string
-  -> ( t
-     , [> `Nonterminated_atom of int
-       | `Expected_number_or_colon of char * int
-       | `Expected_number of char * int
-       | `Unexepected_character of char * int
-       | `Premature_end_of_atom of int * int
-       | `Nonterminated_node of int ] )
-     result
-(** [from_string str] Try deserializing a string in CSexp. *)
+  (** {1 Desrialization} *)
+
+  val from_string :
+       string
+    -> ( t
+       , [> `Nonterminated_atom of int
+         | `Expected_number_or_colon of char * int
+         | `Expected_number of char * int
+         | `Unexepected_character of char * int
+         | `Premature_end_of_atom of int * int
+         | `Nonterminated_node of int ] )
+       result
+  (** [from_string str] Try deserializing a string in Sexp. *)
+
+  val from_seq :
+       char Seq.t
+    -> ( t
+       , [> `Nonterminated_atom of int
+         | `Expected_number_or_colon of char * int
+         | `Expected_number of char * int
+         | `Unexepected_character of char * int
+         | `Premature_end_of_atom of int * int
+         | `Nonterminated_node of int ] )
+       result
+  (** [from_seq s] Try deserializing a sequence of characters in Sexp. The use
+      of a sequence can serve as a basis for easily constructing other sources
+      ([string] or [in_channel] for example). *)
+
+  (** {1 Serialization} *)
+
+  val to_buffer : Buffer.t -> t -> unit
+  (** [to_buffer buf sexp] outputs [sexp] into the given buffer, [buf]. *)
+
+  val to_string : t -> string
+  (** [to_string sexp] converts a [sexp] to a string. *)
+
+  val length : t -> int
+  (** [length sexp] gives the length of [sexp] after serialization. *)
+end
 
 (** {1 Utils} *)
 
@@ -85,3 +98,6 @@ val equal : t -> t -> bool
 
 val pp : Format.formatter -> t -> unit
 (** Pretty-printer for {!type:t} (mostly used for debugging issue). *)
+
+val pp_pretty : Format.formatter -> t -> unit
+(** Pretty-printer for {!type:t} with indentation. *)

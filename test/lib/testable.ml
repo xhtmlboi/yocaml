@@ -16,7 +16,7 @@
 
 let fs = Fs.testable
 let fs_item = Fs.testable_item
-let csexp = Alcotest.testable Yocaml.Csexp.pp Yocaml.Csexp.equal
+let sexp = Alcotest.testable Yocaml.Sexp.pp Yocaml.Sexp.equal
 
 let csexp_error_equal a b =
   match (a, b) with
@@ -45,35 +45,35 @@ let csexp_error_pp ppf = function
   | _ -> Format.fprintf ppf "Unknown error"
 
 let csexp_error () = Alcotest.testable csexp_error_pp csexp_error_equal
-let csexp_result () = Alcotest.result csexp (csexp_error ())
+let csexp_result () = Alcotest.result sexp (csexp_error ())
 let deps = Alcotest.testable Yocaml.Deps.pp Yocaml.Deps.equal
 
-let from_csexp_error_subject_pp ppf = function
+let from_sexp_error_subject_pp ppf = function
   | `Path -> Format.fprintf ppf "`Path"
   | `Deps -> Format.fprintf ppf "`Deps"
   | `Cache -> Format.fprintf ppf "`Cache"
   | _ -> Format.fprintf ppf "Unknown subject"
 
-let from_csexp_error_ppf ppf = function
-  | `Invalid_csexp (expr, subject) ->
-      Format.fprintf ppf "`Invalid_csexp (%a, %a)" Yocaml.Csexp.pp expr
-        from_csexp_error_subject_pp subject
+let from_sexp_error_ppf ppf = function
+  | `Invalid_sexp (expr, subject) ->
+      Format.fprintf ppf "`Invalid_sexp (%a, %a)" Yocaml.Sexp.pp expr
+        from_sexp_error_subject_pp subject
   | _ -> Format.fprintf ppf "Unknown error"
 
-let from_csexp_error_subject_equal a b =
+let from_sexp_error_subject_equal a b =
   match (a, b) with
   | `Path, `Path | `Deps, `Deps | `Cache, `Cache -> true
   | _ -> true
 
-let from_csexp_error_equal a b =
+let from_sexp_error_equal a b =
   match (a, b) with
-  | `Invalid_csexp (expr_a, subject_a), `Invalid_csexp (expr_b, subject_b) ->
-      Yocaml.Csexp.equal expr_a expr_b
-      && from_csexp_error_subject_equal subject_a subject_b
+  | `Invalid_sexp (expr_a, subject_a), `Invalid_sexp (expr_b, subject_b) ->
+      Yocaml.Sexp.equal expr_a expr_b
+      && from_sexp_error_subject_equal subject_a subject_b
   | _ -> false
 
-let from_csexp a =
-  let err = Alcotest.testable from_csexp_error_ppf from_csexp_error_equal in
+let from_sexp a =
+  let err = Alcotest.testable from_sexp_error_ppf from_sexp_error_equal in
   Alcotest.result a err
 
 let path = Alcotest.testable Yocaml.Path.pp Yocaml.Path.equal
@@ -218,3 +218,5 @@ let validated_value ?(custom_handler = default_cst_handler) t =
 
 let validated_record ?(custom_handler = default_cst_handler) t =
   Alcotest.result t (nel @@ record_error ~custom_handler ())
+
+let with_metadata = Alcotest.(pair (option string) string)

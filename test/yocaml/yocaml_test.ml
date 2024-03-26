@@ -20,8 +20,9 @@ let () =
       Fs_test.cases
     ; Nel_test.cases
     ; Path_test.cases
-    ; Csexp_test.cases
+    ; Sexp_test.cases
     ; Data_test.cases
+    ; Metadata_test.cases
     ; Eff_test.cases
     ; Cache_test.cases
     ; Pipeline_test.cases

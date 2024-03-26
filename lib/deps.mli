@@ -58,13 +58,12 @@ val get_mtimes : t -> int list Eff.t
 
     Supports serialization and deserialization of dependency sets. *)
 
-val to_csexp : t -> Csexp.t
-(** [to_csexp deps] Converts a set of dependencies, [deps], into a
-    {!module:Csexp}. *)
+val to_sexp : t -> Sexp.t
+(** [to_sexp deps] Converts a set of dependencies, [deps], into a
+    {!module:Sexp}. *)
 
-val from_csexp :
-  Csexp.t -> (t, [> `Invalid_csexp of Csexp.t * [> `Deps ] ]) result
-(** [from_csexp csexp] try to converts a {!module:Csexp} into a set of
+val from_sexp : Sexp.t -> (t, [> `Invalid_sexp of Sexp.t * [> `Deps ] ]) result
+(** [from_sexp sexp] try to converts a {!module:Sexp} into a set of
     dependencies. *)
 
 (** {1 Utils} *)
