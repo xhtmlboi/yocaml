@@ -233,7 +233,9 @@ let run ~trace program input =
                     let path = Yocaml.Path.to_list gpath in
                     match get !trace.system path with
                     | Some (File { content; _ }) -> continue k content
-                    | _ -> Stdlib.raise @@ Yocaml.Eff.File_not_exists gpath)
+                    | _ ->
+                        Stdlib.raise
+                        @@ Yocaml.Eff.File_not_exists (`Source, gpath))
             | Yocaml_get_mtime (on, path) ->
                 Some
                   (fun (k : (a, _) continuation) ->

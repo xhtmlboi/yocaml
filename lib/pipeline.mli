@@ -31,3 +31,16 @@ val track_files : Path.t list -> (unit, unit) Task.t
 
 val read_file : Path.t -> (unit, string) Task.t
 (** [read_file path] is a task that read the content of a file. *)
+
+val read_file_with_metadata :
+     (module Required.DATA_PROVIDER)
+  -> (module Required.DATA_READABLE with type t = 'a)
+  -> ?extraction_strategy:Metadata.extraction_strategy
+  -> Path.t
+  -> (unit, 'a * string) Task.t
+(** [read_file_with_metadata (module P) (module R) ?extraction_strategy ~on path]
+    is a task that read a file located by a [path] on a data source ([on]) and
+    uses an [extraction_strategy] to separate the metadata from the content and
+    validates the metadata according to a
+    {!module-type:Yocaml.Required.DATA_PROVIDER}, [P], using the description
+    provided by [R] of type {!module-type:Yocaml.Required.DATA_READABLE}. *)
