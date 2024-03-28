@@ -89,7 +89,7 @@ let write_file target task cache =
 
 let copy_file ?new_name ~into path cache =
   match Path.basename path with
-  | None -> Eff.raise @@ Eff.Invalid_path path
+  | None -> Eff.raise @@ Eff.Invalid_path (`Source, path)
   | Some fragment ->
       let name = Option.value ~default:fragment new_name in
       let dest = Path.(into / name) in

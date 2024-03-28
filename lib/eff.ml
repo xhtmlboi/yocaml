@@ -109,10 +109,11 @@ let perform raw_effect = return @@ Effect.perform raw_effect
 let run handler arrow input =
   Effect.Deep.match_with (fun input -> arrow input ()) input handler
 
-exception File_not_exists of Path.t
-exception Invalid_path of Path.t
-exception File_is_a_directory of Path.t
-exception Directory_not_exists of Path.t
+exception File_not_exists of filesystem * Path.t
+exception Invalid_path of filesystem * Path.t
+exception File_is_a_directory of filesystem * Path.t
+exception Directory_not_exists of filesystem * Path.t
+exception Provider_error of Required.provider_error
 
 let log ?(level = `Debug) message = perform @@ Yocaml_log (level, message)
 let raise exn = perform @@ Yocaml_failwith exn
@@ -127,13 +128,26 @@ let is_file ~on path =
 
 let ensure_file_exists ~on f path =
   let* exists = file_exists ~on path in
-  if exists then f path else raise (File_not_exists path)
+  if exists then f path else raise (File_not_exists (on, path))
 
 let read_file ~on =
   ensure_file_exists ~on (fun path ->
       let* is_file = is_file ~on path in
       if is_file then perform @@ Yocaml_read_file (on, path)
-      else raise @@ File_is_a_directory path)
+      else raise @@ File_is_a_directory (on, path))
+
+let read_file_with_metadata (type a) (module P : Required.DATA_PROVIDER)
+    (module R : Required.DATA_READABLE with type t = a)
+    ?(extraction_strategy = Metadata.jekyll) ~on path =
+  let* file = read_file ~on path in
+  let raw_metadata, content =
+    Metadata.extract_from_content ~strategy:extraction_strategy file
+  in
+  raw_metadata
+  |> Metadata.validate (module P) (module R)
+  |> Result.fold
+       ~error:(fun err -> raise @@ Provider_error err)
+       ~ok:(fun metadata -> return (metadata, content))
 
 let mtime ~on =
   ensure_file_exists ~on (fun path -> perform @@ Yocaml_get_mtime (on, path))
@@ -160,4 +174,4 @@ let read_directory ~on ?(only = `Both) ?(where = fun __ -> true) path =
     in
     let* children = perform @@ Yocaml_read_dir (on, path) in
     List.filter_map predicate children
-  else raise @@ Directory_not_exists path
+  else raise @@ Directory_not_exists (on, path)

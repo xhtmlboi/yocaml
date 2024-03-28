@@ -270,17 +270,20 @@ val run : ('b, 'c) Effect.Deep.handler -> ('a -> 'b t) -> 'a -> 'c
 
     Exception that can be propagated by the performance of effects. *)
 
-exception File_not_exists of Path.t
+exception File_not_exists of filesystem * Path.t
 (** Exception raised when a file does not exists. *)
 
-exception Invalid_path of Path.t
+exception Invalid_path of filesystem * Path.t
 (** Exception raised when a file does not has a basename. *)
 
-exception File_is_a_directory of Path.t
+exception File_is_a_directory of filesystem * Path.t
 (** Exception raised when we try to use a directory as a regular file. *)
 
-exception Directory_not_exists of Path.t
+exception Directory_not_exists of filesystem * Path.t
 (** Exception raised when we try to use a directory as a regular file. *)
+
+exception Provider_error of Required.provider_error
+(** Exception raised when we try to validate an invalid source of metadata. *)
 
 (** {2 Helpers for performing effects}
 
@@ -310,14 +313,28 @@ val file_exists : on:filesystem -> Path.t -> bool t
     [path] return [true] if the file exists, [false] if not. *)
 
 val read_file : on:filesystem -> Path.t -> string t
-(** [source_read_file ~on path] perform the effect [Yocaml_read_file] with a
-    given [path] and try to read it. Perform [Yocaml_failwith] with
+(** [read_file ~on path] perform the effect [Yocaml_read_file] with a given
+    [path] and try to read it. Perform [Yocaml_failwith] with
     {!exception:File_not_exists} if the file does not exists. *)
 
+val read_file_with_metadata :
+     (module Required.DATA_PROVIDER)
+  -> (module Required.DATA_READABLE with type t = 'a)
+  -> ?extraction_strategy:Metadata.extraction_strategy
+  -> on:filesystem
+  -> Path.t
+  -> ('a * string) t
+(** [read_file_with_metadata (module P) (module R) ?extraction_strategy ~on path]
+    reads a file located by a [path] on a data source ([on]) and uses an
+    [extraction_strategy] to separate the metadata from the content and
+    validates the metadata according to a
+    {!module-type:Yocaml.Required.DATA_PROVIDER}, [P], using the description
+    provided by [R] of type {!module-type:Yocaml.Required.DATA_READABLE}. *)
+
 val mtime : on:filesystem -> Path.t -> int t
-(** [source_mtime ~on path] perform the effect [Yocaml_source_get_mtime] with a
-    given [path] and try to get the modification time. Perform [Yocaml_failwith]
-    with {!exception:File_not_exists} if the file does not exists. *)
+(** [mtime ~on path] perform the effect [Yocaml_source_get_mtime] with a given
+    [path] and try to get the modification time. Perform [Yocaml_failwith] with
+    {!exception:File_not_exists} if the file does not exists. *)
 
 val hash : string -> string t
 (** [hash str] perform the effect [Yocaml_hash_content] on a given string. *)
