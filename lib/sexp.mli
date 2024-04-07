@@ -102,10 +102,3 @@ val pp : Format.formatter -> t -> unit
 
 val pp_pretty : Format.formatter -> t -> unit
 (** Pretty-printer for {!type:t} with indentation. *)
-
-(** {1 Provider}
-
-    A node expressed as an S-expression can be used as a
-    {{!module:Yocaml.Required.DATA_PROVIDER} Provider}. *)
-
-module Provider : Required.DATA_PROVIDER with type t = t
