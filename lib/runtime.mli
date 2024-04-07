@@ -14,22 +14,16 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-module Data = Data
-module Nel = Nel
-module Path = Path
-module Cache = Cache
-module Eff = Eff
-module Deps = Deps
-module Task = Task
-module Pipeline = Pipeline
-module Action = Action
-module Required = Required
-module Metadata = Metadata
-module Diagnostic = Diagnostic
+(** A Runtime is an execution context (ie, Unix or Git). They describe the entry
+    point of a YOCaml program and abstract the file system. *)
 
-module Sexp = struct
-  include Sexp
-  module Provider = Sexp_provider
+module Make (Runtime : Required.RUNTIME) : sig
+  (** Builds a concrete Runtime. *)
+
+  val run :
+       ?custom_error_handler:
+         (Format.formatter -> Data.Validation.custom_error -> unit)
+    -> (unit -> unit Eff.t)
+    -> unit Runtime.t
+  (** Runs a YOCaml program (and interprets its effects, youhou). *)
 end
-
-module Runtime = Runtime

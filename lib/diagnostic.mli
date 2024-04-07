@@ -14,22 +14,14 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-module Data = Data
-module Nel = Nel
-module Path = Path
-module Cache = Cache
-module Eff = Eff
-module Deps = Deps
-module Task = Task
-module Pipeline = Pipeline
-module Action = Action
-module Required = Required
-module Metadata = Metadata
-module Diagnostic = Diagnostic
+(** Tools for building error diagnostics. These are essentially pretty-printers
+    for exceptions propagated by the {!module:Yocaml.Eff} module. *)
 
-module Sexp = struct
-  include Sexp
-  module Provider = Sexp_provider
-end
-
-module Runtime = Runtime
+val exception_to_diagnostic :
+     ?custom_error:(Format.formatter -> Data.Validation.custom_error -> unit)
+  -> ?in_exception_handler:bool
+  -> Format.formatter
+  -> exn
+  -> unit
+(** A pretty printer that tries to return exceptions in the form of diagnostics
+    (a string describing the error). *)
