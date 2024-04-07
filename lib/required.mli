@@ -56,3 +56,50 @@ module type DATA_READABLE = sig
   (** [validate raw_data] Validates a data item represented by type
       {!type:Data.t} and projects it into a value of type {!type:t}. *)
 end
+
+(** {1 Runtime}
+
+    A runtime is a context for executing a YOCaml program (for example, Unix).
+    It allows all the primitives described by the effects to be implemented
+    without having to worry about implementing an effects handler. *)
+
+module type RUNTIME = sig
+  type 'a t
+  (** Each command is wrapped in a value of type ['a t], making it possible to
+      build runtimes wrapped in monads (for example, Git/Irmin, which are
+      currently based on Lwt).*)
+
+  val bind : ('a -> 'b t) -> 'a t -> 'b t
+  (** the bind primitive for {!type:t}. *)
+
+  val return : 'a -> 'a t
+  (** the return primitive for {!type:t}. *)
+
+  val log : [ `App | `Error | `Warning | `Info | `Debug ] -> string -> unit t
+  (** [log level message] log a [message] with a given [message]. *)
+
+  val file_exists : on:[ `Source | `Target ] -> Path.t -> bool t
+  (** [file_exists ~on:source -> path] returns [true] if the file exists, false
+      otherwise. *)
+
+  val read_file : on:[ `Source | `Target ] -> Path.t -> string t
+  (** [read_file ~on:source -> path] returns the content of a file. *)
+
+  val get_mtime : on:[ `Source | `Target ] -> Path.t -> int t
+  (** [get_mtime ~on:source path] returns the modification time of a file. *)
+
+  val hash_content : string -> string t
+  (** [hash_content str] hash a content. *)
+
+  val write_file : on:[ `Source | `Target ] -> Path.t -> string -> unit t
+  (** [write_file ~on:source path content] write a file (the function should
+      write every every intermediate path fragnment). *)
+
+  val is_directory : on:[ `Source | `Target ] -> Path.t -> bool t
+  (** [is_directory ~on:source path] returns [true] if the given path is a
+      directory, [false] otherwise. *)
+
+  val read_dir : on:[ `Source | `Target ] -> Path.t -> Path.fragment list t
+  (** [read_dir ~on:source path] returns a list of filename (fragment) of a
+      given directory. *)
+end

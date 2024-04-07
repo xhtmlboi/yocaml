@@ -58,6 +58,7 @@ module Action = Action
       abstraction and performance of effects}. *)
 
 module Eff = Eff
+module Runtime = Runtime
 
 (** {1 Serialization}
 
@@ -65,5 +66,20 @@ module Eff = Eff
     it is important to be able to serialise (and deserialise) arbitrary data
     structures. *)
 
-module Sexp = Sexp
+module Sexp : sig
+  include module type of Sexp
+
+  module Provider = Sexp_provider
+  (** {1 Provider}
+
+      A node expressed as an S-expression can be used as a
+      {{!module:Yocaml.Required.DATA_PROVIDER} Provider}. *)
+end
+
 module Data = Data
+
+(** {1 Tools}
+
+    Tools to help build plugins or runtimes. *)
+
+module Diagnostic = Diagnostic

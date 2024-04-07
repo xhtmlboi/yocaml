@@ -14,7 +14,10 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-(** An internal module to centralize logs propagated by the application. *)
+(** An internal module to centralize logs propagated by the application. And to
+    centralise the 'vocabulary' used in the code. *)
+
+(** {1 Logs} *)
 
 val target_already_up_to_date : Path.t -> unit Eff.t
 val target_exists : Path.t -> unit Eff.t
@@ -25,3 +28,20 @@ val target_hash_is_unchanged : Path.t -> unit Eff.t
 val target_hash_is_changed : Path.t -> unit Eff.t
 val found_dynamic_dependencies : Path.t -> unit Eff.t
 val target_not_in_cache : Path.t -> unit Eff.t
+
+(** {1 Vocabulary} *)
+
+val backtrace_not_available : string
+val there_is_an_error : Format.formatter -> unit -> unit
+val unknown_error : Format.formatter -> unit -> unit
+
+val file_not_exists :
+  Eff.filesystem -> Path.t -> Format.formatter -> unit -> unit
+
+val invalid_path : Eff.filesystem -> Path.t -> Format.formatter -> unit -> unit
+
+val file_is_a_directory :
+  Eff.filesystem -> Path.t -> Format.formatter -> unit -> unit
+
+val directory_not_exists :
+  Eff.filesystem -> Path.t -> Format.formatter -> unit -> unit
