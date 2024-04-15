@@ -77,6 +77,10 @@ let pp_provider_error custom_error ppf = function
         (pp_validation_error custom_error)
         error
 
+let glob_pp p v backtrace ppf =
+  Format.fprintf ppf "--- %a ---\n%a\n---\n%s" Lexicon.there_is_an_error () p v
+    backtrace
+
 let exception_to_diagnostic
     ?(custom_error = fun ppf _ -> Format.fprintf ppf "Custom Validation Error")
     ?(in_exception_handler = true) ppf exn =
@@ -84,10 +88,7 @@ let exception_to_diagnostic
     if in_exception_handler then Printexc.get_backtrace ()
     else Lexicon.backtrace_not_available
   in
-  let glob_pp p v =
-    Format.fprintf ppf "--- %a ---\n%a\n---\n%s" Lexicon.there_is_an_error () p
-      v backtrace
-  in
+  let glob_pp p v = glob_pp p v backtrace ppf in
   match exn with
   | Eff.File_not_exists (source, path) ->
       glob_pp (Lexicon.file_not_exists source path) ()
@@ -99,3 +100,7 @@ let exception_to_diagnostic
       glob_pp (Lexicon.directory_not_exists source path) ()
   | Eff.Provider_error error -> glob_pp (pp_provider_error custom_error) error
   | _ -> glob_pp Lexicon.unknown_error ()
+
+let runtime_error_to_diagnostic ppf message =
+  let backtrace = Lexicon.backtrace_not_available in
+  glob_pp Format.pp_print_string message backtrace ppf
