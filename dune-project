@@ -27,3 +27,14 @@
    (ocp-indent :with-dev-setup)
    (merlin :with-dev-setup)
    (utop :with-dev-setup)))
+
+ (package
+   (name yocaml_unix)
+   (synopsis "The Unix runtime for using YOCaml on a Unix file system!")
+   (depends
+    (ocaml (>= 5.1.1))
+    (dune (>= 3.0.0))
+    (yocaml (= :version))
+    (logs (>= 0.7.0))
+    (fmt (>= 0.9.0))
+    (digestif (>= 1.2.0))))
