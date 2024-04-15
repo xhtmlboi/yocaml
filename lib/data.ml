@@ -148,6 +148,10 @@ module Validation = struct
 
   let float = function
     | Float f -> Ok f
+    | Int i ->
+        (* Mandatory case since Ezjsonm does not support integer (because of
+           JavaScript). *)
+        Ok (float_of_int i)
     | invalid_value -> invalid_shape "float" invalid_value
 
   let string ?(strict = true) = function

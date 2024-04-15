@@ -38,3 +38,12 @@
     (logs (>= 0.7.0))
     (fmt (>= 0.9.0))
     (digestif (>= 1.2.0))))
+
+(package
+  (name yocaml_yaml)
+  (synopsis "Yocaml plugin for dealing with Yaml as metadata provider")
+  (depends
+   (ocaml (>= 5.1.1))
+   (dune (>= 3.0.0))
+   (yocaml (= :version))
+   (yaml (>= 3.2.0))))
