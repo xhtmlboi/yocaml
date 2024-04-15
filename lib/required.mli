@@ -35,12 +35,13 @@ module type DATA_PROVIDER = sig
   (** Produces a [ type t ] value from a string. *)
 
   val normalize : t -> Data.t
-  (** Converts a value of type {!type:t} into a value of type {!type:Data.t}. *)
+  (** Converts a value of type {!type:t} into a value of type
+      {!type:Yocaml.Data.t}. *)
 end
 
 module type DATA_READABLE = sig
   (** Describes a type capable of being treated as metadata of type
-      {!type:Data.t}. *)
+      {!type:Yocaml.Data.t}. *)
 
   type t
   (** The type that describes the metadata. *)
@@ -54,7 +55,7 @@ module type DATA_READABLE = sig
 
   val validate : Data.t -> t Data.Validation.validated_value
   (** [validate raw_data] Validates a data item represented by type
-      {!type:Data.t} and projects it into a value of type {!type:t}. *)
+      {!type:Yocaml.Data.t} and projects it into a value of type {!type:t}. *)
 end
 
 (** {1 Runtime}

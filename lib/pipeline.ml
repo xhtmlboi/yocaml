@@ -22,9 +22,9 @@ let read_file file =
 
 let read_file_with_metadata (type a) (module P : Required.DATA_PROVIDER)
     (module R : Required.DATA_READABLE with type t = a) ?extraction_strategy
-    file =
-  Task.make (Deps.singleton file) (fun () ->
+    path =
+  Task.make (Deps.singleton path) (fun () ->
       Eff.read_file_with_metadata
         (module P)
         (module R)
-        ?extraction_strategy ~on:`Source file)
+        ?extraction_strategy ~on:`Source path)

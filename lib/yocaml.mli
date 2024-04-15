@@ -73,7 +73,7 @@ module Sexp : sig
   (** {1 Provider}
 
       A node expressed as an S-expression can be used as a
-      {{!module:Yocaml.Required.DATA_PROVIDER} Provider}. *)
+      {{!module-type:Yocaml.Required.DATA_PROVIDER} Provider}. *)
 end
 
 module Data = Data
