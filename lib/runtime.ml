@@ -24,6 +24,13 @@ module Make (Runtime : Required.RUNTIME) = struct
     in
     Runtime.log `Error msg
 
+  let runtimec error =
+    let error = Runtime.runtime_error_to_string error in
+    let msg =
+      Format.asprintf "%a" Diagnostic.runtime_error_to_diagnostic error
+    in
+    Runtime.log `Error msg
+
   let run ?custom_error_handler program =
     let exnc = exnc ?custom_error_handler in
     let handler =
@@ -47,12 +54,16 @@ module Make (Runtime : Required.RUNTIME) = struct
               | Eff.Yocaml_read_file (filesystem, path) ->
                   Some
                     (fun (k : (a, _) continuation) ->
-                      Runtime.bind (continue k)
+                      Runtime.bind
+                        (function
+                          | Ok x -> continue k x | Error err -> runtimec err)
                         (Runtime.read_file ~on:filesystem path))
               | Eff.Yocaml_get_mtime (filesystem, path) ->
                   Some
                     (fun (k : (a, _) continuation) ->
-                      Runtime.bind (continue k)
+                      Runtime.bind
+                        (function
+                          | Ok x -> continue k x | Error err -> runtimec err)
                         (Runtime.get_mtime ~on:filesystem path))
               | Eff.Yocaml_hash_content content ->
                   Some
@@ -61,7 +72,9 @@ module Make (Runtime : Required.RUNTIME) = struct
               | Eff.Yocaml_write_file (filesystem, path, content) ->
                   Some
                     (fun (k : (a, _) continuation) ->
-                      Runtime.bind (continue k)
+                      Runtime.bind
+                        (function
+                          | Ok x -> continue k x | Error err -> runtimec err)
                         (Runtime.write_file ~on:filesystem path content))
               | Eff.Yocaml_is_directory (filesystem, path) ->
                   Some
@@ -71,7 +84,9 @@ module Make (Runtime : Required.RUNTIME) = struct
               | Eff.Yocaml_read_dir (filesystem, path) ->
                   Some
                     (fun (k : (a, _) continuation) ->
-                      Runtime.bind (continue k)
+                      Runtime.bind
+                        (function
+                          | Ok x -> continue k x | Error err -> runtimec err)
                         (Runtime.read_dir ~on:filesystem path))
               | _ -> None)
         }

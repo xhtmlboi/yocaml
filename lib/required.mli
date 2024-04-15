@@ -64,10 +64,16 @@ end
     without having to worry about implementing an effects handler. *)
 
 module type RUNTIME = sig
+  type runtime_error
+  (** Runtime errors can be defined by the runtime creator. *)
+
   type 'a t
   (** Each command is wrapped in a value of type ['a t], making it possible to
       build runtimes wrapped in monads (for example, Git/Irmin, which are
       currently based on Lwt).*)
+
+  val runtime_error_to_string : runtime_error -> string
+  (** Converts a runtime error into a character string for diagnosis. *)
 
   val bind : ('a -> 'b t) -> 'a t -> 'b t
   (** the bind primitive for {!type:t}. *)
@@ -82,16 +88,22 @@ module type RUNTIME = sig
   (** [file_exists ~on:source -> path] returns [true] if the file exists, false
       otherwise. *)
 
-  val read_file : on:[ `Source | `Target ] -> Path.t -> string t
+  val read_file :
+    on:[ `Source | `Target ] -> Path.t -> (string, runtime_error) result t
   (** [read_file ~on:source -> path] returns the content of a file. *)
 
-  val get_mtime : on:[ `Source | `Target ] -> Path.t -> int t
+  val get_mtime :
+    on:[ `Source | `Target ] -> Path.t -> (int, runtime_error) result t
   (** [get_mtime ~on:source path] returns the modification time of a file. *)
 
   val hash_content : string -> string t
   (** [hash_content str] hash a content. *)
 
-  val write_file : on:[ `Source | `Target ] -> Path.t -> string -> unit t
+  val write_file :
+       on:[ `Source | `Target ]
+    -> Path.t
+    -> string
+    -> (unit, runtime_error) result t
   (** [write_file ~on:source path content] write a file (the function should
       write every every intermediate path fragnment). *)
 
@@ -99,7 +111,10 @@ module type RUNTIME = sig
   (** [is_directory ~on:source path] returns [true] if the given path is a
       directory, [false] otherwise. *)
 
-  val read_dir : on:[ `Source | `Target ] -> Path.t -> Path.fragment list t
+  val read_dir :
+       on:[ `Source | `Target ]
+    -> Path.t
+    -> (Path.fragment list, runtime_error) result t
   (** [read_dir ~on:source path] returns a list of filename (fragment) of a
       given directory. *)
 end

@@ -25,3 +25,7 @@ val exception_to_diagnostic :
   -> unit
 (** A pretty printer that tries to return exceptions in the form of diagnostics
     (a string describing the error). *)
+
+val runtime_error_to_diagnostic : Format.formatter -> string -> unit
+(** Uses the same representation as an exception diagnostic to visually render
+    an error message produced by the runtime. *)
