@@ -7,7 +7,7 @@
 
 (source (gitlab funkywork/yocaml))
 (license GPL-3.0-or-later)
-(authors "The XHTMLBoy")
+(authors "The XHTMLBoy <xhtmlboi@gmail.com>")
 (maintainers "The Funkyworkers")
 
 (package
@@ -47,3 +47,13 @@
    (dune (>= 3.0.0))
    (yocaml (= :version))
    (yaml (>= 3.2.0))))
+
+
+(package
+  (name yocaml_omd)
+  (synopsis "Yocaml plugin for using Markdown (via OMD package) as a Markup language")
+  (depends
+   (ocaml (>= 5.1.1))
+   (dune (>= 3.0.0))
+   (yocaml (= :version))
+   (omd (>= 2.0.0~alpha4))))

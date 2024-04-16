@@ -4,7 +4,7 @@ version: "dev"
 synopsis: "Core engine of the YOCaml Static Site Generator"
 description: "YOCaml is a build system dedicated to generate static document"
 maintainer: ["The Funkyworkers"]
-authors: ["The XHTMLBoy"]
+authors: ["The XHTMLBoy <xhtmlboi@gmail.com>"]
 license: "GPL-3.0-or-later"
 homepage: "https://gitlab.com/funkywork/yocaml"
 bug-reports: "https://gitlab.com/funkywork/yocaml/-/issues"
