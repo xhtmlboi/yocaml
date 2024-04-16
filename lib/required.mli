@@ -40,8 +40,9 @@ module type DATA_PROVIDER = sig
 end
 
 module type DATA_READABLE = sig
-  (** Describes a type capable of being treated as metadata of type
-      {!type:Yocaml.Data.t}. *)
+  (** Describes a type capable of being readable as metadata of type
+      {!type:Yocaml.Data.t}. Used to lift a module into a validator for data
+      described by a {!module-type:Yocaml.Required.DATA_PROVIDER}. *)
 
   type t
   (** The type that describes the metadata. *)
@@ -56,6 +57,36 @@ module type DATA_READABLE = sig
   val validate : Data.t -> t Data.Validation.validated_value
   (** [validate raw_data] Validates a data item represented by type
       {!type:Yocaml.Data.t} and projects it into a value of type {!type:t}. *)
+end
+
+module type DATA_INJECTABLE = sig
+  (** Describes a type capable of being injected as metadata of type
+      {!type:Yocaml.Data.t}. Used to lif a module into an injecter of arbitrary
+      types to a template (for example). *)
+
+  type t
+  (** The type that describes the metadata. *)
+
+  val normalize : t -> (string * Data.t) list
+  (** Converts a value of type {!type:t} into a value of type
+      {!type:Yocaml.Data.t}. *)
+end
+
+module type DATA_TEMPLATE = sig
+  (** Describes a language capable of applying a template by assigning data to
+      it (normalized using {!module-type:DATA_INJECTABLE}). *)
+
+  type t
+  (** The type that describes the template language. *)
+
+  val from : Data.t -> t
+  (** [from data] Transforms a normalized data representation ([data]) into an
+      associative list of data that can be injected into a template. *)
+
+  val render : ?strict:bool -> (string * t) list -> string -> string
+  (** [render ?strict parameters content] injects [parameters] data into
+      [content] and returns the result of the applied content. To inject
+      metadata into a template. *)
 end
 
 (** {1 Runtime}

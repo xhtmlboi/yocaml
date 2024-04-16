@@ -38,9 +38,18 @@ val read_file_with_metadata :
   -> ?extraction_strategy:Metadata.extraction_strategy
   -> Path.t
   -> (unit, 'a * string) Task.t
-(** [read_file_with_metadata (module P) (module R) ?extraction_strategy ~on path]
-    is a task that read a file located by a [path] on a data source ([on]) and
-    uses an [extraction_strategy] to separate the metadata from the content and
+(** [read_file_with_metadata (module P) (module R) ?extraction_strategy path] is
+    a task that read a file located by a [path] and uses an
+    [extraction_strategy] to separate the metadata from the content and
     validates the metadata according to a
     {!module-type:Yocaml.Required.DATA_PROVIDER}, [P], using the description
     provided by [R] of type {!module-type:Yocaml.Required.DATA_READABLE}. *)
+
+val as_template :
+     (module Required.DATA_TEMPLATE)
+  -> (module Required.DATA_INJECTABLE with type t = 'a)
+  -> ?strict:bool
+  -> Path.t
+  -> ('a * string, 'a * string) Task.t
+(** [as_template (module T) (module M) ?strict path] is an arrow that apply a
+    [path] as a template. *)

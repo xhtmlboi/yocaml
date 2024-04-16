@@ -102,3 +102,27 @@ let batch ?only ?where path action cache =
   Stdlib.List.fold_left
     (fun cache file -> cache >>= action file)
     (return cache) children
+
+let restore_cache ~on path =
+  let open Eff.Syntax in
+  let* cache_content = Eff.read_file ~on path in
+  let sexp = Sexp.Canonical.from_string cache_content in
+  match sexp with
+  | Error _ ->
+      let+ () = Lexicon.cache_invalid_csexp path in
+      Cache.empty
+  | Ok sexp ->
+      Result.fold
+        ~ok:(fun cache ->
+          let+ () = Lexicon.cache_restored path in
+          cache)
+        ~error:(fun _ ->
+          let+ () = Lexicon.cache_invalid_repr path in
+          Cache.empty)
+        (Cache.from_sexp sexp)
+
+let store_cache ~on path cache =
+  let open Eff.Syntax in
+  let sexp_str = cache |> Cache.to_sexp |> Sexp.Canonical.to_string in
+  let* () = Eff.write_file ~on path sexp_str in
+  Lexicon.cache_stored path

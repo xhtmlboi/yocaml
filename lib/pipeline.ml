@@ -28,3 +28,17 @@ let read_file_with_metadata (type a) (module P : Required.DATA_PROVIDER)
         (module P)
         (module R)
         ?extraction_strategy ~on:`Source path)
+
+let as_template (type a) (module T : Required.DATA_TEMPLATE)
+    (module I : Required.DATA_INJECTABLE with type t = a) ?(strict = true)
+    template =
+  let action ((meta, content), tpl_content) =
+    let parameters = ("yocaml_body", Data.string content) :: I.normalize meta in
+    let parameters = List.map (fun (k, v) -> (k, T.from v)) parameters in
+    try
+      let new_content = T.render ~strict parameters tpl_content in
+      Eff.return (meta, new_content)
+    with exn -> Eff.raise exn
+  in
+  let open Task in
+  (fun x -> (x, ())) |>> second (read_file template) >>* action
