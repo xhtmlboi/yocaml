@@ -231,6 +231,14 @@ module Infix : sig
   val ( >>> ) : ('a, 'b) t -> ('b, 'c) t -> ('a, 'c) t
   (** [t1 >>> t2] is [rcompose t1 t2]. *)
 
+  val ( <+< ) :
+    ('b, 'c * Deps.t) t -> ('a, 'b * Deps.t) t -> ('a, 'c * Deps.t) t
+  (** [a <+< b] compose [b] and [a] and concat dynamic dependencies set. *)
+
+  val ( >+> ) :
+    ('a, 'b * Deps.t) t -> ('b, 'c * Deps.t) t -> ('a, 'c * Deps.t) t
+  (** [a >+> b] compose [a] and [b] and concat dynamic dependencies set. *)
+
   val ( |<< ) : ('b -> 'c) -> ('a, 'b) t -> ('a, 'c) t
   (** [f ^<< t1] is [pre_compose f t1]. *)
 

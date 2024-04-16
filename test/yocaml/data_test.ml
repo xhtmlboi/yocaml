@@ -1081,8 +1081,8 @@ let test_where_or_const =
       in
       let () =
         check
-          (Error V.(Invalid_shape { expected = "float"; given = D.int 5 }))
-          (v @@ D.int 5)
+          (Error V.(Invalid_shape { expected = "float"; given = D.bool true }))
+          (v @@ D.bool true)
       in
       let () =
         check
