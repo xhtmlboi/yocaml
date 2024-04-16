@@ -3,7 +3,7 @@ opam-version: "2.0"
 version: "dev"
 synopsis: "The Unix runtime for using YOCaml on a Unix file system!"
 maintainer: ["The Funkyworkers"]
-authors: ["The XHTMLBoy"]
+authors: ["The XHTMLBoy <xhtmlboi@gmail.com>"]
 license: "GPL-3.0-or-later"
 homepage: "https://gitlab.com/funkywork/yocaml"
 bug-reports: "https://gitlab.com/funkywork/yocaml/-/issues"
