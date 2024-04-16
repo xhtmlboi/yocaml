@@ -45,6 +45,20 @@ let found_dynamic_dependencies target =
 let target_not_in_cache target =
   Eff.logf ~level:`Info "`%a` is not present in the cache" Path.pp target
 
+let cache_invalid_csexp target =
+  Eff.logf ~level:`Warning "Cache located in `%a` is invalid Csexp" Path.pp
+    target
+
+let cache_invalid_repr target =
+  Eff.logf ~level:`Warning "Cache located in `%a` is invalid representation"
+    Path.pp target
+
+let cache_restored target =
+  Eff.logf ~level:`Info "Cache restored from `%a`" Path.pp target
+
+let cache_stored target =
+  Eff.logf ~level:`Info "Cache stored in `%a`" Path.pp target
+
 let pp_filesystem ppf = function
   | `Source -> Format.fprintf ppf "source"
   | `Target -> Format.fprintf ppf "target"

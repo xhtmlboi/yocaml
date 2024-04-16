@@ -48,7 +48,6 @@
    (yocaml (= :version))
    (yaml (>= 3.2.0))))
 
-
 (package
   (name yocaml_omd)
   (synopsis "Yocaml plugin for using Markdown (via OMD package) as a Markup language")
@@ -57,3 +56,12 @@
    (dune (>= 3.0.0))
    (yocaml (= :version))
    (omd (>= 2.0.0~alpha4))))
+
+(package
+  (name yocaml_jingoo)
+  (synopsis "Yocaml plugin for using Jingoo as a template language")
+  (depends
+   (ocaml (>= 5.1.1))
+   (dune (>= 3.0.0))
+   (yocaml (= :version))
+   (jingoo (>= 1.5.0))))

@@ -28,6 +28,10 @@ val target_hash_is_unchanged : Path.t -> unit Eff.t
 val target_hash_is_changed : Path.t -> unit Eff.t
 val found_dynamic_dependencies : Path.t -> unit Eff.t
 val target_not_in_cache : Path.t -> unit Eff.t
+val cache_invalid_csexp : Path.t -> unit Eff.t
+val cache_invalid_repr : Path.t -> unit Eff.t
+val cache_restored : Path.t -> unit Eff.t
+val cache_stored : Path.t -> unit Eff.t
 
 (** {1 Vocabulary} *)
 

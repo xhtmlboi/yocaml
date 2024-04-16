@@ -1,0 +1,4 @@
+(library
+ (name yocaml_jingoo)
+ (public_name yocaml_jingoo)
+ (libraries jingoo yocaml))
