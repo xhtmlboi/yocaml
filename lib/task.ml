@@ -68,12 +68,10 @@ let right { dependencies; action; has_dynamic_dependencies } =
 let compose t2 t1 =
   let dependencies = Deps.concat t1.dependencies t2.dependencies in
   let action = Eff.(t1.action >=> t2.action) in
-  {
-    dependencies
-  ; action
-  ; has_dynamic_dependencies =
-      t1.has_dynamic_dependencies || t2.has_dynamic_dependencies
-  }
+  let has_dynamic_dependencies =
+    t1.has_dynamic_dependencies || t2.has_dynamic_dependencies
+  in
+  { dependencies; action; has_dynamic_dependencies }
 
 let rcompose t1 t2 = compose t2 t1
 let pre_compose f t = compose (lift f) t
@@ -81,6 +79,22 @@ let post_compose t f = compose t (lift f)
 let pre_rcompose f t = rcompose (lift f) t
 let post_rcompose t f = rcompose t (lift f)
 let choose t1 t2 = rcompose (left t1) (right t2)
+
+let compose_with_dynamic_deps_merge t2 t1 =
+  let dependencies = Deps.concat t1.dependencies t2.dependencies in
+  let action x =
+    let open Eff.Syntax in
+    let* v, adeps = t1.action x in
+    let* r, bdeps = t2.action v in
+    Eff.return (r, Deps.concat adeps bdeps)
+  in
+  let has_dynamic_dependencies =
+    t1.has_dynamic_dependencies || t2.has_dynamic_dependencies
+  in
+  { dependencies; action; has_dynamic_dependencies }
+
+let rcompose_with_dynamic_deps_merge t1 t2 =
+  compose_with_dynamic_deps_merge t2 t1
 
 let fan_in t1 t2 =
   post_rcompose (choose t1 t2) (function
@@ -147,6 +161,8 @@ let no_dynamic_deps t =
 module Infix = struct
   let ( <<< ) = compose
   let ( >>> ) = rcompose
+  let ( <+< ) = compose_with_dynamic_deps_merge
+  let ( >+> ) = rcompose_with_dynamic_deps_merge
   let ( *<< ) f t = make Deps.empty f <<< t
   let ( <<* ) t f = t <<< make Deps.empty f
   let ( |<< ) = pre_compose
