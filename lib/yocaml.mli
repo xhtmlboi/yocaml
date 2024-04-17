@@ -33,6 +33,7 @@ module Path = Path
 module Cache = Cache
 module Deps = Deps
 module Metadata = Metadata
+module Archetype = Archetype
 
 (** {1 Building tasks}
 

@@ -14,23 +14,4 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-module Data = Data
-module Nel = Nel
-module Path = Path
-module Cache = Cache
-module Eff = Eff
-module Deps = Deps
-module Task = Task
-module Pipeline = Pipeline
-module Action = Action
-module Required = Required
-module Metadata = Metadata
-module Archetype = Archetype
-module Diagnostic = Diagnostic
-
-module Sexp = struct
-  include Sexp
-  module Provider = Sexp_provider
-end
-
-module Runtime = Runtime
+let () = Alcotest.run "Yocaml Archetype test" [ Datetime_test.cases ]

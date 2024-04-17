@@ -79,3 +79,5 @@ val validated_metadata :
           -> bool)
   -> 'a Alcotest.testable
   -> 'a Yocaml.Metadata.validated Alcotest.testable
+
+val datetime : Yocaml.Archetype.Datetime.t Alcotest.testable
