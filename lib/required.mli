@@ -74,7 +74,7 @@ end
 
 module type DATA_TEMPLATE = sig
   (** Describes a language capable of applying a template by assigning data to
-      it (normalized using {!module-type:DATA_INJECTABLE}). *)
+      it (normalized using {!module-type:Yocaml.Required.DATA_INJECTABLE}). *)
 
   type t
   (** The type that describes the template language. *)

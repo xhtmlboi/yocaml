@@ -255,3 +255,6 @@ let provider_error ?(custom_handler = default_cst_handler) () =
 
 let validated_metadata ?(custom_handler = default_cst_handler) meta =
   Alcotest.result meta (provider_error ~custom_handler ())
+
+let datetime =
+  Alcotest.testable Yocaml.Archetype.Datetime.pp Yocaml.Archetype.Datetime.equal

@@ -42,3 +42,4 @@ end
     to be passed to any function requiring it. *)
 
 include Yocaml.Required.DATA_TEMPLATE with type t = Jingoo.Jg_types.tvalue
+(** @inline *)
