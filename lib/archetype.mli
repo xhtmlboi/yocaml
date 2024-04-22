@@ -18,6 +18,12 @@
     blog bootstrapping. However, as Yocaml is very generic... it's worth using
     it as an example rather than a concrete model. *)
 
+(** {1 Components}
+
+    Archetypes are fairly independent and can be used by customized models.
+    We'll refer to them as components, because they can provide quick solutions
+    for ambitious models. *)
+
 module Datetime : sig
   (** Describes a date associated with a time. The "default" date format is
       [yyyy-mm-dd HH:mm-ss]. In addition to describing data as injectable or
@@ -88,7 +94,7 @@ module Datetime : sig
 
   (** {1 Dealing with date as metadata} *)
 
-  val normalize : t -> (string * Data.t) list
+  val normalize : t -> Data.t
   (** [normalize datetime] render data generically (with additional fields).
       Here is the list of fields:
       - [year: int] the year value
@@ -159,4 +165,86 @@ module Datetime : sig
 
   val pp : Format.formatter -> t -> unit
   (** Pretty printer for date. *)
+end
+
+(** {1 Models}
+
+    A template is an archetype {i richer} that can be used to construct,
+    {i out of the box} behavior such as pages or articles. And allows you to
+    bootstrap {i quickly} a blog-engine (as generic as possible).
+
+    The models are based on an object interface (hidden from the user) to enable
+    easy composition. *)
+
+module Page : sig
+  (** A page is an archetype that naturally maps an HTML page, providing the
+      necessary metadata to fill in the HTML-metadata ([<meta ...>]) and data to
+      describe the various html tags ([<title>] and co). A page, which is often
+      the basis of a compilation artifact, is also often associated with another
+      archetype. For example, an Article is a page with additional fields.*)
+
+  (** {1 Type} *)
+
+  type t
+  (** A type describing a page with associated fields:
+
+      - [page_title] an optional title
+      - [page_charset] an optional page charset
+      - [description] an optional page description
+      - [tags] an optional list of tags
+
+      The separation between fields prefixed with [page_] and those without
+      prefix allows you to distinguish between fields that describe
+      page-specific behavior and those that don't describe generic behavior. For
+      example, an article is also a page, but can be given a different page
+      title. *)
+
+  (** {1 Deal with Page as Metadata}
+
+      A page can be parsed and injected. *)
+
+  include Required.DATA_READABLE with type t := t
+  (** @inline *)
+
+  (** In addition to the [page_title], [page_charset] and [page_description]
+      fields, normalization returns a [meta] field that contains a list of
+      [name; content] records to easily derive a list of metadata based on the
+      page fields.
+
+      It also exposes Boolean fields to determine whether a page has a title,
+      description or charset with the parameters [has_page_title],
+      [has_page_description], [has_page_charset] and [has_page_tags]. *)
+
+  include Required.DATA_INJECTABLE with type t := t
+  (** @inline *)
+end
+
+module Article : sig
+  (** An article is a specialization of a page to describe blog posts
+      (associated with a [title], [synopsis] and [date]). It's the minimal
+      archetype for describing a blog post. *)
+
+  (** {1 Type} *)
+
+  type t
+  (** A type describing an article with associated fields: *)
+
+  (** {1 Deal with Article as Metadata}
+
+      An article can be parsed and injected. *)
+
+  (** An article is also a page, so any data readable from a page is also
+      readable from an article. If no value is given for [page_title], the
+      metadata will use the article's [title]. The same applies to [description]
+      and [synopsis]. *)
+
+  include Required.DATA_READABLE with type t := t
+  (** @inline *)
+
+  (** As an article is also a page, article-normalized data includes
+      article-normalized data with additional fields. As with optional fields,
+      [synopsis] has a [has_synopsis] version. *)
+
+  include Required.DATA_INJECTABLE with type t := t
+  (** @inline *)
 end

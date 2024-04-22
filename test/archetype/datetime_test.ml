@@ -218,33 +218,32 @@ let test_datetime_validate_normalize_1 =
       let open Archetype in
       let expected =
         Ok
-          Data.
-            [
-              ("year", int 2023)
-            ; ("month", int 2)
-            ; ("day", int 28)
-            ; ("hour", int 22)
-            ; ("min", int 18)
-            ; ("sec", int 45)
-            ; ("has_time", bool true)
-            ; ("day_of_week", int 1)
-            ; ( "repr"
-              , record
-                  [
-                    ("month", string "feb")
-                  ; ("datetime", string "2023-02-28 22:18:45")
-                  ; ("date", string "2023-02-28")
-                  ; ("time", string "22:18:45")
-                  ; ("day_of_week", string "tue")
-                  ] )
-            ]
+          Data.(
+            record
+              [
+                ("year", int 2023)
+              ; ("month", int 2)
+              ; ("day", int 28)
+              ; ("hour", int 22)
+              ; ("min", int 18)
+              ; ("sec", int 45)
+              ; ("has_time", bool true)
+              ; ("day_of_week", int 1)
+              ; ( "repr"
+                , record
+                    [
+                      ("month", string "feb")
+                    ; ("datetime", string "2023-02-28 22:18:45")
+                    ; ("date", string "2023-02-28")
+                    ; ("time", string "22:18:45")
+                    ; ("day_of_week", string "tue")
+                    ] )
+              ])
       and computed =
         let+ a = Datetime.validate @@ Data.string "2023/02/28 22:18:45" in
         Datetime.normalize a
       in
-      check
-        Testable.(validated_value (list @@ pair string data))
-        "should be equal" expected computed)
+      check Testable.(validated_value data) "should be equal" expected computed)
 
 let test_datetime_validate_normalize_2 =
   let open Alcotest in
@@ -253,33 +252,32 @@ let test_datetime_validate_normalize_2 =
       let open Archetype in
       let expected =
         Ok
-          Data.
-            [
-              ("year", int 1813)
-            ; ("month", int 8)
-            ; ("day", int 15)
-            ; ("hour", int 0)
-            ; ("min", int 0)
-            ; ("sec", int 0)
-            ; ("has_time", bool false)
-            ; ("day_of_week", int 6)
-            ; ( "repr"
-              , record
-                  [
-                    ("month", string "aug")
-                  ; ("datetime", string "1813-08-15 00:00:00")
-                  ; ("date", string "1813-08-15")
-                  ; ("time", string "00:00:00")
-                  ; ("day_of_week", string "sun")
-                  ] )
-            ]
+          Data.(
+            record
+              [
+                ("year", int 1813)
+              ; ("month", int 8)
+              ; ("day", int 15)
+              ; ("hour", int 0)
+              ; ("min", int 0)
+              ; ("sec", int 0)
+              ; ("has_time", bool false)
+              ; ("day_of_week", int 6)
+              ; ( "repr"
+                , record
+                    [
+                      ("month", string "aug")
+                    ; ("datetime", string "1813-08-15 00:00:00")
+                    ; ("date", string "1813-08-15")
+                    ; ("time", string "00:00:00")
+                    ; ("day_of_week", string "sun")
+                    ] )
+              ])
       and computed =
         let+ a = Datetime.validate @@ Data.string "1813:08:15" in
         Datetime.normalize a
       in
-      check
-        Testable.(validated_value (list @@ pair string data))
-        "should be equal" expected computed)
+      check Testable.(validated_value data) "should be equal" expected computed)
 
 let test_datetime_comparison_1 =
   let open Alcotest in

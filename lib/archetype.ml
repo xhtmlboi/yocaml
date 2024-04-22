@@ -14,6 +14,9 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
+let alt_opt a b = match a with Some a -> Some a | None -> b
+let is_empty_list = function [] -> true | _ -> false
+
 module Datetime = struct
   type month =
     | Jan
@@ -230,25 +233,26 @@ module Datetime = struct
     let time_repr = Format.asprintf "%a" pp_time dt in
     let day_of_week = day_of_week dt in
     let open Data in
-    [
-      ("year", int year)
-    ; ("month", int (month_to_int month))
-    ; ("day", int day)
-    ; ("hour", int hour)
-    ; ("min", int min)
-    ; ("sec", int sec)
-    ; ("has_time", bool has_time)
-    ; ("day_of_week", int (dow_to_int day_of_week))
-    ; ( "repr"
-      , record
-          [
-            ("month", string (month_to_string month))
-          ; ("datetime", string datetime_repr)
-          ; ("date", string date_repr)
-          ; ("time", string time_repr)
-          ; ("day_of_week", string (dow_to_string day_of_week))
-          ] )
-    ]
+    record
+      [
+        ("year", int year)
+      ; ("month", int (month_to_int month))
+      ; ("day", int day)
+      ; ("hour", int hour)
+      ; ("min", int min)
+      ; ("sec", int sec)
+      ; ("has_time", bool has_time)
+      ; ("day_of_week", int (dow_to_int day_of_week))
+      ; ( "repr"
+        , record
+            [
+              ("month", string (month_to_string month))
+            ; ("datetime", string datetime_repr)
+            ; ("date", string date_repr)
+            ; ("time", string time_repr)
+            ; ("day_of_week", string (dow_to_string day_of_week))
+            ] )
+      ]
 
   module Infix = struct
     let ( = ) = equal
@@ -263,4 +267,124 @@ module Datetime = struct
   let max a b = if Infix.(a < b) then a else b
 
   include Infix
+end
+
+module Page = struct
+  let entity_name = "Page"
+
+  class type t = object
+    method page_title : string option
+    method page_charset : string option
+    method description : string option
+    method tags : string list
+  end
+
+  class page ?title ?description ?charset ?(tags = []) () =
+    object (_ : #t)
+      method page_charset = title
+      method page_title = charset
+      method description = description
+      method tags = tags
+    end
+
+  let neutral = Result.ok @@ new page ()
+
+  let validate_page fields =
+    let open Data.Validation in
+    let+ title = optional fields "page_title" string
+    and+ description = optional fields "description" string
+    and+ charset = optional fields "page_charset" string
+    and+ tags = optional_or fields ~default:[] "tags" (list_of string) in
+    new page ?title ?description ?charset ~tags ()
+
+  let validate =
+    let open Data.Validation in
+    record validate_page
+
+  let to_meta name = function
+    | None -> []
+    | Some x ->
+        [ Data.(record [ ("name", string name); ("content", string x) ]) ]
+
+  let to_meta_kwd = function
+    | [] -> []
+    | tags ->
+        [
+          Data.(
+            record
+              [
+                ("name", string "keywords")
+              ; ("content", string @@ String.concat ", " tags)
+              ])
+        ]
+
+  let meta_list p =
+    to_meta "charset" p#page_charset
+    @ to_meta "description" p#description
+    @ to_meta_kwd p#tags
+
+  let normalize_parameters obj =
+    Data.
+      [
+        ("page_title", option string obj#page_title)
+      ; ("description", option string obj#description)
+      ; ("page_charset", option string obj#page_charset)
+      ; ("tags", list_of string obj#tags)
+      ; ("has_tags", bool (not (is_empty_list obj#tags)))
+      ; ("has_page_title", bool @@ Option.is_some obj#page_title)
+      ; ("has_description", bool @@ Option.is_some obj#description)
+      ; ("has_page_charset", bool @@ Option.is_some obj#page_charset)
+      ]
+
+  let normalize_meta obj = Data.[ ("meta", list @@ meta_list obj) ]
+  let normalize obj = normalize_parameters obj @ normalize_meta obj
+end
+
+module Article = struct
+  let entity_name = "Article"
+
+  class type t = object
+    inherit Page.t
+    method title : string
+    method synopsis : string option
+    method date : Datetime.t
+  end
+
+  class article page ?synopsis ~title ~date () =
+    let page_title = alt_opt page#page_title (Some title) in
+    let description = alt_opt page#description synopsis in
+    object (_ : #t)
+      inherit
+        Page.page
+          ?title:page_title ?description ?charset:page#page_charset
+            ~tags:page#tags ()
+
+      method title = title
+      method synopsis = synopsis
+      method date = date
+    end
+
+  let neutral =
+    Data.Validation.fail_with ~given:"null" "Cannot be null"
+    |> Result.map_error (fun error ->
+           Required.Validation_error { entity = entity_name; error })
+
+  let validate =
+    let open Data.Validation in
+    record (fun fields ->
+        let+ page = Page.validate_page fields
+        and+ title = required fields "title" string
+        and+ synopsis = optional fields "synopsis" string
+        and+ date = required fields "date" Datetime.validate in
+        new article page ?synopsis ~title ~date ())
+
+  let normalize obj =
+    Page.normalize obj
+    @ Data.
+        [
+          ("title", string obj#title)
+        ; ("synopsis", option string obj#synopsis)
+        ; ("date", Datetime.normalize obj#date)
+        ; ("has_synopsis", bool @@ Option.is_some obj#synopsis)
+        ]
 end
