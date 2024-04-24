@@ -158,6 +158,9 @@ let no_dynamic_deps t =
     { t with has_dynamic_dependencies = false }
     (lift (fun x -> (x, Deps.empty)))
 
+let drop_first () = lift Stdlib.snd
+let drop_second () = lift Stdlib.fst
+
 module Infix = struct
   let ( <<< ) = compose
   let ( >>> ) = rcompose

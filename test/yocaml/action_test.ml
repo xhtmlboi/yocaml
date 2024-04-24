@@ -350,7 +350,9 @@ let test_action_with_dynamic_dependencies_1 =
           return (content |> String.concat "", Deps.from_list files)
         in
 
-        Eff.(return cache >>= Action.write_file ~/[ "_build"; "index.txt" ] t)
+        Eff.(
+          return cache
+          >>= Action.write_dynamic_file ~/[ "_build"; "index.txt" ] t)
       in
       let trace = Fs.create_trace ~time:2 base_file_system in
       let cache = Yocaml.Cache.empty in

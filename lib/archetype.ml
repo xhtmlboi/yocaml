@@ -281,8 +281,8 @@ module Page = struct
 
   class page ?title ?description ?charset ?(tags = []) () =
     object (_ : #t)
-      method page_charset = title
-      method page_title = charset
+      method page_title = title
+      method page_charset = charset
       method description = description
       method tags = tags
     end
@@ -388,3 +388,14 @@ module Article = struct
         ; ("has_synopsis", bool @@ Option.is_some obj#synopsis)
         ]
 end
+
+(* module Articles = struct *)
+(*   class type t = object *)
+(*     inherit Page.t *)
+(*     method articles : (Path.t * Article.t) list *)
+(*   end *)
+
+(*   class articles page articles = *)
+
+(*   let normalize obj = Page.normalize *)
+(* end *)
