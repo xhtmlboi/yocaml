@@ -1,0 +1,12 @@
+<h2>{{title}}</h2>
+{%- if has_synopsis -%}
+<details>
+  <summary>Synopsis</summary>
+  {{synopsis}}
+</details>
+{%- endif -%}
+<p>{{date.repr.date}}</p>
+
+<article>
+  {%- autoescape false -%} {{ yocaml_body }} {%- endautoescape -%}
+</article>
