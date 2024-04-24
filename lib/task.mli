@@ -322,3 +322,9 @@ val destruct : ('a, 'b) t -> Deps.t * ('a -> 'b Eff.t) * bool
 val no_dynamic_deps : ('a, 'b) t -> ('a, 'b * Deps.t) t
 (** [no_dynamic_deps] makes an arrow static (does not attach it to any dynamic
     dependency set). *)
+
+val drop_first : unit -> ('a * 'b, 'b) t
+(** [drop_first t] discards the first element returned by a task. *)
+
+val drop_second : unit -> ('a * 'b, 'a) t
+(** [drop_second t] discards the second element returned by a task. *)

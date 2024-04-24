@@ -72,7 +72,7 @@ let perform_update target cache eff =
       let* () = Lexicon.target_hash_is_changed target in
       perform_writing target cache fc hc dynamic_deps
 
-let write_file target task cache =
+let write_dynamic_file target task cache =
   let open Eff.Syntax in
   let deps, eff, has_dynamic_deps = Task.destruct task in
   let* interaction = need_update cache has_dynamic_deps deps target in
@@ -87,14 +87,16 @@ let write_file target task cache =
       perform_writing target cache fc hc dynamic_deps
   | Update -> perform_update target cache eff
 
+let write_static_file target task cache =
+  write_dynamic_file target Task.(task ||> no_dynamic_deps) cache
+
 let copy_file ?new_name ~into path cache =
   match Path.basename path with
   | None -> Eff.raise @@ Eff.Invalid_path (`Source, path)
   | Some fragment ->
       let name = Option.value ~default:fragment new_name in
       let dest = Path.(into / name) in
-      let arr = Task.(Pipeline.read_file path ||> no_dynamic_deps) in
-      write_file dest arr cache
+      write_static_file dest (Pipeline.read_file path) cache
 
 let batch ?only ?where path action cache =
   let open Eff in
@@ -103,25 +105,28 @@ let batch ?only ?where path action cache =
     (fun cache file -> cache >>= action file)
     (return cache) children
 
-let restore_cache ~on path =
+let restore_cache ?(on = `Source) path =
   let open Eff.Syntax in
-  let* cache_content = Eff.read_file ~on path in
-  let sexp = Sexp.Canonical.from_string cache_content in
-  match sexp with
-  | Error _ ->
-      let+ () = Lexicon.cache_invalid_csexp path in
-      Cache.empty
-  | Ok sexp ->
-      Result.fold
-        ~ok:(fun cache ->
-          let+ () = Lexicon.cache_restored path in
-          cache)
-        ~error:(fun _ ->
-          let+ () = Lexicon.cache_invalid_repr path in
-          Cache.empty)
-        (Cache.from_sexp sexp)
+  let* exists = Eff.file_exists ~on path in
+  if exists then
+    let* cache_content = Eff.read_file ~on path in
+    let sexp = Sexp.Canonical.from_string cache_content in
+    match sexp with
+    | Error _ ->
+        let+ () = Lexicon.cache_invalid_csexp path in
+        Cache.empty
+    | Ok sexp ->
+        Result.fold
+          ~ok:(fun cache ->
+            let+ () = Lexicon.cache_restored path in
+            cache)
+          ~error:(fun _ ->
+            let+ () = Lexicon.cache_invalid_repr path in
+            Cache.empty)
+          (Cache.from_sexp sexp)
+  else Eff.return Cache.empty
 
-let store_cache ~on path cache =
+let store_cache ?(on = `Source) path cache =
   let open Eff.Syntax in
   let sexp_str = cache |> Cache.to_sexp |> Sexp.Canonical.to_string in
   let* () = Eff.write_file ~on path sexp_str in
