@@ -389,13 +389,56 @@ module Article = struct
         ]
 end
 
-(* module Articles = struct *)
-(*   class type t = object *)
-(*     inherit Page.t *)
-(*     method articles : (Path.t * Article.t) list *)
-(*   end *)
+module Articles = struct
+  class type t = object
+    inherit Page.t
+    method articles : (Path.t * Article.t) list
+  end
 
-(*   class articles page articles = *)
+  class articles page articles =
+    object (_ : #t)
+      inherit
+        Page.page
+          ?title:page#page_title ?description:page#description
+            ?charset:page#page_charset ~tags:page#tags ()
 
-(*   let normalize obj = Page.normalize *)
-(* end *)
+      method articles = articles
+    end
+
+  let from_page articles page = new articles page articles
+
+  let sort_by_date ?(increasing = false) articles =
+    List.sort
+      (fun (_, articleA) (_, articleB) ->
+        let r = Datetime.compare articleA#date articleB#date in
+        if increasing then r else ~-r)
+      articles
+
+  let compute_index (module P : Required.DATA_PROVIDER) ?increasing
+      ?(filter = fun x -> x) ?(on = `Source) ~where ~compute_link path =
+    Task.from_effect (fun page ->
+        let open Eff in
+        let* files = read_directory ~on ~only:`Files ~where path in
+        let+ articles =
+          List.traverse
+            (fun file ->
+              let url = compute_link file in
+              let+ metadata, _content =
+                Eff.read_file_with_metadata (module P) (module Article) ~on file
+              in
+              (url, metadata))
+            files
+        in
+        let articles = articles |> sort_by_date ?increasing |> filter in
+        from_page articles page)
+
+  let normalize_article (ident, article) =
+    let open Data in
+    record (("url", string @@ Path.to_string ident) :: Article.normalize article)
+
+  let normalize obj =
+    let open Data in
+    ("articles", list_of normalize_article obj#articles)
+    :: ("has_articles", bool @@ is_empty_list obj#articles)
+    :: Page.normalize obj
+end
