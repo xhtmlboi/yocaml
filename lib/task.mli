@@ -31,6 +31,9 @@ val make : Deps.t -> ('a -> 'b Eff.t) -> ('a, 'b) t
 (** [make deps eff] Builds a task with a fixed set of dependencies and an
     action.*)
 
+val from_effect : ('a -> 'b Eff.t) -> ('a, 'b) t
+(** [from_effect] is [make Deps.empty]. *)
+
 val lift : ('a -> 'b) -> ('a, 'b) t
 (** [lift f] lift the function [f] into a task with an empty set of
     dependencies. Useful for transforming regular functions into tasks. *)
@@ -328,3 +331,8 @@ val drop_first : unit -> ('a * 'b, 'b) t
 
 val drop_second : unit -> ('a * 'b, 'a) t
 (** [drop_second t] discards the second element returned by a task. *)
+
+val with_dynamic_dependencies : Path.t list -> ('a, 'a * Deps.t) t
+(** [with_dynamic_dependencies dependenices_list] allows to add a set of dynamic
+    dependencies to a task. Even the set of dependencies looks static, it is
+    mostly used for attaching dependencies like folders. *)

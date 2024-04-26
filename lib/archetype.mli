@@ -227,7 +227,7 @@ module Article : sig
   (** {1 Type} *)
 
   type t
-  (** A type describing an article with associated fields: *)
+  (** A type describing an article. *)
 
   (** {1 Deal with Article as Metadata}
 
@@ -244,6 +244,53 @@ module Article : sig
   (** As an article is also a page, article-normalized data includes
       article-normalized data with additional fields. As with optional fields,
       [synopsis] has a [has_synopsis] version. *)
+
+  include Required.DATA_INJECTABLE with type t := t
+  (** @inline *)
+end
+
+module Articles : sig
+  (** Transforms a regular page into an article index. Useful for building an
+      index (or archive page). The page is read as a regular page which must be
+      injected with a list of [string * Article.t] pairs (where the first
+      element is an identifier which will be used to reconstruct the URL of the
+      article, the way in which the identifier is converted into a URL is left
+      to the user, for example, in the template). *)
+
+  (** {1 Type} *)
+
+  type t
+  (** A type describing a list of articles. *)
+
+  (** Unlike the previous archetypes, reading an index consists of reading a
+      regular page, so this module does not implement the [DATA_READABLE]
+      interface. However, it is possible to inject it. The classic workflow
+      consists of reading the page's metadata. Constructing the list of articles
+      to be displayed in the index, converting the page into an article and then
+      applying the corresponding template cascade. *)
+
+  val sort_by_date :
+    ?increasing:bool -> (Path.t * Article.t) list -> (Path.t * Article.t) list
+  (** [sort_by_date ?increasing articles] sorts items by date, if the
+      [increasing] flag is set to [true], items will be ordered from oldest to
+      newest. Otherwise, they will be sorted from newest to oldest. By default,
+      the flag is set to [false]. *)
+
+  val from_page : (Path.t * Article.t) list -> Page.t -> t
+  (** [from_page articles page] transforms a regular page into an article index. *)
+
+  val compute_index :
+       (module Required.DATA_PROVIDER)
+    -> ?increasing:bool
+    -> ?filter:((Path.t * Article.t) list -> (Path.t * Article.t) list)
+    -> ?on:Eff.filesystem
+    -> where:(Path.t -> bool)
+    -> compute_link:(Path.t -> Path.t)
+    -> Path.t
+    -> (Page.t, t) Task.t
+  (** A helper task that transforms a directory path into a list of items,
+      useful for building indexes. You can refer to the examples to see how this
+      is used in a classic pipeline. *)
 
   include Required.DATA_INJECTABLE with type t := t
   (** @inline *)
