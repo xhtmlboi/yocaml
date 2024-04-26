@@ -41,10 +41,12 @@ open Yocaml
       |- articles  - The directory where markdown articles are written
       |- pages     - The directory containing the pages, written in markdown
       |- templates - The directory where the templates are located
+      |- index.md  - A special page that deal with indexing stuff
       |_ _build    - The directory where the blog will be created
          |- css        - Where the css style sheets will be copied
          |- articles   - Where articles will be generated (in html)
          |- Pages will be generated in [_build], at the root
+         |_ index.html
 
 
    It's a fairly common organisation. There are other artefacts that are not
@@ -79,6 +81,9 @@ module Source = struct
 
   (* The directory containing articles in Markdown. *)
   let articles = Path.(source_root / "articles")
+
+  (* The location of the index (a kind of page for indexing articles). *)
+  let index = Path.(source_root / "index.md")
 
   (* The directory containing templates files. *)
   let templates = Path.(source_root / "templates")
@@ -261,6 +266,79 @@ let process_articles =
   Action.batch ~only:`Files ~where:(Path.has_extension "md") Source.articles
     process_article
 
+(* Now we're going to build a slightly more complex page: the Index. This page
+   differs from the previous ones in that it depends on the contents of a
+   directory. Archetypes provide a fairly simple way of building an article
+   index using the [Archetype.Articles] module. Let's see how to use the utility
+   functions. *)
+let process_index =
+  (* Firstly, we're going to specify the source (our [index.md]) and the target,
+     our [index.html] which will be built at the root of our generated blog.
+     It's not very different from what we did in previous actions.*)
+  let file = Source.index in
+  let file_target = Target.(as_html pages file) in
+
+  (* Next, you need to read all the articles in the [articles/] directory.
+     Fortunately, the [Archetype.Articles] module provides a task (which acts on
+     metadata) to transform page metadata into article metadata. The function
+     takes :
+     - A module for reading metadata. Here we use the [Yocaml_yaml] module.
+     - A file path predicate. Here we only want markdown files
+     - A function for calculating a URL from a file, here we're just going to reuse
+       our `as_html` function except that we're going to tell it that it's pointing
+       to ["/articles"] (so the URL is absolute)
+     - directory where to look for the articles.
+
+     The function can be configured more finely, but please refer to its
+     documentation for more information. *)
+  let compute_index =
+    Archetype.Articles.compute_index
+      (module Yocaml_yaml)
+      ~where:(Path.has_extension "md")
+      ~compute_link:(Target.as_html @@ Path.abs [ "articles" ])
+      Source.articles
+  in
+  (* Now that we have a task that allows us to process our metadata and read
+     our articles, the rest of the pipeline is quite similar to what we were
+     doing before. *)
+  let open Task in
+  (* We use `write_dynamic_file` because, as we will see, we will need to
+     specify to our generator that sometimes it should compute an effect to
+     determine whether a file should be updated or not. *)
+  Action.write_dynamic_file file_target
+    ((* As for Pages, we want to track the binary.  *)
+     Pipeline.track_file Source.binary
+    (* We read a file with its metadata, as our index is a regular page, we read
+       it as if it were a page. *)
+    >>> Yocaml_yaml.Pipeline.read_file_with_metadata
+          (module Archetype.Page)
+          file
+    (* We convert the Markdown content to HTML. *)
+    >>> Yocaml_omd.content_to_html ()
+    (* And here, we want to modify our metadata, which is currently of type
+       [Page.t], to metadata of type [Articles.t] (to have the list of our
+       articles). We will apply our task [compute_index] only to our metadata
+       (thus to the first element of the pair that we maintain in our pipeline),
+       using the function [first]: *)
+    >>> first compute_index
+    (* Now we can apply our cascade of templates. We start with the index
+       template *)
+    >>> Yocaml_jingoo.Pipeline.as_template
+          (module Archetype.Articles)
+          (Source.template "index.html")
+    (* Then we apply the general template, just like in the previous examples *)
+    >>> Yocaml_jingoo.Pipeline.as_template
+          (module Archetype.Articles)
+          (Source.template "layout.html")
+    (* We can finish by dropping our metadata! *)
+    >>> drop_first ()
+    (* But since we are building a 'dynamic' file and not a 'static' one, we
+       need to return, in addition to the content, a set of 'dynamic'
+       dependencies. Normally, we could ask our task to dynamically calculate
+       these dependencies, but here, we know that it's the directory where our
+       articles are located (to rebuild the index if we add a new file) [1] *)
+    >>> with_dynamic_dependencies [ Source.articles ])
+
 (* Now, we can group all our processes together! Each Action (process_xxxx) is
    actually a function that takes a cache as an argument and returns an effect
    that acts on the cache. But the cache is hidden in our actions because the
@@ -284,6 +362,7 @@ let process_all () =
   >>= process_css_files
   >>= process_pages
   >>= process_articles
+  >>= process_index
   (* Once we have processed all our files, our cache will be passed from action
      to action, being updated. So, we can save our cache to be used in the next
      run of our generator! *)
@@ -301,3 +380,13 @@ let () = Yocaml_unix.run process_all
    models! (However, be warned, the Archetype module is a bit dense, to allow by
    default for handling a wide range of "classic" use cases when building a
    blog.) *)
+
+(* [1] In fact, the index could be resolved statically because we realize that
+   the [compute_index] task does not return any dependencies. So the
+   dependencies of the task, here, the [Source.articles] directory are known
+   statically. This is possible because the [Eff.mtime] function is a bit
+   smarter than the Unix one (by treating the modification date of a directory
+   as the greatest modification date of its children, recursively). However, if
+   the dependencies of a target had been calculated from reading a file, for
+   example, our task would not have been able to add it 'at the end'. We will
+   write examples taking advantage of this approach in the near future. *)
