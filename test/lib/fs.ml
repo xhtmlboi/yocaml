@@ -213,7 +213,16 @@ let run ~trace program input =
                        revelant for tests. *)
                     let () = trace := update_time !trace amount in
                     continue k ())
-            | Yocaml_failwith exn -> Some (fun _ -> Stdlib.raise exn)
+            | Yocaml_failwith exn ->
+                Some
+                  (fun _ ->
+                    let s =
+                      Format.asprintf "%a"
+                        (Yocaml.Diagnostic.exception_to_diagnostic
+                           ?custom_error:None ?in_exception_handler:None)
+                        exn
+                    in
+                    Stdlib.raise @@ Failure s)
             | Yocaml_log (level, message) ->
                 Some
                   (fun (k : (a, _) continuation) ->

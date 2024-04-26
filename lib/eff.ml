@@ -149,7 +149,7 @@ let read_file_with_metadata (type a) (module P : Required.DATA_PROVIDER)
        ~error:(fun err -> raise @@ Provider_error err)
        ~ok:(fun metadata -> return (metadata, content))
 
-let mtime ~on =
+let get_mtime ~on =
   ensure_file_exists ~on (fun path -> perform @@ Yocaml_get_mtime (on, path))
 
 let hash str = perform @@ Yocaml_hash_content str
@@ -157,7 +157,7 @@ let hash str = perform @@ Yocaml_hash_content str
 let write_file ~on path content =
   perform @@ Yocaml_write_file (on, path, content)
 
-let read_directory ~on ?(only = `Both) ?(where = fun __ -> true) path =
+let read_directory ~on ?(only = `Both) ?(where = fun _ -> true) path =
   let* is_dir = is_directory ~on path in
   if is_dir then
     let predicate child =
@@ -175,3 +175,19 @@ let read_directory ~on ?(only = `Both) ?(where = fun __ -> true) path =
     let* children = perform @@ Yocaml_read_dir (on, path) in
     List.filter_map predicate children
   else raise @@ Directory_not_exists (on, path)
+
+let mtime ~on path =
+  let rec aux path =
+    let* t = get_mtime ~on path in
+    let* d = is_directory path ~on in
+    if d then
+      let* children = read_directory ~on ~only:`Both path in
+      Stdlib.List.fold_left
+        (fun max_time f ->
+          let* a = max_time in
+          let+ b = aux f in
+          Int.max a b)
+        (return t) children
+    else return t
+  in
+  aux path
