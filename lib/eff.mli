@@ -334,7 +334,12 @@ val read_file_with_metadata :
 val mtime : on:filesystem -> Path.t -> int t
 (** [mtime ~on path] perform the effect [Yocaml_source_get_mtime] with a given
     [path] and try to get the modification time. Perform [Yocaml_failwith] with
-    {!exception:File_not_exists} if the file does not exists. *)
+    {!exception:File_not_exists} if the file does not exists.
+
+    The logic of [mtime] differs slightly from that of Unix. If a directory is
+    given as an argument, the function will return the largest [mtime]
+    recursively contained in the directory. This makes it easy to treat
+    directories as dependency sets. *)
 
 val hash : string -> string t
 (** [hash str] perform the effect [Yocaml_hash_content] on a given string. *)

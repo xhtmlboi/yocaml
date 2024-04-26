@@ -178,6 +178,41 @@ let test_read_directory =
         ; ~/[ "images"; "photos"; "mickael.jpeg" ]
         ])
 
+let test_mtime_recursive =
+  let open Alcotest in
+  test_case "mtime on directory should return the greatest mtime of children"
+    `Quick (fun () ->
+      let open Yocaml in
+      let fs =
+        let open Fs in
+        from_list
+          [
+            d 1 "."
+              [
+                f 1 "foo" "bar"
+              ; d 1 "www"
+                  [
+                    d 1 "x" [ f 10 "test" "test"; f 2 "aaa" "bbb" ]
+                  ; f 13 "tttt" "tttt"
+                  ]
+              ]
+          ]
+      in
+      let trace = Fs.create_trace fs in
+      let expect_mtime path expected =
+        let computed =
+          snd @@ Fs.run ~trace (fun () -> Eff.mtime ~on:`Source path) ()
+        in
+        check int
+          (Format.asprintf "%a should has mtime `%d`" Path.pp path expected)
+          expected computed
+      in
+      let open Path in
+      expect_mtime ~/[] 13;
+      expect_mtime ~/[ "www" ] 13;
+      expect_mtime ~/[ "www"; "x" ] 10;
+      expect_mtime ~/[ "foo" ] 1)
+
 let cases =
   ( "Yocaml.Eff"
   , [
@@ -186,4 +221,5 @@ let cases =
     ; test_mtime
     ; test_is_directory
     ; test_read_directory
+    ; test_mtime_recursive
     ] )
