@@ -1,10 +1,10 @@
 ---
-title: An other article !!
-date: 2024/04/26
-synopsis: Yeah, a new article, with static deps
+title: Yet an other article !!
+date: 2024/04/27
+synopsis: Yeah, almost new article, with static deps
 ---
 
-Hello this is a super **new** article!
+Hello this is a super _new_ article!
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sodales mattis lacus, at luctus neque varius pretium. In ac lacus lacinia, laoreet eros in, bibendum nisl. In risus ante, laoreet non ex ut, ultrices euismod eros. Ut neque nisi, rhoncus in ex volutpat, condimentum tempor est. Duis nibh urna, egestas sed lacus a, semper varius ex. Sed laoreet, diam eget viverra volutpat, orci mi dictum justo, eget vestibulum neque risus id mauris. Duis suscipit, nulla nec dignissim consectetur, nisi ipsum consectetur augue, vel fermentum nibh ex sit amet mi. Sed a tincidunt eros. Nunc luctus congue quam, quis congue purus interdum ornare. Vestibulum sed sem purus. Morbi tristique leo ac purus volutpat, sit amet vestibulum nibh consectetur.
 

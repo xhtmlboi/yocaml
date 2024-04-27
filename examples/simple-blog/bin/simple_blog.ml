@@ -302,12 +302,22 @@ let process_index =
      our articles, the rest of the pipeline is quite similar to what we were
      doing before. *)
   let open Task in
-  (* We use `write_dynamic_file` because, as we will see, we will need to
-     specify to our generator that sometimes it should compute an effect to
-     determine whether a file should be updated or not. *)
-  Action.write_dynamic_file file_target
-    ((* As for Pages, we want to track the binary.  *)
-     Pipeline.track_file Source.binary
+  (* As for Pages and articles, we can write the file using the
+     [write_static_file] action, which will execute a task. We use
+     [write_static_file] because in our example, constructing a page involves no
+     dynamic dependencies (because of a small trick). *)
+  Action.write_static_file file_target
+    ((* As for Pages, we want to track the binary. But we're also going to track
+        the directory containing the articles. Normally, the processing of
+        articles seems to be a dynamic dependency (because we would
+        theoretically have to read all the articles to decide whether or not to
+        rebuild the index). But in fact, all the subtlety lies in the function
+        that gives the modification date of a file/directory. The primitive that
+        returns the [mtime] has a slightly special behaviour in the case of
+        directories. It returns the 'largest' modification date of a directory's
+        children. This makes it possible to statically track all the articles,
+        trivially speaking.*)
+     Pipeline.track_files [ Source.binary; Source.articles ]
     (* We read a file with its metadata, as our index is a regular page, we read
        it as if it were a page. *)
     >>> Yocaml_yaml.Pipeline.read_file_with_metadata
@@ -331,13 +341,7 @@ let process_index =
           (module Archetype.Articles)
           (Source.template "layout.html")
     (* We can finish by dropping our metadata! *)
-    >>> drop_first ()
-    (* But since we are building a 'dynamic' file and not a 'static' one, we
-       need to return, in addition to the content, a set of 'dynamic'
-       dependencies. Normally, we could ask our task to dynamically calculate
-       these dependencies, but here, we know that it's the directory where our
-       articles are located (to rebuild the index if we add a new file) [1] *)
-    >>> with_dynamic_dependencies [ Source.articles ])
+    >>> drop_first ())
 
 (* Now, we can group all our processes together! Each Action (process_xxxx) is
    actually a function that takes a cache as an argument and returns an effect
@@ -380,13 +384,3 @@ let () = Yocaml_unix.run process_all
    models! (However, be warned, the Archetype module is a bit dense, to allow by
    default for handling a wide range of "classic" use cases when building a
    blog.) *)
-
-(* [1] In fact, the index could be resolved statically because we realize that
-   the [compute_index] task does not return any dependencies. So the
-   dependencies of the task, here, the [Source.articles] directory are known
-   statically. This is possible because the [Eff.mtime] function is a bit
-   smarter than the Unix one (by treating the modification date of a directory
-   as the greatest modification date of its children, recursively). However, if
-   the dependencies of a target had been calculated from reading a file, for
-   example, our task would not have been able to add it 'at the end'. We will
-   write examples taking advantage of this approach in the near future. *)
