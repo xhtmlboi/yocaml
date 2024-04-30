@@ -307,7 +307,7 @@ let test_datetime_comparison_2 =
 
 let test_datetime_comparison_3 =
   let open Alcotest in
-  test_case "comparison between datetime - 2" `Quick (fun () ->
+  test_case "comparison between datetime - 3" `Quick (fun () ->
       let open Yocaml in
       let open Archetype in
       let expected = Ok false
@@ -320,7 +320,7 @@ let test_datetime_comparison_3 =
 
 let test_datetime_comparison_4 =
   let open Alcotest in
-  test_case "comparison between datetime - 2" `Quick (fun () ->
+  test_case "comparison between datetime - 4" `Quick (fun () ->
       let open Yocaml in
       let open Archetype in
       let expected = Ok false
@@ -333,7 +333,7 @@ let test_datetime_comparison_4 =
 
 let test_datetime_comparison_5 =
   let open Alcotest in
-  test_case "comparison between datetime - 2" `Quick (fun () ->
+  test_case "comparison between datetime - 5" `Quick (fun () ->
       let open Yocaml in
       let open Archetype in
       let expected = Ok false
@@ -346,7 +346,7 @@ let test_datetime_comparison_5 =
 
 let test_datetime_comparison_6 =
   let open Alcotest in
-  test_case "comparison between datetime - 2" `Quick (fun () ->
+  test_case "comparison between datetime - 6" `Quick (fun () ->
       let open Yocaml in
       let open Archetype in
       let expected = Ok true
@@ -354,6 +354,19 @@ let test_datetime_comparison_6 =
         let* a = Datetime.validate @@ Data.string "2023/11/12" in
         let* b = Datetime.validate @@ Data.string "2022/11/12" in
         Result.ok Datetime.(a <> b)
+      in
+      check Testable.(validated_value bool) "should be equal" expected computed)
+
+let test_datetime_comparison_7 =
+  let open Alcotest in
+  test_case "comparison between datetime - 7" `Quick (fun () ->
+      let open Yocaml in
+      let open Archetype in
+      let expected = Ok true
+      and computed =
+        let* a = Datetime.validate @@ Data.string "2023/11/12" in
+        let* b = Datetime.validate @@ Data.string "2023/11/12" in
+        Result.ok Datetime.(a = b)
       in
       check Testable.(validated_value bool) "should be equal" expected computed)
 
@@ -381,4 +394,5 @@ let cases =
     ; test_datetime_comparison_4
     ; test_datetime_comparison_5
     ; test_datetime_comparison_6
+    ; test_datetime_comparison_7
     ] )
