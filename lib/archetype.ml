@@ -173,10 +173,7 @@ module Datetime = struct
     let cmp = Int.compare a.year b.year in
     if Int.equal cmp 0 then
       let cmp = Int.compare (month_to_int a.month) (month_to_int b.month) in
-      if Int.equal cmp 0 then
-        let cmp = Int.compare a.day b.day in
-        if Int.equal cmp 0 then assert false else cmp
-      else cmp
+      if Int.equal cmp 0 then Int.compare a.day b.day else cmp
     else cmp
 
   let compare_time a b =
