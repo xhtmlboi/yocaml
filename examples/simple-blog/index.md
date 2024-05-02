@@ -1,8 +1,10 @@
 ---
 page_title: An index
 description: A dead simple Index
-tags: [foo, bar, baz]
+tags: [yocaml, index, example]
 ---
 
-Hello, you're on an index _generated_ by
-[YOCaml](https://github.com/xhtmlboi/yocaml). Isn't that **nice**?
+You are on the index of **my personal blog**. Below is a list of articles I have
+written over _the last few years_. They are ordered from the most recent to the
+oldest. The blog doesn't have an `Archives` page because there will never be
+enough content to make it _relevant_.

@@ -37,7 +37,7 @@ val cache_stored : Path.t -> unit Eff.t
 
 val backtrace_not_available : string
 val there_is_an_error : Format.formatter -> unit -> unit
-val unknown_error : Format.formatter -> unit -> unit
+val unknown_error : Format.formatter -> exn -> unit
 
 val file_not_exists :
   Eff.filesystem -> Path.t -> Format.formatter -> unit -> unit

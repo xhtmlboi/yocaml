@@ -71,11 +71,13 @@ let backtrace_not_available =
 let there_is_an_error ppf () =
   Format.fprintf ppf "Oh dear, an error has occurred"
 
-let unknown_error ppf () =
+let unknown_error ppf exn =
   Format.fprintf ppf
-    "No idea what mistake it is. This is very annoying. It's probably a bug \
-     and you should report the error here: <%s>"
+    "No idea what error is. This is very annoying. It's probably a bug and you \
+     should report the error here: <%s> : @[<1>%s;@ %s@]"
     bug_tracker
+    (Printexc.exn_slot_name exn)
+    (Printexc.to_string exn)
 
 let file_not_exists source path ppf () =
   Format.fprintf ppf "The file `%a` (on `%a`) does not exists" Path.pp path
