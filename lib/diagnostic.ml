@@ -99,7 +99,7 @@ let exception_to_diagnostic
   | Eff.Directory_not_exists (source, path) ->
       glob_pp (Lexicon.directory_not_exists source path) ()
   | Eff.Provider_error error -> glob_pp (pp_provider_error custom_error) error
-  | _ -> glob_pp Lexicon.unknown_error ()
+  | exn -> glob_pp Lexicon.unknown_error exn
 
 let runtime_error_to_diagnostic ppf message =
   let backtrace = Lexicon.backtrace_not_available in
