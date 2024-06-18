@@ -150,3 +150,23 @@ module type RUNTIME = sig
   (** [read_dir ~on:source path] returns a list of filename (fragment) of a
       given directory. *)
 end
+
+(** {1 Runner}
+
+    A Runner is used to run a Yocaml program in the context of a
+    {!module-type:Yocaml.Required.RUNTIME}. *)
+
+module type RUNNER = sig
+  type 'a t
+  (** Effect type. Usually {!type:Ÿocaml.Eff.t}. *)
+
+  module Runtime : RUNTIME
+  (** The given runtime. *)
+
+  val run :
+       ?custom_error_handler:
+         (Format.formatter -> Data.Validation.custom_error -> unit)
+    -> (unit -> unit t)
+    -> unit Runtime.t
+  (** Runs a YOCaml program (and interprets its effects, youhou). *)
+end

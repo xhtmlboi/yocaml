@@ -17,13 +17,5 @@
 (** A Runtime is an execution context (ie, Unix or Git). They describe the entry
     point of a YOCaml program and abstract the file system. *)
 
-module Make (Runtime : Required.RUNTIME) : sig
-  (** Builds a concrete Runtime. *)
-
-  val run :
-       ?custom_error_handler:
-         (Format.formatter -> Data.Validation.custom_error -> unit)
-    -> (unit -> unit Eff.t)
-    -> unit Runtime.t
-  (** Runs a YOCaml program (and interprets its effects, youhou). *)
-end
+module Make (Runtime : Required.RUNTIME) :
+  Required.RUNNER with type 'a t := 'a Eff.t and module Runtime := Runtime

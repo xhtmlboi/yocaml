@@ -14,12 +14,9 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-let setup_logger ?level () =
-  let header = Logs_fmt.pp_header in
-  let () = Fmt_tty.setup_std_outputs () in
-  let () = Logs.set_reporter Logs_fmt.(reporter ~pp_header:header ()) in
-  Logs.set_level level
+(** A runner for executing Yocaml programs in the Unix context. *)
 
-let run ?(level = Logs.Debug) ?custom_error_handler program =
-  let () = setup_logger ~level () in
-  Runner.run ?custom_error_handler program
+include
+  Yocaml.Required.RUNNER
+    with type 'a t := 'a Yocaml.Eff.t
+     and module Runtime := Runtime
