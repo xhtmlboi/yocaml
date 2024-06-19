@@ -120,6 +120,10 @@ val to_list : t -> fragment list
 (** [to_list path] returns a path into a list of fragment (and use [.] for
     [relative] path and [/] for [absolute] path). *)
 
+val to_pair : t -> [ `Root | `Rel ] * fragment list
+(** [to_pair] is like [to_list] but instead of prefixing the first fragment with
+    [.] or [/], it returns the kind as first element of the tuple. *)
+
 (** {1 Serialization/Deserialization}
 
     Supports serialization and deserialization of paths. *)

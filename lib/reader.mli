@@ -14,24 +14,19 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-module Data = Data
-module Nel = Nel
-module Path = Path
-module Cache = Cache
-module Eff = Eff
-module Deps = Deps
-module Task = Task
-module Pipeline = Pipeline
-module Action = Action
-module Required = Required
-module Metadata = Metadata
-module Archetype = Archetype
-module Diagnostic = Diagnostic
-module Reader = Reader
+(** A very simple implementation of a Reader Monad. *)
 
-module Sexp = struct
-  include Sexp
-  module Provider = Sexp_provider
+module Over (T : sig
+  type env
+  type 'a monad
+
+  val return : 'a -> 'a monad
+  val bind : ('a -> 'b monad) -> 'a monad -> 'b monad
+end) : sig
+  type env = T.env
+  type 'a monad = 'a T.monad
+  type 'a t = env -> 'a monad
+
+  val return : 'a -> 'a t
+  val bind : ('a -> 'b t) -> 'a t -> 'b t
 end
-
-module Runtime = Runtime

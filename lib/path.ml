@@ -64,6 +64,7 @@ let pp ppf path =
 
 let to_string = Format.asprintf "%a" pp
 let to_list = function Absolute xs -> "/" :: xs | Relative xs -> "." :: xs
+let to_pair = function Absolute xs -> (`Root, xs) | Relative xs -> (`Rel, xs)
 
 let append path fragments =
   match path with

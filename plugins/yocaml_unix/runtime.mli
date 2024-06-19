@@ -14,4 +14,4 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-include Yocaml.Required.RUNTIME with type 'a t = 'a
+include Yocaml.Required.RUNTIME with type 'a t = Eio_unix.Stdenv.base -> 'a
