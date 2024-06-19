@@ -26,7 +26,10 @@
 
     {b TODO}: The aim of this implementation is to find an API that is easy to
     extend to capture the different uses in YOCaml. Once this API has
-    stabilised, we can think about a less naive implementation. *)
+    stabilised, we can think about a less naive implementation.
+
+    {eof@ocaml[# #install_printer Yocaml.Path.pp]eof}
+*)
 
 (** {1 Types}
 
@@ -93,7 +96,58 @@ val dirname : t -> t
 (** [dirname path] returns the path without the last fragment. *)
 
 val move : into:t -> t -> t
-(** [move source ~into:target] attempts to move the [source] to the [target]. *)
+(** [move source ~into:target] attempts to move the [source] (the source is the
+    last fragment of the given path) to the [target]. For exemple:
+
+    {eof@ocaml[
+      # open Yocaml.Path ;;
+      # move ~into:(rel ["target" ; "html"]) (rel ["source"; "index.html"]) ;;
+      - : t = ./target/html/index.html
+    ]eof}
+
+    Only [index.html] is moved to [into]. *)
+
+val relocate : into:t -> t -> t
+(** [locate source ~into:target] is similar to [move] except that it (virtually)
+    moves the entire path.
+
+    If two paths are of the same type (absolute or relative) and have no prefix,
+    the source is concatenated with the target.
+
+    {eof@ocaml[
+      # relocate ~into:(rel ["foo"; "bar"]) (rel ["baz"; "index.html"]) ;;
+      - : t = ./foo/bar/baz/index.html
+
+      # relocate ~into:(abs ["foo"; "bar"]) (abs ["baz"; "index.html"]) ;;
+      - : t = /foo/bar/baz/index.html
+    ]eof}
+
+    If the types are different, the target's type takes precedence.
+
+    {eof@ocaml[
+      # relocate ~into:(abs ["foo"; "bar"]) (rel ["baz"; "index.html"]) ;;
+      - : t = /foo/bar/baz/index.html
+
+      # relocate ~into:(rel ["foo"; "bar"]) (abs ["baz"; "index.html"]) ;;
+      - : t = ./foo/bar/baz/index.html
+    ]eof}
+
+    If the types are the same and the target is a prefix of the source, then the
+    target merges the prefixes.
+
+    {eof@ocaml[
+      # relocate ~into:(rel ["foo"; "bar"]) (rel ["foo"; "bar"; "index.html"]) ;;
+      - : t = ./foo/bar/index.html
+    ]eof}
+
+    But here, [foo/bar] is not a prefix of [bar] so the [bar] fragment is
+    duplicated.
+
+    {eof@ocaml[
+      # relocate ~into:(rel ["foo"; "bar"]) (rel ["bar"; "index.html"]) ;;
+      - : t = ./foo/bar/bar/index.html
+    ]eof}
+*)
 
 (** {1 Utils} *)
 
