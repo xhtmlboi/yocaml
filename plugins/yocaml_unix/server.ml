@@ -14,6 +14,14 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
+module Pages = struct
+  let error404 htdoc =
+    Format.asprintf
+      "<h1>Error 404</h1><hr /><p>You can generate a <code>404.html</code> \
+       page at the root (<code>%s</code>) of your target as a fallback.</p>"
+      (Eio.Path.native_exn htdoc)
+end
+
 type 'a requested_path =
   | File of 'a Eio.Path.t * string
   | Dir of 'a Eio.Path.t
@@ -29,16 +37,12 @@ let get_requested_uri htdoc request =
   if String.equal path "" then Dir htdoc
   else
     let path = Eio.Path.(htdoc / path) in
+    let pstr = Eio.Path.native_exn path in
     if Eio.Path.is_directory path then Dir path
-    else if Eio.Path.is_file path then File (path, Eio.Path.native_exn path)
+    else if Eio.Path.is_file path then File (path, pstr)
     else Error404
 
-let error404 () =
-  Cohttp_eio.Server.respond_string
-    ~headers:(Http.Header.of_list [ ("content-type", "text/html") ])
-    ~status:`Not_found ~body:"<h1>Error 404</h1>" ()
-
-let file path str =
+let file ?(status = `OK) path str =
   let content_type =
     if String.equal (Filename.extension str) ".html" then "text/html"
     else Magic_mime.lookup ~default:"text/plain" str
@@ -48,21 +52,31 @@ let file path str =
   let body = Eio.Path.load path in
   Cohttp_eio.Server.respond_string
     ~headers:(Http.Header.of_list [ ("content-type", content_type) ])
-    ~status:`OK ~body ()
+    ~status ~body ()
 
-let dir path =
+let error404 htdoc =
+  let path = Eio.Path.(htdoc / "404.html") in
+  let str = Eio.Path.native_exn path in
+  if Eio.Path.is_file path then file ~status:`Not_found path str
+  else
+    let body = Pages.error404 htdoc in
+    Cohttp_eio.Server.respond_string
+      ~headers:(Http.Header.of_list [ ("content-type", "text/html") ])
+      ~status:`Not_found ~body ()
+
+let dir htdoc path =
   let index = Eio.Path.(path / "index.html") in
   if Eio.Path.is_file index then
     let index_str = Eio.Path.native_exn index in
     file index index_str
-  else error404 ()
+  else error404 htdoc
 
 let handler htdoc refresh _socket request _body =
   let () = refresh () in
   match get_requested_uri htdoc request with
-  | Error404 -> error404 ()
+  | Error404 -> error404 htdoc
   | File (path, str) -> file path str
-  | Dir path -> dir path
+  | Dir path -> dir htdoc path
 
 let error_handler exn = Logs.warn (fun fmt -> fmt "%a" Eio.Exn.pp exn)
 
