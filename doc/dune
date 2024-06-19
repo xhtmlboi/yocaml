@@ -4,4 +4,4 @@
 (mdx
  (files *.mld)
  (libraries yocaml)
- (preludes prelude.ml))
+ (preludes mdx_prelude.ml))

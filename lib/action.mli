@@ -18,14 +18,14 @@
     point for a {b construction rule}. In general, a chain of actions maitizes a
     cache and is used in this way:
 
-    {[
+    {eof@ocaml skip[
       let open Eff.Infix in
       restore_cache ~on path_of_cache
       >>= action_a
       >>= action_b
       >>= action_c
       >>= store_cache ~on path_of_cache
-    ]} *)
+    ]eof} *)
 
 type t = Cache.t -> Cache.t Eff.t
 (** As it is necessary to maintain the cache during the various artifact
