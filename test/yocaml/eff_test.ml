@@ -213,6 +213,39 @@ let test_mtime_recursive =
       expect_mtime ~/[ "www"; "x" ] 10;
       expect_mtime ~/[ "foo" ] 1)
 
+let test_list_fold_left_1 =
+  let open Alcotest in
+  test_case "List.fold_left on empty list should return an empty string" `Quick
+    (fun () ->
+      let trace = Fs.create_trace base_file_system in
+      let expected = ""
+      and _, computed =
+        Fs.run ~trace
+          (fun () ->
+            Yocaml.Eff.(
+              List.fold_left (fun acc x -> acc >|= String.cat x) (return "") []))
+          ()
+      in
+      check string "should be equal" expected computed)
+
+let test_list_fold_left_2 =
+  let open Alcotest in
+  test_case "List.fold_left on list should concat into one string" `Quick
+    (fun () ->
+      let trace = Fs.create_trace base_file_system in
+      let expected = "abcd"
+      and _, computed =
+        Fs.run ~trace
+          (fun () ->
+            Yocaml.Eff.(
+              List.fold_left
+                (fun acc x -> acc >|= (Fun.flip String.cat) x)
+                (return "")
+                [ return "a"; return "b"; return "c"; return "d" ]))
+          ()
+      in
+      check string "should be equal" expected computed)
+
 let cases =
   ( "Yocaml.Eff"
   , [
@@ -222,4 +255,6 @@ let cases =
     ; test_is_directory
     ; test_read_directory
     ; test_mtime_recursive
+    ; test_list_fold_left_1
+    ; test_list_fold_left_2
     ] )

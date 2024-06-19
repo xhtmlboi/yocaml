@@ -50,7 +50,7 @@ module List = struct
   let traverse f l =
     let rec aux acc = function
       | [] -> map Stdlib.List.rev acc
-      | x :: xs -> aux (map2 Stdlib.List.cons (f x) acc) xs
+      | x :: xs -> (aux [@tailcall]) (map2 Stdlib.List.cons (f x) acc) xs
     in
     aux (return []) l
 
@@ -66,6 +66,13 @@ module List = struct
           @@ f x
     in
     aux [] l
+
+  let fold_left f default list =
+    let rec aux acc = function
+      | [] -> acc
+      | x :: xs -> (aux [@tailcall]) (bind (fun m -> f acc m) x) xs
+    in
+    aux default list
 end
 
 module Infix = struct

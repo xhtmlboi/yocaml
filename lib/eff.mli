@@ -156,6 +156,10 @@ module List : sig
 
   val filter_map : ('a -> 'b option t) -> 'a list -> 'b list t
   (** [filter_map] that acts on effectful predicates. *)
+
+  val fold_left : ('acc t -> 'a -> 'acc t) -> 'acc t -> 'a t list -> 'acc t
+  (** [fold_left f default l] apply [f] on each value of [l], accumulating into
+      [default]. *)
 end
 
 (** {2 Infix operators}
