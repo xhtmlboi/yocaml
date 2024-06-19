@@ -30,14 +30,17 @@
 
  (package
    (name yocaml_unix)
-   (synopsis "The Unix runtime for using YOCaml on a Unix file system!")
+   (synopsis "The Unix runtime for using YOCaml on an Unix file system!")
    (depends
     (ocaml (>= 5.1.1))
     (dune (>= 3.0.0))
     (yocaml (= :version))
     (logs (>= 0.7.0))
     (fmt (>= 0.9.0))
-    (digestif (>= 1.2.0))))
+    (digestif (>= 1.2.0))
+    (eio (= 1.1))
+    (eio_main (= 1.1))
+    (cohttp-eio (= 6.0.0~beta2))))
 
 (package
   (name yocaml_yaml)

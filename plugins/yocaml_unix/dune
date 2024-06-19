@@ -1,4 +1,4 @@
 (library
  (name yocaml_unix)
  (public_name yocaml_unix)
- (libraries digestif fmt fmt.tty logs logs.fmt unix yocaml))
+ (libraries digestif fmt fmt.tty logs logs.fmt eio eio_main yocaml))

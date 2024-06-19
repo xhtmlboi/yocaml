@@ -22,4 +22,4 @@ let setup_logger ?level () =
 
 let run ?(level = Logs.Debug) ?custom_error_handler program =
   let () = setup_logger ~level () in
-  Runner.run ?custom_error_handler program
+  Eio_main.run (Runner.run ?custom_error_handler program)

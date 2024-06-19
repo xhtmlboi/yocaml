@@ -84,3 +84,4 @@ module Data = Data
     Tools to help build plugins or runtimes. *)
 
 module Diagnostic = Diagnostic
+module Reader = Reader
