@@ -131,6 +131,22 @@ let dirname path =
 let move ~into source =
   match basename source with None -> into | Some x -> append into [ x ]
 
+let remove_common_prefix into source =
+  let rec aux acc into source =
+    match (into, source) with
+    | [ x ], y :: xs when String.equal x y -> List.rev_append acc (x :: xs)
+    | x :: xs, y :: ys when String.equal x y -> aux (x :: acc) xs ys
+    | _ -> into @ source
+  in
+  aux [] into source
+
+let relocate ~into source =
+  match (into, source) with
+  | Relative x, Absolute y -> Relative (x @ y)
+  | Absolute x, Relative y -> Absolute (x @ y)
+  | Relative x, Relative y -> Relative (remove_common_prefix x y)
+  | Absolute x, Absolute y -> Absolute (remove_common_prefix x y)
+
 let compare a b =
   match (a, b) with
   | Absolute _, Relative _ -> -1

@@ -286,6 +286,74 @@ let test_move2 =
       and computed = ~/[] |> move ~into:~/[ "oof"; "rab"; "zab" ] in
       check Testable.path "should be equal" expected computed)
 
+let test_relocate1 =
+  let open Alcotest in
+  test_case "relocate when both path are relative without common suffixes"
+    `Quick (fun () ->
+      let open Yocaml.Path in
+      let expected = ~/[ "foo"; "bar"; "baz"; "index.html" ]
+      and computed =
+        relocate ~into:~/[ "foo"; "bar" ] ~/[ "baz"; "index.html" ]
+      in
+      check Testable.path "should be equal" expected computed)
+
+let test_relocate2 =
+  let open Alcotest in
+  test_case "relocate when both path are absolute without common suffixes"
+    `Quick (fun () ->
+      let open Yocaml.Path in
+      let expected = abs [ "foo"; "bar"; "baz"; "index.html" ]
+      and computed =
+        relocate ~into:(abs [ "foo"; "bar" ]) (abs [ "baz"; "index.html" ])
+      in
+      check Testable.path "should be equal" expected computed)
+
+let test_relocate3 =
+  let open Alcotest in
+  test_case "relocate when one path is absolute without common suffixes" `Quick
+    (fun () ->
+      let open Yocaml.Path in
+      let expected = abs [ "foo"; "bar"; "baz"; "index.html" ]
+      and computed =
+        relocate ~into:(abs [ "foo"; "bar" ]) (rel [ "baz"; "index.html" ])
+      in
+      check Testable.path "should be equal" expected computed)
+
+let test_relocate4 =
+  let open Alcotest in
+  test_case "relocate when one path is relative without common suffixes" `Quick
+    (fun () ->
+      let open Yocaml.Path in
+      let expected = rel [ "foo"; "bar"; "baz"; "index.html" ]
+      and computed =
+        relocate ~into:(rel [ "foo"; "bar" ]) (abs [ "baz"; "index.html" ])
+      in
+      check Testable.path "should be equal" expected computed)
+
+let test_relocate5 =
+  let open Alcotest in
+  test_case "relocate when common suffixes 1" `Quick (fun () ->
+      let open Yocaml.Path in
+      let expected = rel [ "foo"; "bar"; "index.html" ]
+      and computed =
+        relocate
+          ~into:(rel [ "foo"; "bar" ])
+          (rel [ "foo"; "bar"; "index.html" ])
+      in
+      check Testable.path "should be equal" expected computed)
+
+let test_relocate6 =
+  let open Alcotest in
+  test_case "relocate when common suffixes 2" `Quick (fun () ->
+      let open Yocaml.Path in
+      let expected = rel [ "foo"; "bar"; "baz"; "index.html" ]
+      and computed =
+        relocate
+          ~into:(rel [ "foo"; "bar" ])
+          (rel [ "foo"; "bar"; "baz"; "index.html" ])
+      in
+      check Testable.path "should be equal" expected computed)
+
 let to_csexp_from_csexp_roundtrip =
   QCheck2.Test.make ~name:"to_csexp -> from_csexp roundtrip" ~count:100
     ~print:(fun x -> Format.asprintf "%a" Yocaml.Path.pp x)
@@ -327,5 +395,11 @@ let cases =
     ; test_dirname3
     ; test_move1
     ; test_move2
+    ; test_relocate1
+    ; test_relocate2
+    ; test_relocate3
+    ; test_relocate4
+    ; test_relocate5
+    ; test_relocate6
     ; to_csexp_from_csexp_roundtrip
     ] )
