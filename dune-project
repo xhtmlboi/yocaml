@@ -37,6 +37,7 @@
     (yocaml (= :version))
     (logs (>= 0.7.0))
     (fmt (>= 0.9.0))
+    (magic-mime (>= 1.3.1))
     (digestif (>= 1.2.0))
     (eio (= 1.1))
     (eio_main (= 1.1))
