@@ -397,14 +397,13 @@ module Validation : sig
 
         A typical usage is:
 
-        {[
+        {eof@ocaml skip[
           record (fun assoc ->
               let+ field_a = required assoc "fieldA" validator_a
               and+ field_b = optional assoc "fieldB" validator_b
               and+ field_c = required associ "fieldB" validator_c in
-              { field_a, field_b, field_c }
-            )
-        ]} *)
+              { field_a, field_b, field_c })
+        ]eof} *)
 
     val ( let+ ) : 'a validated_record -> ('a -> 'b) -> 'b validated_record
     (** [let+ x = v in  k x] is [map (fun x -> k x) v]. *)

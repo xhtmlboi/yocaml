@@ -6,3 +6,7 @@
 
 (documentation
  (package yocaml))
+
+(mdx
+ (files *.mli)
+ (libraries yocaml))
