@@ -23,3 +23,7 @@ let setup_logger ?level () =
 let run ?(level = Logs.Debug) ?custom_error_handler program =
   let () = setup_logger ~level () in
   Eio_main.run (Runner.run ?custom_error_handler program)
+
+let serve ?(level = Logs.Debug) ?custom_error_handler ~target ~port program =
+  let () = setup_logger ~level () in
+  Eio_main.run (Server.run ?custom_error_handler target port program)

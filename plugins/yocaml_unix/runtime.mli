@@ -15,3 +15,7 @@
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
 include Yocaml.Required.RUNTIME with type 'a t = Eio_unix.Stdenv.base -> 'a
+
+val to_eio_path :
+  Eio_unix.Stdenv.base -> Yocaml.Path.t -> Eio.Fs.dir_ty Eio.Path.t
+(** An helper for converting {!type:Yocaml.Path.t} to {!type:Eio.Path.t}. *)
