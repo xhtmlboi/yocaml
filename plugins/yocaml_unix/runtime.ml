@@ -24,6 +24,7 @@ end)
 
 type runtime_error =
   | Unable_to_write_file of Yocaml.Path.t * string
+  | Unable_to_create_directory of Yocaml.Path.t
   | Unable_to_read_file of Yocaml.Path.t
   | Unable_to_read_directory of Yocaml.Path.t
   | Unable_to_read_mtime of Yocaml.Path.t
@@ -56,17 +57,14 @@ let is_directory ~on:_ path env =
   let path = to_eio_path env path in
   Eio.Path.is_directory path
 
-let rec create_directory path env =
-  if not (file_exists ~on:`Source path env) then
-    let parent = Yocaml.Path.dirname path in
-    let () = create_directory parent env in
-    try
-      let path = to_eio_path env path in
-      Eio.Path.mkdir ~perm:0o755 path
-    with _ -> ()
+let create_directory ~on:_ path env =
+  try
+    let path = to_eio_path env path in
+    let () = Eio.Path.mkdir ~perm:0o755 path in
+    Ok ()
+  with _ -> Error (Unable_to_create_directory path)
 
 let write_file ~on:_ path content env =
-  let () = create_directory (Yocaml.Path.dirname path) env in
   try
     let path = to_eio_path env path in
     let () =
@@ -90,6 +88,9 @@ let runtime_error_to_string runtime_error =
   | Unable_to_read_file path ->
       Format.asprintf "%s: Unable to read file: `%a`" heading Yocaml.Path.pp
         path
+  | Unable_to_create_directory path ->
+      Format.asprintf "%s: Unable to create directory: `%a`" heading
+        Yocaml.Path.pp path
 
 let read_dir ~on:_ path env =
   try path |> to_eio_path env |> Eio.Path.read_dir |> Result.ok

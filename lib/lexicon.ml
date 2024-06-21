@@ -93,6 +93,12 @@ let file_is_a_directory source path ppf () =
      used as a file)"
     pp_filesystem source Path.pp path
 
+let directory_is_a_file source path ppf () =
+  Format.fprintf ppf
+    "The following path: `%a` (on `%a`) is a file (and attempts to be used as \
+     a directory)"
+    pp_filesystem source Path.pp path
+
 let directory_not_exists source path ppf () =
   Format.fprintf ppf
     "The following directory: `%a` (on `%a`) does not exists (or is maybe a \

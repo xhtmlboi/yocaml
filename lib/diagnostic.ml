@@ -98,6 +98,8 @@ let exception_to_diagnostic
       glob_pp (Lexicon.file_is_a_directory source path) ()
   | Eff.Directory_not_exists (source, path) ->
       glob_pp (Lexicon.directory_not_exists source path) ()
+  | Eff.Directory_is_a_file (source, path) ->
+      glob_pp (Lexicon.directory_is_a_file source path) ()
   | Eff.Provider_error error -> glob_pp (pp_provider_error custom_error) error
   | exn -> glob_pp Lexicon.unknown_error exn
 

@@ -179,6 +179,10 @@ let push_write_file trace on path content =
   @@ Format.asprintf "[WRITE_FILE][%a][%a]%s" on_pp on Yocaml.Path.pp path
        content
 
+let push_create_dir trace on path =
+  push_trace trace
+  @@ Format.asprintf "[WRITE_FILE][%a][%a]" on_pp on Yocaml.Path.pp path
+
 let push_is_directory trace on path =
   push_trace trace
   @@ Format.asprintf "[IS_DIRECTORY][%a]%a" on_pp on Yocaml.Path.pp path
@@ -261,6 +265,18 @@ let run ~trace program input =
                     (* We do not really hash the content since we are working on very
                        small file content. *)
                     continue k ("H:" ^ content))
+            | Yocaml_create_dir (on, gpath) ->
+                Some
+                  (fun (k : (a, _) continuation) ->
+                    let () = trace := push_create_dir !trace on gpath in
+                    let path = Yocaml.Path.to_list gpath in
+                    let new_fs =
+                      update !trace.system path (fun ~target ~previous_item:_ ->
+                          let mtime = !trace.time in
+                          Some (dir ~mtime target []))
+                    in
+                    let () = trace := update_system !trace new_fs in
+                    continue k ())
             | Yocaml_write_file (on, gpath, content) ->
                 Some
                   (fun (k : (a, _) continuation) ->
