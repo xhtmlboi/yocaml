@@ -76,6 +76,13 @@ module Make (Runtime : Required.RUNTIME) = struct
                         (function
                           | Ok x -> continue k x | Error err -> runtimec err)
                         (Runtime.write_file ~on:filesystem path content))
+              | Eff.Yocaml_create_dir (filesystem, path) ->
+                  Some
+                    (fun (k : (a, _) continuation) ->
+                      Runtime.bind
+                        (function
+                          | Ok x -> continue k x | Error err -> runtimec err)
+                        (Runtime.create_directory ~on:filesystem path))
               | Eff.Yocaml_is_directory (filesystem, path) ->
                   Some
                     (fun (k : (a, _) continuation) ->

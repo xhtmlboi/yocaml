@@ -131,13 +131,16 @@ module type RUNTIME = sig
   val hash_content : string -> string t
   (** [hash_content str] hash a content. *)
 
+  val create_directory :
+    on:[ `Source | `Target ] -> Path.t -> (unit, runtime_error) result t
+  (** [create_directory ~on path] create a directory. *)
+
   val write_file :
        on:[ `Source | `Target ]
     -> Path.t
     -> string
     -> (unit, runtime_error) result t
-  (** [write_file ~on:source path content] write a file (the function should
-      write every every intermediate path fragnment). *)
+  (** [write_file ~on:source path content] write a file. *)
 
   val is_directory : on:[ `Source | `Target ] -> Path.t -> bool t
   (** [is_directory ~on:source path] returns [true] if the given path is a

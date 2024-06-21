@@ -47,5 +47,8 @@ val invalid_path : Eff.filesystem -> Path.t -> Format.formatter -> unit -> unit
 val file_is_a_directory :
   Eff.filesystem -> Path.t -> Format.formatter -> unit -> unit
 
+val directory_is_a_file :
+  Eff.filesystem -> Path.t -> Format.formatter -> unit -> unit
+
 val directory_not_exists :
   Eff.filesystem -> Path.t -> Format.formatter -> unit -> unit

@@ -110,6 +110,7 @@ type _ Effect.t +=
   | Yocaml_write_file : filesystem * Path.t * string -> unit Effect.t
   | Yocaml_is_directory : filesystem * Path.t -> bool Effect.t
   | Yocaml_read_dir : filesystem * Path.t -> Path.fragment list Effect.t
+  | Yocaml_create_dir : filesystem * Path.t -> unit Effect.t
 
 let perform raw_effect = return @@ Effect.perform raw_effect
 
@@ -119,6 +120,7 @@ let run handler arrow input =
 exception File_not_exists of filesystem * Path.t
 exception Invalid_path of filesystem * Path.t
 exception File_is_a_directory of filesystem * Path.t
+exception Directory_is_a_file of filesystem * Path.t
 exception Directory_not_exists of filesystem * Path.t
 exception Provider_error of Required.provider_error
 
@@ -130,8 +132,11 @@ let logf ?(level = `Debug) = Format.kasprintf (fun result -> log ~level result)
 let is_directory ~on path = perform @@ Yocaml_is_directory (on, path)
 
 let is_file ~on path =
-  let+ is_dir = is_directory ~on path in
-  not is_dir
+  let* file_exists = file_exists ~on path in
+  if file_exists then
+    let+ is_dir = is_directory ~on path in
+    not is_dir
+  else return false
 
 let ensure_file_exists ~on f path =
   let* exists = file_exists ~on path in
@@ -161,7 +166,23 @@ let get_mtime ~on =
 
 let hash str = perform @@ Yocaml_hash_content str
 
+let create_directory ~on path =
+  let rec aux path =
+    let* is_file = is_file ~on path in
+    if is_file then raise (Directory_is_a_file (on, path))
+    else
+      let* is_directory = is_directory ~on path in
+      if not is_directory then
+        let parent = Path.dirname path in
+        let* () = aux parent in
+        perform @@ Yocaml_create_dir (on, path)
+      else return ()
+  in
+  aux path
+
 let write_file ~on path content =
+  let parent = Path.dirname path in
+  let* () = create_directory ~on parent in
   perform @@ Yocaml_write_file (on, path, content)
 
 let read_directory ~on ?(only = `Both) ?(where = fun _ -> true) path =
