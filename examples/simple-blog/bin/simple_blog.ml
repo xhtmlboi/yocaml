@@ -107,9 +107,6 @@ module Target = struct
      For ease of use, this cache is stored in the target directory. *)
   let cache = Path.(target_root / "cache")
 
-  (* CSS files will be copied into [_build/css]. *)
-  let css = Path.(target_root / "css")
-
   (* Pages will be generated in the root of the generated blog. *)
   let pages = target_root
 
@@ -127,20 +124,10 @@ end
    build rules that will copy files from the source to the target and transform
    files from the source and save them in the target. *)
 
-(* Let's start with CSS. There is no particular process, we just want to copy a
-   CSS file from the source to the target, so we can use the file copy action,
-   which proceeds without ceremony to a copy-paste. *)
-let process_css_file = Action.copy_file ~into:Target.css
-
-(* Now that we can copy/paste ONE file, let's batch the action to copy/paste all
-   CSS files from our source to our target.
-
-   - only: Allows specifying that we only want to act on files.
-   - where: Allows specifying that the batched action
-     will only be executed on files with the ".css" extension *)
+(* As we just want to move the entire directory of our CSS style sheets, we
+   don't need to bother, we can just copy the CSS directory into our target! *)
 let process_css_files =
-  Action.batch ~only:`Files ~where:(Path.has_extension "css") Source.css
-    process_css_file
+  Action.copy_directory ~into:Target.target_root Source.css
 
 (* Now that we can handle CSS files, we will handle pages using the description
    of a generic page described in the Archetype module. Like for CSS files, we
