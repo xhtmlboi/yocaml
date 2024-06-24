@@ -380,3 +380,11 @@ val read_directory :
 (** [read_directory ~on ?only ?where path] returns a list of children (as a pair
     of the full path and the name ([fragment]) of the child) of the given
     directory, performing [Yocaml_read_dir]. *)
+
+val copy_recursive : ?new_name:Path.fragment -> into:Path.t -> Path.t -> unit t
+(** [copy_recursive ~on path] copy (recursively) a directory or a file into
+    another one. *)
+
+val get_basename : Path.t -> Path.fragment t
+(** [get_basename path] returns the basename of a path (and fail if the path has
+    no basename). *)
