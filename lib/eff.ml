@@ -219,3 +219,40 @@ let mtime ~on path =
     else return t
   in
   aux path
+
+let get_basename source =
+  match Path.basename source with
+  | None -> raise (Invalid_path (`Source, source))
+  | Some fragment -> return fragment
+
+let copy_file into source =
+  let* fragment = get_basename source in
+  let dest = Path.(into / fragment) in
+  let* content = read_file ~on:`Source source in
+  write_file ~on:`Target dest content
+
+let copy_recursive ?new_name ~into source =
+  let rec aux ?new_name into source =
+    let* is_dir = is_directory ~on:`Target into in
+    if is_dir then
+      let* source_is_file = is_file ~on:`Source source in
+      if source_is_file then copy_file into source
+      else
+        let* source_is_directory = is_directory ~on:`Source source in
+        if source_is_directory then
+          let* name = get_basename source in
+          let name = Option.value new_name ~default:name in
+          let name = Path.(into / name) in
+          let* () = create_directory ~on:`Target name in
+          let* children = read_directory ~on:`Source ~only:`Both source in
+          let* _ = List.traverse (fun child -> aux name child) children in
+          return ()
+        else raise (File_not_exists (`Source, source))
+    else
+      let* is_file = is_file ~on:`Target into in
+      if is_file then raise (Directory_is_a_file (`Target, into))
+      else
+        let* () = create_directory ~on:`Target into in
+        aux ?new_name into source
+  in
+  aux ?new_name into source
