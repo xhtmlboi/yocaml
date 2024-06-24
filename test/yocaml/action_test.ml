@@ -110,6 +110,95 @@ let test_action_create_file_1 =
       check Testable.fs "should be equal" expected_file_system
         computed_file_system)
 
+let test_action_create_file_using_copy_directory =
+  let open Alcotest in
+  test_case "test of a complete action exection - everything is fresh" `Quick
+    (fun () ->
+      let open Yocaml.Path.Infix in
+      let base_file_system =
+        Fs.(
+          from_list
+            [
+              dir ~mtime:0 "."
+                [
+                  file ~mtime:0 "index.md" "an index"
+                ; file ~mtime:0 "about.md" "about page"
+                ; dir ~mtime:0 "articles"
+                    [
+                      file ~mtime:0 "hello.md" "hello world"
+                    ; file ~mtime:0 "yocaml.md" "article about YOCaml"
+                    ]
+                ; dir ~mtime:0 "static"
+                    [
+                      dir ~mtime:0 "images"
+                        [
+                          file ~mtime:0 "ocaml.png" "ocaml-logo"
+                        ; file ~mtime:0 "yocaml.svg" "yocaml-logo"
+                        ]
+                    ; file ~mtime:0 "client.bc.js" "js client"
+                    ; file ~mtime:0 "style.css" "stylesheet"
+                    ]
+                ]
+            ])
+      in
+      let trace = Fs.create_trace ~time:0 base_file_system in
+      let program () =
+        let open Yocaml in
+        let cache = Cache.empty in
+        let open Eff in
+        Eff.return cache
+        >>= Fs.increase_time_with 1
+        >>= Action.copy_file ~new_name:"client.js"
+              ~into:~/[ "_build"; "js" ]
+              ~/[ "static"; "client.bc.js" ]
+        >>= Action.copy_file
+              ~into:~/[ "_build"; "css" ]
+              ~/[ "static"; "style.css" ]
+        >>= Action.copy_directory ~into:~/[ "_build" ] ~/[ "static"; "images" ]
+      in
+      let trace, _cache = Fs.run ~trace program () in
+      let computed_file_system = Fs.trace_system trace
+      and expected_file_system =
+        Fs.(
+          from_list
+            [
+              dir ~mtime:1 "."
+                [
+                  file ~mtime:0 "index.md" "an index"
+                ; file ~mtime:0 "about.md" "about page"
+                ; dir ~mtime:0 "articles"
+                    [
+                      file ~mtime:0 "hello.md" "hello world"
+                    ; file ~mtime:0 "yocaml.md" "article about YOCaml"
+                    ]
+                ; dir ~mtime:0 "static"
+                    [
+                      dir ~mtime:0 "images"
+                        [
+                          file ~mtime:0 "ocaml.png" "ocaml-logo"
+                        ; file ~mtime:0 "yocaml.svg" "yocaml-logo"
+                        ]
+                    ; file ~mtime:0 "client.bc.js" "js client"
+                    ; file ~mtime:0 "style.css" "stylesheet"
+                    ]
+                ; dir "_build"
+                    [
+                      dir ~mtime:1 "js"
+                        [ file ~mtime:1 "client.js" "js client" ]
+                    ; dir ~mtime:1 "css"
+                        [ file ~mtime:1 "style.css" "stylesheet" ]
+                    ; dir ~mtime:1 "images"
+                        [
+                          file ~mtime:1 "ocaml.png" "ocaml-logo"
+                        ; file ~mtime:1 "yocaml.svg" "yocaml-logo"
+                        ]
+                    ]
+                ]
+            ])
+      in
+      check Testable.fs "should be equal" expected_file_system
+        computed_file_system)
+
 let test_action_create_file_2 =
   let open Alcotest in
   test_case
@@ -640,12 +729,172 @@ let test_batch_1 =
       check Testable.fs "Nothing should be done" expected_file_system
         computed_file_system)
 
+let test_copy_directory_1 =
+  let open Alcotest in
+  test_case "copy_directory - should copy/paste a whole filetree - 1" `Quick
+    (fun () ->
+      let open Yocaml in
+      let open Path.Infix in
+      let base_fs =
+        Fs.(
+          from_list
+            [
+              dir "."
+                [
+                  dir "a"
+                    [
+                      dir "b"
+                        [ file "a.txt" "a"; file "b.txt" "b"; file "c.md" "c" ]
+                    ; dir "c" [ dir "d" [ file "a.bb" "foo" ] ]
+                    ; dir "d" [ file "e" "eee" ]
+                    ]
+                ; dir "b" [ dir "c" [ file "e" "ef" ] ]
+                ]
+            ])
+      in
+      let program cache =
+        let open Eff.Infix in
+        Eff.return cache
+        >>= Action.copy_directory ~into:~/[ "_build"; "foo"; "bar" ] ~/[ "a" ]
+      in
+      let trace = Fs.create_trace ~time:10 base_fs in
+      let trace, cache = Fs.run ~trace program Cache.empty in
+      let expected_fs =
+        Fs.(
+          from_list
+            [
+              dir "."
+                [
+                  dir "_build"
+                    [
+                      dir "foo"
+                        [
+                          dir "bar"
+                            [
+                              dir "a"
+                                [
+                                  dir "b"
+                                    [
+                                      file ~mtime:10 "a.txt" "a"
+                                    ; file ~mtime:10 "b.txt" "b"
+                                    ; file ~mtime:10 "c.md" "c"
+                                    ]
+                                ; dir "c"
+                                    [ dir "d" [ file ~mtime:10 "a.bb" "foo" ] ]
+                                ; dir "d" [ file ~mtime:10 "e" "eee" ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ; dir "a"
+                    [
+                      dir "b"
+                        [ file "a.txt" "a"; file "b.txt" "b"; file "c.md" "c" ]
+                    ; dir "c" [ dir "d" [ file "a.bb" "foo" ] ]
+                    ; dir "d" [ file "e" "eee" ]
+                    ]
+                ; dir "b" [ dir "c" [ file "e" "ef" ] ]
+                ]
+            ])
+      in
+      let computed_fs = Fs.trace_system trace in
+      let () =
+        check Testable.fs "everything should be copied" expected_fs computed_fs
+      in
+      let trace = Fs.create_trace ~time:10 computed_fs in
+      let trace, _cache = Fs.run ~trace program cache in
+      let computed_fs_2 = Fs.trace_system trace in
+      check Testable.fs "Nothing should be done" computed_fs computed_fs_2)
+
+let test_copy_directory_2 =
+  let open Alcotest in
+  test_case
+    "copy_directory - should copy/paste a whole filetree with renaming - 2"
+    `Quick (fun () ->
+      let open Yocaml in
+      let open Path.Infix in
+      let base_fs =
+        Fs.(
+          from_list
+            [
+              dir "."
+                [
+                  dir "a"
+                    [
+                      dir "b"
+                        [ file "a.txt" "a"; file "b.txt" "b"; file "c.md" "c" ]
+                    ; dir "c" [ dir "d" [ file "a.bb" "foo" ] ]
+                    ; dir "d" [ file "e" "eee" ]
+                    ]
+                ; dir "b" [ dir "c" [ file "e" "ef" ] ]
+                ]
+            ])
+      in
+      let program cache =
+        let open Eff.Infix in
+        Eff.return cache
+        >>= Action.copy_directory ~new_name:"qwerty"
+              ~into:~/[ "_build"; "foo"; "bar" ]
+              ~/[ "a" ]
+      in
+      let trace = Fs.create_trace ~time:10 base_fs in
+      let trace, cache = Fs.run ~trace program Cache.empty in
+      let expected_fs =
+        Fs.(
+          from_list
+            [
+              dir "."
+                [
+                  dir "_build"
+                    [
+                      dir "foo"
+                        [
+                          dir "bar"
+                            [
+                              dir "qwerty"
+                                [
+                                  dir "b"
+                                    [
+                                      file ~mtime:10 "a.txt" "a"
+                                    ; file ~mtime:10 "b.txt" "b"
+                                    ; file ~mtime:10 "c.md" "c"
+                                    ]
+                                ; dir "c"
+                                    [ dir "d" [ file ~mtime:10 "a.bb" "foo" ] ]
+                                ; dir "d" [ file ~mtime:10 "e" "eee" ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ; dir "a"
+                    [
+                      dir "b"
+                        [ file "a.txt" "a"; file "b.txt" "b"; file "c.md" "c" ]
+                    ; dir "c" [ dir "d" [ file "a.bb" "foo" ] ]
+                    ; dir "d" [ file "e" "eee" ]
+                    ]
+                ; dir "b" [ dir "c" [ file "e" "ef" ] ]
+                ]
+            ])
+      in
+      let computed_fs = Fs.trace_system trace in
+      let () =
+        check Testable.fs "everything should be copied" expected_fs computed_fs
+      in
+      let trace = Fs.create_trace ~time:10 computed_fs in
+      let trace, _cache = Fs.run ~trace program cache in
+      let computed_fs_2 = Fs.trace_system trace in
+      check Testable.fs "Nothing should be done" computed_fs computed_fs_2)
+
 let cases =
   ( "Yocaml.Action"
   , [
       test_action_create_file_1
+    ; test_action_create_file_using_copy_directory
     ; test_action_create_file_2
     ; test_action_create_file_3
     ; test_action_with_dynamic_dependencies_1
     ; test_batch_1
+    ; test_copy_directory_1
+    ; test_copy_directory_2
     ] )
