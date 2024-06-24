@@ -57,6 +57,14 @@ val copy_file : ?new_name:Path.fragment -> into:Path.t -> Path.t -> t
     the [target] directory (potentially giving it a new name), taking account of
     dependencies. The copy is obviously static. *)
 
+val copy_directory : ?new_name:Path.fragment -> into:Path.t -> Path.t -> t
+(** [copy_directory ?new_name ~into:target source cache] Copies recursively the
+    [source] file to the [target] directory (potentially giving it a new name),
+    taking account of dependencies. The copy is obviously static.
+
+    {b Warning} The use of this action is relatively optimistic. If only one
+    child has been modified, the entire copy will be replayed. *)
+
 val batch :
      ?only:[ `Files | `Directories | `Both ]
   -> ?where:(Path.t -> bool)

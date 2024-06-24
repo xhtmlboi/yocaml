@@ -52,6 +52,23 @@ let need_update cache has_dynamic_deps deps target =
       else Nothing
   else Eff.return Create
 
+let perform target task when_creation when_update cache =
+  let open Eff.Syntax in
+  let deps, eff, has_dynamic_deps = Task.destruct task in
+  let* interaction = need_update cache has_dynamic_deps deps target in
+  match interaction with
+  | Nothing ->
+      let+ () = Lexicon.target_already_up_to_date target in
+      cache
+  | Create ->
+      let* () = Lexicon.target_need_to_be_built target in
+      let+ cache = when_creation target cache eff in
+      cache
+  | Update ->
+      let* () = Lexicon.target_exists target in
+      let+ cache = when_update target cache eff in
+      cache
+
 let perform_writing target cache fc hc dynamic_deps =
   let open Eff.Syntax in
   let* () = Lexicon.target_is_written target in
@@ -73,19 +90,13 @@ let perform_update target cache eff =
       perform_writing target cache fc hc dynamic_deps
 
 let write_dynamic_file target task cache =
-  let open Eff.Syntax in
-  let deps, eff, has_dynamic_deps = Task.destruct task in
-  let* interaction = need_update cache has_dynamic_deps deps target in
-  match interaction with
-  | Nothing ->
-      let+ () = Lexicon.target_already_up_to_date target in
-      cache
-  | Create ->
-      let* () = Lexicon.target_need_to_be_built target in
+  perform target task
+    (fun target cache eff ->
+      let open Eff.Syntax in
       let* fc, dynamic_deps = eff () in
       let* hc = Eff.hash fc in
-      perform_writing target cache fc hc dynamic_deps
-  | Update -> perform_update target cache eff
+      perform_writing target cache fc hc dynamic_deps)
+    perform_update cache
 
 let write_static_file target task cache =
   write_dynamic_file target Task.(task ||> no_dynamic_deps) cache
@@ -97,6 +108,23 @@ let copy_file ?new_name ~into path cache =
       let name = Option.value ~default:fragment new_name in
       let dest = Path.(into / name) in
       write_static_file dest (Pipeline.read_file path) cache
+
+let copy_directory ?new_name ~into source cache =
+  let open Eff.Syntax in
+  let perform_copy _ cache eff =
+    let+ (), _ = eff () in
+    cache
+  in
+  let* name = Eff.get_basename source in
+  let name = Option.value new_name ~default:name in
+  let target = Path.(into / name) in
+  let task =
+    Task.(
+      make (Deps.singleton source) (fun () ->
+          Eff.copy_recursive ?new_name ~into source)
+      ||> no_dynamic_deps)
+  in
+  perform target task perform_copy perform_copy cache
 
 let batch ?only ?where path action cache =
   let open Eff in
