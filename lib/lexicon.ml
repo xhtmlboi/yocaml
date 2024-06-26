@@ -17,47 +17,62 @@
 let bug_tracker = "https://github.com/xhtmlboi/yocaml/issues"
 
 let target_already_up_to_date target =
-  Eff.logf ~level:`Info "`%a` is already up-to-date" Path.pp target
+  Format.asprintf "`%a` is already up-to-date" Path.pp target
 
-let target_exists target = Eff.logf ~level:`Info "`%a` exists" Path.pp target
+let target_exists target = Format.asprintf "`%a` exists" Path.pp target
 
 let target_need_to_be_built target =
-  Eff.logf ~level:`Info "`%a` need to be built" Path.pp target
+  Format.asprintf "`%a` need to be built" Path.pp target
 
 let target_is_written target =
-  Eff.logf ~level:`Debug "`%a` will be written" Path.pp target
+  Format.asprintf "`%a` will be written" Path.pp target
 
 let target_was_written target =
-  Eff.logf ~level:`Debug "`%a` has been written" Path.pp target
+  Format.asprintf "`%a` has been written" Path.pp target
 
 let target_hash_is_unchanged target =
-  Eff.logf ~level:`Info
+  Format.asprintf
     "`%a` always has the same hash as in the cache, already up-to-date" Path.pp
     target
 
 let target_hash_is_changed target =
-  Eff.logf ~level:`Info "`%a` has a different hash, need to be built" Path.pp
-    target
+  Format.asprintf "`%a` has a different hash, need to be built" Path.pp target
 
 let found_dynamic_dependencies target =
-  Eff.logf ~level:`Info "`%a` has dynamic dependencies" Path.pp target
+  Format.asprintf "`%a` has dynamic dependencies" Path.pp target
 
 let target_not_in_cache target =
-  Eff.logf ~level:`Info "`%a` is not present in the cache" Path.pp target
+  Format.asprintf "`%a` is not present in the cache" Path.pp target
 
 let cache_invalid_csexp target =
-  Eff.logf ~level:`Warning "Cache located in `%a` is invalid Csexp" Path.pp
-    target
+  Format.asprintf "Cache located in `%a` is invalid Csexp" Path.pp target
 
 let cache_invalid_repr target =
-  Eff.logf ~level:`Warning "Cache located in `%a` is invalid representation"
-    Path.pp target
+  Format.asprintf "Cache located in `%a` is invalid representation" Path.pp
+    target
 
 let cache_restored target =
-  Eff.logf ~level:`Info "Cache restored from `%a`" Path.pp target
+  Format.asprintf "Cache restored from `%a`" Path.pp target
 
-let cache_stored target =
-  Eff.logf ~level:`Info "Cache stored in `%a`" Path.pp target
+let cache_stored target = Format.asprintf "Cache stored in `%a`" Path.pp target
+
+let copy_file ?new_name ~into source =
+  let with_new_name =
+    Option.fold ~none:""
+      ~some:(Format.asprintf " (with new name `%s`)")
+      new_name
+  in
+  Format.asprintf "Copy file `%a` into `%a`%s" Path.pp source Path.pp into
+    with_new_name
+
+let copy_directory ?new_name ~into source =
+  let with_new_name =
+    Option.fold ~none:""
+      ~some:(Format.asprintf " (with new name `%s`)")
+      new_name
+  in
+  Format.asprintf "Copy directory `%a` into `%a`%s" Path.pp source Path.pp into
+    with_new_name
 
 let pp_filesystem ppf = function
   | `Source -> Format.fprintf ppf "source"

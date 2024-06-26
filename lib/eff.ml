@@ -236,10 +236,17 @@ let copy_recursive ?new_name ~into source =
     let* is_dir = is_directory ~on:`Target into in
     if is_dir then
       let* source_is_file = is_file ~on:`Source source in
-      if source_is_file then copy_file into source
+      if source_is_file then
+        let* () =
+          log ~level:`Debug @@ Lexicon.copy_file ?new_name ~into source
+        in
+        copy_file into source
       else
         let* source_is_directory = is_directory ~on:`Source source in
         if source_is_directory then
+          let* () =
+            log ~level:`Debug @@ Lexicon.copy_directory ?new_name ~into source
+          in
           let* name = get_basename source in
           let name = Option.value new_name ~default:name in
           let name = Path.(into / name) in
