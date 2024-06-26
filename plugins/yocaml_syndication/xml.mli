@@ -103,5 +103,5 @@ val node : ?ns:string -> name:string -> ?attr:Attr.t list -> node list -> node
 val opt : node option -> node
 (** [opt node] conditionnally adds [node]. *)
 
-val pp : Format.formatter -> t -> unit
+val to_string : t -> string
 (** Pretty printer for XML document. *)
