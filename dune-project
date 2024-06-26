@@ -22,6 +22,7 @@
    (alcotest :with-test)
    (qcheck :with-test)
    (qcheck-alcotest :with-test)
+   (ppx_expect :with-test)
    (mdx (and :with-test (= 2.4.1)))
    (ocamlformat :with-dev-setup)
    (ocp-indent :with-dev-setup)
@@ -69,3 +70,11 @@
    (dune (>= 3.0.0))
    (yocaml (= :version))
    (jingoo (>= 1.5.0))))
+
+(package
+  (name yocaml_syndication)
+  (synopsis "Yocaml plugin for dealing with RSS and Atom feed")
+  (depends
+   (ocaml (>= 5.1.1))
+   (dune (>= 3.0.0))
+   (yocaml (= :version))))
