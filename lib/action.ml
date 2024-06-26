@@ -17,17 +17,13 @@
 type t = Cache.t -> Cache.t Eff.t
 type interaction = Create | Nothing | Update
 
-let need_update ?(absent_in_cache = false) cache has_dynamic_deps deps target =
+let need_update cache has_dynamic_deps deps target =
   let open Eff.Syntax in
   let* exists = Eff.file_exists ~on:`Target target in
   if exists then
     let* need_shortcut, deps =
       if has_dynamic_deps then
         match Cache.get cache target with
-        | None when absent_in_cache ->
-            (* Accepts certain artefacts as missing from the cache (e.g. a
-               directory) *)
-            Eff.return (false, deps)
         | None ->
             (* If there's no information in the cache, it's annoying and dynamic
                dependencies will probably have to be rechecked, right? In some
@@ -60,12 +56,11 @@ let need_update ?(absent_in_cache = false) cache has_dynamic_deps deps target =
       else Nothing
   else Eff.return Create
 
-let perform ?absent_in_cache target task when_creation when_update cache =
+let perform target task when_creation when_update cache =
   let open Eff.Syntax in
   let deps, eff, has_dynamic_deps = Task.destruct task in
-  let* interaction =
-    need_update ?absent_in_cache cache has_dynamic_deps deps target
-  in
+  let* () = Eff.logf ~level:`Warning "%a %b" Path.pp target has_dynamic_deps in
+  let* interaction = need_update cache has_dynamic_deps deps target in
   match interaction with
   | Nothing ->
       let+ () =
@@ -141,7 +136,7 @@ let copy_directory ?new_name ~into source cache =
           Eff.copy_recursive ?new_name ~into source)
       ||> no_dynamic_deps)
   in
-  perform ~absent_in_cache:true target task perform_copy perform_copy cache
+  perform target task perform_copy perform_copy cache
 
 let batch ?only ?where path action cache =
   let open Eff in
