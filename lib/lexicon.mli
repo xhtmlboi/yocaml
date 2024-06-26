@@ -19,19 +19,21 @@
 
 (** {1 Logs} *)
 
-val target_already_up_to_date : Path.t -> unit Eff.t
-val target_exists : Path.t -> unit Eff.t
-val target_need_to_be_built : Path.t -> unit Eff.t
-val target_is_written : Path.t -> unit Eff.t
-val target_was_written : Path.t -> unit Eff.t
-val target_hash_is_unchanged : Path.t -> unit Eff.t
-val target_hash_is_changed : Path.t -> unit Eff.t
-val found_dynamic_dependencies : Path.t -> unit Eff.t
-val target_not_in_cache : Path.t -> unit Eff.t
-val cache_invalid_csexp : Path.t -> unit Eff.t
-val cache_invalid_repr : Path.t -> unit Eff.t
-val cache_restored : Path.t -> unit Eff.t
-val cache_stored : Path.t -> unit Eff.t
+val target_already_up_to_date : Path.t -> string
+val target_exists : Path.t -> string
+val target_need_to_be_built : Path.t -> string
+val target_is_written : Path.t -> string
+val target_was_written : Path.t -> string
+val target_hash_is_unchanged : Path.t -> string
+val target_hash_is_changed : Path.t -> string
+val found_dynamic_dependencies : Path.t -> string
+val target_not_in_cache : Path.t -> string
+val cache_invalid_csexp : Path.t -> string
+val cache_invalid_repr : Path.t -> string
+val cache_restored : Path.t -> string
+val cache_stored : Path.t -> string
+val copy_file : ?new_name:Path.fragment -> into:Path.t -> Path.t -> string
+val copy_directory : ?new_name:Path.fragment -> into:Path.t -> Path.t -> string
 
 (** {1 Vocabulary} *)
 
@@ -40,15 +42,16 @@ val there_is_an_error : Format.formatter -> unit -> unit
 val unknown_error : Format.formatter -> exn -> unit
 
 val file_not_exists :
-  Eff.filesystem -> Path.t -> Format.formatter -> unit -> unit
+  [ `Source | `Target ] -> Path.t -> Format.formatter -> unit -> unit
 
-val invalid_path : Eff.filesystem -> Path.t -> Format.formatter -> unit -> unit
+val invalid_path :
+  [ `Source | `Target ] -> Path.t -> Format.formatter -> unit -> unit
 
 val file_is_a_directory :
-  Eff.filesystem -> Path.t -> Format.formatter -> unit -> unit
+  [ `Source | `Target ] -> Path.t -> Format.formatter -> unit -> unit
 
 val directory_is_a_file :
-  Eff.filesystem -> Path.t -> Format.formatter -> unit -> unit
+  [ `Source | `Target ] -> Path.t -> Format.formatter -> unit -> unit
 
 val directory_not_exists :
-  Eff.filesystem -> Path.t -> Format.formatter -> unit -> unit
+  [ `Source | `Target ] -> Path.t -> Format.formatter -> unit -> unit

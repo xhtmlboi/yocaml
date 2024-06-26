@@ -375,7 +375,8 @@ let () =
         |> Option.value ~default:8000
       in
       (* Then you can launch the server! *)
-      Yocaml_unix.serve ~target:Target.target_root ~port process_all
+      Yocaml_unix.serve ~level:Logs.Info ~target:Target.target_root ~port
+        process_all
   | _ ->
       (* If no arguments (or the wrong values) are passed, the site is built *)
       Yocaml_unix.run process_all
