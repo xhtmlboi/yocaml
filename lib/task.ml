@@ -155,9 +155,8 @@ let map7 fu a b c d e f g = ap (map6 fu a b c d e f) g
 let map8 fu a b c d e f g h = ap (map7 fu a b c d e f g) h
 
 let no_dynamic_deps t =
-  rcompose
-    { t with has_dynamic_dependencies = false }
-    (lift (fun x -> (x, Deps.empty)))
+  let a = rcompose t (lift (fun x -> (x, Deps.empty))) in
+  { a with has_dynamic_dependencies = false }
 
 let drop_first () = lift Stdlib.snd
 let drop_second () = lift Stdlib.fst
