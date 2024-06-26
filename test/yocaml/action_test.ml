@@ -299,18 +299,18 @@ let test_action_create_file_2 =
                     ; file ~mtime:5 "about.html" "about page"
                     ; dir ~mtime:5 "js"
                         [ file ~mtime:5 "client.js" "js client" ]
-                    ; dir ~mtime:5 "css"
-                        [ file ~mtime:5 "style.css" "stylesheet" ]
-                    ; dir ~mtime:5 "images"
+                    ; dir ~mtime:1 "css"
+                        [ file ~mtime:1 "style.css" "stylesheet" ]
+                    ; dir ~mtime:1 "images"
                         [
-                          file ~mtime:5 "ocaml.png" "ocaml-logo"
-                        ; file ~mtime:5 "yocaml.svg" "yocaml-logo"
+                          file ~mtime:1 "ocaml.png" "ocaml-logo"
+                        ; file ~mtime:1 "yocaml.svg" "yocaml-logo"
                         ]
                     ]
                 ]
             ])
       in
-      check Testable.fs "should be equal" expected_file_system
+      check Testable.fs "1 - should be equal" expected_file_system
         computed_file_system)
 
 let test_action_create_file_3 =
@@ -881,7 +881,7 @@ let test_copy_directory_2 =
       let () =
         check Testable.fs "everything should be copied" expected_fs computed_fs
       in
-      let trace = Fs.create_trace ~time:10 computed_fs in
+      let trace = Fs.create_trace ~time:15 computed_fs in
       let trace, _cache = Fs.run ~trace program cache in
       let computed_fs_2 = Fs.trace_system trace in
       check Testable.fs "Nothing should be done" computed_fs computed_fs_2)
