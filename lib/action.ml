@@ -49,8 +49,8 @@ let need_update cache has_dynamic_deps deps target =
     in
     if need_shortcut then Eff.return Update
     else
-      let+ mtime_target = Eff.mtime ~on:`Target target
-      and+ mtime_deps = Deps.get_mtimes deps in
+      let* mtime_target = Eff.mtime ~on:`Target target in
+      let+ mtime_deps = Deps.get_mtimes deps in
       if List.exists (fun mtime_dep -> mtime_dep >= mtime_target) mtime_deps
       then Update
       else Nothing
@@ -59,7 +59,7 @@ let need_update cache has_dynamic_deps deps target =
 let perform target task when_creation when_update cache =
   let open Eff.Syntax in
   let deps, eff, has_dynamic_deps = Task.destruct task in
-  let* () = Eff.logf ~level:`Warning "%a %b" Path.pp target has_dynamic_deps in
+
   let* interaction = need_update cache has_dynamic_deps deps target in
   match interaction with
   | Nothing ->
