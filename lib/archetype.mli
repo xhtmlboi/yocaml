@@ -199,6 +199,13 @@ module Page : sig
       example, an article is also a page, but can be given a different page
       title. *)
 
+  (** {1 Accessors} *)
+
+  val title : t -> string option
+  val charset : t -> string option
+  val description : t -> string option
+  val tags : t -> string list
+
   (** {1 Deal with Page as Metadata}
 
       A page can be parsed and injected. *)
@@ -228,6 +235,13 @@ module Article : sig
 
   type t
   (** A type describing an article. *)
+
+  (** {1 Accessors} *)
+
+  val page : t -> Page.t
+  val title : t -> string
+  val synopsis : t -> string option
+  val date : t -> Datetime.t
 
   (** {1 Deal with Article as Metadata}
 
@@ -279,6 +293,19 @@ module Articles : sig
   val from_page : (Path.t * Article.t) list -> Page.t -> t
   (** [from_page articles page] transforms a regular page into an article index. *)
 
+  val fetch :
+       (module Required.DATA_PROVIDER)
+    -> ?increasing:bool
+    -> ?filter:((Path.t * Article.t) list -> (Path.t * Article.t) list)
+    -> ?on:Eff.filesystem
+    -> where:(Path.t -> bool)
+    -> compute_link:(Path.t -> Path.t)
+    -> Path.t
+    -> (unit, (Path.t * Article.t) list) Task.t
+  (** A helper task that transforms a directory path into a list of items,
+      useful for building indexes. You can refer to the examples to see how this
+      is used in a classic pipeline. *)
+
   val compute_index :
        (module Required.DATA_PROVIDER)
     -> ?increasing:bool
@@ -288,9 +315,8 @@ module Articles : sig
     -> compute_link:(Path.t -> Path.t)
     -> Path.t
     -> (Page.t, t) Task.t
-  (** A helper task that transforms a directory path into a list of items,
-      useful for building indexes. You can refer to the examples to see how this
-      is used in a classic pipeline. *)
+  (** Pipe {!val:fetch} into a computed page. You can refer to the examples to
+      see how this is used in a classic pipeline. *)
 
   include Required.DATA_INJECTABLE with type t := t
   (** @inline *)
