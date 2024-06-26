@@ -284,6 +284,10 @@ module Page = struct
       method tags = tags
     end
 
+  let title p = p#page_title
+  let charset p = p#page_charset
+  let description p = p#description
+  let tags p = p#tags
   let neutral = Result.ok @@ new page ()
 
   let validate_page fields =
@@ -361,6 +365,11 @@ module Article = struct
       method date = date
     end
 
+  let page a = (a :> Page.t)
+  let title a = a#title
+  let synopsis a = a#synopsis
+  let date a = a#date
+
   let neutral =
     Data.Validation.fail_with ~given:"null" "Cannot be null"
     |> Result.map_error (fun error ->
@@ -411,9 +420,9 @@ module Articles = struct
         if increasing then r else ~-r)
       articles
 
-  let compute_index (module P : Required.DATA_PROVIDER) ?increasing
+  let fetch (module P : Required.DATA_PROVIDER) ?increasing
       ?(filter = fun x -> x) ?(on = `Source) ~where ~compute_link path =
-    Task.from_effect (fun page ->
+    Task.from_effect (fun () ->
         let open Eff in
         let* files = read_directory ~on ~only:`Files ~where path in
         let+ articles =
@@ -426,8 +435,15 @@ module Articles = struct
               (url, metadata))
             files
         in
-        let articles = articles |> sort_by_date ?increasing |> filter in
-        from_page articles page)
+        articles |> sort_by_date ?increasing |> filter)
+
+  let compute_index (module P : Required.DATA_PROVIDER) ?increasing
+      ?(filter = fun x -> x) ?(on = `Source) ~where ~compute_link path =
+    let open Task in
+    (fun x -> (x, ()))
+    |>> second
+          (fetch (module P) ?increasing ~filter ~on ~where ~compute_link path)
+    >>| fun (page, articles) -> from_page articles page
 
   let normalize_article (ident, article) =
     let open Data in
