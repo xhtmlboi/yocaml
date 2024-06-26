@@ -176,4 +176,4 @@ let from_articles ?encoding ?standalone ?image ?textinput ~title ~url ~link
         feed ?encoding ?standalone ?image ?textinput ~title ~url ~link
           ~description items
       in
-      Format.asprintf "%a" Xml.pp feed)
+      Xml.to_string feed)

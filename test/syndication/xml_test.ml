@@ -14,8 +14,10 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
+open Yocaml_syndication
+
 let address ~number ~street ~zipcode ~city ~country =
-  let open Yocaml_syndication.Xml in
+  let open Xml in
   node ~name:"address"
     [
       leaf ~name:"number" (Some (string_of_int number))
@@ -28,16 +30,16 @@ let address ~number ~street ~zipcode ~city ~country =
     ]
 
 let phone ~kind ~value =
-  let open Yocaml_syndication.Xml in
+  let open Xml in
   leaf ~name:"phone" ~attr:Attr.[ string ~key:"kind" kind ] (Some value)
 
 let email ~kind ~value =
-  let open Yocaml_syndication.Xml in
+  let open Xml in
   leaf ~name:"email" ~attr:Attr.[ string ~key:"kind" kind ] (Some value)
 
 let person ?(phones = []) ?(emails = []) ~gender ~first_name ~last_name ~address
     () =
-  let open Yocaml_syndication.Xml in
+  let open Xml in
   node ~name:"person"
     ~attr:Attr.[ string ~key:"gender" gender ]
     [
@@ -49,49 +51,49 @@ let person ?(phones = []) ?(emails = []) ~gender ~first_name ~last_name ~address
     ]
 
 let%expect_test "Pretty-printing a simple xml document" =
-  let open Yocaml_syndication.Xml in
+  let open Xml in
   let document = document @@ leaf ~name:"element" (Some "Hello World") in
-  print_endline @@ Format.asprintf "%a" pp document;
+  print_endline @@ to_string document;
   [%expect
     {|
-    <?xml encoding="utf-8" version="1.0" ?>
+    <?xml version="1.0" encoding="utf-8"?>
     <element>Hello World</element>
     |}]
 
 let%expect_test "Pretty-printing a simple xml document with custom encoding \
                  and version" =
-  let open Yocaml_syndication.Xml in
+  let open Xml in
   let document =
     document ~version:"2.0" ~encoding:"utf-16" ~standalone:true
     @@ leaf ~name:"element" (Some "Hello World")
   in
-  print_endline @@ Format.asprintf "%a" pp document;
+  print_endline @@ to_string document;
   [%expect
     {|
-    <?xml encoding="utf-16" standalone="yes" version="2.0" ?>
+    <?xml standalone="yes" version="2.0" encoding="utf-16"?>
     <element>Hello World</element>
     |}]
 
 let%expect_test "Pretty-printing an empty xml document (using a leaf)" =
-  let open Yocaml_syndication.Xml in
+  let open Xml in
   let document = document @@ leaf ~name:"element" None in
-  print_endline @@ Format.asprintf "%a" pp document;
+  print_endline @@ to_string document;
   [%expect {|
-    <?xml encoding="utf-8" version="1.0" ?>
+    <?xml version="1.0" encoding="utf-8"?>
     <element/>
     |}]
 
 let%expect_test "Pretty-printing an empty xml document (using a node)" =
-  let open Yocaml_syndication.Xml in
+  let open Xml in
   let document = document @@ node ~name:"element" [] in
-  print_endline @@ Format.asprintf "%a" pp document;
+  print_endline @@ to_string document;
   [%expect {|
-    <?xml encoding="utf-8" version="1.0" ?>
+    <?xml version="1.0" encoding="utf-8"?>
     <element/>
     |}]
 
 let%expect_test "Pretty-printing a complex xml document" =
-  let open Yocaml_syndication.Xml in
+  let open Xml in
   let document =
     document
     @@ node ~name:"repository"
@@ -110,32 +112,42 @@ let%expect_test "Pretty-printing a complex xml document" =
              ()
          ]
   in
-  print_endline @@ Format.asprintf "%a" pp document;
+  print_endline @@ to_string document;
   [%expect
     {|
-    <?xml encoding="utf-8" version="1.0" ?>
+    <?xml version="1.0" encoding="utf-8"?>
     <repository>
-                <person gender="M"> <first_name>John</first_name>
-                                   <last_name>Doe</last_name>
-                                   <address> <number>10</number>
-                                            <street kind="regular">Street of OCaml</street>
-                                            <zipcode>42</zipcode>
-                                            <city>FPCity</city>
-                                            <country>OCamland</country></address>
-                                   <phones/><email/></person>
-                <person gender="F"> <first_name>Jeanne</first_name>
-                                   <last_name>Doe</last_name>
-                                   <address> <number>12</number>
-                                            <street kind="avenue">Avenue of OCaml</street>
-                                            <zipcode>43</zipcode>
-                                            <city>CityOfApp</city>
-                                            <country>OcamlIsland</country>
-                                   </address><phones/><email/></person>
+      <person gender="M">
+        <first_name>John</first_name>
+        <last_name>Doe</last_name>
+        <address>
+          <number>10</number>
+          <street kind="regular">Street of OCaml</street>
+          <zipcode>42</zipcode>
+          <city>FPCity</city>
+          <country>OCamland</country>
+        </address>
+        <phones/>
+        <email/>
+      </person>
+      <person gender="F">
+        <first_name>Jeanne</first_name>
+        <last_name>Doe</last_name>
+        <address>
+          <number>12</number>
+          <street kind="avenue">Avenue of OCaml</street>
+          <zipcode>43</zipcode>
+          <city>CityOfApp</city>
+          <country>OcamlIsland</country>
+        </address>
+        <phones/>
+        <email/>
+      </person>
     </repository>
     |}]
 
 let%expect_test "Pretty-printing yet another complex xml document" =
-  let open Yocaml_syndication.Xml in
+  let open Xml in
   let document =
     document
     @@ node ~name:"repository"
@@ -171,47 +183,54 @@ let%expect_test "Pretty-printing yet another complex xml document" =
              ()
          ]
   in
-  print_endline @@ Format.asprintf "%a" pp document;
+  print_endline @@ to_string document;
   [%expect
     {|
-    <?xml encoding="utf-8" version="1.0" ?>
+    <?xml version="1.0" encoding="utf-8"?>
     <repository>
-                <person gender="M"> <first_name>John</first_name>
-                                   <last_name>Doe</last_name>
-                                   <address> <number>10</number>
-                                            <street kind="regular">Street of OCaml</street>
-                                            <zipcode>42</zipcode>
-                                            <city>FPCity</city>
-                                            <country>OCamland</country></address>
-                                   <phones>
-                                           <phone kind="mobile">+33 06 11 11 11 11</phone>
-                                           <phone kind="mobile">+33 06 11 11 11 12</phone>
-                                           <phone kind="fixe">+33 06 11 11 11 13</phone>
-                                   </phones>
-                                   <email>
-                                          <email kind="perso">jhonnydony@yahoo.fr</email>
-                                          <email kind="pro">j.doe@corporate.org</email>
-                                   </email></person>
-                <person gender="F"> <first_name>Jeanne</first_name>
-                                   <last_name>Doe</last_name>
-                                   <address> <number>12</number>
-                                            <street kind="avenue">Avenue of OCaml</street>
-                                            <zipcode>43</zipcode>
-                                            <city>CityOfApp</city>
-                                            <country>OcamlIsland</country>
-                                   </address>
-                                   <phones>
-                                           <phone kind="mobile">+33 06 11 11 11 14</phone>
-                                           <phone kind="fixe">+33 06 11 11 11 15</phone>
-                                   </phones>
-                                   <email>
-                                          <email kind="pro">je.doee@corporate.org</email>
-                                   </email></person>
+      <person gender="M">
+        <first_name>John</first_name>
+        <last_name>Doe</last_name>
+        <address>
+          <number>10</number>
+          <street kind="regular">Street of OCaml</street>
+          <zipcode>42</zipcode>
+          <city>FPCity</city>
+          <country>OCamland</country>
+        </address>
+        <phones>
+          <phone kind="mobile">+33 06 11 11 11 11</phone>
+          <phone kind="mobile">+33 06 11 11 11 12</phone>
+          <phone kind="fixe">+33 06 11 11 11 13</phone>
+        </phones>
+        <email>
+          <email kind="perso">jhonnydony@yahoo.fr</email>
+          <email kind="pro">j.doe@corporate.org</email>
+        </email>
+      </person>
+      <person gender="F">
+        <first_name>Jeanne</first_name>
+        <last_name>Doe</last_name>
+        <address>
+          <number>12</number>
+          <street kind="avenue">Avenue of OCaml</street>
+          <zipcode>43</zipcode>
+          <city>CityOfApp</city>
+          <country>OcamlIsland</country>
+        </address>
+        <phones>
+          <phone kind="mobile">+33 06 11 11 11 14</phone>
+          <phone kind="fixe">+33 06 11 11 11 15</phone>
+        </phones>
+        <email>
+          <email kind="pro">je.doee@corporate.org</email>
+        </email>
+      </person>
     </repository>
     |}]
 
 let%expect_test "test with some escapes" =
-  let open Yocaml_syndication.Xml in
+  let open Xml in
   let document =
     document
     @@ node ~ns:"foo" ~name:"a"
@@ -226,13 +245,15 @@ let%expect_test "test with some escapes" =
              ]
          ]
   in
-  print_endline @@ Format.asprintf "%a" pp document;
+  print_endline @@ to_string document;
   [%expect
     {|
-    <?xml encoding="utf-8" version="1.0" ?>
+    <?xml version="1.0" encoding="utf-8"?>
     <foo:a>
-           <k value="a&amp;b"> <fwrk:msp><![CDATA[Hello "World"]]></fwrk:msp>
-                              <r>Hi &quot;World&quot;, l&apos;oo &lt;p&gt;</r>
-                              <b><![CDATA[f]]></b></k>
+      <k value="a&amp;b">
+        <fwrk:msp><![CDATA[Hello "World"]]></fwrk:msp>
+        <r>Hi &quot;World&quot;, l&apos;oo &lt;p&gt;</r>
+        <b><![CDATA[f]]></b>
+      </k>
     </foo:a>
     |}]

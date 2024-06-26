@@ -88,35 +88,45 @@ let header_to_string { version; encoding; standalone; _ } =
     in
     if standalone then Attr.string ~key:"standalone" "yes" :: base else base
   in
-  "<?xml " ^ Attr.(set_to_string @@ from_list attributes) ^ " ?>"
+  "<?xml " ^ (attributes |> List.map Attr.to_string |> String.concat " ") ^ "?>"
 
-let rec opening = function
-  | Leaf (name, attributes, _) | Node (name, attributes, _) ->
-      let name = make_key name in
-      let attr_str =
-        let r = Attr.set_to_string attributes in
-        if String.equal String.empty r then "" else " " ^ r
-      in
-      Some (name, "<" ^ name ^ attr_str)
-  | Maybe (Some n) -> opening n
-  | Maybe None -> None
+let close_tag = "/>"
+let close_name name = "</" ^ name ^ ">"
+let make_indent i = String.make (i * 2) ' '
 
-let rec pp_node ppf node =
-  match opening node with
-  | None -> Format.fprintf ppf ""
-  | Some (name, opening) ->
-      Format.fprintf ppf "%s%a" opening (pp_node_tail name) node
+let node_to_string node =
+  let rec aux t = function
+    | Maybe (Some node) -> aux t node
+    | Maybe None -> ""
+    | (Node (key, attr, _) | Leaf (key, attr, _)) as node ->
+        let indent = make_indent t in
+        let name = make_key key in
+        let attr = Attr.set_to_string attr in
+        let attr = if String.(equal empty attr) then "" else " " ^ attr in
+        let opening = indent ^ "<" ^ name ^ attr in
+        let closing = closing t indent name node in
+        opening ^ closing
+  and closing t indent name = function
+    | Maybe _ -> assert false (* Unreacheable *)
+    | Leaf (_, _, None) | Node (_, _, []) -> close_tag
+    | Leaf (_, _, Some str) ->
+        if String.length str > 80 then
+          let indent_ctn = make_indent (succ t) in
+          ">\n" ^ indent_ctn ^ str ^ "\n" ^ indent ^ close_name name
+        else ">" ^ str ^ close_name name
+    | Node (_, _, li) ->
+        ">\n"
+        ^ (List.filter_map
+             (function Maybe None -> None | x -> Some (aux (succ t) x))
+             li
+          |> String.concat "\n")
+        ^ "\n"
+        ^ indent
+        ^ close_name name
+  in
 
-and pp_node_tail name ppf = function
-  | Leaf (_, _, None) | Node (_, _, []) -> Format.fprintf ppf "/>"
-  | Leaf (_, _, Some content) -> Format.fprintf ppf ">@[%s@]</%s>" content name
-  | Node (_, _, li) ->
-      Format.fprintf ppf ">@[<hov 0>@ %a@]@,</%s>"
-        (Format.pp_print_list pp_node)
-        li name
-  | Maybe (Some n) -> pp_node_tail name ppf n
-  | Maybe None -> Format.fprintf ppf ""
+  aux 0 node
 
-let pp ppf ({ root; _ } as doc) =
+let to_string ({ root; _ } as doc) =
   let header = header_to_string doc in
-  Format.fprintf ppf "%s@.%a" header pp_node root
+  header ^ "\n" ^ node_to_string root
