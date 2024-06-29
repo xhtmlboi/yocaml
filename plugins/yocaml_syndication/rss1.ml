@@ -23,7 +23,7 @@ module X = struct
   let url x = leaf ~name:"url" (Some x)
   let description x = leaf ~name:"description" (cdata x)
   let about x = Attr.string ~ns:"rdf" ~key:"about" x
-  let resource x = Attr.string ~ns:"rdf" ~key:"ressource" x
+  let resource x = Attr.string ~ns:"rdf" ~key:"resource" x
 end
 
 module Image = struct
