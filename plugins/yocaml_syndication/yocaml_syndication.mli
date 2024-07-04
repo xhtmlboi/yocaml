@@ -26,6 +26,20 @@
     Implementation of syndication formats. *)
 
 module Rss1 = Rss1
+module Rss2 = Rss2
+
+module Rss = Rss2
+(** By default, [Rss] module is {!module:Rss2}. *)
+
+(** {1 Element}
+
+    Reusable elements for describing news feeds. *)
+
+module Lang = Lang
+module Tz = Tz
+module Datetime = Datetime
+module Text_input = Text_input
+module Media_type = Media_type
 
 (** {1 Low-level API}
 

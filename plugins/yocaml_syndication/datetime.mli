@@ -14,12 +14,16 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-module Lang = Lang
-module Tz = Tz
-module Datetime = Datetime
-module Text_input = Text_input
-module Media_type = Media_type
-module Xml = Xml
-module Rss1 = Rss1
-module Rss2 = Rss2
-module Rss = Rss2
+(** An extension of {!type:Yocaml.Archetype.Datetime.t} with Timezone support. *)
+
+(** {1 Types} *)
+
+type t
+
+(** {1 Helpers} *)
+
+val make : ?tz:Tz.t -> Yocaml.Archetype.Datetime.t -> t
+(** [make ?tz datetime] build a [datetime] associated with a Timezone. *)
+
+val to_string : t -> string
+(** [to_string date] converts a [date] into a string. *)

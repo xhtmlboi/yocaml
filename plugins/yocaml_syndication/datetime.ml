@@ -14,12 +14,10 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-module Lang = Lang
-module Tz = Tz
-module Datetime = Datetime
-module Text_input = Text_input
-module Media_type = Media_type
-module Xml = Xml
-module Rss1 = Rss1
-module Rss2 = Rss2
-module Rss = Rss2
+type t = Tz.t * Yocaml.Archetype.Datetime.t
+
+let make ?(tz = Tz.Gmt) date = (tz, date)
+
+let to_string (tz, dt) =
+  let tz = Tz.to_string tz in
+  Format.asprintf "%a" (Yocaml.Archetype.Datetime.pp_rfc822 ~tz ()) dt
