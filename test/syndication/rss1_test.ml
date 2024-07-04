@@ -16,7 +16,7 @@
 
 open Yocaml_syndication
 
-(* Exemples extracted from https://web.resource.org/rss/1.0/spec#s7*)
+(* Exemples extracted from https://web.resource.org/rss/1.0/spec#s7 *)
 
 let%expect_test "Create a simple feed" =
   let title = "XML.com"
@@ -37,7 +37,7 @@ let%expect_test "Create a simple feed" =
              the most exciting new RDF toolkits."
       ]
   in
-  let document = Rss1.feed ~title ~url ~link ~description items in
+  let document = Rss1.feed ~title ~url ~link ~description Fun.id items in
   print_endline @@ Xml.to_string document;
   [%expect
     {|
@@ -76,7 +76,7 @@ let%expect_test "Create a complete feed feed" =
     Rss1.image ~title:"XML.com" ~link:"http://www.xml.com"
       ~url:"http://xml.com/universal/images/xml_tiny.gif"
   and textinput =
-    Rss1.textinput ~title:"Search XML.com"
+    Text_input.make ~title:"Search XML.com"
       ~description:"Search XML.com's XML collection" ~name:"s"
       ~link:"http://search.xml.com"
   and items =
@@ -97,7 +97,7 @@ let%expect_test "Create a complete feed feed" =
       ]
   in
   let document =
-    Rss1.feed ~title ~image ~textinput ~url ~link ~description items
+    Rss1.feed ~title ~image ~textinput ~url ~link ~description Fun.id items
   in
   print_endline @@ Xml.to_string document;
   [%expect

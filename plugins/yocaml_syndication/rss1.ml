@@ -18,7 +18,6 @@ module X = struct
   open Xml
 
   let title x = leaf ~name:"title" (escape x)
-  let name x = leaf ~name:"name" (escape x)
   let link x = leaf ~name:"link" (Some x)
   let url x = leaf ~name:"url" (Some x)
   let description x = leaf ~name:"description" (cdata x)
@@ -35,22 +34,6 @@ module Image = struct
       [ X.title title; X.link link; X.url url ]
 
   let make ~title ~link ~url = { title; link; url }
-end
-
-module Textinput = struct
-  type t = {
-      title : string
-    ; description : string
-    ; name : string
-    ; link : string
-  }
-
-  let to_xml { title; description; name; link } =
-    Xml.node ~name:"textinput"
-      ~attr:[ X.about link ]
-      [ X.title title; X.description description; X.name name; X.link link ]
-
-  let make ~title ~description ~name ~link = { title; description; name; link }
 end
 
 module Item = struct
@@ -71,7 +54,7 @@ module Channel = struct
     ; link : string
     ; description : string
     ; image : Image.t option
-    ; textinput : Textinput.t option
+    ; textinput : Text_input.t option
     ; items : Item.t list
   }
 
@@ -80,19 +63,12 @@ module Channel = struct
 
   let make_image image =
     let open Xml in
-    opt
-      (Option.map
-         (fun image ->
-           leaf ~name:"image" ~attr:[ X.resource image.Image.url ] None)
-         image)
+    may
+      (fun image ->
+        leaf ~name:"image" ~attr:[ X.resource image.Image.url ] None)
+      image
 
-  let make_textinput textinput =
-    let open Xml in
-    opt
-      (Option.map
-         (fun ti ->
-           leaf ~name:"textinput" ~attr:[ X.resource ti.Textinput.link ] None)
-         textinput)
+  let make_textinput textinput = Xml.may Text_input.to_rss1_channel textinput
 
   let make_items = function
     | [] -> None
@@ -126,25 +102,24 @@ module Channel = struct
 end
 
 type image = Image.t
-type textinput = Textinput.t
 type item = Item.t
 
 let image = Image.make
-let textinput = Textinput.make
 let item = Item.make
 
 let feed ?encoding ?standalone ?image ?textinput ~title ~url ~link ~description
-    items =
+    f items =
+  let items = List.map f items in
   let channel =
     Channel.make ~title ~url ~link ~description ~image ~textinput ~items
   in
   let nodes =
     [
       Channel.to_xml channel
-    ; Xml.opt @@ Option.map Image.to_xml image
-    ; Xml.opt @@ Option.map Textinput.to_xml textinput
+    ; Xml.may Image.to_xml image
+    ; Xml.may Text_input.to_rss1 textinput
     ]
-    @ List.map Item.to_xml items
+    @ List.map (fun x -> Item.to_xml x) items
   in
   Xml.document ?encoding ?standalone ~version:"1.0"
     (Xml.node ~ns:"rdf" ~name:"RDF"
@@ -157,23 +132,23 @@ let feed ?encoding ?standalone ?image ?textinput ~title ~url ~link ~description
            ]
        nodes)
 
-let from_articles ?encoding ?standalone ?image ?textinput ~title ~url ~link
-    ~description () =
+let from ?encoding ?standalone ?image ?textinput ~title ~url ~link ~description
+    f =
   Yocaml.Task.lift (fun articles ->
-      let items =
-        List.map
-          (fun (path, article) ->
-            let open Yocaml.Archetype in
-            let title = Article.title article in
-            let link = link ^ Yocaml.Path.to_string path in
-            let description =
-              Option.value ~default:"no description" (Article.synopsis article)
-            in
-            item ~title ~link ~description)
-          articles
-      in
       let feed =
         feed ?encoding ?standalone ?image ?textinput ~title ~url ~link
-          ~description items
+          ~description f articles
       in
       Xml.to_string feed)
+
+let from_articles ?encoding ?standalone ?image ?textinput ~title ~url ~link
+    ~description () =
+  from ?encoding ?standalone ?image ?textinput ~title ~url ~link ~description
+    (fun (path, article) ->
+      let open Yocaml.Archetype in
+      let title = Article.title article in
+      let link = link ^ Yocaml.Path.to_string path in
+      let description =
+        Option.value ~default:"no description" (Article.synopsis article)
+      in
+      item ~title ~link ~description)

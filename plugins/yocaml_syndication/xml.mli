@@ -103,5 +103,16 @@ val node : ?ns:string -> name:string -> ?attr:Attr.t list -> node list -> node
 val opt : node option -> node
 (** [opt node] conditionnally adds [node]. *)
 
+val may : ('a -> node) -> 'a option -> node
+(** [may f x] Lift a value into a node if it exists. *)
+
+val may_leaf :
+     ?finalize:(string -> string option)
+  -> name:string
+  -> ('a -> string)
+  -> 'a option
+  -> node
+(** [may_leaf ~name f x] May build a [leaf]. *)
+
 val to_string : t -> string
 (** Pretty printer for XML document. *)
