@@ -14,12 +14,34 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-module Lang = Lang
-module Tz = Tz
-module Datetime = Datetime
-module Text_input = Text_input
-module Media_type = Media_type
-module Xml = Xml
-module Rss1 = Rss1
-module Rss2 = Rss2
-module Rss = Rss2
+(** Describes (almost) a Timezone according to
+    {{:https://www.w3.org/Protocols/rfc822/#z28} RFC822}. *)
+
+(** {1 Types} *)
+
+(** A type describing a timezone. *)
+type t =
+  | Ut
+  | Gmt
+  | Est
+  | Edt
+  | Cst
+  | Cdt
+  | Mst
+  | Mdt
+  | Pst
+  | Pdt
+  | T1Alpha
+  | Plus of int
+  | Minus of int
+
+(** {1 Helpers} *)
+
+val plus : int -> t
+(** [plus 200] generates the TZ ["+0200"]. *)
+
+val minus : int -> t
+(** [minus 200] generates the TZ ["-0200"]. *)
+
+val to_string : t -> string
+(** [to_string tz] render a string representation of a timezone. *)

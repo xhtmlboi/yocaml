@@ -14,12 +14,23 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-module Lang = Lang
-module Tz = Tz
-module Datetime = Datetime
-module Text_input = Text_input
-module Media_type = Media_type
-module Xml = Xml
-module Rss1 = Rss1
-module Rss2 = Rss2
-module Rss = Rss2
+(** The purpose of the [<textInput>] element is something of a mystery. You can
+    use it to specify a search engine box. Or to allow a reader to provide
+    feedback. Most aggregators ignore it. *)
+
+(** {1 Type} *)
+
+type t
+(** The type describing a [TextInput]*)
+
+(** {1 Creation} *)
+
+val make : title:string -> description:string -> name:string -> link:string -> t
+(** Build a textinput.
+    @see <https://web.resource.org/rss/1.0/spec#s5.6> *)
+
+(** {1 Projection} *)
+
+val to_rss1 : t -> Xml.node
+val to_rss1_channel : t -> Xml.node
+val to_rss2 : t -> Xml.node

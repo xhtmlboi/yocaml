@@ -14,12 +14,35 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-module Lang = Lang
-module Tz = Tz
-module Datetime = Datetime
-module Text_input = Text_input
-module Media_type = Media_type
-module Xml = Xml
-module Rss1 = Rss1
-module Rss2 = Rss2
-module Rss = Rss2
+type t =
+  | Ut
+  | Gmt
+  | Est
+  | Edt
+  | Cst
+  | Cdt
+  | Mst
+  | Mdt
+  | Pst
+  | Pdt
+  | T1Alpha
+  | Plus of int
+  | Minus of int
+
+let plus x = Plus x
+let minus x = Minus x
+
+let to_string = function
+  | Ut -> "UT"
+  | Gmt -> "GMT"
+  | Est -> "EST"
+  | Edt -> "EDT"
+  | Cst -> "CST"
+  | Cdt -> "CDT"
+  | Mst -> "MST"
+  | Mdt -> "MDT"
+  | Pst -> "PST"
+  | Pdt -> "PSDT"
+  | T1Alpha -> "1ALPHA"
+  | Plus x -> Format.asprintf "+%04d" x
+  | Minus x -> Format.asprintf "-%04d" x
