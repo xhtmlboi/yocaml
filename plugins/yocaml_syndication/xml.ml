@@ -78,6 +78,11 @@ let node ?ns ~name ?(attr = []) body =
 let leaf ?ns ~name ?(attr = []) body =
   Leaf ((ns, name), Attr.from_list attr, body)
 
+let may f x = opt (Option.map f x)
+
+let may_leaf ?(finalize = fun x -> Some x) ~name f v =
+  opt @@ Option.map (fun x -> leaf ~name (finalize (f x))) v
+
 let cdata str = Some ("<![CDATA[" ^ str ^ "]]>")
 let escape str = Some (escape str)
 

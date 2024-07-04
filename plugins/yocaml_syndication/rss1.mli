@@ -32,10 +32,6 @@ type image
 (** Type describing an image associated with the feed.
     @see <https://web.resource.org/rss/1.0/spec#s5.4> *)
 
-type textinput
-(** Type describing a way to interact with a query-engine.
-    @see <https://web.resource.org/rss/1.0/spec#s5.6> *)
-
 type item
 (** Type describing an item.
     @see <https://web.resource.org/rss/1.0/spec#s5.5> *)
@@ -45,11 +41,6 @@ type item
 val image : title:string -> link:string -> url:string -> image
 (** Build an image.
     @see <https://web.resource.org/rss/1.0/spec#s5.4> *)
-
-val textinput :
-  title:string -> description:string -> name:string -> link:string -> textinput
-(** Build a textinput.
-    @see <https://web.resource.org/rss/1.0/spec#s5.6> *)
 
 val item : title:string -> link:string -> description:string -> item
 (** Build an item.
@@ -61,23 +52,39 @@ val feed :
      ?encoding:string
   -> ?standalone:bool
   -> ?image:image
-  -> ?textinput:textinput
+  -> ?textinput:Text_input.t
   -> title:string
   -> url:string
   -> link:string
   -> description:string
-  -> item list
+  -> ('a -> item)
+  -> 'a list
   -> Xml.t
 (** Build a RSS1`feed. [url] is the [rdf identifier] of the feed (usually the
     url of the feed) and [link] is the link of the website attached to the feed.
 
     @see <https://web.resource.org/rss/1.0/spec#s5.3> *)
 
+(** {1 Arrows for building a feed} *)
+
+val from :
+     ?encoding:string
+  -> ?standalone:bool
+  -> ?image:image
+  -> ?textinput:Text_input.t
+  -> title:string
+  -> url:string
+  -> link:string
+  -> description:string
+  -> ('a -> item)
+  -> ('a list, string) Yocaml.Task.t
+(** An arrow that build a feed that from an arbitrary list. *)
+
 val from_articles :
      ?encoding:string
   -> ?standalone:bool
   -> ?image:image
-  -> ?textinput:textinput
+  -> ?textinput:Text_input.t
   -> title:string
   -> url:string
   -> link:string
