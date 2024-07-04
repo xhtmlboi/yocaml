@@ -223,6 +223,13 @@ module Datetime = struct
     let index = (c_code + y_code + m_code + day) mod 7 in
     [| Sun; Mon; Tue; Wed; Thu; Fri; Sat |].(index)
 
+  let pp_rfc822 ?(tz = "gmt") () ppf dt =
+    let tz = String.uppercase_ascii tz in
+    let dow = dt |> day_of_week |> dow_to_string |> String.capitalize_ascii in
+    let mon = dt.month |> month_to_string |> String.capitalize_ascii in
+    Format.fprintf ppf "%s, %02d %s %04d %a %s" dow dt.day mon dt.year pp_time
+      dt tz
+
   let normalize ({ year; month; day; hour; min; sec } as dt) =
     let has_time = not (Int.equal (compare_time dt dummy_date) 0) in
     let datetime_repr = Format.asprintf "%a" pp dt in
@@ -411,7 +418,7 @@ module Articles = struct
       method articles = articles
     end
 
-  let from_page articles page = new articles page articles
+  let from_page = Task.lift (fun (page, articles) -> new articles page articles)
 
   let sort_by_date ?(increasing = false) articles =
     List.sort
@@ -443,7 +450,7 @@ module Articles = struct
     (fun x -> (x, ()))
     |>> second
           (fetch (module P) ?increasing ~filter ~on ~where ~compute_link path)
-    >>| fun (page, articles) -> from_page articles page
+    >>> from_page
 
   let normalize_article (ident, article) =
     let open Data in

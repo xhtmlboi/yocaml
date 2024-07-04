@@ -165,6 +165,10 @@ module Datetime : sig
 
   val pp : Format.formatter -> t -> unit
   (** Pretty printer for date. *)
+
+  val pp_rfc822 : ?tz:string -> unit -> Format.formatter -> t -> unit
+  (** Pretty printer according to the
+      {{:https://www.w3.org/Protocols/rfc822/#z28} RFC822} specification. *)
 end
 
 (** {1 Models}
@@ -290,7 +294,7 @@ module Articles : sig
       newest. Otherwise, they will be sorted from newest to oldest. By default,
       the flag is set to [false]. *)
 
-  val from_page : (Path.t * Article.t) list -> Page.t -> t
+  val from_page : (Page.t * (Path.t * Article.t) list, t) Task.t
   (** [from_page articles page] transforms a regular page into an article index. *)
 
   val fetch :
