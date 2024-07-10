@@ -14,37 +14,20 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-(** Describes (almost) a Timezone according to
-    {{:https://www.w3.org/Protocols/rfc822/#z28} RFC822}. *)
+type t = { name : string; uri : string option; version : string option }
 
-(** {1 Types} *)
+let make ?uri ?version name = { name; uri; version }
 
-(** A type describing a timezone. *)
-type t =
-  | Ut
-  | Gmt
-  | Est
-  | Edt
-  | Cst
-  | Cdt
-  | Mst
-  | Mdt
-  | Pst
-  | Pdt
-  | Plus of int
-  | Minus of int
+let to_atom { name; uri; version } =
+  let attr =
+    let open Xml.Attr in
+    let uri = Option.(uri |> map (string ~key:"uri") |> to_list) in
+    let version = Option.(version |> map (escaped ~key:"version") |> to_list) in
+    uri @ version
+  in
+  Xml.leaf ~name:"generator" ~attr (Xml.escape name)
 
-(** {1 Helpers} *)
+let to_rss2 { name; _ } = Xml.leaf ~name:"generator" (Some name)
 
-val plus : int -> t
-(** [plus 200] generates the TZ ["+0200"]. *)
-
-val minus : int -> t
-(** [minus 200] generates the TZ ["-0200"]. *)
-
-val to_string : t -> string
-(** [to_string tz] render a string representation of a timezone. *)
-
-val to_string_rfc3339 : t -> string
-(** [to_string_rfc3339 tz] render a string representation of a timezone
-    (computing fixed timezone into offset). *)
+let yocaml =
+  make ~uri:"https://github.com/xhtmlboi/yocaml" ~version:"2" "YOCaml"

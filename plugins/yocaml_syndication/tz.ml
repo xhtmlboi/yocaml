@@ -25,7 +25,6 @@ type t =
   | Mdt
   | Pst
   | Pdt
-  | T1Alpha
   | Plus of int
   | Minus of int
 
@@ -43,6 +42,22 @@ let to_string = function
   | Mdt -> "MDT"
   | Pst -> "PST"
   | Pdt -> "PSDT"
-  | T1Alpha -> "1ALPHA"
   | Plus x -> Format.asprintf "+%04d" x
   | Minus x -> Format.asprintf "-%04d" x
+
+let nb r =
+  let s = Format.asprintf "%04d" r in
+  Format.asprintf "%c%c:%c%c" s.[0] s.[1] s.[2] s.[3]
+
+let to_string_rfc3339 = function
+  | Ut | Gmt -> "Z"
+  | Est -> "-05:00"
+  | Edt -> "-04:00"
+  | Cst -> "-06:00"
+  | Cdt -> "-05:00"
+  | Mst -> "-07:00"
+  | Mdt -> "-06:00"
+  | Pst -> "-08:00"
+  | Pdt -> "-07:00"
+  | Plus x -> "+" ^ nb x
+  | Minus x -> "-" ^ nb x

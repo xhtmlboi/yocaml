@@ -14,37 +14,21 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-(** Describes (almost) a Timezone according to
-    {{:https://www.w3.org/Protocols/rfc822/#z28} RFC822}. *)
+type t = { term : string; scheme : string option; label : string option }
 
-(** {1 Types} *)
+let make ?scheme ?label term = { term; scheme; label }
 
-(** A type describing a timezone. *)
-type t =
-  | Ut
-  | Gmt
-  | Est
-  | Edt
-  | Cst
-  | Cdt
-  | Mst
-  | Mdt
-  | Pst
-  | Pdt
-  | Plus of int
-  | Minus of int
+let to_atom { term; scheme; label } =
+  let attr =
+    let open Xml.Attr in
+    let scheme = Option.(scheme |> map (string ~key:"scheme") |> to_list) in
+    let label = Option.(label |> map (escaped ~key:"label") |> to_list) in
+    escaped ~key:"term" term :: (scheme @ label)
+  in
+  Xml.leaf ~name:"category" ~attr None
 
-(** {1 Helpers} *)
-
-val plus : int -> t
-(** [plus 200] generates the TZ ["+0200"]. *)
-
-val minus : int -> t
-(** [minus 200] generates the TZ ["-0200"]. *)
-
-val to_string : t -> string
-(** [to_string tz] render a string representation of a timezone. *)
-
-val to_string_rfc3339 : t -> string
-(** [to_string_rfc3339 tz] render a string representation of a timezone
-    (computing fixed timezone into offset). *)
+let to_rss2 { term; scheme; _ } =
+  let attr =
+    Option.map (fun value -> [ Xml.Attr.string ~key:"domain" value ]) scheme
+  in
+  Xml.leaf ?attr ~name:"category" (Xml.cdata term)

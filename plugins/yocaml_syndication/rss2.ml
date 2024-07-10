@@ -26,28 +26,6 @@ module X = struct
   let url x = Attr.string ~key:"url" x
 end
 
-module Category = struct
-  type t = { value : string; domain : string option }
-
-  let make ?domain value = { value; domain }
-
-  let to_xml { domain; value } =
-    let attr =
-      Option.map (fun value -> [ Xml.Attr.string ~key:"domain" value ]) domain
-    in
-    Xml.leaf ?attr ~name:"category" (Xml.cdata value)
-end
-
-module Email = struct
-  type t = { email : string; name : string option }
-
-  let make ?name email = { email; name }
-
-  let to_string { name; email } =
-    let n = Option.fold ~none:"" ~some:(fun x -> " (" ^ x ^ ")") name in
-    email ^ n
-end
-
 module Cloud = struct
   type t = {
       domain : string
@@ -199,8 +177,8 @@ module Item = struct
       title : string
     ; link : string
     ; description : string
-    ; author : Email.t option
-    ; category : Category.t option
+    ; author : Person.t option
+    ; categories : Category.t list
     ; comments : string option
     ; enclosure : Enclosure.t option
     ; guid : Guid.t option
@@ -208,8 +186,8 @@ module Item = struct
     ; source : Source.t option
   }
 
-  let make ?author ?category ?comments ?enclosure ?guid ?pub_date ?source ~title
-      ~link ~description () =
+  let make ?author ?(categories = []) ?comments ?enclosure ?guid ?pub_date
+      ?source ~title ~link ~description () =
     let guid =
       Option.map
         (function
@@ -223,7 +201,7 @@ module Item = struct
     ; link
     ; description
     ; author
-    ; category
+    ; categories
     ; comments
     ; enclosure
     ; guid
@@ -237,7 +215,7 @@ module Item = struct
       ; link
       ; description
       ; author
-      ; category
+      ; categories
       ; comments
       ; enclosure
       ; guid
@@ -245,18 +223,18 @@ module Item = struct
       ; source
       } =
     Xml.node ~name:"item"
-      [
-        X.title title
-      ; X.link link
-      ; X.description description
-      ; Xml.may_leaf ~name:"author" Email.to_string author
-      ; Xml.may Category.to_xml category
-      ; Xml.may_leaf ~name:"comments" Fun.id comments
-      ; Xml.may Enclosure.to_xml enclosure
-      ; Xml.may Guid.to_xml guid
-      ; Xml.may_leaf ~name:"pubDate" Datetime.to_string pub_date
-      ; Xml.may Source.to_xml source
-      ]
+      ([
+         X.title title
+       ; X.link link
+       ; X.description description
+       ; Xml.may_leaf ~name:"author" Person.to_rss2 author
+       ; Xml.may_leaf ~name:"comments" Fun.id comments
+       ; Xml.may Enclosure.to_xml enclosure
+       ; Xml.may Guid.to_xml guid
+       ; Xml.may_leaf ~name:"pubDate" Datetime.to_string pub_date
+       ; Xml.may Source.to_xml source
+       ]
+      @ List.map Category.to_rss2 categories)
 end
 
 module Channel = struct
@@ -267,12 +245,12 @@ module Channel = struct
     ; description : string
     ; language : Lang.t option
     ; copyright : string option
-    ; managing_editor : Email.t option
-    ; webmaster : Email.t option
+    ; managing_editor : Person.t option
+    ; webmaster : Person.t option
     ; pub_date : Datetime.t option
     ; last_build_date : Datetime.t option
-    ; category : Category.t option
-    ; generator : string option
+    ; categories : Category.t list
+    ; generator : Generator.t option
     ; cloud : Cloud.t option
     ; ttl : int option
     ; image : Image.t option
@@ -283,8 +261,8 @@ module Channel = struct
   }
 
   let make ?language ?copyright ?managing_editor ?webmaster ?pub_date
-      ?last_build_date ?category ?generator ?cloud ?ttl ?image ?text_input
-      ?skip_hours ?skip_days ~title ~link url ~description items =
+      ?last_build_date ?(categories = []) ?generator ?cloud ?ttl ?image
+      ?text_input ?skip_hours ?skip_days ~title ~link url ~description items =
     let image = Option.map (fun f -> f ~title ~link) image in
     {
       title
@@ -297,7 +275,7 @@ module Channel = struct
     ; webmaster
     ; pub_date
     ; last_build_date
-    ; category
+    ; categories
     ; generator
     ; cloud
     ; ttl
@@ -320,7 +298,7 @@ module Channel = struct
       ; webmaster
       ; pub_date
       ; last_build_date
-      ; category
+      ; categories
       ; generator
       ; cloud
       ; ttl
@@ -346,16 +324,15 @@ module Channel = struct
            None
        ; Xml.may_leaf ~name:"language" Lang.to_string language
        ; Xml.may_leaf ~name:"copyright" Fun.id copyright
-       ; Xml.may_leaf ~name:"managingEditor" Email.to_string managing_editor
-       ; Xml.may_leaf ~name:"webMaster" Email.to_string webmaster
+       ; Xml.may_leaf ~name:"managingEditor" Person.to_rss2 managing_editor
+       ; Xml.may_leaf ~name:"webMaster" Person.to_rss2 webmaster
        ; Xml.may_leaf ~name:"pubDate" Datetime.to_string pub_date
        ; Xml.may_leaf ~name:"lastBuildDate" Datetime.to_string last_build_date
-       ; Xml.may Category.to_xml category
        ; (*Since the implementation of the current module was implemented on top
            of that documentation, it make no sense to make it parametric. *)
          Xml.leaf ~name:"docs"
            (Some "https://www.rssboard.org/rss-specification")
-       ; Xml.may_leaf ~name:"generator" Fun.id generator
+       ; Xml.may Generator.to_rss2 generator
        ; Xml.may Cloud.to_xml cloud
        ; Xml.may_leaf ~name:"ttl" string_of_int ttl
        ; Xml.may Image.to_xml image
@@ -363,10 +340,10 @@ module Channel = struct
        ; Xml.may Skip_hours.to_xml skip_hours
        ; Xml.may Skip_days.to_xml skip_days
        ]
+      @ List.map Category.to_rss2 categories
       @ List.map (fun x -> x |> f |> Item.to_xml) items)
 end
 
-type email = Email.t
 type cloud = Cloud.t
 type enclosure = Enclosure.t
 type guid = Guid.t
@@ -374,10 +351,7 @@ type guid_strategy = Guid.strategy
 type source = Source.t
 type image = Image.t
 type item = Item.t
-type category = Category.t
 
-let email = Email.make
-let category = Category.make
 let cloud = Cloud.make
 let guid_from_title = Guid.from_title
 let guid_from_link = Guid.from_link
@@ -388,12 +362,12 @@ let enclosure = Enclosure.make
 let item = Item.make
 
 let feed ?encoding ?standalone ?language ?copyright ?managing_editor ?webmaster
-    ?pub_date ?last_build_date ?category ?(generator = "YOCaml") ?cloud ?ttl
-    ?image ?text_input ?skip_hours ?skip_days ~title ~link ~url ~description f
-    items =
+    ?pub_date ?last_build_date ?categories ?(generator = Generator.yocaml)
+    ?cloud ?ttl ?image ?text_input ?skip_hours ?skip_days ~title ~link ~url
+    ~description f items =
   let channel =
     Channel.make ?language ?copyright ?managing_editor ?webmaster ?pub_date
-      ?last_build_date ?category ~generator ?cloud ?ttl ?image ?text_input
+      ?last_build_date ?categories ~generator ?cloud ?ttl ?image ?text_input
       ?skip_hours ?skip_days ~title ~link url ~description items
   in
   let nodes = [ Channel.to_xml f channel ] in
@@ -408,20 +382,21 @@ let feed ?encoding ?standalone ?language ?copyright ?managing_editor ?webmaster
        nodes)
 
 let from ?encoding ?standalone ?language ?copyright ?managing_editor ?webmaster
-    ?pub_date ?last_build_date ?category ?(generator = "YOCaml") ?cloud ?ttl
-    ?image ?text_input ?skip_hours ?skip_days ~title ~link ~url ~description f =
+    ?pub_date ?last_build_date ?categories ?generator ?cloud ?ttl ?image
+    ?text_input ?skip_hours ?skip_days ~title ~site_url ~feed_url ~description f
+    =
   Yocaml.Task.lift (fun articles ->
       let feed =
         feed ?encoding ?standalone ?language ?copyright ?managing_editor
-          ?webmaster ?pub_date ?last_build_date ?category ~generator ?cloud ?ttl
-          ?image ?text_input ?skip_hours ?skip_days ~title ~link ~url
-          ~description f articles
+          ?webmaster ?pub_date ?last_build_date ?categories ?generator ?cloud
+          ?ttl ?image ?text_input ?skip_hours ?skip_days ~title ~link:site_url
+          ~url:feed_url ~description f articles
       in
       Xml.to_string feed)
 
 let from_articles ?encoding ?standalone ?language ?copyright ?managing_editor
-    ?webmaster ?pub_date ?category ?(generator = "YOCaml") ?cloud ?ttl ?image
-    ?text_input ?skip_hours ?skip_days ~title ~link ~url ~description () =
+    ?webmaster ?pub_date ?categories ?generator ?cloud ?ttl ?image ?text_input
+    ?skip_hours ?skip_days ~title ~site_url ~feed_url ~description () =
   Yocaml.Task.lift (fun articles ->
       let last_build_date =
         List.fold_left
@@ -437,18 +412,19 @@ let from_articles ?encoding ?standalone ?language ?copyright ?managing_editor
 
       let feed =
         feed ?encoding ?standalone ?language ?copyright ?managing_editor
-          ?webmaster ?pub_date ?last_build_date ?category ~generator ?cloud ?ttl
-          ?image ?text_input ?skip_hours ?skip_days ~title ~link ~url
-          ~description
+          ?webmaster ?pub_date ?last_build_date ?categories ?generator ?cloud
+          ?ttl ?image ?text_input ?skip_hours ?skip_days ~title ~link:site_url
+          ~url:feed_url ~description
           (fun (path, article) ->
             let open Yocaml.Archetype.Article in
             let title = title article in
-            let link = link ^ Yocaml.Path.to_string path in
+            let link = site_url ^ Yocaml.Path.to_string path in
+            let guid = guid_from_link in
             let description =
               Option.value ~default:"no description" (synopsis article)
             in
             let pub_date = Datetime.make (date article) in
-            item ~title ~link ~description ~pub_date ())
+            item ~title ~link ~guid ~description ~pub_date ())
           articles
       in
       Xml.to_string feed)

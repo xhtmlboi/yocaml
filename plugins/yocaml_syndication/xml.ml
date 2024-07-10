@@ -83,6 +83,12 @@ let may f x = opt (Option.map f x)
 let may_leaf ?(finalize = fun x -> Some x) ~name f v =
   opt @@ Option.map (fun x -> leaf ~name (finalize (f x))) v
 
+let rec namespace ~ns = function
+  | Leaf ((_, name), attr, value) -> Leaf ((Some ns, name), attr, value)
+  | Maybe on -> Maybe (Option.map (namespace ~ns) on)
+  | Node ((_, name), attr, value) ->
+      Node ((Some ns, name), attr, List.map (namespace ~ns) value)
+
 let cdata str = Some ("<![CDATA[" ^ str ^ "]]>")
 let escape str = Some (escape str)
 

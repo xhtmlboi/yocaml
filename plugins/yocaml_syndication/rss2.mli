@@ -19,17 +19,9 @@
 
 (** {1 Types}
 
-    Types that briefly describe the RSS 1 specification. As the channel is
+    Types that briefly describe the RSS 2 specification. As the channel is
     closely linked to the description of a feed, the module does not export a
     [channel] type, as it is constructed when the feed is built. *)
-
-type email
-(** Type describing an email.
-    @see <https://www.rssboard.org/rss-specification> *)
-
-type category
-(** Type describing a category.
-    @see <https://www.rssboard.org/rss-specification#ltcategorygtSubelementOfLtitemgt> *)
 
 (** Type describing days (for skip days).
     @see <https://www.rssboard.org/rss-specification> *)
@@ -68,14 +60,6 @@ type item
     @see <https://www.rssboard.org/rss-specification#hrelementsOfLtitemgt> *)
 
 (** {1 Construction of elements} *)
-
-val email : ?name:string -> string -> email
-(** Build an email.
-    @see <https://www.rssboard.org/rss-specification> *)
-
-val category : ?domain:string -> string -> category
-(** Build a category.
-    @see <https://www.rssboard.org/rss-specification#ltcategorygtSubelementOfLtitemgt> *)
 
 val cloud :
      protocol:cloud_protocol
@@ -118,8 +102,8 @@ val image :
     @see <https://www.rssboard.org/rss-specification#ltimagegtSubelementOfLtchannelgt> *)
 
 val item :
-     ?author:email
-  -> ?category:category
+     ?author:Person.t
+  -> ?categories:Category.t list
   -> ?comments:string
   -> ?enclosure:enclosure
   -> ?guid:guid_strategy
@@ -140,12 +124,12 @@ val feed :
   -> ?standalone:bool
   -> ?language:Lang.t
   -> ?copyright:string
-  -> ?managing_editor:email
-  -> ?webmaster:email
+  -> ?managing_editor:Person.t
+  -> ?webmaster:Person.t
   -> ?pub_date:Datetime.t
   -> ?last_build_date:Datetime.t
-  -> ?category:category
-  -> ?generator:string
+  -> ?categories:Category.t list
+  -> ?generator:Generator.t
   -> ?cloud:cloud
   -> ?ttl:int
   -> ?image:(title:string -> link:string -> image)
@@ -170,12 +154,12 @@ val from :
   -> ?standalone:bool
   -> ?language:Lang.t
   -> ?copyright:string
-  -> ?managing_editor:email
-  -> ?webmaster:email
+  -> ?managing_editor:Person.t
+  -> ?webmaster:Person.t
   -> ?pub_date:Datetime.t
   -> ?last_build_date:Datetime.t
-  -> ?category:category
-  -> ?generator:string
+  -> ?categories:Category.t list
+  -> ?generator:Generator.t
   -> ?cloud:cloud
   -> ?ttl:int
   -> ?image:(title:string -> link:string -> image)
@@ -183,8 +167,8 @@ val from :
   -> ?skip_hours:int list
   -> ?skip_days:days list
   -> title:string
-  -> link:string
-  -> url:string
+  -> site_url:string
+  -> feed_url:string
   -> description:string
   -> ('a -> item)
   -> ('a list, string) Yocaml.Task.t
@@ -195,11 +179,11 @@ val from_articles :
   -> ?standalone:bool
   -> ?language:Lang.t
   -> ?copyright:string
-  -> ?managing_editor:email
-  -> ?webmaster:email
+  -> ?managing_editor:Person.t
+  -> ?webmaster:Person.t
   -> ?pub_date:Datetime.t
-  -> ?category:category
-  -> ?generator:string
+  -> ?categories:Category.t list
+  -> ?generator:Generator.t
   -> ?cloud:cloud
   -> ?ttl:int
   -> ?image:(title:string -> link:string -> image)
@@ -207,8 +191,8 @@ val from_articles :
   -> ?skip_hours:int list
   -> ?skip_days:days list
   -> title:string
-  -> link:string
-  -> url:string
+  -> site_url:string
+  -> feed_url:string
   -> description:string
   -> unit
   -> ((Yocaml.Path.t * Yocaml.Archetype.Article.t) list, string) Yocaml.Task.t

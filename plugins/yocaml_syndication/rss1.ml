@@ -141,13 +141,13 @@ let from ?encoding ?standalone ?image ?textinput ~title ~url ~link ~description
       in
       Xml.to_string feed)
 
-let from_articles ?encoding ?standalone ?image ?textinput ~title ~url ~link
-    ~description () =
-  from ?encoding ?standalone ?image ?textinput ~title ~url ~link ~description
-    (fun (path, article) ->
+let from_articles ?encoding ?standalone ?image ?textinput ~title ~feed_url
+    ~site_url ~description () =
+  from ?encoding ?standalone ?image ?textinput ~title ~url:feed_url
+    ~link:site_url ~description (fun (path, article) ->
       let open Yocaml.Archetype in
       let title = Article.title article in
-      let link = link ^ Yocaml.Path.to_string path in
+      let link = site_url ^ Yocaml.Path.to_string path in
       let description =
         Option.value ~default:"no description" (Article.synopsis article)
       in

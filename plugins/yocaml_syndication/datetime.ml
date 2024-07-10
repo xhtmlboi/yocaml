@@ -21,3 +21,9 @@ let make ?(tz = Tz.Gmt) date = (tz, date)
 let to_string (tz, dt) =
   let tz = Tz.to_string tz in
   Format.asprintf "%a" (Yocaml.Archetype.Datetime.pp_rfc822 ~tz ()) dt
+
+let to_string_rfc3339 (tz, dt) =
+  let tz = Tz.to_string_rfc3339 tz in
+  Format.asprintf "%a" (Yocaml.Archetype.Datetime.pp_rfc3339 ~tz ()) dt
+
+let compare (_, a) (_, b) = Yocaml.Archetype.Datetime.compare a b
