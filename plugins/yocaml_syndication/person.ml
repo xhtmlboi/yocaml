@@ -14,37 +14,18 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-(** Describes (almost) a Timezone according to
-    {{:https://www.w3.org/Protocols/rfc822/#z28} RFC822}. *)
+type t = { name : string; uri : string option; email : string option }
 
-(** {1 Types} *)
+let make ?uri ?email name = { uri; email; name }
 
-(** A type describing a timezone. *)
-type t =
-  | Ut
-  | Gmt
-  | Est
-  | Edt
-  | Cst
-  | Cdt
-  | Mst
-  | Mdt
-  | Pst
-  | Pdt
-  | Plus of int
-  | Minus of int
+let to_xml { name; email; uri } =
+  [
+    Xml.leaf ~name:"name" (Xml.escape name)
+  ; Xml.may_leaf ~name:"uri" Fun.id uri
+  ; Xml.may_leaf ~name:"email" Fun.id email
+  ]
 
-(** {1 Helpers} *)
+let to_atom ?ns ?attr ~name p = Xml.node ~name ?attr ?ns (to_xml p)
 
-val plus : int -> t
-(** [plus 200] generates the TZ ["+0200"]. *)
-
-val minus : int -> t
-(** [minus 200] generates the TZ ["-0200"]. *)
-
-val to_string : t -> string
-(** [to_string tz] render a string representation of a timezone. *)
-
-val to_string_rfc3339 : t -> string
-(** [to_string_rfc3339 tz] render a string representation of a timezone
-    (computing fixed timezone into offset). *)
+let to_rss2 { name; email; _ } =
+  match email with None -> name | Some email -> email ^ " (" ^ name ^ ")"

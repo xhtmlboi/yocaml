@@ -22,8 +22,17 @@ type t
 
 (** {1 Helpers} *)
 
+val compare : t -> t -> int
+(** [compare dt1 dt2] a dummy comparison function that does not care about the
+    Timezone (because we expect that every RSS/Atom elements are published on
+    the same Timezone). *)
+
 val make : ?tz:Tz.t -> Yocaml.Archetype.Datetime.t -> t
 (** [make ?tz datetime] build a [datetime] associated with a Timezone. *)
 
 val to_string : t -> string
 (** [to_string date] converts a [date] into a string. *)
+
+val to_string_rfc3339 : t -> string
+(** [to_string_rfc3339 date] converts a [date] into a string according to the
+    rfc 3339. *)

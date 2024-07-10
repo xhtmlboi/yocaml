@@ -169,6 +169,13 @@ module Datetime : sig
   val pp_rfc822 : ?tz:string -> unit -> Format.formatter -> t -> unit
   (** Pretty printer according to the
       {{:https://www.w3.org/Protocols/rfc822/#z28} RFC822} specification. *)
+
+  val pp_rfc3339 : ?tz:string -> unit -> Format.formatter -> t -> unit
+  (** Pretty printer according to the
+      {{:https://datatracker.ietf.org/doc/html/rfc3339} RFC822} specification. *)
+
+  val dummy : t
+  (** A dummy datetime. *)
 end
 
 (** {1 Models}

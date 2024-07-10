@@ -14,37 +14,23 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-(** Describes (almost) a Timezone according to
-    {{:https://www.w3.org/Protocols/rfc822/#z28} RFC822}. *)
+(** A Person construct is an element that describes a person, corporation, or
+    similar entity.
+
+    @see <https://datatracker.ietf.org/doc/html/rfc4287#section-3.2> *)
 
 (** {1 Types} *)
 
-(** A type describing a timezone. *)
-type t =
-  | Ut
-  | Gmt
-  | Est
-  | Edt
-  | Cst
-  | Cdt
-  | Mst
-  | Mdt
-  | Pst
-  | Pdt
-  | Plus of int
-  | Minus of int
+type t
 
 (** {1 Helpers} *)
 
-val plus : int -> t
-(** [plus 200] generates the TZ ["+0200"]. *)
+val make : ?uri:string -> ?email:string -> string -> t
+(** [make ?uri ?email name] constructs an element of type {!type:t}. *)
 
-val minus : int -> t
-(** [minus 200] generates the TZ ["-0200"]. *)
+val to_atom :
+  ?ns:string -> ?attr:Xml.Attr.t list -> name:string -> t -> Xml.node
+(** Generate an Atom node. *)
 
-val to_string : t -> string
-(** [to_string tz] render a string representation of a timezone. *)
-
-val to_string_rfc3339 : t -> string
-(** [to_string_rfc3339 tz] render a string representation of a timezone
-    (computing fixed timezone into offset). *)
+val to_rss2 : t -> string
+(** Generate a string representation of the person. *)

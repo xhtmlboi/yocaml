@@ -87,7 +87,7 @@ module Datetime = struct
     let hour, min, sec = time in
     { year; month; day; hour; min; sec }
 
-  let dummy_date = make_raw ~time:(0, 0, 0) ~year:1977 ~month:Jan ~day:1 ()
+  let dummy = make_raw ~time:(0, 0, 0) ~year:1970 ~month:Jan ~day:1 ()
   let ( let* ) = Result.bind
 
   let make ?(time = (0, 0, 0)) ~year ~month ~day () =
@@ -230,8 +230,13 @@ module Datetime = struct
     Format.fprintf ppf "%s, %02d %s %04d %a %s" dow dt.day mon dt.year pp_time
       dt tz
 
+  let pp_rfc3339 ?(tz = "Z") () ppf dt =
+    let mon = dt.month |> month_to_int in
+    Format.fprintf ppf "%04d-%02d-%02dT%02d:%02d:%02d%s" dt.year mon dt.day
+      dt.hour dt.min dt.sec tz
+
   let normalize ({ year; month; day; hour; min; sec } as dt) =
-    let has_time = not (Int.equal (compare_time dt dummy_date) 0) in
+    let has_time = not (Int.equal (compare_time dt dummy) 0) in
     let datetime_repr = Format.asprintf "%a" pp dt in
     let date_repr = Format.asprintf "%a" pp_date dt in
     let time_repr = Format.asprintf "%a" pp_time dt in

@@ -19,7 +19,12 @@
 
     The implementations should be sufficient to build the archetypes offered by
     YOCaml, while allowing you to build flows manually (adapting to your data
-    model). *)
+    model).
+
+    Please note that although the library makes some attempt to avoid invalid
+    cases, [Yocaml_syndication] is not an RSS or Atom document processing
+    library. If you want a stricter approach, you can turn to
+    {{:https://ocaml.org/p/syndic/latest} Syndic}. *)
 
 (** {1 Syndication format}
 
@@ -27,6 +32,7 @@
 
 module Rss1 = Rss1
 module Rss2 = Rss2
+module Atom = Atom
 
 module Rss = Rss2
 (** By default, [Rss] module is {!module:Rss2}. *)
@@ -40,6 +46,9 @@ module Tz = Tz
 module Datetime = Datetime
 module Text_input = Text_input
 module Media_type = Media_type
+module Person = Person
+module Category = Category
+module Generator = Generator
 
 (** {1 Low-level API}
 

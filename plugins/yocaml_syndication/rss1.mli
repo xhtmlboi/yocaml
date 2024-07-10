@@ -86,8 +86,8 @@ val from_articles :
   -> ?image:image
   -> ?textinput:Text_input.t
   -> title:string
-  -> url:string
-  -> link:string
+  -> feed_url:string
+  -> site_url:string
   -> description:string
   -> unit
   -> ((Yocaml.Path.t * Yocaml.Archetype.Article.t) list, string) Yocaml.Task.t

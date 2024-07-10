@@ -14,37 +14,23 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-(** Describes (almost) a Timezone according to
-    {{:https://www.w3.org/Protocols/rfc822/#z28} RFC822}. *)
+(** Conveys information about a category associated with an entry or feed. This
+    specification assigns no meaning to the content (if any) of this element.
+
+    @see <https://datatracker.ietf.org/doc/html/rfc4287#section-4.2.2> *)
 
 (** {1 Types} *)
 
-(** A type describing a timezone. *)
-type t =
-  | Ut
-  | Gmt
-  | Est
-  | Edt
-  | Cst
-  | Cdt
-  | Mst
-  | Mdt
-  | Pst
-  | Pdt
-  | Plus of int
-  | Minus of int
+type t
 
 (** {1 Helpers} *)
 
-val plus : int -> t
-(** [plus 200] generates the TZ ["+0200"]. *)
+val make : ?scheme:string -> ?label:string -> string -> t
+(** [make ?scheme ?label term] constructs an element of {!type:t}. [scheme] is
+    used as [domain] for [rss2] and [label] is discarded. *)
 
-val minus : int -> t
-(** [minus 200] generates the TZ ["-0200"]. *)
+val to_atom : t -> Xml.node
+(** Generate an Atom node. *)
 
-val to_string : t -> string
-(** [to_string tz] render a string representation of a timezone. *)
-
-val to_string_rfc3339 : t -> string
-(** [to_string_rfc3339 tz] render a string representation of a timezone
-    (computing fixed timezone into offset). *)
+val to_rss2 : t -> Xml.node
+(** Generate a Rss2 node. *)
