@@ -257,3 +257,58 @@ let%expect_test "test with some escapes" =
       </k>
     </foo:a>
     |}]
+
+let%expect_test "test a renamespacing" =
+  let open Xml in
+  let document =
+    document
+    @@ (node ~name:"repository"
+          [
+            person ~gender:"M" ~first_name:"John" ~last_name:"Doe"
+              ~address:
+                (address ~number:10
+                   ~street:("regular", "Street of OCaml")
+                   ~zipcode:"42" ~city:"FPCity" ~country:"OCamland")
+              ()
+          ; person ~gender:"F" ~first_name:"Jeanne" ~last_name:"Doe"
+              ~address:
+                (address ~number:12
+                   ~street:("avenue", "Avenue of OCaml")
+                   ~zipcode:"43" ~city:"CityOfApp" ~country:"OcamlIsland")
+              ()
+          ]
+       |> namespace ~ns:"yocaml")
+  in
+  print_endline @@ to_string document;
+  [%expect
+    {|
+    <?xml version="1.0" encoding="utf-8"?>
+    <yocaml:repository>
+      <yocaml:person gender="M">
+        <yocaml:first_name>John</yocaml:first_name>
+        <yocaml:last_name>Doe</yocaml:last_name>
+        <yocaml:address>
+          <yocaml:number>10</yocaml:number>
+          <yocaml:street kind="regular">Street of OCaml</yocaml:street>
+          <yocaml:zipcode>42</yocaml:zipcode>
+          <yocaml:city>FPCity</yocaml:city>
+          <yocaml:country>OCamland</yocaml:country>
+        </yocaml:address>
+        <yocaml:phones/>
+        <yocaml:email/>
+      </yocaml:person>
+      <yocaml:person gender="F">
+        <yocaml:first_name>Jeanne</yocaml:first_name>
+        <yocaml:last_name>Doe</yocaml:last_name>
+        <yocaml:address>
+          <yocaml:number>12</yocaml:number>
+          <yocaml:street kind="avenue">Avenue of OCaml</yocaml:street>
+          <yocaml:zipcode>43</yocaml:zipcode>
+          <yocaml:city>CityOfApp</yocaml:city>
+          <yocaml:country>OcamlIsland</yocaml:country>
+        </yocaml:address>
+        <yocaml:phones/>
+        <yocaml:email/>
+      </yocaml:person>
+    </yocaml:repository>
+    |}]
