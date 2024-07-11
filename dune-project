@@ -63,6 +63,15 @@
    (omd (>= 2.0.0~alpha4))))
 
 (package
+  (name yocaml_cmarkit)
+  (synopsis "Yocaml plugin for using Markdown (via Cmarkit package) as a Markup language")
+  (depends
+   (ocaml (>= 5.1.1))
+   (dune (>= 3.0.0))
+   (yocaml (= :version))
+   cmarkit))
+
+(package
   (name yocaml_jingoo)
   (synopsis "Yocaml plugin for using Jingoo as a template language")
   (depends

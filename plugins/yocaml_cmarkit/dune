@@ -1,0 +1,4 @@
+(library
+ (name yocaml_cmarkit)
+ (public_name yocaml_cmarkit)
+ (libraries yocaml cmarkit))
