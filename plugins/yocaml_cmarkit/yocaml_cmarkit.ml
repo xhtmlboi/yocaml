@@ -14,10 +14,9 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-let to_html ~strict =
+let to_html ?(strict = true) ?(safe = false) () =
   Yocaml.Task.lift (fun content ->
-      content
-      |> Cmarkit.Doc.of_string ~strict
-      |> Cmarkit_html.of_doc ~safe:false)
+      content |> Cmarkit.Doc.of_string ~strict |> Cmarkit_html.of_doc ~safe)
 
-let content_to_html ?(strict = true) () = Yocaml.Task.second (to_html ~strict)
+let content_to_html ?strict ?safe () =
+  Yocaml.Task.second (to_html ?strict ?safe ())
