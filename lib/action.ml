@@ -138,12 +138,46 @@ let copy_directory ?new_name ~into source cache =
   in
   perform target task perform_copy perform_copy cache
 
-let batch ?only ?where path action cache =
+let fold ?only ?where ~state path action cache =
   let open Eff in
   let* children = read_directory ~on:`Source ?only ?where path in
   Stdlib.List.fold_left
-    (fun cache file -> cache >>= action file)
-    (return cache) children
+    (fun state file ->
+      let* cache, state = state in
+      action file state cache)
+    (return (cache, state))
+    children
+
+let fold_list ~state list action cache =
+  let open Eff in
+  Stdlib.List.fold_left
+    (fun state elt ->
+      let* cache, state = state in
+      action elt state cache)
+    (return (cache, state))
+    list
+
+let batch ?only ?where path action cache =
+  let open Eff in
+  let+ cache, () =
+    fold ?only ?where ~state:() path
+      (fun file () cache ->
+        let+ cache = action file cache in
+        (cache, ()))
+      cache
+  in
+  cache
+
+let batch_list list action cache =
+  let open Eff in
+  let+ cache, () =
+    fold_list ~state:() list
+      (fun elt () cache ->
+        let+ cache = action elt cache in
+        (cache, ()))
+      cache
+  in
+  cache
 
 let restore_cache ?(on = `Source) path =
   let open Eff.Syntax in

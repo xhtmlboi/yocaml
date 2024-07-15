@@ -73,3 +73,29 @@ val batch :
   -> t
 (** [batch ?only ?where path action cache] Executes the given action on all
     child files of the given path. The cache is passed from call to call. *)
+
+val fold :
+     ?only:[ `Files | `Directories | `Both ]
+  -> ?where:(Path.t -> bool)
+  -> state:'a
+  -> Path.t
+  -> (Path.t -> 'a -> Cache.t -> (Cache.t * 'a) Eff.t)
+  -> Cache.t
+  -> (Cache.t * 'a) Eff.t
+(** [fold ?only ?where ~state path action cache] Executes the given action on
+    all child files of the given path. The cache is passed from call to call and
+    instead of {!val:batch}, you can maintain your own additional state. *)
+
+val batch_list : 'a list -> ('a -> t) -> t
+(** [batch_list list action cache] Executes the given action on all element of
+    the given list. The cache is passed from call to call. *)
+
+val fold_list :
+     state:'a
+  -> 'b list
+  -> ('b -> 'a -> Cache.t -> (Cache.t * 'a) Eff.t)
+  -> Cache.t
+  -> (Cache.t * 'a) Eff.t
+(** [fold_list ~state list action cache] Executes the given action on all
+    element of the given list. The cache is passed from call to call and instead
+    of {!val:batch_list}, you can maintain your own additional state. *)

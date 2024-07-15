@@ -165,6 +165,9 @@ let with_dynamic_dependencies files =
   let set = Deps.from_list files in
   lift (fun x -> (x, set))
 
+let empty_body () = lift (fun x -> (x, ""))
+let const k = lift (fun _ -> k)
+
 module Infix = struct
   let ( <<< ) = compose
   let ( >>> ) = rcompose

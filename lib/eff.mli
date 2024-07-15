@@ -326,6 +326,18 @@ val read_file : on:filesystem -> Path.t -> string t
     [path] and try to read it. Perform [Yocaml_failwith] with
     {!exception:File_not_exists} if the file does not exists. *)
 
+val read_file_as_metadata :
+     (module Required.DATA_PROVIDER)
+  -> (module Required.DATA_READABLE with type t = 'a)
+  -> on:filesystem
+  -> Path.t
+  -> 'a t
+(** [read_file_as_metadata (module P) (module R) ~on path] reads a file located
+    by a [path] on a data source ([on]) and validates the content as metadata
+    according to a {!module-type:Yocaml.Required.DATA_PROVIDER}, [P], using the
+    description provided by [R] of type
+    {!module-type:Yocaml.Required.DATA_READABLE}. *)
+
 val read_file_with_metadata :
      (module Required.DATA_PROVIDER)
   -> (module Required.DATA_READABLE with type t = 'a)

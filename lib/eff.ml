@@ -148,6 +148,16 @@ let read_file ~on =
       if is_file then perform @@ Yocaml_read_file (on, path)
       else raise @@ File_is_a_directory (on, path))
 
+let read_file_as_metadata (type a) (module P : Required.DATA_PROVIDER)
+    (module R : Required.DATA_READABLE with type t = a) ~on path =
+  let* file = read_file ~on path in
+  file
+  |> Option.some
+  |> Metadata.validate (module P) (module R)
+  |> Result.fold
+       ~error:(fun err -> raise @@ Provider_error err)
+       ~ok:(fun metadata -> return metadata)
+
 let read_file_with_metadata (type a) (module P : Required.DATA_PROVIDER)
     (module R : Required.DATA_READABLE with type t = a)
     ?(extraction_strategy = Metadata.jekyll) ~on path =

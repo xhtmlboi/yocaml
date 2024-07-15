@@ -61,7 +61,7 @@ end
 
 module type DATA_INJECTABLE = sig
   (** Describes a type capable of being injected as metadata of type
-      {!type:Yocaml.Data.t}. Used to lif a module into an injecter of arbitrary
+      {!type:Yocaml.Data.t}. Used to lift a module into an injecter of arbitrary
       types to a template (for example). *)
 
   type t
