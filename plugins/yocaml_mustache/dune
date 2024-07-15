@@ -1,0 +1,4 @@
+(library
+ (name yocaml_mustache)
+ (public_name yocaml_mustache)
+ (libraries mustache yocaml))
