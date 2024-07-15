@@ -29,6 +29,11 @@ let read_file_with_metadata (type a) (module P : Required.DATA_PROVIDER)
         (module R)
         ?extraction_strategy ~on:`Source path)
 
+let read_file_as_metadata (type a) (module P : Required.DATA_PROVIDER)
+    (module R : Required.DATA_READABLE with type t = a) path =
+  Task.make (Deps.singleton path) (fun () ->
+      Eff.read_file_as_metadata (module P) (module R) ~on:`Source path)
+
 let as_template (type a) (module T : Required.DATA_TEMPLATE)
     (module I : Required.DATA_INJECTABLE with type t = a) ?(strict = true)
     template =

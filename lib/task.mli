@@ -332,6 +332,12 @@ val drop_first : unit -> ('a * 'b, 'b) t
 val drop_second : unit -> ('a * 'b, 'a) t
 (** [drop_second t] discards the second element returned by a task. *)
 
+val empty_body : unit -> ('a, 'a * string) t
+(** An arrow that attach an empty body *)
+
+val const : 'a -> ('b, 'a) t
+(** [const x] is an arrow that discard the previous output to replace-it by [k]. *)
+
 val with_dynamic_dependencies : Path.t list -> ('a, 'a * Deps.t) t
 (** [with_dynamic_dependencies dependenices_list] allows to add a set of dynamic
     dependencies to a task. Even the set of dependencies looks static, it is
