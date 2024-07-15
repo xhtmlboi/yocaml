@@ -37,6 +37,15 @@ module Eff : sig
   (** The analogous function of {!val:Yocaml.Eff.read_file_with_metadata}, not
       requiring a [DATA_PROVIDER]. Identical to using
       [Yocaml.Eff.read_file_with_metadata (module Yocaml_yaml) ...].*)
+
+  val read_file_as_metadata :
+       (module Yocaml.Required.DATA_READABLE with type t = 'a)
+    -> on:Yocaml.Eff.filesystem
+    -> Yocaml.Path.t
+    -> 'a Yocaml.Eff.t
+  (** The analogous function of {!val:Yocaml.Eff.read_file_as_metadata}, not
+      requiring a [DATA_PROVIDER]. Identical to using
+      [Yocaml.Eff.read_file_as_metadata (module Yocaml_yaml) ...].*)
 end
 
 module Pipeline : sig
@@ -51,6 +60,14 @@ module Pipeline : sig
   (** The analogous function of {!val:Yocaml.Pipeline.read_file_with_metadata},
       not requiring a [DATA_PROVIDER]. Identical to using
       [Yocaml.Pipeline.read_file_with_metadata (module Yocaml_yaml) ...].*)
+
+  val read_file_as_metadata :
+       (module Yocaml.Required.DATA_READABLE with type t = 'a)
+    -> Yocaml.Path.t
+    -> (unit, 'a) Yocaml.Task.t
+  (** The analogous function of {!val:Yocaml.Pipeline.read_file_as_metadata},
+      not requiring a [DATA_PROVIDER]. Identical to using
+      [Yocaml.Pipeline.read_file_as_metadata (module Yocaml_yaml) ...].*)
 end
 
 (** {1 Data Provider}
