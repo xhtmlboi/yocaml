@@ -1,3 +1,9 @@
 (executable
  (name simple_blog)
- (libraries yocaml yocaml_jingoo yocaml_yaml yocaml_omd yocaml_unix yocaml_syndication))
+ (libraries
+  yocaml
+  yocaml_jingoo
+  yocaml_yaml
+  yocaml_omd
+  yocaml_unix
+  yocaml_syndication))

@@ -81,6 +81,15 @@
    (jingoo (>= 1.5.0))))
 
 (package
+  (name yocaml_mustache)
+  (synopsis "Yocaml plugin for using Jingoo as a template language")
+  (depends
+   (ocaml (>= 5.1.1))
+   (dune (>= 3.0.0))
+   (yocaml (= :version))
+   (mustache (= 3.3.0))))
+
+(package
   (name yocaml_syndication)
   (synopsis "Yocaml plugin for dealing with RSS and Atom feed")
   (depends
