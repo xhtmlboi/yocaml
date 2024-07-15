@@ -1,4 +1,4 @@
 (library
-  (name yocaml_syndication)
-  (public_name yocaml_syndication)
-  (libraries yocaml))
+ (name yocaml_syndication)
+ (public_name yocaml_syndication)
+ (libraries yocaml))
