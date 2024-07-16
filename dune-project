@@ -82,7 +82,7 @@
 
 (package
   (name yocaml_mustache)
-  (synopsis "Yocaml plugin for using Jingoo as a template language")
+  (synopsis "Yocaml plugin for using Mustache as a template language")
   (depends
    (ocaml (>= 5.1.1))
    (dune (>= 3.0.0))
