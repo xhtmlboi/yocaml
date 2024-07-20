@@ -8,7 +8,7 @@ examples or tools to quickly build a blog.
 
 ## Information
 
-The project is described in the YOCaml source tree, so no particular OPAM set-up
+The project is described in the **YOCaml** source tree, so no particular OPAM set-up
 is required (if the development environment is properly set up) and should be
 used _only_ to understand how to build a blog.
 
