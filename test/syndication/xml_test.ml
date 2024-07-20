@@ -312,3 +312,17 @@ let%expect_test "test a renamespacing" =
       </yocaml:person>
     </yocaml:repository>
     |}]
+
+let%expect_test "Empty nodes should produce a leaf" =
+  let open Xml in
+  let document =
+    document ~version:"2.0" ~encoding:"utf-16" ~standalone:true
+    @@ node ~name:"element"
+         [ may_leaf ~name:"foo" Fun.id None; may_leaf ~name:"bar" Fun.id None ]
+  in
+  print_endline @@ to_string document;
+  [%expect
+    {|
+    <?xml standalone="yes" version="2.0" encoding="utf-16"?>
+    <element/>
+    |}]
