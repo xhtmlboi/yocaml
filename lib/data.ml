@@ -344,7 +344,8 @@ module Validation = struct
   end
 
   module Syntax = struct
-    let ( let+ ) v f = match v with Error err -> Error err | Ok x -> Ok (f x)
+    let ( let+ ) v f = Result.map f v
+    let ( let* ) v f = Result.bind v f
 
     let ( and+ ) a b =
       match (a, b) with
