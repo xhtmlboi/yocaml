@@ -21,11 +21,7 @@
 
     In fact, a document complying with the OPML2 specification is broadly
     compatible with specification 1, so it is
-    {b recommended to use specification 2}.
-
-    The module is not bundled with Arrows because transforming archetypes into
-    an OPML feed is far less trivial and the encoding is less generalizable
-    through archetypes. *)
+    {b recommended to use specification 2}. *)
 
 (** {1 Types} *)
 
@@ -99,10 +95,61 @@ val feed :
 
 (** {1 Generating OPML feeds} *)
 
+val to_opml2 : ?encoding:string -> ?standalone:bool -> t -> Xml.t
+(** Generates an OPML stream in accordance with specification 2.
+    @see <http://opml.org/spec2.opml> *)
+
 val to_opml1 : ?encoding:string -> ?standalone:bool -> t -> Xml.t
 (** Generates an OPML stream in accordance with specification 1.
     @see <https://archive.wikiwix.com/cache/index2.php?url=http%3A%2F%2Fdev.opml.org%2Fspec1.html#federation=archive.wikiwix.com&tab=url> *)
 
-val to_opml2 : ?encoding:string -> ?standalone:bool -> t -> Xml.t
-(** Generates an OPML stream in accordance with specification 2.
-    @see <http://opml.org/spec2.opml> *)
+(** {1 Arrows for building a feed} *)
+
+val from :
+     ?title:string
+  -> ?date_created:Datetime.t
+  -> ?date_modified:Datetime.t
+  -> ?owner:Person.t
+  -> ?expansion_state:int list
+  -> ?vert_scroll_state:int
+  -> ?window_top:int
+  -> ?window_left:int
+  -> ?window_bottom:int
+  -> ?window_right:int
+  -> unit
+  -> (outline list, t) Yocaml.Task.t
+(** An arrow that build a feed that from a list of outlines. *)
+
+val opml2_from :
+     ?encoding:string
+  -> ?standalone:bool
+  -> ?title:string
+  -> ?date_created:Datetime.t
+  -> ?date_modified:Datetime.t
+  -> ?owner:Person.t
+  -> ?expansion_state:int list
+  -> ?vert_scroll_state:int
+  -> ?window_top:int
+  -> ?window_left:int
+  -> ?window_bottom:int
+  -> ?window_right:int
+  -> unit
+  -> (outline list, string) Yocaml.Task.t
+(** An arrow that build an OPML2 representation that from a list of outlines. *)
+
+val opml1_from :
+     ?encoding:string
+  -> ?standalone:bool
+  -> ?title:string
+  -> ?date_created:Datetime.t
+  -> ?date_modified:Datetime.t
+  -> ?owner:Person.t
+  -> ?expansion_state:int list
+  -> ?vert_scroll_state:int
+  -> ?window_top:int
+  -> ?window_left:int
+  -> ?window_bottom:int
+  -> ?window_right:int
+  -> unit
+  -> (outline list, string) Yocaml.Task.t
+(** An arrow that build an OPML1 representation that from a list of outlines. *)
