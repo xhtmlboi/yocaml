@@ -405,12 +405,24 @@ module Validation : sig
               { field_a, field_b, field_c })
         ]eof} *)
 
-    val ( let+ ) : 'a validated_record -> ('a -> 'b) -> 'b validated_record
+    val ( let+ ) : ('a, 'err) Result.t -> ('a -> 'b) -> ('b, 'err) Result.t
     (** [let+ x = v in  k x] is [map (fun x -> k x) v]. *)
 
     val ( and+ ) :
       'a validated_record -> 'b validated_record -> ('a * 'b) validated_record
     (** [let+ x = v and+ y = w in k x y] is [map2 (fun x y -> k x y) v w]. *)
+
+    val ( let* ) :
+      ('a, 'err) Result.t -> ('a -> ('b, 'err) Result.t) -> ('b, 'err) Result.t
+    (** [let* r = f x in return r] tries to produce a result [Ok] from the
+        expression [f x], if the expression returns [Error _], the computation
+        chain is interrupted.
+
+        {b Warning}: the semantics of [let*] are significantly different from a
+        succession of [let+ ... and+ ...] which allow errors to be collected in
+        parallel (independently), whereas [let*] captures them sequentially. The
+        composition of [let*] and [let+] is tricky and [let*] should only be
+        used to validate preconditions. *)
   end
 
   include module type of Syntax

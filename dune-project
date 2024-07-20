@@ -19,6 +19,7 @@
    (ocaml (>= 5.1.1))
    (dune (>= 3.0.0))
    (odoc :with-doc)
+   (sherlodoc :with-doc)
    (fmt :with-test)
    (alcotest :with-test)
    (qcheck :with-test)

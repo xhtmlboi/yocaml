@@ -853,3 +853,142 @@ And it can be used with const in the event of absolute valis failure :
 With the support of alternatives, we've seen all the ways to build increasingly
 expressive validators, enabling us to capture as many scenarios as possible to
 describe metadata.
+
+{1 Executing preconditions/postconditions}
+
+In some cases, you may want to build data under certain conditions. You can use
+the [let*] operator to describe pre/post-conditions. For example, let's modify
+our user validation function to allow validation only if registrations are open:
+
+{eof@ocaml[
+let user_validation registration_open user =
+  let open Yocaml.Data.Validation in
+  let* () =
+     if registration_open then Ok ()
+     else fail_with ~given:"false" "registration are closed"
+  in
+  record (fun fields ->
+    let+ username = required fields "username" string
+    and+ age = required fields "age" int
+    and+ nouns = optional_or  ~default:[] fields "nouns" (list_of string)
+    and+ email = optional fields "email" string
+    in
+      { username; age; nouns; email }
+  ) user
+]eof}
+
+If you use validation with registration open, validation behaves correctly:
+
+{eof@ocaml[
+# user_validation true D.(record [
+    "username", string "JohnDoe42"
+  ; "age", int 42
+  ; "nouns", list_of string ["he"; "him"; "his"; "himself"]
+  ; "email", string "jdoe@name.com"
+  ]) ;;
+- : (user, V.value_error) result =
+Result.Ok
+ {username = "JohnDoe42"; age = 42; nouns = ["he"; "him"; "his"; "himself"];
+  email = Some "jdoe@name.com"}
+]eof}
+
+But if you close the registrations, the validation will fail (without executing
+the record validation):
+
+{eof@ocaml[
+# user_validation false D.(record [
+    "username", string "JohnDoe42"
+  ; "age", int 42
+  ; "nouns", list_of string ["he"; "him"; "his"; "himself"]
+  ; "email", string "jdoe@name.com"
+  ]) ;;
+- : (user, V.value_error) result =
+Result.Error
+ (Yocaml.Data.Validation.With_message
+   {Yocaml.Data.Validation.given = "false";
+    message = "registration are closed"})
+]eof}
+
+We can also describe preconditions that construct values on which a ‘next’
+validation sequence will depend (and performing postcondition). Here, we will
+assume that we want the user to provide confirmation of their name, which must
+be equal to the username they have provided:
+
+{eof@ocaml[
+let user_validation registration_open user =
+  let open Yocaml.Data.Validation in
+  let* validated_user =
+    record (fun fields ->
+      let+ username = required fields "username" string
+      and+ age = required fields "age" int
+      and+ nouns = optional_or  ~default:[] fields "nouns" (list_of string)
+      and+ email = optional fields "email" string
+      in
+        { username; age; nouns; email }
+    ) user
+  in
+  let* () =
+    record (fun fields ->
+      let+ _ =
+        required fields "username_confirmation"
+          (string
+             & equal ~equal:String.equal
+                ~pp:Format.pp_print_string
+                validated_user.username)
+      in ()
+     ) user
+  in Ok validated_user
+]eof}
+
+If our confirmation is correct, the validation process will run smoothly!
+
+{eof@ocaml[
+# user_validation true D.(record [
+    "username", string "JohnDoe42"
+  ; "age", int 42
+  ; "nouns", list_of string ["he"; "him"; "his"; "himself"]
+  ; "email", string "jdoe@name.com"
+  ; "username_confirmation", string "JohnDoe42"
+  ]) ;;
+- : (user, V.value_error) result =
+Result.Ok
+ {username = "JohnDoe42"; age = 42; nouns = ["he"; "him"; "his"; "himself"];
+  email = Some "jdoe@name.com"}
+]eof}
+
+On the other hand, if the confirmation is wrong:
+
+{eof@ocaml[
+# user_validation true D.(record [
+    "username", string "JohnDoe42"
+  ; "age", int 42
+  ; "nouns", list_of string ["he"; "him"; "his"; "himself"]
+  ; "email", string "jdoe@name.com"
+  ; "username_confirmation", string "JohnDoe43"
+  ]) ;;
+- : (user, V.value_error) result =
+Result.Error
+ (Yocaml.Data.Validation.Invalid_record
+   {Yocaml.Data.Validation.errors =
+     Yocaml__.Nel.(::)
+      (Yocaml.Data.Validation.Invalid_field
+        {Yocaml.Data.Validation.given = Yocaml.Data.String "JohnDoe43";
+         field = "username_confirmation";
+         error =
+          Yocaml.Data.Validation.With_message
+           {Yocaml.Data.Validation.given = "JohnDoe43";
+            message = "should be equal to JohnDoe42"}},
+       []);
+    given =
+     [("username", Yocaml.Data.String "JohnDoe42");
+      ("age", Yocaml.Data.Int 42);
+      ("nouns",
+       Yocaml.Data.List
+        [Yocaml.Data.String "he"; Yocaml.Data.String "him";
+         Yocaml.Data.String "his"; Yocaml.Data.String "himself"]);
+      ("email", Yocaml.Data.String "jdoe@name.com");
+      ("username_confirmation", Yocaml.Data.String "JohnDoe43")]})
+]eof}
+
+In some cases, dependent validation makes it possible to construct increasingly
+complex situations, so it should only be used when really necessary.
