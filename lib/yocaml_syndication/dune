@@ -1,7 +1,0 @@
-(library
- (name yocaml_syndication)
- (public_name yocaml_syndication)
- (libraries yocaml syndic preface ptime))
-
-(documentation
- (package yocaml_syndication))

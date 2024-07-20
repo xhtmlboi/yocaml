@@ -1,6 +1,0 @@
-version = 0.24.1
-profile = janestreet
-break-infix = fit-or-vertical
-parse-docstrings = true
-module-item-spacing = compact
-margin = 78

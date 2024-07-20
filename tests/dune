@@ -1,3 +1,0 @@
-(test
- (name yocaml_test)
- (libraries alcotest preface yocaml yocaml_yaml))

@@ -1,7 +1,0 @@
-(library
- (name yocaml)
- (public_name yocaml)
- (libraries preface))
-
-(documentation
- (package yocaml))
