@@ -28,6 +28,15 @@ type t
 val make : ?uri:string -> ?email:string -> string -> t
 (** [make ?uri ?email name] constructs an element of type {!type:t}. *)
 
+val to_owner_name : t -> Xml.node
+(** Generate the OPML node [ownerName]. *)
+
+val to_owner_email : t -> Xml.node
+(** Generate the OPML node [ownerEmail]. *)
+
+val to_owner_id : t -> Xml.node
+(** Generate the OPML node [ownerId]. *)
+
 val to_atom :
   ?ns:string -> ?attr:Xml.Attr.t list -> name:string -> t -> Xml.node
 (** Generate an Atom node. *)

@@ -27,3 +27,4 @@ module Rss1 = Rss1
 module Rss2 = Rss2
 module Rss = Rss2
 module Atom = Atom
+module Opml = Opml

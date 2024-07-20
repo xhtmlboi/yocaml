@@ -33,6 +33,7 @@
 module Rss1 = Rss1
 module Rss2 = Rss2
 module Atom = Atom
+module Opml = Opml
 
 module Rss = Rss2
 (** By default, [Rss] module is {!module:Rss2}. *)

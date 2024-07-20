@@ -29,3 +29,7 @@ let to_atom ?ns ?attr ~name p = Xml.node ~name ?attr ?ns (to_xml p)
 
 let to_rss2 { name; email; _ } =
   match email with None -> name | Some email -> email ^ " (" ^ name ^ ")"
+
+let to_owner_name { name; _ } = Xml.leaf ~name:"ownerName" (Some name)
+let to_owner_email { email; _ } = Xml.may_leaf ~name:"ownerEmail" Fun.id email
+let to_owner_id { uri; _ } = Xml.may_leaf ~name:"ownerId" Fun.id uri

@@ -73,7 +73,10 @@ let document ?(version = "1.0") ?(encoding = "utf-8") ?(standalone = false) root
 let opt n = Maybe n
 
 let node ?ns ~name ?(attr = []) body =
-  Node ((ns, name), Attr.from_list attr, body)
+  Node
+    ( (ns, name)
+    , Attr.from_list attr
+    , List.filter_map (function Maybe x -> x | x -> Some x) body )
 
 let leaf ?ns ~name ?(attr = []) body =
   Leaf ((ns, name), Attr.from_list attr, body)
