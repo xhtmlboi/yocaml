@@ -150,7 +150,7 @@ module Outline = struct
       xml_url |> Option.map (Xml.Attr.string ~key:"xmlUrl") |> Option.to_list
     in
     let html_url =
-      html_url |> Option.map (Xml.Attr.string ~key:"xmlUrl") |> Option.to_list
+      html_url |> Option.map (Xml.Attr.string ~key:"htmlUrl") |> Option.to_list
     in
     let categories =
       match categories with
@@ -236,3 +236,29 @@ let to_opml1 ?encoding ?standalone feed =
 
 let to_opml2 ?encoding ?standalone feed =
   Feed.to_opml2 ?encoding ?standalone feed
+
+let from ?title ?date_created ?date_modified ?owner ?expansion_state
+    ?vert_scroll_state ?window_top ?window_left ?window_bottom ?window_right ()
+    =
+  Yocaml.Task.lift (fun outlines ->
+      feed ?title ?date_created ?date_modified ?owner ?expansion_state
+        ?vert_scroll_state ?window_top ?window_left ?window_bottom ?window_right
+        outlines)
+
+let opml2_from ?encoding ?standalone ?title ?date_created ?date_modified ?owner
+    ?expansion_state ?vert_scroll_state ?window_top ?window_left ?window_bottom
+    ?window_right () =
+  let open Yocaml.Task in
+  from ?title ?date_created ?date_modified ?owner ?expansion_state
+    ?vert_scroll_state ?window_top ?window_left ?window_bottom ?window_right ()
+  >>> lift (fun feed ->
+          feed |> Feed.to_opml2 ?encoding ?standalone |> Xml.to_string)
+
+let opml1_from ?encoding ?standalone ?title ?date_created ?date_modified ?owner
+    ?expansion_state ?vert_scroll_state ?window_top ?window_left ?window_bottom
+    ?window_right () =
+  let open Yocaml.Task in
+  from ?title ?date_created ?date_modified ?owner ?expansion_state
+    ?vert_scroll_state ?window_top ?window_left ?window_bottom ?window_right ()
+  >>> lift (fun feed ->
+          feed |> Feed.to_opml1 ?encoding ?standalone |> Xml.to_string)
