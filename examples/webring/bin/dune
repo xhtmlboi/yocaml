@@ -1,0 +1,9 @@
+(executable
+ (name webring)
+ (libraries
+  yocaml
+  yocaml_jingoo
+  yocaml_yaml
+  yocaml_omd
+  yocaml_syndication
+  yocaml_unix))
