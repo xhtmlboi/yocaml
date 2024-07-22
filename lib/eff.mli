@@ -264,6 +264,10 @@ type _ Effect.t +=
             path). *)
   | Yocaml_create_dir : filesystem * Path.t -> unit Effect.t
         (** Effect that create a directory. *)
+  | Yocaml_exec_command :
+      string * string list * (int -> bool)
+      -> string Effect.t
+        (** Effect that perform an Unix call. *)
 
 val perform : 'a Effect.t -> 'a t
 (** [perform effect] colours an effect performance as impure. Replaces
@@ -321,6 +325,14 @@ val failwith : string -> 'a t
 
 val get_time : unit -> int t
 (** [get_time ()] returns the current timestamp. *)
+
+val exec : ?is_success:(int -> bool) -> string -> ?args:string list -> string t
+(** [exec ?is_success prog ?args] will executes [prog ...args]. When
+    [is_success] is provided, it is called with the exit code to determine
+    whether it indicates success or failure. Without [is_success], success
+    requires the process to return an exit code of 0.
+
+    printing on standard output is returned. *)
 
 val file_exists : on:filesystem -> Path.t -> bool t
 (** [file_exists ~on path] perform the effect [Yocaml_file_exists] with a given

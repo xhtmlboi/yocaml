@@ -27,4 +27,5 @@ let () =
     ; Cache_test.cases
     ; Pipeline_test.cases
     ; Action_test.cases
+    ; Exec_command.cases
     ]

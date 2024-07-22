@@ -155,6 +155,18 @@ module type RUNTIME = sig
     -> (Path.fragment list, runtime_error) result t
   (** [read_dir ~on:source path] returns a list of filename (fragment) of a
       given directory. *)
+
+  val exec :
+       ?is_success:(int -> bool)
+    -> string
+    -> ?args:string list
+    -> (string, runtime_error) result t
+  (** [exec ?is_success prog ?args] will executes [prog ...args]. When
+      [is_success] is provided, it is called with the exit code to determine
+      whether it indicates success or failure. Without [is_success], success
+      requires the process to return an exit code of 0.
+
+      printing on standard output is returned. *)
 end
 
 (** {1 Runner}

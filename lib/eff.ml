@@ -112,6 +112,9 @@ type _ Effect.t +=
   | Yocaml_is_directory : filesystem * Path.t -> bool Effect.t
   | Yocaml_read_dir : filesystem * Path.t -> Path.fragment list Effect.t
   | Yocaml_create_dir : filesystem * Path.t -> unit Effect.t
+  | Yocaml_exec_command :
+      string * string list * (int -> bool)
+      -> string Effect.t
 
 let perform raw_effect = return @@ Effect.perform raw_effect
 
@@ -132,6 +135,9 @@ let get_time () = perform @@ Yocaml_get_time ()
 let file_exists ~on path = perform @@ Yocaml_file_exists (on, path)
 let logf ?(level = `Debug) = Format.kasprintf (fun result -> log ~level result)
 let is_directory ~on path = perform @@ Yocaml_is_directory (on, path)
+
+let exec ?(is_success = Int.equal 0) exec_name ?(args = []) =
+  perform @@ Yocaml_exec_command (exec_name, args, is_success)
 
 let is_file ~on path =
   let* file_exists = file_exists ~on path in

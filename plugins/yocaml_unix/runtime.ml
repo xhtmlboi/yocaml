@@ -28,6 +28,7 @@ type runtime_error =
   | Unable_to_read_file of Yocaml.Path.t
   | Unable_to_read_directory of Yocaml.Path.t
   | Unable_to_read_mtime of Yocaml.Path.t
+  | Unable_to_perform_command of string * exn
 
 let to_eio_path env p =
   let k, fragments = Yocaml.Path.to_pair p in
@@ -95,6 +96,8 @@ let runtime_error_to_string runtime_error =
   | Unable_to_create_directory path ->
       Format.asprintf "%s: Unable to create directory: `%a`" heading
         Yocaml.Path.pp path
+  | Unable_to_perform_command (prog, _) ->
+      Format.asprintf "%s: Unable to perform command: `%s`" heading prog
 
 let read_dir ~on:_ path env =
   try path |> to_eio_path env |> Eio.Path.read_dir |> Result.ok
@@ -117,3 +120,14 @@ let read_file ~on:_ path env =
     let output = Eio.Path.load path in
     Result.ok output
   with _ -> Result.error @@ Unable_to_read_file path
+
+let exec ?(is_success = Int.equal 0) exec_name ?(args = []) env =
+  try
+    let args = exec_name :: args in
+    let proc_mgr = Eio.Stdenv.process_mgr env in
+    let result =
+      Eio.Process.parse_out ~is_success proc_mgr Eio.Buf_read.line args
+    in
+    Result.ok result
+  with exn ->
+    Result.error @@ Unable_to_perform_command (String.concat " " args, exn)

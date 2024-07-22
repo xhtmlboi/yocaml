@@ -99,6 +99,13 @@ module Make (Runtime : Required.RUNTIME) = struct
                         (function
                           | Ok x -> continue k x | Error err -> runtimec err)
                         (Runtime.read_dir ~on:filesystem path))
+              | Eff.Yocaml_exec_command (prog, args, is_success) ->
+                  Some
+                    (fun (k : (a, _) continuation) ->
+                      Runtime.bind
+                        (function
+                          | Ok x -> continue k x | Error err -> runtimec err)
+                        (Runtime.exec ~is_success ~args prog))
               | _ -> None)
         }
     in

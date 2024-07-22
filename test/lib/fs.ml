@@ -193,6 +193,10 @@ let push_read_directory trace on path =
   push_trace trace
   @@ Format.asprintf "[READ_DIRECTORY][%a]%a" on_pp on Yocaml.Path.pp path
 
+let push_exec trace prog args =
+  push_trace trace
+  @@ Format.asprintf "[EXEC][%s]" (String.concat " " (prog :: args))
+
 type _ Effect.t += Yocaml_test_increase_time : int -> unit Effect.t
 
 let increase_time amount =
@@ -200,6 +204,32 @@ let increase_time amount =
 
 let increase_time_with amount cache =
   Yocaml.Eff.(increase_time amount >>= Fun.const @@ return cache)
+
+let perform_exec trace prog args =
+  match prog :: args with
+  | "echo" :: xs -> (trace, String.concat " " xs)
+  | [ "ls"; path ] ->
+      ( trace
+      , match get trace.system (String.split_on_char '/' path) with
+        | None -> "ls: no " ^ path
+        | Some x -> Format.asprintf "%a" pp_item x )
+  | [ "cat"; path ] ->
+      ( trace
+      , match get trace.system (String.split_on_char '/' path) with
+        | None -> "cat: no " ^ path
+        | Some (File { content; _ }) -> content
+        | Some (Dir { name; _ }) -> name )
+  | [ "write"; target; content ] ->
+      let path = String.split_on_char '/' target in
+      let system =
+        update trace.system path (fun ~target:_ ~previous_item ->
+            match previous_item with
+            | Some (File _ as p) ->
+                file ~mtime:trace.time (name_of p) content |> Option.some
+            | x -> x)
+      in
+      ({ trace with system }, "done")
+  | x -> (trace, String.concat "," x)
 
 let run ~trace program input =
   let handler =
@@ -326,6 +356,13 @@ let run ~trace program input =
                          function. *)
                     in
                     continue k res)
+            | Yocaml_exec_command (prog, args, _) ->
+                Some
+                  (fun (k : (a, _) continuation) ->
+                    let () = trace := push_exec !trace prog args in
+                    let new_trace, st = perform_exec !trace prog args in
+                    let () = trace := new_trace in
+                    continue k st)
             | _ -> None)
       }
   in
