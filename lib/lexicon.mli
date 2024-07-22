@@ -20,14 +20,12 @@
 (** {1 Logs} *)
 
 val target_already_up_to_date : Path.t -> string
-val target_exists : Path.t -> string
 val target_need_to_be_built : Path.t -> string
 val target_is_written : Path.t -> string
 val target_was_written : Path.t -> string
 val target_hash_is_unchanged : Path.t -> string
 val target_hash_is_changed : Path.t -> string
 val found_dynamic_dependencies : Path.t -> string
-val target_not_in_cache : Path.t -> string
 val cache_invalid_csexp : Path.t -> string
 val cache_invalid_repr : Path.t -> string
 val cache_restored : Path.t -> string

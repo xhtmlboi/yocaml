@@ -116,6 +116,9 @@ module type RUNTIME = sig
   val log : [ `App | `Error | `Warning | `Info | `Debug ] -> string -> unit t
   (** [log level message] log a [message] with a given [message]. *)
 
+  val get_time : unit -> int t
+  (** [get_time ()] returns the current timestamp. *)
+
   val file_exists : on:[ `Source | `Target ] -> Path.t -> bool t
   (** [file_exists ~on:source -> path] returns [true] if the file exists, false
       otherwise. *)

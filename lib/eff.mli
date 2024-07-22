@@ -243,6 +243,8 @@ type _ Effect.t +=
             library. *)
   | Yocaml_failwith : exn -> 'a Effect.t
         (** Effect that propagates an error. *)
+  | Yocaml_get_time : unit -> int Effect.t
+        (** Effect that get the current time. *)
   | Yocaml_file_exists : filesystem * Path.t -> bool Effect.t
         (** Effect that check if a file exists. *)
   | Yocaml_read_file : filesystem * Path.t -> string Effect.t
@@ -316,6 +318,9 @@ val raise : exn -> 'a t
 val failwith : string -> 'a t
 (** [failwith message] perform the effect [Yocaml_failwith] with a message that
     produces an error wrapped into a [Failure] exception. *)
+
+val get_time : unit -> int t
+(** [get_time ()] returns the current timestamp. *)
 
 val file_exists : on:filesystem -> Path.t -> bool t
 (** [file_exists ~on path] perform the effect [Yocaml_file_exists] with a given

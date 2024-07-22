@@ -19,8 +19,6 @@ let bug_tracker = "https://github.com/xhtmlboi/yocaml/issues"
 let target_already_up_to_date target =
   Format.asprintf "`%a` is already up-to-date" Path.pp target
 
-let target_exists target = Format.asprintf "`%a` exists" Path.pp target
-
 let target_need_to_be_built target =
   Format.asprintf "`%a` need to be built" Path.pp target
 
@@ -40,9 +38,6 @@ let target_hash_is_changed target =
 
 let found_dynamic_dependencies target =
   Format.asprintf "`%a` has dynamic dependencies" Path.pp target
-
-let target_not_in_cache target =
-  Format.asprintf "`%a` is not present in the cache" Path.pp target
 
 let cache_invalid_csexp target =
   Format.asprintf "Cache located in `%a` is invalid Csexp" Path.pp target

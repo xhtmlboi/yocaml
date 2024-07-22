@@ -167,6 +167,8 @@ let push_read_file trace on path =
   push_trace trace
   @@ Format.asprintf "[READ_FILE][%a]%a" on_pp on Yocaml.Path.pp path
 
+let push_time trace = push_trace trace @@ Format.asprintf "[TIME]"
+
 let push_mtime trace on path =
   push_trace trace
   @@ Format.asprintf "[MTIME][%a]%a" on_pp on Yocaml.Path.pp path
@@ -232,6 +234,12 @@ let run ~trace program input =
                   (fun (k : (a, _) continuation) ->
                     let () = trace := push_log !trace level message in
                     continue k ())
+            | Yocaml_get_time () ->
+                Some
+                  (fun (k : (a, _) continuation) ->
+                    let () = trace := push_time !trace in
+                    let time = !trace.time in
+                    continue k time)
             | Yocaml_file_exists (on, path) ->
                 Some
                   (fun (k : (a, _) continuation) ->

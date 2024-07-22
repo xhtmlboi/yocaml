@@ -103,6 +103,7 @@ type _ Effect.t +=
       ([ `App | `Error | `Warning | `Info | `Debug ] * string)
       -> unit Effect.t
   | Yocaml_failwith : exn -> 'a Effect.t
+  | Yocaml_get_time : unit -> int Effect.t
   | Yocaml_file_exists : filesystem * Path.t -> bool Effect.t
   | Yocaml_read_file : filesystem * Path.t -> string Effect.t
   | Yocaml_get_mtime : filesystem * Path.t -> int Effect.t
@@ -127,6 +128,7 @@ exception Provider_error of Required.provider_error
 let log ?(level = `Debug) message = perform @@ Yocaml_log (level, message)
 let raise exn = perform @@ Yocaml_failwith exn
 let failwith message = perform @@ Yocaml_failwith (Failure message)
+let get_time () = perform @@ Yocaml_get_time ()
 let file_exists ~on path = perform @@ Yocaml_file_exists (on, path)
 let logf ?(level = `Debug) = Format.kasprintf (fun result -> log ~level result)
 let is_directory ~on path = perform @@ Yocaml_is_directory (on, path)

@@ -49,6 +49,10 @@ let log level message _env =
   in
   Logs.msg level (fun print -> print "%s" message)
 
+let get_time () env =
+  let clock = Eio.Stdenv.clock env in
+  Eio.Time.now clock |> int_of_float
+
 let file_exists ~on:_ path env =
   let path = to_eio_path env path in
   match Eio.Path.kind ~follow:true path with `Not_found -> false | _ -> true

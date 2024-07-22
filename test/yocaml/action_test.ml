@@ -461,12 +461,12 @@ let test_action_with_dynamic_dependencies_1 =
             ])
       in
       let () =
-        check Testable.cache "should be equal"
+        check Testable.cache "should be equal 1"
           Yocaml.Cache.(
             from_list
               [
                 ( ~/[ "_build"; "index.txt" ]
-                , entry "H:abc"
+                , entry ~last_build_date:2 "H:abc"
                   @@ Yocaml.Deps.from_list
                        [
                          ~/[ "includes"; "a.txt" ]
@@ -477,14 +477,14 @@ let test_action_with_dynamic_dependencies_1 =
           cache
       in
       let () =
-        check Testable.fs "should be equal" expected_file_system
+        check Testable.fs "should be equal 2" expected_file_system
           computed_file_system
       in
       let trace = Fs.create_trace ~time:5 computed_file_system in
       let trace, cache = Fs.run ~trace program cache in
       let computed_file_system = Fs.trace_system trace in
       let () =
-        check Testable.fs "should be equal" expected_file_system
+        check Testable.fs "should be equal 3" expected_file_system
           computed_file_system
       in
       let base_file_system =
@@ -525,14 +525,14 @@ let test_action_with_dynamic_dependencies_1 =
             ])
       in
       let () =
-        check Testable.fs "should be equal" expected_file_system
+        check Testable.fs "should be equal 4" expected_file_system
           computed_file_system
       in
       let trace = Fs.create_trace ~time:10 computed_file_system in
       let trace, cache = Fs.run ~trace program cache in
       let computed_file_system = Fs.trace_system trace in
       let () =
-        check Testable.fs "should be equal" expected_file_system
+        check Testable.fs "should be equal 5" expected_file_system
           computed_file_system
       in
       let base_file_system =
@@ -573,7 +573,7 @@ let test_action_with_dynamic_dependencies_1 =
             ])
       in
       let () =
-        check Testable.fs "should be equal" expected_file_system
+        check Testable.fs "should be equal 6" expected_file_system
           computed_file_system
       in
       let trace = Fs.create_trace ~time:10 computed_file_system in
@@ -594,13 +594,13 @@ let test_action_with_dynamic_dependencies_1 =
                     [
                       file "a.txt" "a"
                     ; file "b.txt" "b"
-                    ; file ~mtime:5 "c.txt" "d"
+                    ; file ~mtime:11 "c.txt" "d"
                     ]
                 ; file "index.txt" "a.txt;b.txt;c.txt"
                 ]
             ])
       in
-      let trace = Fs.create_trace ~time:10 base_file_system in
+      let trace = Fs.create_trace ~time:12 base_file_system in
       let trace, _cache = Fs.run ~trace program cache in
       let computed_file_system = Fs.trace_system trace in
       let expected_file_system =
@@ -609,12 +609,12 @@ let test_action_with_dynamic_dependencies_1 =
             [
               dir "."
                 [
-                  dir "_build" ~mtime:10 [ file "index.txt" ~mtime:10 "abd" ]
+                  dir "_build" ~mtime:12 [ file "index.txt" ~mtime:12 "abd" ]
                 ; dir "includes"
                     [
                       file "a.txt" "a"
                     ; file "b.txt" "b"
-                    ; file ~mtime:5 "c.txt" "d"
+                    ; file ~mtime:11 "c.txt" "d"
                     ]
                 ; file "index.txt" "a.txt;b.txt;c.txt"
                 ]
@@ -622,7 +622,7 @@ let test_action_with_dynamic_dependencies_1 =
       in
 
       let () =
-        check Testable.fs "should be equal" expected_file_system
+        check Testable.fs "should be equal 7" expected_file_system
           computed_file_system
       in
 

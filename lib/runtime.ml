@@ -46,6 +46,10 @@ module Make (Runtime : Required.RUNTIME) = struct
                   Some
                     (fun (k : (a, _) continuation) ->
                       Runtime.bind (continue k) (Runtime.log level message))
+              | Eff.Yocaml_get_time () ->
+                  Some
+                    (fun (k : (a, _) continuation) ->
+                      Runtime.bind (continue k) (Runtime.get_time ()))
               | Eff.Yocaml_file_exists (filesystem, path) ->
                   Some
                     (fun (k : (a, _) continuation) ->

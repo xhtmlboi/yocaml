@@ -21,35 +21,38 @@ let need_update cache has_dynamic_deps deps target =
   let open Eff.Syntax in
   let* exists = Eff.file_exists ~on:`Target target in
   if exists then
-    let* need_shortcut, deps =
-      if has_dynamic_deps then
-        match Cache.get cache target with
-        | None ->
-            (* If there's no information in the cache, it's annoying and dynamic
-               dependencies will probably have to be rechecked, right? In some
-               cases, a file will be rebuilt, which is a bit of a shame, but it
-               allows you to be less rigorous about cache maintenance, in the
-               event of corruption or concurrent access. So it's a loss that's
-               considered acceptable... sorry about that, but I'm not sure
-               there's a "panacea". *)
-            let+ () =
-              Eff.log ~level:`Debug @@ Lexicon.target_not_in_cache target
-            in
-            (true, deps)
-        | Some (_, dynamic_deps) when not (Deps.is_empty dynamic_deps) ->
-            (* If an entry exists in the cache and the target is attached to
-               dynamic dependencies, try to rebuild the file taking into account
-               the dynamic dependencies. *)
-            let+ () =
-              Eff.log ~level:`Debug @@ Lexicon.found_dynamic_dependencies target
-            in
-            (false, Deps.concat deps dynamic_deps)
-        | _ -> Eff.return (false, deps)
-      else Eff.return (false, deps)
+    let* need_shortcut, deps, last_build_date =
+      match Cache.get cache target with
+      | None ->
+          (* If there's no information in the cache, it's annoying and dynamic
+             dependencies will probably have to be rechecked, right? In some
+             cases, a file will be rebuilt, which is a bit of a shame, but it
+             allows you to be less rigorous about cache maintenance, in the
+             event of corruption or concurrent access. So it's a loss that's
+             considered acceptable... sorry about that, but I'm not sure
+             there's a "panacea". *)
+          Eff.return (has_dynamic_deps, deps, None)
+      | Some (_, dynamic_deps, last_build_date)
+        when not (Deps.is_empty dynamic_deps) ->
+          (* If an entry exists in the cache and the target is attached to
+             dynamic dependencies, try to rebuild the file taking into account
+             the dynamic dependencies. *)
+          let+ () =
+            Eff.log ~level:`Debug @@ Lexicon.found_dynamic_dependencies target
+          in
+          (false, Deps.concat deps dynamic_deps, last_build_date)
+      | Some (_, _, last_build_date) -> Eff.return (false, deps, last_build_date)
     in
+
     if need_shortcut then Eff.return Update
     else
-      let* mtime_target = Eff.mtime ~on:`Target target in
+      let* real_mtime_target = Eff.mtime ~on:`Target target in
+      let mtime_target =
+        Option.fold ~none:real_mtime_target
+          ~some:(fun last_build_date ->
+            Int.max last_build_date real_mtime_target)
+          last_build_date
+      in
       let+ mtime_deps = Deps.get_mtimes deps in
       if List.exists (fun mtime_dep -> mtime_dep >= mtime_target) mtime_deps
       then Update
@@ -59,7 +62,7 @@ let need_update cache has_dynamic_deps deps target =
 let perform target task when_creation when_update cache =
   let open Eff.Syntax in
   let deps, eff, has_dynamic_deps = Task.destruct task in
-
+  let* now = Eff.get_time () in
   let* interaction = need_update cache has_dynamic_deps deps target in
   match interaction with
   | Nothing ->
@@ -67,47 +70,39 @@ let perform target task when_creation when_update cache =
         Eff.log ~level:`Debug @@ Lexicon.target_already_up_to_date target
       in
       cache
-  | Create ->
-      let* () =
-        Eff.log ~level:`Debug @@ Lexicon.target_need_to_be_built target
-      in
-      let+ cache = when_creation target cache eff in
-      cache
-  | Update ->
-      let* () = Eff.log ~level:`Debug @@ Lexicon.target_exists target in
-      let+ cache = when_update target cache eff in
-      cache
+  | Create -> when_creation now target cache eff
+  | Update -> when_update now target cache eff
 
-let perform_writing target cache fc hc dynamic_deps =
+let perform_writing now target cache fc hc dynamic_deps =
   let open Eff.Syntax in
   let* () = Eff.log ~level:`Debug @@ Lexicon.target_is_written target in
   let* () = Eff.write_file ~on:`Target target fc in
   let+ () = Eff.log ~level:`Info @@ Lexicon.target_was_written target in
-  Cache.update ~deps:dynamic_deps cache target hc
+  Cache.update ~deps:dynamic_deps ~now cache target hc
 
-let perform_update target cache eff =
+let perform_update now target cache eff =
   let open Eff.Syntax in
   let* fc, dynamic_deps = eff () in
   let* hc = Eff.hash fc in
   match Cache.get cache target with
-  | Some (pred_h, _) when String.equal hc pred_h ->
+  | Some (pred_h, _, _) when String.equal hc pred_h ->
       let+ () =
         Eff.log ~level:`Debug @@ Lexicon.target_hash_is_unchanged target
       in
-      Cache.update ~deps:dynamic_deps cache target pred_h
+      Cache.update ~deps:dynamic_deps ~now cache target pred_h
   | _ ->
       let* () =
         Eff.log ~level:`Debug @@ Lexicon.target_hash_is_changed target
       in
-      perform_writing target cache fc hc dynamic_deps
+      perform_writing now target cache fc hc dynamic_deps
 
 let write_dynamic_file target task cache =
   perform target task
-    (fun target cache eff ->
+    (fun now target cache eff ->
       let open Eff.Syntax in
       let* fc, dynamic_deps = eff () in
       let* hc = Eff.hash fc in
-      perform_writing target cache fc hc dynamic_deps)
+      perform_writing now target cache fc hc dynamic_deps)
     perform_update cache
 
 let write_static_file target task cache =
@@ -123,7 +118,7 @@ let copy_file ?new_name ~into path cache =
 
 let copy_directory ?new_name ~into source cache =
   let open Eff.Syntax in
-  let perform_copy _ cache eff =
+  let perform_copy _ _ cache eff =
     let+ (), _ = eff () in
     cache
   in
