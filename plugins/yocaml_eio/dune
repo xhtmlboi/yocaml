@@ -1,6 +1,6 @@
 (library
- (name yocaml_unix)
- (public_name yocaml_unix)
+ (name yocaml_eio)
+ (public_name yocaml_eio)
  (libraries
   digestif
   fmt

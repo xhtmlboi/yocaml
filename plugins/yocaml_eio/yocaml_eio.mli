@@ -14,10 +14,10 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-(** Unix runtime for YOCaml.
+(** Eio runtime for YOCaml.
 
-    Allows you to run YOCaml on a Unix system (or source service for more
-    complex runtimes). *)
+    Allows you to run YOCaml on a Unix system based on Eio (or source service
+    for more complex runtimes). *)
 
 val run :
      ?level:Logs.level
@@ -25,7 +25,7 @@ val run :
        (Format.formatter -> Yocaml.Data.Validation.custom_error -> unit)
   -> (unit -> unit Yocaml.Eff.t)
   -> unit
-(** [run ?level ?custom_error_handler program] Runs a Yocaml program in the Unix
+(** [run ?level ?custom_error_handler program] Runs a Yocaml program in the Eio
     runtime. The log [level] (default: [Debug]) and a [custom_error_handler] can
     be passed as arguments to change the reporting level.*)
 

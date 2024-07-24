@@ -86,5 +86,5 @@ let () =
         Option.bind (List.nth_opt xs 0) int_of_string_opt
         |> Option.value ~default:8000
       in
-      Yocaml_unix.serve ~level:Logs.Info ~target:Target.root ~port process_all
-  | _ -> Yocaml_unix.run process_all
+      Yocaml_eio.serve ~level:Logs.Info ~target:Target.root ~port process_all
+  | _ -> Yocaml_eio.run process_all

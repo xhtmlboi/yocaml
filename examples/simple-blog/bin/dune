@@ -5,5 +5,5 @@
   yocaml_jingoo
   yocaml_yaml
   yocaml_omd
-  yocaml_unix
+  yocaml_eio
   yocaml_syndication))

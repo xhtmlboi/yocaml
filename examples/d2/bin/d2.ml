@@ -57,5 +57,5 @@ let () =
         |> Option.value ~default:8000
       in
 
-      Yocaml_unix.serve ~level:Logs.Info ~target:target_root ~port process_all
-  | _ -> Yocaml_unix.run process_all
+      Yocaml_eio.serve ~level:Logs.Info ~target:target_root ~port process_all
+  | _ -> Yocaml_eio.run process_all

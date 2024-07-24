@@ -32,8 +32,8 @@
    (utop :with-dev-setup)))
 
  (package
-   (name yocaml_unix)
-   (synopsis "The Unix runtime for using YOCaml on an Unix file system!")
+   (name yocaml_eio)
+   (synopsis "The Eio runtime for using YOCaml")
    (depends
     (ocaml (>= 5.1.1))
     (dune (>= 3.0.0))

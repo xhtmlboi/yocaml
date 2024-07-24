@@ -2,7 +2,7 @@
 
 Presentation of a very simple blog, using **YOCaml** with the plugins
 `yocaml_jingoo` as template engine, `yocaml_yaml` to describe metadata,
-`yocaml_omd` for parsing Markdown and `yocaml_unix` as runtime. Metadata is
+`yocaml_omd` for parsing Markdown and `yocaml_eio` as runtime. Metadata is
 described using **Archetypes**, data models pre-bundled with YOCaml, serving as
 examples or tools to quickly build a blog.
 

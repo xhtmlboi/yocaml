@@ -457,11 +457,11 @@ let () =
         |> Option.value ~default:8000
       in
       (* Then you can launch the server! *)
-      Yocaml_unix.serve ~level:Logs.Info ~target:Target.target_root ~port
+      Yocaml_eio.serve ~level:Logs.Info ~target:Target.target_root ~port
         process_all
   | _ ->
       (* If no arguments (or the wrong values) are passed, the site is built *)
-      Yocaml_unix.run process_all
+      Yocaml_eio.run process_all
 
 (* And there you have it, our blog is now finished. To be able to build your
    site from scratch, with even more flexibility, we invite you to read through
