@@ -52,6 +52,24 @@ val write_static_file : Path.t -> (unit, string) Task.t -> t
     dependencies are involved in the task. It is like using
     [ t ||> no_dynamic_deps ] at the end of the task pipeline. *)
 
+val exec_cmd : ?is_success:(int -> bool) -> (Cmd.value -> Cmd.t) -> Path.t -> t
+(** [exec_cmd ?is_success cmd target] produces a [target] performing
+    [cmd target] (the argument of the given callback, [cmd] is prefilled with
+    the target as a not watched path). When [is_success] is provided, it is
+    called with the exit code to determine whether it indicates success or
+    failure. Without [is_success], success requires the process to return an
+    exit code of 0. *)
+
+val perform :
+     Path.t
+  -> ('a, 'b) Task.t
+  -> when_creation:(int -> Path.t -> ('a -> 'b Eff.t) -> t)
+  -> when_update:(int -> Path.t -> ('a -> 'b Eff.t) -> t)
+  -> t
+(** [perform target task ~when_creation ~when_update cache] is a generic task
+    performer. (It executes [when_creation] if the target has to be created, and
+    [need_update] if the target must be updated). *)
+
 val copy_file : ?new_name:Path.fragment -> into:Path.t -> Path.t -> t
 (** [copy_file ?new_name ~into:target source cache] Copies the [source] file to
     the [target] directory (potentially giving it a new name), taking account of

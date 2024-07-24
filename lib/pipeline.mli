@@ -56,6 +56,18 @@ val read_file_with_metadata :
     {!module-type:Yocaml.Required.DATA_PROVIDER}, [P], using the description
     provided by [R] of type {!module-type:Yocaml.Required.DATA_READABLE}. *)
 
+val exec_cmd : ?is_success:(int -> bool) -> Cmd.t -> (unit, unit) Task.t
+(** [exec_cmd ?is_success cmd] is a task that performs a shell command
+    ({!module:Yocaml.Cmd}). [watched] arguments are used to define the
+    dependencies set. When [is_success] is provided, it is called with the exit
+    code to determine whether it indicates success or failure. Without
+    [is_success], success requires the process to return an exit code of 0. *)
+
+val exec_cmd_with_result :
+  ?is_success:(int -> bool) -> Cmd.t -> (unit, string) Task.t
+(** [exec_cmd_with_result ?is_success cmd] is like {!val:exec_cmd} but the
+    output of the shell command is returned. *)
+
 val as_template :
      (module Required.DATA_TEMPLATE)
   -> (module Required.DATA_INJECTABLE with type t = 'a)

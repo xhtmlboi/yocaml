@@ -176,7 +176,7 @@ end
 
 module type RUNNER = sig
   type 'a t
-  (** Effect type. Usually {!type:Ÿocaml.Eff.t}. *)
+  (** Effect type. Usually {!type:Yocaml.Eff.t}. *)
 
   module Runtime : RUNTIME
   (** The given runtime. *)

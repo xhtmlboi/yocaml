@@ -27,14 +27,16 @@ type (-'a, 'b) t
 
 (** {1 Building tasks} *)
 
-val make : Deps.t -> ('a -> 'b Eff.t) -> ('a, 'b) t
+val make :
+  ?has_dynamic_dependencies:bool -> Deps.t -> ('a -> 'b Eff.t) -> ('a, 'b) t
 (** [make deps eff] Builds a task with a fixed set of dependencies and an
     action.*)
 
-val from_effect : ('a -> 'b Eff.t) -> ('a, 'b) t
+val from_effect :
+  ?has_dynamic_dependencies:bool -> ('a -> 'b Eff.t) -> ('a, 'b) t
 (** [from_effect] is [make Deps.empty]. *)
 
-val lift : ('a -> 'b) -> ('a, 'b) t
+val lift : ?has_dynamic_dependencies:bool -> ('a -> 'b) -> ('a, 'b) t
 (** [lift f] lift the function [f] into a task with an empty set of
     dependencies. Useful for transforming regular functions into tasks. *)
 

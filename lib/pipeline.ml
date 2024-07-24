@@ -47,3 +47,13 @@ let as_template (type a) (module T : Required.DATA_TEMPLATE)
   in
   let open Task in
   (fun x -> (x, ())) |>> second (read_file template) >>* action
+
+let exec_cmd_with_result ?is_success cmd =
+  let deps = cmd |> Cmd.deps_of |> Deps.from_list in
+  Task.make ~has_dynamic_dependencies:false deps (fun () ->
+      Eff.exec_cmd ?is_success cmd)
+
+let exec_cmd ?is_success cmd =
+  Task.rcompose
+    (exec_cmd_with_result ?is_success cmd)
+    (Task.lift ~has_dynamic_dependencies:false (fun _result -> ()))

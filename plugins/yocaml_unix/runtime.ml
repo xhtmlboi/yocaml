@@ -122,11 +122,11 @@ let read_file ~on:_ path env =
   with _ -> Result.error @@ Unable_to_read_file path
 
 let exec ?(is_success = Int.equal 0) exec_name ?(args = []) env =
+  let args = exec_name :: args in
   try
-    let args = exec_name :: args in
     let proc_mgr = Eio.Stdenv.process_mgr env in
     let result =
-      Eio.Process.parse_out ~is_success proc_mgr Eio.Buf_read.line args
+      Eio.Process.parse_out ~is_success proc_mgr Eio.Buf_read.take_all args
     in
     Result.ok result
   with exn ->

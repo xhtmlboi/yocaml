@@ -59,7 +59,7 @@ let need_update cache has_dynamic_deps deps target =
       else Nothing
   else Eff.return Create
 
-let perform target task when_creation when_update cache =
+let perform target task ~when_creation ~when_update cache =
   let open Eff.Syntax in
   let deps, eff, has_dynamic_deps = Task.destruct task in
   let* now = Eff.get_time () in
@@ -70,8 +70,8 @@ let perform target task when_creation when_update cache =
         Eff.log ~level:`Debug @@ Lexicon.target_already_up_to_date target
       in
       cache
-  | Create -> when_creation now target cache eff
-  | Update -> when_update now target cache eff
+  | Create -> when_creation now target eff cache
+  | Update -> when_update now target eff cache
 
 let perform_writing now target cache fc hc dynamic_deps =
   let open Eff.Syntax in
@@ -80,7 +80,7 @@ let perform_writing now target cache fc hc dynamic_deps =
   let+ () = Eff.log ~level:`Info @@ Lexicon.target_was_written target in
   Cache.update ~deps:dynamic_deps ~now cache target hc
 
-let perform_update now target cache eff =
+let perform_update now target eff cache =
   let open Eff.Syntax in
   let* fc, dynamic_deps = eff () in
   let* hc = Eff.hash fc in
@@ -96,14 +96,14 @@ let perform_update now target cache eff =
       in
       perform_writing now target cache fc hc dynamic_deps
 
-let write_dynamic_file target task cache =
+let write_dynamic_file target task =
   perform target task
-    (fun now target cache eff ->
+    ~when_creation:(fun now target eff cache ->
       let open Eff.Syntax in
       let* fc, dynamic_deps = eff () in
       let* hc = Eff.hash fc in
       perform_writing now target cache fc hc dynamic_deps)
-    perform_update cache
+    ~when_update:perform_update
 
 let write_static_file target task cache =
   write_dynamic_file target Task.(task ||> no_dynamic_deps) cache
@@ -118,7 +118,7 @@ let copy_file ?new_name ~into path cache =
 
 let copy_directory ?new_name ~into source cache =
   let open Eff.Syntax in
-  let perform_copy _ _ cache eff =
+  let perform_copy _ _ eff cache =
     let+ (), _ = eff () in
     cache
   in
@@ -131,7 +131,8 @@ let copy_directory ?new_name ~into source cache =
           Eff.copy_recursive ?new_name ~into source)
       ||> no_dynamic_deps)
   in
-  perform target task perform_copy perform_copy cache
+  perform target task ~when_creation:perform_copy ~when_update:perform_copy
+    cache
 
 let fold ?only ?where ~state path action cache =
   let open Eff in
@@ -202,3 +203,13 @@ let store_cache ?(on = `Source) path cache =
   let sexp_str = cache |> Cache.to_sexp |> Sexp.Canonical.to_string in
   let* () = Eff.write_file ~on path sexp_str in
   Eff.log ~level:`Debug @@ Lexicon.cache_stored path
+
+let exec_cmd ?is_success cmd target =
+  let action _ _ eff cache =
+    let open Eff in
+    let+ () = eff () in
+    cache
+  in
+  perform target
+    (Pipeline.exec_cmd ?is_success (cmd (Cmd.p target)))
+    ~when_creation:action ~when_update:action

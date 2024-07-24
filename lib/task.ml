@@ -22,10 +22,12 @@ type (-'a, 'b) t = {
 
 type 'a ct = (unit, 'a) t
 
-let make dependencies action =
-  { dependencies; action; has_dynamic_dependencies = true }
+let make ?(has_dynamic_dependencies = true) dependencies action =
+  { dependencies; action; has_dynamic_dependencies }
 
-let from_effect action = make Deps.empty action
+let from_effect ?has_dynamic_dependencies action =
+  make ?has_dynamic_dependencies Deps.empty action
+
 let dependencies_of { dependencies; _ } = dependencies
 let action_of { action; _ } = action
 
@@ -35,10 +37,10 @@ let has_dynamic_dependencies { has_dynamic_dependencies; _ } =
 let destruct { dependencies; action; has_dynamic_dependencies } =
   (dependencies, action, has_dynamic_dependencies)
 
-let lift f =
+let lift ?has_dynamic_dependencies f =
   let dependencies = Deps.empty in
   let action x = Eff.return (f x) in
-  { dependencies; action; has_dynamic_dependencies = true }
+  make ?has_dynamic_dependencies dependencies action
 
 let id =
   let dependencies = Deps.empty in
