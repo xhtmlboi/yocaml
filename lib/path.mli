@@ -26,10 +26,13 @@
 
     {b TODO}: The aim of this implementation is to find an API that is easy to
     extend to capture the different uses in YOCaml. Once this API has
-    stabilised, we can think about a less naive implementation.
+    stabilised, we can think about a less naive implementation. *)
 
-    {eof@ocaml[# #install_printer Yocaml.Path.pp]eof}
-*)
+(**/**)
+
+(** {eof@ocaml[# #install_printer Yocaml.Path.pp]eof} *)
+
+(**/**)
 
 (** {1 Types}
 

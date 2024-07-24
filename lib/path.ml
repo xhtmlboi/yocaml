@@ -41,6 +41,7 @@ let pp ppf path =
     | Relative f -> (Filename.current_dir_name, f, 1)
     | Absolute f -> ("", f, 0)
   in
+
   let seperator = Filename.dir_sep in
   match fragments with
   | [] -> Format.fprintf ppf "%s" (prefix ^ seperator)
