@@ -38,7 +38,9 @@ module Pages = struct
     ("root", "") :: List.map2 (fun x y -> (x, String.concat "/" y)) path a
 
   let directory path children =
-    let full_path = "/" ^ String.concat "/" path in
+    let full_path =
+      match path with [] -> "" | path -> "/" ^ String.concat "/" path
+    in
     let top =
       path
       |> expand
