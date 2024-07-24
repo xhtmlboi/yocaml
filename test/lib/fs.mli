@@ -65,6 +65,9 @@ val dir : ?mtime:int -> string -> item list -> item
     If no [mtime] is provided, it use the max [mtime] of the list of given
     children. *)
 
+val is_dir : item -> bool
+val is_file : item -> bool
+
 (** {1 Interact with a file system} *)
 
 val get : t -> string list -> item option

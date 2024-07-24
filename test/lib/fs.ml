@@ -24,6 +24,8 @@ let content { content; _ } = content
 let mtime { mtime; _ } = mtime
 let name_of = function File { name; _ } | Dir { name; _ } -> name
 let mtime_of = function File { mtime; _ } | Dir { mtime; _ } -> mtime
+let is_dir = function Dir _ -> true | File _ -> false
+let is_file = function Dir _ -> false | File _ -> true
 
 let compare_item a b =
   (* A slightly naive comparison function, to be consistent when modifying file
@@ -159,9 +161,9 @@ let on_pp ppf = function
   | `Target -> Format.fprintf ppf "Target"
   | `Source -> Format.fprintf ppf "Source"
 
-let push_file_exists trace on path =
+let push_file_exists trace on path ex =
   push_trace trace
-  @@ Format.asprintf "[FILE_EXISTS][%a]%a" on_pp on Yocaml.Path.pp path
+  @@ Format.asprintf "[FILE_EXISTS][%a]%a - %b" on_pp on Yocaml.Path.pp path ex
 
 let push_read_file trace on path =
   push_trace trace
@@ -229,6 +231,21 @@ let perform_exec trace prog args =
             | x -> x)
       in
       ({ trace with system }, "done")
+  | [ "a-cmd"; "--input"; p; "--output"; o ] ->
+      let input = String.split_on_char '/' p in
+      let output = String.split_on_char '/' o in
+      let ctn =
+        match get trace.system input with
+        | None -> "no-file"
+        | Some (Dir _) -> "is-directory"
+        | Some (File { content; _ }) -> content
+      in
+      let system =
+        update trace.system output (fun ~target:_ ~previous_item:_ ->
+            let p = Filename.basename o in
+            Some (file ~mtime:trace.time p (String.uppercase_ascii ctn)))
+      in
+      ({ trace with system }, "done")
   | x -> (trace, String.concat "," x)
 
 let run ~trace program input =
@@ -270,12 +287,12 @@ let run ~trace program input =
                     let () = trace := push_time !trace in
                     let time = !trace.time in
                     continue k time)
-            | Yocaml_file_exists (on, path) ->
+            | Yocaml_file_exists (on, p) ->
                 Some
                   (fun (k : (a, _) continuation) ->
-                    let () = trace := push_file_exists !trace on path in
-                    let path = Yocaml.Path.to_list path in
+                    let path = Yocaml.Path.to_list p in
                     let ex = Option.is_some @@ get !trace.system path in
+                    let () = trace := push_file_exists !trace on p ex in
                     continue k ex)
             | Yocaml_read_file (on, gpath) ->
                 Some
