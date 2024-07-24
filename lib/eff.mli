@@ -334,6 +334,10 @@ val exec : ?is_success:(int -> bool) -> string -> ?args:string list -> string t
 
     printing on standard output is returned. *)
 
+val exec_cmd : ?is_success:(int -> bool) -> Cmd.t -> string t
+(** [exec_cmd ?is_success cmd] is {!val:exec} but relaying on
+    {!module:Yocaml.Cmd} for describing a shell call. *)
+
 val file_exists : on:filesystem -> Path.t -> bool t
 (** [file_exists ~on path] perform the effect [Yocaml_file_exists] with a given
     [path] return [true] if the file exists, [false] if not. *)

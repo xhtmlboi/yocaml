@@ -34,6 +34,7 @@ module Cache = Cache
 module Deps = Deps
 module Metadata = Metadata
 module Archetype = Archetype
+module Cmd = Cmd
 
 (** {1 Building tasks}
 

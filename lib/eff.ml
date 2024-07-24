@@ -139,6 +139,10 @@ let is_directory ~on path = perform @@ Yocaml_is_directory (on, path)
 let exec ?(is_success = Int.equal 0) exec_name ?(args = []) =
   perform @@ Yocaml_exec_command (exec_name, args, is_success)
 
+let exec_cmd ?is_success cmd =
+  let command, args = Cmd.normalize cmd in
+  exec ?is_success ~args command
+
 let is_file ~on path =
   let* file_exists = file_exists ~on path in
   if file_exists then

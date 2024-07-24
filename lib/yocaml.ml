@@ -27,6 +27,7 @@ module Required = Required
 module Metadata = Metadata
 module Archetype = Archetype
 module Diagnostic = Diagnostic
+module Cmd = Cmd
 module Reader = Reader
 
 module Sexp = struct
