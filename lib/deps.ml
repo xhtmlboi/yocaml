@@ -46,7 +46,7 @@ let from_sexp sexp =
   | _ -> Error (Sexp.Invalid_sexp (sexp, "deps"))
 
 let pp ppf deps =
-  Format.fprintf ppf "Deps [@[<v 0>%a@]]"
+  Format.fprintf ppf "Deps [@[%a@]]"
     (Format.pp_print_list
        ~pp_sep:(fun ppf () -> Format.fprintf ppf ";@ ")
        Path.pp)
