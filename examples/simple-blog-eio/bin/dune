@@ -1,0 +1,6 @@
+(executable
+ (name simple_blog_eio)
+ (libraries
+  yocaml
+  simple_blog
+  yocaml_eio))

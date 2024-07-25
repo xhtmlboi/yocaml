@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <!-- Display title (if it exists) -->
+    <title>
+      YOCaml examples/simple-blog {%- if has_page_title -%} - {{ page_title }}
+      {%-endif -%}
+    </title>
+    <!-- We iterate over the metatags calculated to display them -->
+    {%- for m in meta-%}
+    <meta name="{{m.name}}" content="{{m.content}}" />
+    {%- endfor -%}
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- We use Google font to load the typography, which is a bit sad,
+         but it avoids making the repo code too long for an example. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto+Slab:wght@100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Specific CSS stylesheets -->
+    <link rel="stylesheet" href="/css/reset.css" />
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <div class="layout">
+      <header>
+        <h1 class="slab">A simple blog</h1>
+        <h2 class="slab">An example of a personal blog built with YOCaml</h2>
+        <nav>
+          <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/about.html">About</a></li>
+            <li><a href="/links.html">Links</a></li>
+            <li><a class="feed" href="/rss1.xml">RSS1</a></li>
+            <li><a class="feed" href="/rss2.xml">RSS2</a></li>
+            <li><a class="feed" href="/atom.xml">ATOM</a></li>
+          </ul>
+        </nav>
+      </header>
+      <main>
+        {%- autoescape false -%} {{ yocaml_body }} {%- endautoescape -%}
+      </main>
+      <footer>
+        This is an example blog, written using
+        <a href="https://gitlab.com/funkywork/yocaml">YOCaml</a>. You can find
+        the sources for this example
+        <a
+          href="https://gitlab.com/funkywork/yocaml/-/tree/main/examples/simple-blog?ref_type=heads"
+          >here</a
+        >.
+      </footer>
+    </div>
+  </body>
+</html>
