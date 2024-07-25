@@ -22,13 +22,10 @@ include Yocaml.Reader.Over (struct
   let bind f = f
 end)
 
-type runtime_error =
-  | Unable_to_write_file of Yocaml.Path.t * string
-  | Unable_to_create_directory of Yocaml.Path.t
-  | Unable_to_read_file of Yocaml.Path.t
-  | Unable_to_read_directory of Yocaml.Path.t
-  | Unable_to_read_mtime of Yocaml.Path.t
-  | Unable_to_perform_command of string * exn
+type runtime_error = Yocaml_runtime.runtime_error
+
+let runtime_error_to_string = Yocaml_runtime.runtime_error_to_string
+let hash_content s _env = Yocaml_runtime.hash_content s
 
 let to_eio_path env p =
   let k, fragments = Yocaml.Path.to_pair p in
@@ -39,16 +36,7 @@ let to_eio_path env p =
   in
   List.fold_left Eio.Path.( / ) root fragments
 
-let log level message _env =
-  let level =
-    match level with
-    | `App -> Logs.App
-    | `Error -> Logs.Error
-    | `Warning -> Logs.Warning
-    | `Info -> Logs.Info
-    | `Debug -> Logs.Debug
-  in
-  Logs.msg level (fun print -> print "%s" message)
+let log level message _env = Yocaml_runtime.log level message
 
 let get_time () env =
   let clock = Eio.Stdenv.clock env in
@@ -67,7 +55,7 @@ let create_directory ~on:_ path env =
     let path = to_eio_path env path in
     let () = Eio.Path.mkdir ~perm:0o755 path in
     Ok ()
-  with _ -> Error (Unable_to_create_directory path)
+  with _ -> Error (Yocaml_runtime.Unable_to_create_directory path)
 
 let write_file ~on:_ path content env =
   try
@@ -76,32 +64,11 @@ let write_file ~on:_ path content env =
       Eio.Path.save ~append:false ~create:(`Or_truncate 0o755) path content
     in
     Ok ()
-  with _ -> Error (Unable_to_write_file (path, content))
-
-let runtime_error_to_string runtime_error =
-  let heading = "Runtime error:" in
-  match runtime_error with
-  | Unable_to_write_file (path, _) ->
-      Format.asprintf "%s Unable to write file: `%a`" heading Yocaml.Path.pp
-        path
-  | Unable_to_read_directory path ->
-      Format.asprintf "%s: Unable to read directory: `%a`" heading
-        Yocaml.Path.pp path
-  | Unable_to_read_mtime path ->
-      Format.asprintf "%s: Unable to read mtime: `%a`" heading Yocaml.Path.pp
-        path
-  | Unable_to_read_file path ->
-      Format.asprintf "%s: Unable to read file: `%a`" heading Yocaml.Path.pp
-        path
-  | Unable_to_create_directory path ->
-      Format.asprintf "%s: Unable to create directory: `%a`" heading
-        Yocaml.Path.pp path
-  | Unable_to_perform_command (prog, _) ->
-      Format.asprintf "%s: Unable to perform command: `%s`" heading prog
+  with _ -> Error (Yocaml_runtime.Unable_to_write_file (path, content))
 
 let read_dir ~on:_ path env =
   try path |> to_eio_path env |> Eio.Path.read_dir |> Result.ok
-  with _ -> Result.error (Unable_to_read_directory path)
+  with _ -> Result.error (Yocaml_runtime.Unable_to_read_directory path)
 
 let get_mtime ~on:_ path env =
   try
@@ -109,19 +76,16 @@ let get_mtime ~on:_ path env =
     let stat = Eio.Path.stat ~follow:true path in
     let mtim = stat.Eio.File.Stat.mtime in
     Result.ok @@ int_of_float mtim
-  with _ -> Result.error @@ Unable_to_read_mtime path
-
-let hash_content value _env =
-  value |> Digestif.SHA256.digest_string |> Digestif.SHA256.to_hex
+  with _ -> Result.error @@ Yocaml_runtime.Unable_to_read_mtime path
 
 let read_file ~on:_ path env =
   try
     let path = to_eio_path env path in
     let output = Eio.Path.load path in
     Result.ok output
-  with _ -> Result.error @@ Unable_to_read_file path
+  with _ -> Result.error @@ Yocaml_runtime.Unable_to_read_file path
 
-let exec ?(is_success = Int.equal 0) exec_name ?(args = []) env =
+let exec ?(is_success = Int.equal 0) exec_name args env =
   let args = exec_name :: args in
   try
     let proc_mgr = Eio.Stdenv.process_mgr env in
@@ -130,4 +94,5 @@ let exec ?(is_success = Int.equal 0) exec_name ?(args = []) env =
     in
     Result.ok result
   with exn ->
-    Result.error @@ Unable_to_perform_command (String.concat " " args, exn)
+    Result.error
+    @@ Yocaml_runtime.Unable_to_perform_command (String.concat " " args, exn)
