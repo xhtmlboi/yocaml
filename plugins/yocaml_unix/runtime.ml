@@ -19,11 +19,11 @@ type 'a t = 'a
 let bind f x = f x
 let return x = x
 
-type runtime_error = Yocaml_runtime.runtime_error
+type runtime_error = Yocaml_runtime.Error.common
 
-let runtime_error_to_string = Yocaml_runtime.runtime_error_to_string
-let hash_content s = Yocaml_runtime.hash_content s
-let log = Yocaml_runtime.log
+let runtime_error_to_string = Yocaml_runtime.Error.common_to_string
+let hash_content s = Yocaml_runtime.Hash.content s
+let log = Yocaml_runtime.Log.msg
 let get_time () = Unix.time () |> int_of_float
 
 let file_exists ~on:_ path =
@@ -39,7 +39,7 @@ let create_directory ~on:_ path =
     let path = Yocaml.Path.to_string path in
     let () = Unix.mkdir path 0o755 in
     Ok ()
-  with _ -> Error (Yocaml_runtime.Unable_to_create_directory path)
+  with _ -> Error (Yocaml_runtime.Error.Unable_to_create_directory path)
 
 let write_file ~on:_ path content =
   try
@@ -49,14 +49,14 @@ let write_file ~on:_ path content =
           Out_channel.output_string channel content)
     in
     Ok ()
-  with _ -> Error (Yocaml_runtime.Unable_to_write_file (path, content))
+  with _ -> Error (Yocaml_runtime.Error.Unable_to_write_file (path, content))
 
 let read_dir ~on:_ path =
   try
     let path = Yocaml.Path.to_string path in
     let children = path |> Sys.readdir |> Array.to_list in
     Ok children
-  with _ -> Result.error (Yocaml_runtime.Unable_to_read_directory path)
+  with _ -> Result.error (Yocaml_runtime.Error.Unable_to_read_directory path)
 
 let get_mtime ~on:_ path =
   try
@@ -64,14 +64,14 @@ let get_mtime ~on:_ path =
     let stat = Unix.lstat path in
     let mtim = stat.Unix.st_mtime in
     Result.ok @@ int_of_float mtim
-  with _ -> Result.error @@ Yocaml_runtime.Unable_to_read_mtime path
+  with _ -> Result.error @@ Yocaml_runtime.Error.Unable_to_read_mtime path
 
 let read_file ~on:_ path =
   try
     let path = Yocaml.Path.to_string path in
     let output = In_channel.with_open_text path In_channel.input_all in
     Result.ok output
-  with _ -> Result.error @@ Yocaml_runtime.Unable_to_read_file path
+  with _ -> Result.error @@ Yocaml_runtime.Error.Unable_to_read_file path
 
 let exec ?(is_success = Int.equal 0) exec_name args =
   let command = String.concat " " (exec_name :: args) in
@@ -87,4 +87,4 @@ let exec ?(is_success = Int.equal 0) exec_name args =
     let () = Unix.unlink temporary in
     Result.ok output
   with exn ->
-    Result.error @@ Yocaml_runtime.Unable_to_perform_command (command, exn)
+    Result.error @@ Yocaml_runtime.Error.Unable_to_perform_command (command, exn)

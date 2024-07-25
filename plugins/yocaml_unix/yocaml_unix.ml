@@ -14,6 +14,6 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-let run ?(level = Logs.Debug) ?custom_error_handler program =
-  let () = Yocaml_runtime.setup_logger ~level () in
+let run ?(level = `Debug) ?custom_error_handler program =
+  let () = Yocaml_runtime.Log.setup ~level () in
   Runner.run ?custom_error_handler program

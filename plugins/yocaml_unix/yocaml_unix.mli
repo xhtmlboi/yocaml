@@ -20,7 +20,7 @@
     for more complex runtimes). *)
 
 val run :
-     ?level:Logs.level
+     ?level:Yocaml_runtime.Log.level
   -> ?custom_error_handler:
        (Format.formatter -> Yocaml.Data.Validation.custom_error -> unit)
   -> (unit -> unit Yocaml.Eff.t)

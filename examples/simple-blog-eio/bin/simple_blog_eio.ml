@@ -34,8 +34,7 @@ let () =
         |> Option.value ~default:8000
       in
       (* Then you can launch the server! *)
-      Yocaml_eio.serve ~level:Logs.Info ~target:Blog.target ~port
-        Blog.process_all
+      Yocaml_eio.serve ~level:`Info ~target:Blog.target ~port Blog.process_all
   | _ ->
       (* If no arguments (or the wrong values) are passed, the site is built *)
       Yocaml_eio.run Blog.process_all

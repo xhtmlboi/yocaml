@@ -14,16 +14,18 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-(** A very simple server for locally serving a project built with YOcaml on top
-    of Eio. *)
+(** Utilities for working with the {{:https://erratique.ch/software/logs} Logs}
+    library in a given runtime. *)
 
-val run :
-     ?custom_error_handler:
-       (Format.formatter -> Yocaml.Data.Validation.custom_error -> unit)
-  -> Yocaml.Path.t
-  -> int
-  -> (unit -> unit Yocaml.Eff.t)
-  -> Eio_unix.Stdenv.base
-  -> 'a
-(** [run ?custom_error_handler target port program] describes an EIO program
-    that serve statically [target] on listening [port]. *)
+(** {1 Types} *)
+
+type level = [ `App | `Error | `Warning | `Info | `Debug ]
+(** Describe a log-level.*)
+
+(** {1 Helpers} *)
+
+val msg : level -> string -> unit
+(** [msg level message] log a [message] with a given [message]. *)
+
+val setup : ?level:level -> unit -> unit
+(** Set-up a default logger. *)

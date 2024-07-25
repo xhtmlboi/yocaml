@@ -14,7 +14,7 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-type runtime_error =
+type common =
   | Unable_to_write_file of Yocaml.Path.t * string
   | Unable_to_create_directory of Yocaml.Path.t
   | Unable_to_read_file of Yocaml.Path.t
@@ -22,7 +22,7 @@ type runtime_error =
   | Unable_to_read_mtime of Yocaml.Path.t
   | Unable_to_perform_command of string * exn
 
-let runtime_error_to_string runtime_error =
+let common_to_string runtime_error =
   let heading = "Runtime error:" in
   match runtime_error with
   | Unable_to_write_file (path, _) ->
@@ -42,23 +42,3 @@ let runtime_error_to_string runtime_error =
         Yocaml.Path.pp path
   | Unable_to_perform_command (prog, _) ->
       Format.asprintf "%s: Unable to perform command: `%s`" heading prog
-
-let log level message =
-  let level =
-    match level with
-    | `App -> Logs.App
-    | `Error -> Logs.Error
-    | `Warning -> Logs.Warning
-    | `Info -> Logs.Info
-    | `Debug -> Logs.Debug
-  in
-  Logs.msg level (fun print -> print "%s" message)
-
-let setup_logger ?level () =
-  let header = Logs_fmt.pp_header in
-  let () = Fmt_tty.setup_std_outputs () in
-  let () = Logs.set_reporter Logs_fmt.(reporter ~pp_header:header ()) in
-  Logs.set_level level
-
-let hash_content value =
-  value |> Digestif.SHA256.digest_string |> Digestif.SHA256.to_hex

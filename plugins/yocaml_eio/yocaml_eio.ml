@@ -14,10 +14,10 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-let run ?(level = Logs.Debug) ?custom_error_handler program =
-  let () = Yocaml_runtime.setup_logger ~level () in
+let run ?(level = `Debug) ?custom_error_handler program =
+  let () = Yocaml_runtime.Log.setup ~level () in
   Eio_main.run (Runner.run ?custom_error_handler program)
 
-let serve ?(level = Logs.Debug) ?custom_error_handler ~target ~port program =
-  let () = Yocaml_runtime.setup_logger ~level () in
+let serve ?(level = `Debug) ?custom_error_handler ~target ~port program =
+  let () = Yocaml_runtime.Log.setup ~level () in
   Eio_main.run (Server.run ?custom_error_handler target port program)

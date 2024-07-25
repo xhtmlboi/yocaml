@@ -1,4 +1,4 @@
 (library
  (name yocaml_runtime)
  (public_name yocaml_runtime)
- (libraries yocaml digestif fmt fmt.tty logs logs.fmt))
+ (libraries yocaml digestif fmt fmt.tty logs logs.fmt cohttp magic-mime))

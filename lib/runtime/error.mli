@@ -14,35 +14,22 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-(** Utilities common to runtimes based on Logs and Fmt. (ie: Eio and Unix) *)
+(** Description of common errors in the various runtimes (at least shared by
+    Unix and Eio). *)
 
-(** {1 Error handling}
+(** {1 Types} *)
 
-    Common approach to error handling from a runtime. *)
-
-type runtime_error =
+(** Describes common errors that can occur during the execution of a program in
+    a specific runtime. *)
+type common =
   | Unable_to_write_file of Yocaml.Path.t * string
   | Unable_to_create_directory of Yocaml.Path.t
   | Unable_to_read_file of Yocaml.Path.t
   | Unable_to_read_directory of Yocaml.Path.t
   | Unable_to_read_mtime of Yocaml.Path.t
   | Unable_to_perform_command of string * exn
-      (** A type describing common runtime errors. *)
 
-val runtime_error_to_string : runtime_error -> string
-(** Serialize an error to a string. *)
+(** {1 Utils} *)
 
-(** {1 Logging} *)
-
-val log : [ `App | `Error | `Warning | `Info | `Debug ] -> string -> unit
-(** [log level message] log a [message] with a given [message]. *)
-
-val setup_logger : ?level:Logs.level -> unit -> unit
-(** Set-up a default logger. *)
-
-(** {1 Hashing}
-
-    Hash content using Digestif. *)
-
-val hash_content : string -> string
-(** [hash s] hash a string using [SHA256]. *)
+val common_to_string : common -> string
+(** String representation of a {!type:common}. *)

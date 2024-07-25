@@ -13,17 +13,3 @@
 
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
-
-(** A very simple server for locally serving a project built with YOcaml on top
-    of Eio. *)
-
-val run :
-     ?custom_error_handler:
-       (Format.formatter -> Yocaml.Data.Validation.custom_error -> unit)
-  -> Yocaml.Path.t
-  -> int
-  -> (unit -> unit Yocaml.Eff.t)
-  -> Eio_unix.Stdenv.base
-  -> 'a
-(** [run ?custom_error_handler target port program] describes an EIO program
-    that serve statically [target] on listening [port]. *)
