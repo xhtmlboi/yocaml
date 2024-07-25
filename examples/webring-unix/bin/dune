@@ -1,0 +1,3 @@
+(executable
+ (name webring_unix)
+ (libraries webring yocaml_unix))

@@ -16,11 +16,18 @@
 
 open Yocaml
 
-let root = Path.rel [ "examples"; "webring" ]
-let source_root = root
-let css = Path.(source_root / "css")
-let index = Path.(source_root / "index.md")
-let members = Path.(source_root / "members.yml")
-let templates = Path.(source_root / "templates")
-let template file = Path.(templates / file)
-let binary = Path.rel [ Sys.argv.(0) ]
+module Webring = Webring.Make (struct
+  let source = Path.rel [ "examples"; "webring-unix" ]
+end)
+
+let () =
+  match Array.to_list Sys.argv with
+  | _ :: "serve" :: _ ->
+      (* let port = *)
+      (*   Option.bind (List.nth_opt xs 0) int_of_string_opt *)
+      (*   |> Option.value ~default:8000 *)
+      (* in *)
+      (* Yocaml_eio.serve ~level:Logs.Info ~target:Webring.target ~port *)
+      (*   Webring.process_all *)
+      assert false
+  | _ -> Yocaml_unix.run Webring.process_all

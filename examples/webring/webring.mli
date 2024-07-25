@@ -14,13 +14,9 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-open Yocaml
-
-let target_root = Path.(Source.root / "_build")
-let cache = Path.(target_root / "cache")
-let opml = Path.(target_root / "ring.opml")
-
-let as_html ?(into = target_root) file =
-  file |> Path.move ~into |> Path.change_extension "html"
-
-let root = target_root
+module Make (_ : sig
+  val source : Yocaml.Path.t
+end) : sig
+  val target : Yocaml.Path.t
+  val process_all : unit -> unit Yocaml.Eff.t
+end

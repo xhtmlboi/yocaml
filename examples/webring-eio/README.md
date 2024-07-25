@@ -17,6 +17,7 @@ build stuff.
 ## Launch of the webring
 
 Generation is designed to be launched from the root of the project with the
-command: `dune exec examples/webring/bin/webring.exe` which will generate the
-blog content in the following directory: `./examples/webring/_build`. You
-can also pass `serve [PORT]` to launch the development server.
+command: `dune exec examples/webring-eio/bin/webring_eio.exe` which will
+generate the blog content in the following directory:
+`./examples/webring-eio/_build`. You can also pass `serve [PORT]` to launch the
+development server.

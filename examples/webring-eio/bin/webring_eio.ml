@@ -14,10 +14,19 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-val root : Yocaml.Path.t
-val css : Yocaml.Path.t
-val index : Yocaml.Path.t
-val members : Yocaml.Path.t
-val templates : Yocaml.Path.t
-val template : Yocaml.Path.fragment -> Yocaml.Path.t
-val binary : Yocaml.Path.t
+open Yocaml
+
+module Webring = Webring.Make (struct
+  let source = Path.rel [ "examples"; "webring-eio" ]
+end)
+
+let () =
+  match Array.to_list Sys.argv with
+  | _ :: "serve" :: xs ->
+      let port =
+        Option.bind (List.nth_opt xs 0) int_of_string_opt
+        |> Option.value ~default:8000
+      in
+      Yocaml_eio.serve ~level:Logs.Info ~target:Webring.target ~port
+        Webring.process_all
+  | _ -> Yocaml_eio.run Webring.process_all

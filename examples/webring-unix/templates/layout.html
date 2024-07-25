@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    {%- if redirection == "prev" -%}
+    <meta http-equiv="refresh" content="0; URL={{ prev.url }}" />
+    {%- elif redirection == "succ" -%}
+    <meta http-equiv="refresh" content="0; URL={{ succ.url }}" />
+    {%- endif -%}
+  </head>
+  <body>
+    <h1>Welcome to the YOCaml's webring</h1>
+    <hr />
+    <main>
+      {%- autoescape false -%} {{ yocaml_body }} {%- endautoescape -%}
+    </main>
+    <hr />
+    Get the <a href="/ring.opml">OPML database</a>
+  </body>
+</html>
