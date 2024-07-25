@@ -17,3 +17,7 @@
 let run ?(level = `Debug) ?custom_error_handler program =
   let () = Yocaml_runtime.Log.setup ~level () in
   Runner.run ?custom_error_handler program
+
+let serve ?(level = `Debug) ?custom_error_handler ~target ~port program =
+  let () = Yocaml_runtime.Log.setup ~level () in
+  Server.run ?custom_error_handler target port program

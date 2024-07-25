@@ -14,28 +14,15 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-(** Unix runtime for YOCaml.
-
-    Allows you to run YOCaml on a Unix system based on Unix (or source service
-    for more complex runtimes). *)
+(** A very simple server for locally serving a project built with YOcaml on top
+    of Unix. *)
 
 val run :
-     ?level:Yocaml_runtime.Log.level
-  -> ?custom_error_handler:
+     ?custom_error_handler:
        (Format.formatter -> Yocaml.Data.Validation.custom_error -> unit)
+  -> Yocaml.Path.t
+  -> int
   -> (unit -> unit Yocaml.Eff.t)
   -> unit
-(** [run ?level ?custom_error_handler program] Runs a Yocaml program in the Eio
-    runtime. The log [level] (default: [Debug]) and a [custom_error_handler] can
-    be passed as arguments to change the reporting level.*)
-
-val serve :
-     ?level:Yocaml_runtime.Log.level
-  -> ?custom_error_handler:
-       (Format.formatter -> Yocaml.Data.Validation.custom_error -> unit)
-  -> target:Yocaml.Path.t
-  -> port:int
-  -> (unit -> unit Yocaml.Eff.t)
-  -> unit
-(** [serve ?level ?custom_error_handler ~target ~port program] serve the
-    directory [target] statically and re-run [program] on each refresh. *)
+(** [run ?custom_error_handler target port program] describes an lwt program
+    that serve statically [target] on listening [port]. *)
