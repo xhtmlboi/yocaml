@@ -16,5 +16,3 @@ project](https://gitlab.com/funkywork/yocaml/-/blob/main/examples/simple-blog/bi
 to see how to build a _blog_ **yourself** using, for example, [this
 template](https://github.com/xvw/yocaml2-empty-template) that allows you to
 bootstrap an empty project filled with YOCaml dependencies.
-
-

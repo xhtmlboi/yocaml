@@ -22,12 +22,11 @@ end)
 
 let () =
   match Array.to_list Sys.argv with
-  | _ :: "serve" :: _ ->
-      (* let port = *)
-      (*   Option.bind (List.nth_opt xs 0) int_of_string_opt *)
-      (*   |> Option.value ~default:8000 *)
-      (* in *)
-      (* Yocaml_eio.serve ~level:Logs.Info ~target:Webring.target ~port *)
-      (*   Webring.process_all *)
-      assert false
+  | _ :: "serve" :: xs ->
+      let port =
+        Option.bind (List.nth_opt xs 0) int_of_string_opt
+        |> Option.value ~default:8000
+      in
+      Yocaml_unix.serve ~level:`Info ~target:Webring.target ~port
+        Webring.process_all
   | _ -> Yocaml_unix.run Webring.process_all

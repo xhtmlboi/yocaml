@@ -26,17 +26,15 @@ end)
 
 let () =
   match Array.to_list Sys.argv with
-  | _ :: "serve" :: _ ->
+  | _ :: "serve" :: xs ->
       (* If the [serve] argument is passed to the CLI. We're trying to parse a
          port. *)
-      (* let port = *)
-      (*   Option.bind (List.nth_opt xs 0) int_of_string_opt *)
-      (*   |> Option.value ~default:8000 *)
-      (* in *)
-      (* (\* Then you can launch the server! *\) *)
-      (* Yocaml_eio.serve ~level:Logs.Info ~target:Blog.target ~port *)
-      (*   Blog.process_all *)
-      assert false
+      let port =
+        Option.bind (List.nth_opt xs 0) int_of_string_opt
+        |> Option.value ~default:8000
+      in
+      (* Then you can launch the server! *)
+      Yocaml_unix.serve ~level:`Info ~target:Blog.target ~port Blog.process_all
   | _ ->
       (* If no arguments (or the wrong values) are passed, the site is built *)
       Yocaml_unix.run Blog.process_all
