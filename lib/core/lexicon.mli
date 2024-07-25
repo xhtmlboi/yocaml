@@ -29,6 +29,7 @@ val found_dynamic_dependencies : Path.t -> string
 val cache_invalid_csexp : Path.t -> string
 val cache_invalid_repr : Path.t -> string
 val cache_restored : Path.t -> string
+val cache_initiated : Path.t -> string
 val cache_stored : Path.t -> string
 val copy_file : ?new_name:Path.fragment -> into:Path.t -> Path.t -> string
 val copy_directory : ?new_name:Path.fragment -> into:Path.t -> Path.t -> string

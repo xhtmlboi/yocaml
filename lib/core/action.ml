@@ -196,7 +196,9 @@ let restore_cache ?(on = `Source) path =
             in
             Cache.empty)
           (Cache.from_sexp sexp)
-  else Eff.return Cache.empty
+  else
+    let+ () = Eff.log ~level:`Debug @@ Lexicon.cache_initiated path in
+    Cache.empty
 
 let store_cache ?(on = `Source) path cache =
   let open Eff.Syntax in

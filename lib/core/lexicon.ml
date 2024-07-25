@@ -49,6 +49,9 @@ let cache_invalid_repr target =
 let cache_restored target =
   Format.asprintf "Cache restored from `%a`" Path.pp target
 
+let cache_initiated target =
+  Format.asprintf "Cache initiated in `%a`" Path.pp target
+
 let cache_stored target = Format.asprintf "Cache stored in `%a`" Path.pp target
 
 let copy_file ?new_name ~into source =
