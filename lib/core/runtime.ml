@@ -105,7 +105,7 @@ module Make (Runtime : Required.RUNTIME) = struct
                       Runtime.bind
                         (function
                           | Ok x -> continue k x | Error err -> runtimec err)
-                        (Runtime.exec ~is_success ~args prog))
+                        (Runtime.exec ~is_success prog args))
               | _ -> None)
         }
     in

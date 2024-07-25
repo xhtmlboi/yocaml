@@ -159,7 +159,7 @@ module type RUNTIME = sig
   val exec :
        ?is_success:(int -> bool)
     -> string
-    -> ?args:string list
+    -> string list
     -> (string, runtime_error) result t
   (** [exec ?is_success prog ?args] will executes [prog ...args]. When
       [is_success] is provided, it is called with the exit code to determine
