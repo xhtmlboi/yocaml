@@ -7,6 +7,6 @@ installed**.
 ## Launch of the generation
 
 Generation is designed to be launched from the root of the project with the
-command: `dune exec examples/d2/bin/d2.exe` which will generate the
-blog content in the following directory: `./examples/d2/_build`. You
-can also pass `serve [PORT]` to launch the development server.
+command: `dune exec examples/d2-eio/bin/d2_eio.exe` which will generate the blog
+content in the following directory: `./examples/d2-eio/_build`. You can also
+pass `serve [PORT]` to launch the development server.

@@ -1,3 +1,0 @@
-(executable
- (name d2)
- (libraries yocaml yocaml_eio))

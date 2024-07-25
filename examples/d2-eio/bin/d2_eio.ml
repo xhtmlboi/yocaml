@@ -16,38 +16,9 @@
 
 open Yocaml
 
-let source_root = Path.rel [ "examples"; "d2" ]
-let target_root = Path.(source_root / "_build")
-let cache_path = Path.(target_root / "cache")
-
-let invoke_d2 source target =
-  let open Cmd in
-  make "d2"
-    [
-      param ~prefix:"-" "t" (int 301)
-    ; param ~suffix:"=" "layout" (string "elk")
-    ; arg (w source)
-    ; arg target
-    ]
-
-let target_of d2_source =
-  let open Path in
-  d2_source
-  |> move ~into:Path.(target_root / "diagrams")
-  |> change_extension "svg"
-
-let batch_diagrams =
-  Action.batch ~only:`Files ~where:(Path.has_extension "d2")
-    Path.(source_root / "diagrams")
-    (fun source ->
-      let target = target_of source in
-      Action.exec_cmd (invoke_d2 source) target)
-
-let process_all () =
-  let open Eff in
-  Action.restore_cache cache_path
-  >>= batch_diagrams
-  >>= Action.store_cache cache_path
+module D2 = D2.Make (struct
+  let source = Path.rel [ "examples"; "d2-eio" ]
+end)
 
 let () =
   match Array.to_list Sys.argv with
@@ -57,5 +28,5 @@ let () =
         |> Option.value ~default:8000
       in
 
-      Yocaml_eio.serve ~level:Logs.Info ~target:target_root ~port process_all
-  | _ -> Yocaml_eio.run process_all
+      Yocaml_eio.serve ~level:Logs.Info ~target:D2.target ~port D2.process_all
+  | _ -> Yocaml_eio.run D2.process_all
