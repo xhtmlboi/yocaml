@@ -35,6 +35,7 @@ module Deps = Deps
 module Metadata = Metadata
 module Archetype = Archetype
 module Cmd = Cmd
+module Slug = Slug
 
 (** {1 Building tasks}
 
