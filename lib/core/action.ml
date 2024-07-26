@@ -175,7 +175,7 @@ let batch_list list action cache =
   in
   cache
 
-let restore_cache ?(on = `Source) path =
+let restore_cache ?(on = `Target) path =
   let open Eff.Syntax in
   let* exists = Eff.file_exists ~on path in
   if exists then
@@ -200,7 +200,7 @@ let restore_cache ?(on = `Source) path =
     let+ () = Eff.log ~level:`Debug @@ Lexicon.cache_initiated path in
     Cache.empty
 
-let store_cache ?(on = `Source) path cache =
+let store_cache ?(on = `Target) path cache =
   let open Eff.Syntax in
   let sexp_str = cache |> Cache.to_sexp |> Sexp.Canonical.to_string in
   let* () = Eff.write_file ~on path sexp_str in
