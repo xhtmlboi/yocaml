@@ -17,10 +17,10 @@
 let author = "The XHTMLBoy"
 let email = "xhtmlboi@gmail.com"
 let message = "pushed from YOCaml 2"
-let remote = "git@gitlab.com:xhtmlboi/yocaml-git-experience.git"
+let remote = "https://gitlab.com/xhtmlboi/yocaml-git-experience.git"
 
 module Blog = Simple_blog.Make_with_target (struct
-  let source = Yocaml.Path.rel [ "examples"; "simple-blog-unix" ]
+  let source = Yocaml.Path.rel [ "examples"; "simple-blog-git" ]
   let target = Yocaml.Path.rel [ "www" ]
 end)
 

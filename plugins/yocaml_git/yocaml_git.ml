@@ -20,6 +20,9 @@ let run (module Source : Required.SOURCE) (module Clock : Mirage_clock.PCLOCK)
     ~context ?author ?email ?message ~remote ?(level = `Debug)
     ?custom_error_handler program =
   let open Lwt.Syntax in
+  let () =
+    Mirage_crypto_rng_unix.initialize (module Mirage_crypto_rng.Fortuna)
+  in
   let* context = match context with `SSH -> Ssh.context () in
   let* store = Git_kv.connect context remote in
   let module Store = Git_kv.Make (Clock) in
