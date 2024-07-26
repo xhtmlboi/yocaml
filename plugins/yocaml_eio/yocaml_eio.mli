@@ -39,3 +39,8 @@ val serve :
   -> 'a
 (** [serve ?level ?custom_error_handler ~target ~port program] serve the
     directory [target] statically and re-run [program] on each refresh. *)
+
+(** {1 Runtime} *)
+
+module Runtime = Runtime
+(** Rexports Runtime to be used outside of the package. *)

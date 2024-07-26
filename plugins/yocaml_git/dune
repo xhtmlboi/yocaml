@@ -1,0 +1,5 @@
+(library
+ (name yocaml_git)
+ (public_name yocaml_git)
+ (libraries ptime mirage-clock lwt git-kv yocaml yocaml_runtime)
+ (modules_without_implementation required))

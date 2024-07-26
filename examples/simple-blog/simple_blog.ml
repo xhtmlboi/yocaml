@@ -57,8 +57,9 @@ open Yocaml
    build only the [process_all] function.
 *)
 
-module Make (S : sig
+module Make_with_target (S : sig
   val source : Path.t
+  val target : Path.t
 end) =
 struct
   (* Firstly, we're going to create resolvers to facilitate access to files and to
@@ -108,7 +109,7 @@ struct
 
     (* As the target directory is in the source directory, we start by describing
        a target root. *)
-    let target_root = Path.(source_root / "_build")
+    let target_root = S.target
 
     (* To deal with dynamic dependencies, you need to maintain a state in a cache.
        For ease of use, this cache is stored in the target directory. *)
@@ -451,3 +452,12 @@ struct
        run of our generator! *)
     >>= Action.store_cache Target.cache
 end
+
+module Make (S : sig
+  val source : Path.t
+end) =
+Make_with_target (struct
+  include S
+
+  let target = Path.(source / "_build")
+end)

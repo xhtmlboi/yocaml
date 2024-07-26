@@ -14,17 +14,19 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-module Make_with_target (_ : sig
-  val source : Yocaml.Path.t
-  val target : Yocaml.Path.t
-end) : sig
-  val target : Yocaml.Path.t
-  val process_all : unit -> unit Yocaml.Eff.t
-end
+(** A runtime for executing Yocaml programs in the Unix context. (That is
+    shipped with a Runner). *)
 
-module Make (_ : sig
-  val source : Yocaml.Path.t
-end) : sig
-  val target : Yocaml.Path.t
-  val process_all : unit -> unit Yocaml.Eff.t
+module Make
+    (_ : Required.SOURCE)
+    (_ : Required.CONFIG)
+    (_ : Mirage_kv.RW with type t = Git_kv.t) : sig
+  module Runtime : Yocaml.Required.RUNTIME with type 'a t = 'a Lwt.t
+
+  module Runner :
+    Yocaml.Required.RUNNER
+      with type 'a t := 'a Yocaml.Eff.t
+       and module Runtime := Runtime
+
+  include Yocaml.Required.RUNTIME with type 'a t = 'a Lwt.t
 end

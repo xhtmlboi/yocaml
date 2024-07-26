@@ -119,3 +119,15 @@
    (ocaml (>= 5.1.1))
    (dune (>= 3.0.0))
    (yocaml (= :version))))
+
+(package
+  (name yocaml_git)
+  (synopsis "Yocaml plugins for generating Yocaml program into a Git repository")
+  (depends
+   (ocaml (>= 5.1.1))
+   (dune (>= 3.0.0))
+   (lwt (>= 5.7.0))
+   (git-kv (>= 0.0.5))
+   (git-unix (>= 3.16.1))
+   (mirage-clock (>= 4.2.0))
+   (yocaml (= :version))))

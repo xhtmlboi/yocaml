@@ -14,17 +14,22 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-module Make_with_target (_ : sig
-  val source : Yocaml.Path.t
-  val target : Yocaml.Path.t
-end) : sig
-  val target : Yocaml.Path.t
-  val process_all : unit -> unit Yocaml.Eff.t
+(** Requirements for building a Git Runtime. *)
+
+module type SOURCE = sig
+  (** Describes a natural transformation allowing a Yocaml program of type
+      [‘a t] to be transformed into a program of type [’a Lwt.t] (so that it can
+      be used via [Yocaml_git]. *)
+
+  include Yocaml.Required.RUNTIME
+
+  val lift : 'a t -> 'a Lwt.t
+  (** [lift x] lift a value from ['a t] to ['a Lwt.t]. *)
 end
 
-module Make (_ : sig
-  val source : Yocaml.Path.t
-end) : sig
-  val target : Yocaml.Path.t
-  val process_all : unit -> unit Yocaml.Eff.t
+module type CONFIG = sig
+  (** Store configuration. *)
+
+  val store : Git_kv.t
+  (** The type of the Git store. *)
 end

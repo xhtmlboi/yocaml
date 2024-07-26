@@ -1,0 +1,24 @@
+<div class="article-header">
+  <div>
+    <div class="mono date">
+      <div class="year">{{ date.year }}</div>
+      <div class="day">{{ date.day }}</div>
+      <div class="month">{{ date.repr.month }}</div>
+    </div>
+  </div>
+  <div>
+    <h3 class="slab">{{ title }}</h3>
+    {%- if has_synopsis -%}
+    <div class="article-synopsis">{{ synopsis }}</div>
+    {%- endif -%}
+    <ul class="mono tags">
+      {%- for tag in tags -%}
+      <li>{{ tag }}</li>
+      {%- endfor -%}
+    </ul>
+  </div>
+</div>
+
+<article>
+  {%- autoescape false -%} {{ yocaml_body }} {%- endautoescape -%}
+</article>
