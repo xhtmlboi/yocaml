@@ -17,7 +17,7 @@
 let author = "The XHTMLBoy"
 let email = "xhtmlboi@gmail.com"
 let message = "pushed from YOCaml 2"
-let remote = "https://gitlab.com/xhtmlboi/yocaml-git-experience.git"
+let remote = "git@gitlab.com:xhtmlboi/yocaml-git-experience.git"
 
 module Blog = Simple_blog.Make_with_target (struct
   let source = Yocaml.Path.rel [ "examples"; "simple-blog-unix" ]
@@ -27,11 +27,9 @@ end)
 module Source = Yocaml_git.From_identity (Yocaml_unix.Runtime)
 
 let () =
-  let open Lwt.Syntax in
-  (let* context = Git_unix.ctx @@ Happy_eyeballs_lwt.create () in
-   Yocaml_git.run
-     (module Source)
-     (module Pclock)
-     ~context ~author ~email ~message ~remote Blog.process_all)
+  Yocaml_git.run
+    (module Source)
+    (module Pclock)
+    ~context:`SSH ~author ~email ~message ~remote Blog.process_all
   |> Lwt_main.run
   |> Result.iter_error (fun (`Msg err) -> invalid_arg err)

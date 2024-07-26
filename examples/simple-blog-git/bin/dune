@@ -1,3 +1,9 @@
 (executable
  (name simple_blog_git)
- (libraries git-unix yocaml simple_blog yocaml_unix yocaml_git))
+ (libraries
+  git-unix
+  yocaml
+  simple_blog
+  yocaml_unix
+  yocaml_git
+  yocaml_runtime))
