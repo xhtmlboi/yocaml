@@ -14,7 +14,9 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-let to_kv_path x = Mirage_kv.Key.v (Yocaml.Path.to_string x)
+let to_kv_path x =
+  let _, r = Yocaml.Path.to_pair x in
+  Mirage_kv.Key.v (r |> String.concat Filename.dir_sep)
 
 module Make
     (Source : Required.SOURCE)
