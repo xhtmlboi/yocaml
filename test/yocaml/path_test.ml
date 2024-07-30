@@ -354,6 +354,30 @@ let test_relocate6 =
       in
       check Testable.path "should be equal" expected computed)
 
+let test_from_string1 =
+  let open Alcotest in
+  test_case "from_string 1" `Quick (fun () ->
+      let open Yocaml.Path in
+      let expected = ~/[ "oof"; "rab"; "zab" ]
+      and computed = from_string "./oof/rab/zab" in
+      check Testable.path "should be equal" expected computed)
+
+let test_from_string2 =
+  let open Alcotest in
+  test_case "from_string 2" `Quick (fun () ->
+      let open Yocaml.Path in
+      let expected = abs [ "oof"; "rab"; "zab" ]
+      and computed = from_string "/oof/rab/zab" in
+      check Testable.path "should be equal" expected computed)
+
+let test_from_string3 =
+  let open Alcotest in
+  test_case "from_string 2" `Quick (fun () ->
+      let open Yocaml.Path in
+      let expected = rel [ "oof"; "rab"; "zab" ]
+      and computed = from_string "oof/rab/zab" in
+      check Testable.path "should be equal" expected computed)
+
 let to_csexp_from_csexp_roundtrip =
   QCheck2.Test.make ~name:"to_csexp -> from_csexp roundtrip" ~count:100
     ~print:(fun x -> Format.asprintf "%a" Yocaml.Path.pp x)
@@ -362,6 +386,16 @@ let to_csexp_from_csexp_roundtrip =
       let open Yocaml.Path in
       let expected = Ok p and computed = p |> to_sexp |> from_sexp in
       Alcotest.equal Testable.(from_sexp path) expected computed)
+  |> QCheck_alcotest.to_alcotest ~colors:true ~verbose:true
+
+let to_string_from_string_roundtrip =
+  QCheck2.Test.make ~name:"to_string -> from_string roundtrip" ~count:100
+    ~print:(fun x -> Format.asprintf "%a" Yocaml.Path.pp x)
+    Gen.path
+    (fun p ->
+      let open Yocaml.Path in
+      let expected = p and computed = p |> to_string |> from_string in
+      Alcotest.equal Testable.path expected computed)
   |> QCheck_alcotest.to_alcotest ~colors:true ~verbose:true
 
 let cases =
@@ -401,5 +435,9 @@ let cases =
     ; test_relocate4
     ; test_relocate5
     ; test_relocate6
+    ; test_from_string1
+    ; test_from_string2
+    ; test_from_string3
+    ; to_string_from_string_roundtrip
     ; to_csexp_from_csexp_roundtrip
     ] )

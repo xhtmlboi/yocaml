@@ -181,6 +181,9 @@ val to_pair : t -> [ `Root | `Rel ] * fragment list
 (** [to_pair] is like [to_list] but instead of prefixing the first fragment with
     [.] or [/], it returns the kind as first element of the tuple. *)
 
+val from_string : string -> t
+(** [from_string string] try to compute a path from a string. *)
+
 (** {1 Serialization/Deserialization}
 
     Supports serialization and deserialization of paths. *)
