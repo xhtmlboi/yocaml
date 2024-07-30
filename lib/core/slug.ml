@@ -99,9 +99,11 @@ let validate_from_str separator unknown_char =
     | '0' .. '9' | 'a' .. 'z' -> true
     | chr -> Char.equal chr separator || Char.equal chr unknown_char)
 
-let validate ?(separator = '-') ?(unknown_char = '-') =
+let validate_string ?(separator = '-') ?(unknown_char = '-') =
+  Data.Validation.where ~pp:Format.pp_print_string
+    ~message:(fun x -> x ^ " is not a valid slug")
+    (validate_from_str separator unknown_char)
+
+let validate ?separator ?unknown_char =
   let open Data.Validation in
-  string
-  & where ~pp:Format.pp_print_string
-      ~message:(fun x -> x ^ " is not a valid slug")
-      (validate_from_str separator unknown_char)
+  string & validate_string ?separator ?unknown_char

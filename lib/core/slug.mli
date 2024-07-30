@@ -43,4 +43,11 @@ val validate :
   -> ?unknown_char:char
   -> Data.t
   -> t Data.Validation.validated_value
-(** Validated a slug. *)
+(** Validate a slug. *)
+
+val validate_string :
+     ?separator:char
+  -> ?unknown_char:char
+  -> string
+  -> t Data.Validation.validated_value
+(** Validate a slug from a string. *)
