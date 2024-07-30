@@ -6,7 +6,6 @@
   digestif
   fmt
   fmt.tty
-  lwt
   unix
   logs
   logs.fmt
