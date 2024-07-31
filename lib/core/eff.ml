@@ -224,7 +224,9 @@ let read_directory ~on ?(only = `Both) ?(where = fun _ -> true) path =
     in
     let* children = perform @@ Yocaml_read_dir (on, path) in
     List.filter_map predicate children
-  else raise @@ Directory_not_exists (on, path)
+  else
+    let+ () = logf ~level:`Warning "%a does not exists" Path.pp path in
+    []
 
 let mtime ~on path =
   let rec aux path =
