@@ -22,7 +22,7 @@ module Make (Runtime : Required.RUNTIME) = struct
            ~in_exception_handler:true)
         exn
     in
-    msg |> Runtime.log `Error |> Runtime.bind (fun () -> exit 1)
+    msg |> Runtime.log `Error |> Runtime.bind (fun () -> raise Exit)
 
   let runtimec error =
     let error = Runtime.runtime_error_to_string error in
