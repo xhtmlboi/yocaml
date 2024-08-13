@@ -62,3 +62,9 @@ let pipe f arr =
   let open Task in
   let lift f = lift ~has_dynamic_dependencies:false f in
   lift (fun x -> (x, ())) >>> second arr >>> lift (fun (a, b) -> f a b)
+
+let pipe_files ?(seperator = "") files =
+  let f x y = x ^ seperator ^ y in
+  List.fold_left
+    (fun arr file -> Task.(arr >>> pipe f (read_file file)))
+    (Task.const "") files

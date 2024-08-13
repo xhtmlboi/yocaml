@@ -929,6 +929,57 @@ let test_action_using_pipes_1 =
       check Testable.fs "should be equal" expected_file_system
         computed_file_system)
 
+let test_action_using_pipes_2 =
+  let open Alcotest in
+  test_case "test Pipeline.pipe in real world context" `Quick (fun () ->
+      let base_file_system =
+        Fs.(
+          from_list
+            [
+              dir "."
+                [
+                  file "header.txt" "<header"
+                ; file "a.txt" "aaa"
+                ; file "b.txt" "bbb"
+                ; file "c.txt" "ccc"
+                ]
+            ])
+      in
+      let trace = Fs.create_trace ~time:1 base_file_system in
+      let program () =
+        let open Yocaml.Eff in
+        return Yocaml.Cache.empty
+        >>= Fs.increase_time_with 1
+        >>= Yocaml.Action.Static.write_file
+              Yocaml.Path.(rel [ "_build"; "out.txt" ])
+              (let open Yocaml.Task in
+               Yocaml.Pipeline.read_file Yocaml.Path.(rel [ "header.txt" ])
+               >>> Yocaml.Pipeline.pipe
+                     (fun x y -> x ^ ">" ^ y)
+                     (Yocaml.Pipeline.pipe_files ~seperator:"-"
+                        Yocaml.Path.
+                          [ rel [ "a.txt" ]; rel [ "b.txt" ]; rel [ "c.txt" ] ]))
+      in
+      let trace, _cache = Fs.run ~trace program () in
+      let computed_file_system = Fs.trace_system trace in
+      let expected_file_system =
+        Fs.(
+          from_list
+            [
+              dir "."
+                [
+                  file "a.txt" "aaa"
+                ; file "b.txt" "bbb"
+                ; file "c.txt" "ccc"
+                ; file "header.txt" "<header"
+                ; dir "_build"
+                    [ file ~mtime:2 "out.txt" "<header>-aaa-bbb-ccc" ]
+                ]
+            ])
+      in
+      check Testable.fs "should be equal" expected_file_system
+        computed_file_system)
+
 let cases =
   ( "Yocaml.Action"
   , [
@@ -941,4 +992,5 @@ let cases =
     ; test_copy_directory_1
     ; test_copy_directory_2
     ; test_action_using_pipes_1
+    ; test_action_using_pipes_2
     ] )

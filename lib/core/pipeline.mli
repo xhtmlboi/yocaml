@@ -61,6 +61,10 @@ val read_file_with_metadata :
     {!module-type:Yocaml.Required.DATA_PROVIDER}, [P], using the description
     provided by [R] of type {!module-type:Yocaml.Required.DATA_READABLE}. *)
 
+val pipe_files : ?seperator:string -> Path.t list -> (unit, string) Task.t
+(** [pipe_files ?seperator list_of_path] build a task that pipe file toegether
+    using [seperator] as a separator. *)
+
 val exec_cmd : ?is_success:(int -> bool) -> Cmd.t -> (unit, unit) Task.t
 (** [exec_cmd ?is_success cmd] is a task that performs a shell command
     ({!module:Yocaml.Cmd}). [watched] arguments are used to define the
