@@ -117,3 +117,32 @@ val fold_list :
 (** [fold_list ~state list action cache] Executes the given action on all
     element of the given list. The cache is passed from call to call and instead
     of {!val:batch_list}, you can maintain your own additional state. *)
+
+(** {1 Helpers for dealing with static and dynamic dependencies}
+
+    The API can change considerably when processing tasks with or without
+    dynamic dependencies, so we are exposing two modules to simplify this
+    processing. *)
+
+module Static : sig
+  (** Utilities for dealing with tasks without dynamic dependencies. *)
+
+  val write_file : Path.t -> (unit, string) Task.t -> t
+  (** [write_file] is {!val:Yocaml.Action.write_static_file}. *)
+
+  val write_file_with_metadata : Path.t -> (unit, 'a * string) Task.t -> t
+  (** [write_file path task cache] is {!val:Yocaml.Action.write_static_file}
+      that discards the metadata part. *)
+end
+
+module Dynamic : sig
+  (** Utilities for dealing with tasks with dynamic dependencies. *)
+
+  val write_file : Path.t -> (unit, string * Deps.t) Task.t -> t
+  (** [write_file] is {!val:Yocaml.Action.write_dynamic_file}. *)
+
+  val write_file_with_metadata :
+    Path.t -> (unit, ('a * string) * Deps.t) Task.t -> t
+  (** [write_file path task cache] is {!val:Yocaml.Action.write_dynamic_file}
+      that discards the metadata part. *)
+end

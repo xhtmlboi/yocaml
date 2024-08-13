@@ -155,7 +155,7 @@ struct
      batching the action! *)
 
   (* Building pages or articles generally follows the same pattern:
-     - We construct a file using Action.write_static_file
+     - We construct a file using Action.Static.write_file_with_metadata
        (because the file will have no dynamic dependencies)
      - The task will add the binary to the dependencies (so that rewriting
        the generator triggers a modification)
@@ -173,14 +173,14 @@ struct
        it that we will write the file to the root of our target. *)
     let file_target = Target.(as_html pages file) in
 
-    (* Now, we can write the file using the [write_static_file] action, which will
-       execute a task. We use [write_static_file] because in our example,
-       constructing a page involves no dynamic dependencies.
+    (* Now, we can write the file using the [Static.write_file_with_metadata]
+       action, which will execute a task. We use [Static.write_file_with_metadata]
+       because in our example, constructing a page involves no dynamic dependencies.
 
        The operators for composing tasks are found in the Task module, Hence its
        opening. *)
     let open Task in
-    Action.write_static_file file_target
+    Action.Static.write_file_with_metadata file_target
       ((* We add the binary to the dependencies because we assume that if the
           binary changes, we would want to replay the task. Building a task simply
           involves composing (often with [>>>]) smaller tasks, and it's these
@@ -212,13 +212,7 @@ struct
          template is constructed). *)
       >>> Yocaml_jingoo.Pipeline.as_template
             (module Archetype.Page)
-            (Source.template "layout.html")
-      (* At this stage, we have a pair with our metadata and the complete content
-         of our file. However, since our document has been injected into the
-         template with its metadata, we no longer need the metadata (as the
-         [write_static_file] action writes a string). We can use [drop_first()]
-         which will keep only the content of our file. *)
-      >>> drop_first ())
+            (Source.template "layout.html"))
 
   (* Now that we can process a page, we can batch all our pages in the same way we
      proceeded to process CSS files, using [batch]. This time, we will also
@@ -239,11 +233,13 @@ struct
        constructed, just like for the pages. *)
     let file_target = Target.(as_html articles file) in
 
-    (* As for Pages, we can write the file using the [write_static_file] action,
-       which will execute a task. We use [write_static_file] because in our
-       example, constructing a page involves no dynamic dependencies. *)
+    (* As for Pages, we can write the file using the
+       [Static.write_file_with_metadata] action,
+       which will execute a task. We use [Static.write_file_with_metadata]
+       because in our example, constructing a page involves no dynamic
+       dependencies. *)
     let open Task in
-    Action.write_static_file file_target
+    Action.Static.write_file_with_metadata file_target
       ((* As for Pages, we want to track the binary.  *)
        Pipeline.track_file Source.binary
       (* Just like with pages, we read the file and its metadata. This time we use
@@ -263,9 +259,7 @@ struct
          inherits from a page. *)
       >>> Yocaml_jingoo.Pipeline.as_template
             (module Archetype.Article)
-            (Source.template "layout.html")
-      (* We can finish by dropping our metadata! *)
-      >>> drop_first ())
+            (Source.template "layout.html"))
 
   (* Now we can batch our article processing on all files with the [.md] extension
      in the directory of our articles, and that's it. *)
@@ -312,10 +306,10 @@ struct
        doing before. *)
 
     (* As for Pages and articles, we can write the file using the
-       [write_static_file] action, which will execute a task. We use
-       [write_static_file] because in our example, constructing a page involves no
-       dynamic dependencies (because of a small trick). *)
-    Action.write_static_file file_target
+       [Static.write_file_with_metadata] action, which will execute a task.
+       We use [Static.write_file_with_metadata] because in our example, constructing
+       the index involves no dynamic dependencies (because of a small trick). *)
+    Action.Static.write_file_with_metadata file_target
       ((* As for Pages, we want to track the binary. But we're also going to track
           the directory containing the articles. Normally, the processing of
           articles seems to be a dynamic dependency (because we would
@@ -348,9 +342,7 @@ struct
       (* Then we apply the general template, just like in the previous examples *)
       >>> Yocaml_jingoo.Pipeline.as_template
             (module Archetype.Articles)
-            (Source.template "layout.html")
-      (* We can finish by dropping our metadata! *)
-      >>> drop_first ())
+            (Source.template "layout.html"))
 
   (* Now we're going to create the feeds. For the flex, we're going to create 3,
      Rss1, Rss2 and Atom (in real life, this isn't very useful :D).
@@ -389,7 +381,7 @@ struct
 
   let rss1 =
     let open Task in
-    Action.write_static_file Target.rss1
+    Action.Static.write_file Target.rss1
       (fetch_articles
       >>> Yocaml_syndication.Rss1.from_articles ~title:feed_title ~site_url
             ~description:feed_description ~feed_url:"http://mysite.com/rss1.xml"
@@ -399,7 +391,7 @@ struct
 
   let rss2 =
     let open Task in
-    Action.write_static_file Target.rss2
+    Action.Static.write_file Target.rss2
       (fetch_articles
       >>> Yocaml_syndication.Rss2.from_articles ~title:feed_title ~site_url
             ~description:feed_description ~feed_url:"http://mysite.com/rss2.xml"
@@ -414,7 +406,7 @@ struct
       Yocaml.Nel.singleton
       @@ Yocaml_syndication.Person.make "The YOCaml community group"
     in
-    Action.write_static_file Target.atom
+    Action.Static.write_file Target.atom
       (fetch_articles
       >>> Yocaml_syndication.Atom.(
             from_articles ~site_url ~authors ~title:(text feed_title)

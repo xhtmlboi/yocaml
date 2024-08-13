@@ -344,3 +344,56 @@ val with_dynamic_dependencies : Path.t list -> ('a, 'a * Deps.t) t
 (** [with_dynamic_dependencies dependenices_list] allows to add a set of dynamic
     dependencies to a task. Even the set of dependencies looks static, it is
     mostly used for attaching dependencies like folders. *)
+
+(** {1 Helpers for dealing with static and dynamic dependencies}
+
+    The API can change considerably when processing tasks with or without
+    dynamic dependencies, so we are exposing two modules to simplify this
+    processing. *)
+
+module Static : sig
+  (** Utilities for dealing with tasks without dynamic dependencies. *)
+
+  val on_content :
+       ('content_in, 'content_out) t
+    -> ('meta * 'content_in, 'meta * 'content_out) t
+  (** [on_content arr] lift an arrow to deal only with the content of a task. *)
+
+  val on_metadata :
+    ('meta_in, 'meta_out) t -> ('meta_in * 'content, 'meta_out * 'content) t
+  (** [on_metadata arr] lift an arrow to deal only with the associated metadata
+      of a task. *)
+
+  val keep_content : unit -> ('meta * 'content, 'content) t
+  (** [keep_content ()] drop the metadata part of the computed task. *)
+
+  val empty_body : unit -> ('meta, 'meta * string) t
+  (** [empty_body ()] attach an empty body (an empty string) to a task. *)
+end
+
+module Dynamic : sig
+  (** Utilities for dealing with tasks with dynamic dependencies. *)
+
+  val on_content :
+       ('content_in, 'content_out) t
+    -> (('meta * 'content_in) * Deps.t, ('meta * 'content_out) * Deps.t) t
+  (** [on_content arr] lift an arrow to deal only with the content of a task. *)
+
+  val on_metadata :
+       ('meta_in, 'meta_out) t
+    -> (('meta_in * 'content) * Deps.t, ('meta_out * 'content) * Deps.t) t
+  (** [on_metadata arr] lift an arrow to deal only with the associated metadata
+      of a task. *)
+
+  val on_dependencies :
+       (Deps.t, Deps.t) t
+    -> (('meta * 'content) * Deps.t, ('meta * 'content) * Deps.t) t
+  (** [on_dependencies arr] lift an arrow to deal only with the associated
+      dynamic deps set of a task. *)
+
+  val keep_content : unit -> (('meta * 'content) * Deps.t, 'content * Deps.t) t
+  (** [keep_content ()] drop the metadata part of the computed task. *)
+
+  val empty_body : unit -> ('meta * Deps.t, ('meta * string) * Deps.t) t
+  (** [empty_body ()] attach an empty body (an empty string) to a task. *)
+end

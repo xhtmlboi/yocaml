@@ -233,7 +233,7 @@ struct
   let process_index =
     let source = Source.index in
     let target = Target.(as_html source) in
-    Action.write_static_file target
+    Action.Static.write_file_with_metadata target
       (let open Task in
        Pipeline.track_file Source.binary
        >>> (Yocaml_yaml.Pipeline.read_file_as_metadata
@@ -246,8 +246,7 @@ struct
              (Source.template "index.html")
        >>> Yocaml_jingoo.Pipeline.as_template
              (module Model)
-             (Source.template "layout.html")
-       >>> drop_first ())
+             (Source.template "layout.html"))
 
   let write_chain select member =
     let path =
@@ -256,16 +255,15 @@ struct
     let member = Model.Cycle.select select member in
     let curr = Model.Cycle.curr member in
     let target = Path.(Target.root / Model.Member.id curr) in
-    Action.write_static_file
+    Action.Static.write_file_with_metadata
       Path.(target / path / "index.html")
       (let open Task in
        Pipeline.track_files [ Source.binary; Source.members ]
        >>> const member
-       >>> empty_body ()
+       >>> Static.empty_body ()
        >>> Yocaml_jingoo.Pipeline.as_template
              (module Model.Cycle)
-             (Source.template "layout.html")
-       >>> drop_first ())
+             (Source.template "layout.html"))
 
   let process_members members =
     let open Eff in
@@ -274,7 +272,7 @@ struct
 
   let generate_opml members =
     let members = Model.to_outlines members in
-    Action.write_static_file Target.opml
+    Action.Static.write_file Target.opml
       (let open Task in
        Pipeline.track_files [ Source.binary; Source.members ]
        >>> const members

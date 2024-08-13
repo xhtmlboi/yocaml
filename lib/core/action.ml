@@ -215,3 +215,21 @@ let exec_cmd ?is_success cmd target =
   perform target
     (Pipeline.exec_cmd ?is_success (cmd (Cmd.p target)))
     ~when_creation:action ~when_update:action
+
+module Static = struct
+  let write_file path task = write_static_file path task
+
+  let write_file_with_metadata path task =
+    write_file path
+      (let open Task in
+       task >>> Static.keep_content ())
+end
+
+module Dynamic = struct
+  let write_file path task = write_dynamic_file path task
+
+  let write_file_with_metadata path task =
+    write_file path
+      (let open Task in
+       task >>> Dynamic.keep_content ())
+end
