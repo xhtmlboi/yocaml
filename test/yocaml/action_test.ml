@@ -886,6 +886,49 @@ let test_copy_directory_2 =
       let computed_fs_2 = Fs.trace_system trace in
       check Testable.fs "Nothing should be done" computed_fs computed_fs_2)
 
+let test_action_using_pipes_1 =
+  let open Alcotest in
+  test_case "test Pipeline.pipe in real world context" `Quick (fun () ->
+      let base_file_system =
+        Fs.(
+          from_list
+            [
+              dir "."
+                [ file "a.txt" "aaa"; file "b.txt" "bbb"; file "c.txt" "ccc" ]
+            ])
+      in
+      let trace = Fs.create_trace ~time:1 base_file_system in
+      let program () =
+        let open Yocaml.Eff in
+        return Yocaml.Cache.empty
+        >>= Fs.increase_time_with 1
+        >>= Yocaml.Action.Static.write_file
+              Yocaml.Path.(rel [ "_build"; "out.txt" ])
+              (let open Yocaml.Task in
+               Yocaml.Pipeline.read_file Yocaml.Path.(rel [ "a.txt" ])
+               >>> Yocaml.Pipeline.pipe ( ^ )
+                     (Yocaml.Pipeline.read_file Yocaml.Path.(rel [ "b.txt" ]))
+               >>> Yocaml.Pipeline.pipe ( ^ )
+                     (Yocaml.Pipeline.read_file Yocaml.Path.(rel [ "c.txt" ])))
+      in
+      let trace, _cache = Fs.run ~trace program () in
+      let computed_file_system = Fs.trace_system trace in
+      let expected_file_system =
+        Fs.(
+          from_list
+            [
+              dir "."
+                [
+                  file "a.txt" "aaa"
+                ; file "b.txt" "bbb"
+                ; file "c.txt" "ccc"
+                ; dir "_build" [ file ~mtime:2 "out.txt" "aaabbbccc" ]
+                ]
+            ])
+      in
+      check Testable.fs "should be equal" expected_file_system
+        computed_file_system)
+
 let cases =
   ( "Yocaml.Action"
   , [
@@ -897,4 +940,5 @@ let cases =
     ; test_batch_1
     ; test_copy_directory_1
     ; test_copy_directory_2
+    ; test_action_using_pipes_1
     ] )

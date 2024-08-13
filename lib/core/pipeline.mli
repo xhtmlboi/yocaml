@@ -32,6 +32,11 @@ val track_files : Path.t list -> (unit, unit) Task.t
 val read_file : Path.t -> (unit, string) Task.t
 (** [read_file path] is a task that read the content of a file. *)
 
+val pipe : ('a -> 'b -> 'c) -> (unit, 'b) Task.t -> ('a, 'c) Task.t
+(** [pipe f arr] will pipe an arrow applying [f previous_result result_of arr].
+    For example, it can be used for piping files content :
+    [pipe (fun x y -> x ^ "\n" ^ y) (read_file path)]. *)
+
 val read_file_as_metadata :
      (module Required.DATA_PROVIDER)
   -> (module Required.DATA_READABLE with type t = 'a)
