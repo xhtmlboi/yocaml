@@ -88,7 +88,12 @@ val document :
 (** Create a complete XML document. *)
 
 val leaf :
-  ?ns:string -> name:string -> ?attr:Attr.t list -> string option -> node
+     ?indent:bool
+  -> ?ns:string
+  -> name:string
+  -> ?attr:Attr.t list
+  -> string option
+  -> node
 (** Describes a node that only contains PCDATA. *)
 
 val cdata : string -> string option
@@ -110,7 +115,8 @@ val may : ('a -> node) -> 'a option -> node
 (** [may f x] Lift a value into a node if it exists. *)
 
 val may_leaf :
-     ?finalize:(string -> string option)
+     ?indent:bool
+  -> ?finalize:(string -> string option)
   -> name:string
   -> ('a -> string)
   -> 'a option

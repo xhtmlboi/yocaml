@@ -158,7 +158,7 @@ module Guid = struct
   let make ~is_permalink value = Given (create ~is_permalink value)
 
   let to_xml { value; is_permalink } =
-    Xml.leaf ~name:"guid"
+    Xml.leaf ~indent:false ~name:"guid"
       ~attr:Xml.Attr.[ bool ~key:"isPermaLink" is_permalink ]
       (Some value)
 end

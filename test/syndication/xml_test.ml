@@ -326,3 +326,75 @@ let%expect_test "Empty nodes should produce a leaf" =
     <?xml standalone="yes" version="2.0" encoding="utf-16"?>
     <element/>
     |}]
+
+let%expect_test "Pretty-printing XML with indentation removed" =
+  let open Xml in
+  let document =
+    document
+    @@ node ~name:"root"
+         [
+           leaf ~indent:false ~name:"plain"
+             (Some
+                "A very long message used to find if it is not indented, so \
+                 there is a lot of useless content")
+         ]
+  in
+  print_endline @@ to_string document;
+  [%expect
+    {|
+    <?xml version="1.0" encoding="utf-8"?>
+    <root>
+      <plain>A very long message used to find if it is not indented, so there is a lot of useless content</plain>
+    </root>
+    |}]
+
+let%expect_test "Pretty-printing XML with indentation kept" =
+  let open Xml in
+  let document =
+    document
+    @@ node ~name:"root"
+         [
+           leaf ~name:"plain"
+             (Some
+                "A very long message used to find if it is not indented, so \
+                 there is a lot of useless content")
+         ]
+  in
+  print_endline @@ to_string document;
+  [%expect
+    {|
+    <?xml version="1.0" encoding="utf-8"?>
+    <root>
+      <plain>
+        A very long message used to find if it is not indented, so there is a lot of useless content
+      </plain>
+    </root>
+    |}]
+
+let%expect_test "Pretty-printing XML with indentation removed" =
+  let open Xml in
+  let document =
+    document
+    @@ node ~name:"root"
+         [
+           leaf ~name:"plain"
+             (Some
+                "A very long message used to find if it is not indented, so \
+                 there is a lot of useless content")
+         ; leaf ~indent:false ~name:"plain"
+             (Some
+                "A very long message used to find if it is not indented, so \
+                 there is a lot of useless content text text text text")
+         ]
+  in
+  print_endline @@ to_string document;
+  [%expect
+    {|
+    <?xml version="1.0" encoding="utf-8"?>
+    <root>
+      <plain>
+        A very long message used to find if it is not indented, so there is a lot of useless content
+      </plain>
+      <plain>A very long message used to find if it is not indented, so there is a lot of useless content text text text text</plain>
+    </root>
+    |}]

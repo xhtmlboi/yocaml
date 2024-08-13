@@ -67,9 +67,7 @@ let%expect_test "Create a simple feed" =
           <description>
             <![CDATA[As part of the state's first Earth-to-space call, students from Louisiana will have an opportunity soon to hear from NASA astronauts aboard the International Space Station.]]>
           </description>
-          <guid isPermaLink="true">
-            http://www.nasa.gov/press-release/louisiana-students-to-hear-from-nasa-astronauts-aboard-space-station
-          </guid>
+          <guid isPermaLink="true">http://www.nasa.gov/press-release/louisiana-students-to-hear-from-nasa-astronauts-aboard-space-station</guid>
           <pubDate>Fri, 21 Jul 2023 09:04:00 GMT</pubDate>
         </item>
       </channel>
@@ -154,9 +152,7 @@ let%expect_test "Create a complex feed" =
           <description>
             <![CDATA[As part of the state's first Earth-to-space call, students from Louisiana will have an opportunity soon to hear from NASA astronauts aboard the International Space Station.]]>
           </description>
-          <guid isPermaLink="true">
-            http://www.nasa.gov/press-release/louisiana-students-to-hear-from-nasa-astronauts-aboard-space-station
-          </guid>
+          <guid isPermaLink="true">http://www.nasa.gov/press-release/louisiana-students-to-hear-from-nasa-astronauts-aboard-space-station</guid>
           <pubDate>Fri, 21 Jul 2023 09:04:00 GMT</pubDate>
         </item>
         <item>
@@ -168,9 +164,7 @@ let%expect_test "Create a complex feed" =
             <![CDATA[NASA has awarded Axiom Space and Collins Aerospace task orders under existing contracts to advance spacewalking capabilities in low Earth orbit, as well as moonwalking services for Artemis missions.]]>
           </description>
           <enclosure length="1032272" type="image/jpeg" url="http://www.nasa.gov/sites/default/files/styles/1x1_cardfeed/public/thumbnails/image/iss068e027836orig.jpg?itok=ucNUaaGx"/>
-          <guid isPermaLink="true">
-            http://www.nasa.gov/press-release/nasa-expands-options-for-spacewalking-moonwalking-suits-services
-          </guid>
+          <guid isPermaLink="true">http://www.nasa.gov/press-release/nasa-expands-options-for-spacewalking-moonwalking-suits-services</guid>
           <pubDate>Mon, 10 Jul 2023 14:14:00 GMT</pubDate>
         </item>
       </channel>
@@ -263,9 +257,7 @@ let%expect_test "Create a complex feed" =
           <description>
             <![CDATA[As part of the state's first Earth-to-space call, students from Louisiana will have an opportunity soon to hear from NASA astronauts aboard the International Space Station.]]>
           </description>
-          <guid isPermaLink="true">
-            http://www.nasa.gov/press-release/louisiana-students-to-hear-from-nasa-astronauts-aboard-space-station
-          </guid>
+          <guid isPermaLink="true">http://www.nasa.gov/press-release/louisiana-students-to-hear-from-nasa-astronauts-aboard-space-station</guid>
           <pubDate>Fri, 21 Jul 2023 09:04:00 GMT</pubDate>
         </item>
         <item>
@@ -277,9 +269,7 @@ let%expect_test "Create a complex feed" =
             <![CDATA[NASA has awarded Axiom Space and Collins Aerospace task orders under existing contracts to advance spacewalking capabilities in low Earth orbit, as well as moonwalking services for Artemis missions.]]>
           </description>
           <enclosure length="1032272" type="image/jpeg" url="http://www.nasa.gov/sites/default/files/styles/1x1_cardfeed/public/thumbnails/image/iss068e027836orig.jpg?itok=ucNUaaGx"/>
-          <guid isPermaLink="true">
-            http://www.nasa.gov/press-release/nasa-expands-options-for-spacewalking-moonwalking-suits-services
-          </guid>
+          <guid isPermaLink="true">http://www.nasa.gov/press-release/nasa-expands-options-for-spacewalking-moonwalking-suits-services</guid>
           <pubDate>Mon, 10 Jul 2023 14:14:00 GMT</pubDate>
           <category domain="https://github.com"><![CDATA[repo]]></category>
           <category><![CDATA[bar]]></category>

@@ -142,14 +142,15 @@ module Source = struct
     let links = links |> List.map Link.to_xml in
     let categories = categories |> List.map Category.to_atom in
     [
-      Xml.may_leaf ~name:"id" Fun.id id
+      Xml.may_leaf ~indent:false ~name:"id" Fun.id id
     ; Xml.may (text_node ~name:"title") title
     ; Xml.may (text_node ~name:"subtitle") subtitle
     ; Xml.may Generator.to_atom generator
     ; Xml.may_leaf ~name:"icon" Fun.id icon
     ; Xml.may_leaf ~name:"logo" Fun.id logo
     ; Xml.may (text_node ~name:"rights") rights
-    ; Xml.may_leaf ~name:"updated" Datetime.to_string_rfc3339 updated
+    ; Xml.may_leaf ~indent:false ~name:"updated" Datetime.to_string_rfc3339
+        updated
     ]
     @ authors
     @ contributors
@@ -249,11 +250,13 @@ module Entry = struct
     let categories = categories |> List.map Category.to_atom in
     Xml.node ~name:"entry"
       ([
-         Xml.leaf ~name:"id" (Some id)
+         Xml.leaf ~indent:false ~name:"id" (Some id)
        ; text_node ~name:"title" title
        ; Xml.may (text_node ~name:"rights") rights
-       ; Xml.leaf ~name:"updated" (Some (Datetime.to_string_rfc3339 updated))
-       ; Xml.may_leaf ~name:"published" Datetime.to_string_rfc3339 published
+       ; Xml.leaf ~indent:false ~name:"updated"
+           (Some (Datetime.to_string_rfc3339 updated))
+       ; Xml.may_leaf ~indent:false ~name:"published" Datetime.to_string_rfc3339
+           published
        ; Xml.may Source.to_source_xml source
        ; Xml.may (text_node ~name:"summary") summary
        ; Xml.may Content.to_xml content
