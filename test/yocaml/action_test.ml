@@ -956,7 +956,7 @@ let test_action_using_pipes_2 =
                Yocaml.Pipeline.read_file Yocaml.Path.(rel [ "header.txt" ])
                >>> Yocaml.Pipeline.pipe
                      (fun x y -> x ^ ">" ^ y)
-                     (Yocaml.Pipeline.pipe_files ~seperator:"-"
+                     (Yocaml.Pipeline.pipe_files ~separator:"-"
                         Yocaml.Path.
                           [ rel [ "a.txt" ]; rel [ "b.txt" ]; rel [ "c.txt" ] ]))
       in
