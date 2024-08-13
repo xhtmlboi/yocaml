@@ -86,5 +86,4 @@ let%expect_test "slug validation - 3" =
   Slug.validate ~unknown_char:'@' ~separator:'~' (Data.string slug)
   |> Result.fold ~ok:(fun x -> x) ~error:(fun _ -> "<error>")
   |> print_endline;
-  [%expect
-    {| <error> |}]
+  [%expect {| <error> |}]

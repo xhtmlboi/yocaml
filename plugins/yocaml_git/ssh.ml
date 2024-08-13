@@ -40,9 +40,11 @@ module Ctx = struct
 
   let connect { user; path; host; port; mode } =
     let edn = Fmt.str "%s@%a" user pp_inet_addr host in
-    let cmd = match mode with
+    let cmd =
+      match mode with
       | `Wr -> Fmt.str {sh|git-receive-pack '%s'|sh} path
-      | `Rd -> Fmt.str {sh|git-upload-pack '%s'|sh} path in
+      | `Rd -> Fmt.str {sh|git-upload-pack '%s'|sh} path
+    in
     let cmd = Fmt.str "ssh -p %d %s %a" port edn Fmt.(quote string) cmd in
     try
       let ic, oc = Unix.open_process cmd in
