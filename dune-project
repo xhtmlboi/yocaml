@@ -132,4 +132,5 @@
    (git-kv (>= 0.0.5))
    (git-unix (>= 3.16.1))
    (mirage-clock (>= 4.2.0))
-   (yocaml (= :version))))
+   (yocaml (= :version))
+   (yocaml_runtime (= :version))))
