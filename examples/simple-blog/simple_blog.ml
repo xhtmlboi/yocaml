@@ -429,7 +429,7 @@ struct
     let open Eff in
     (* First, we will load the cache. If it does not exist, the function will
        return an empty cache (wrapped in an effect). *)
-    Action.restore_cache Target.cache
+    Action.restore_cache ~on:`Source Target.cache
     (* Now we can execute all the batches of actions we had previously defined.
        The order here doesn't matter; they will be executed sequentially. *)
     >>= process_css_files
@@ -442,7 +442,7 @@ struct
     (* Once we have processed all our files, our cache will be passed from action
        to action, being updated. So, we can save our cache to be used in the next
        run of our generator! *)
-    >>= Action.store_cache Target.cache
+    >>= Action.store_cache ~on:`Source Target.cache
 end
 
 module Make (S : sig
