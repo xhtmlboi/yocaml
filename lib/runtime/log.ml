@@ -28,8 +28,11 @@ let msg level message =
   Logs.msg level (fun print -> print "%s" message)
 
 let setup ?level () =
-  let level = Option.map level_to_logs level in
-  let header = Logs_fmt.pp_header in
-  let () = Fmt_tty.setup_std_outputs () in
-  let () = Logs.set_reporter Logs_fmt.(reporter ~pp_header:header ()) in
-  Logs.set_level level
+  match level with
+  | None -> ()
+  | Some level ->
+      let level = level_to_logs level in
+      let header = Logs_fmt.pp_header in
+      let () = Fmt_tty.setup_std_outputs () in
+      let () = Logs.set_reporter Logs_fmt.(reporter ~pp_header:header ()) in
+      Logs.set_level (Some level)

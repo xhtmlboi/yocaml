@@ -17,8 +17,8 @@
 module Required = Required
 
 let run (module Source : Required.SOURCE) (module Clock : Mirage_clock.PCLOCK)
-    ~context ?author ?email ?message ~remote ?(level = `Debug)
-    ?custom_error_handler program =
+    ~context ?author ?email ?message ~remote ?level ?custom_error_handler
+    program =
   let open Lwt.Syntax in
   let () =
     Mirage_crypto_rng_unix.initialize (module Mirage_crypto_rng.Fortuna)
@@ -31,7 +31,7 @@ let run (module Source : Required.SOURCE) (module Clock : Mirage_clock.PCLOCK)
         let store = store
       end in
       let module Runtime = Runtime.Make (Source) (Config) (Store) in
-      let () = Yocaml_runtime.Log.setup ~level () in
+      let () = Yocaml_runtime.Log.setup ?level () in
       Runtime.Runner.run ?custom_error_handler program)
 
 module From_identity (Source : Yocaml.Required.RUNTIME with type 'a t = 'a) =

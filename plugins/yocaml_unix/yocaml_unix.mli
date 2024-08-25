@@ -25,9 +25,11 @@ val run :
        (Format.formatter -> Yocaml.Data.Validation.custom_error -> unit)
   -> (unit -> unit Yocaml.Eff.t)
   -> unit
-(** [run ?level ?custom_error_handler program] Runs a Yocaml program in the Eio
+(** [run ?custom_error_handler program] Runs a Yocaml program in the Unix
     runtime. The log [level] (default: [Debug]) and a [custom_error_handler] can
-    be passed as arguments to change the reporting level.*)
+    be passed as arguments to change the reporting level and use a default log
+    reporter, and to pretty print user defined errors. If the user want to
+    set-up a custom reporter, the [level flag] should be ignored. *)
 
 val serve :
      ?level:Yocaml_runtime.Log.level
@@ -38,7 +40,8 @@ val serve :
   -> (unit -> unit Yocaml.Eff.t)
   -> unit
 (** [serve ?level ?custom_error_handler ~target ~port program] serve the
-    directory [target] statically and re-run [program] on each refresh. *)
+    directory [target] statically and re-run [program] on each refresh. If the
+    user want to set-up a custom reporter, the [level flag] should be ignored. *)
 
 (** {1 Runtime} *)
 
