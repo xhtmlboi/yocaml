@@ -37,7 +37,7 @@ let () =
       Yocaml_eio.serve ~level:`Info ~target:Blog.target ~port Blog.process_all
   | _ ->
       (* If no arguments (or the wrong values) are passed, the site is built *)
-      Yocaml_eio.run Blog.process_all
+      Yocaml_eio.run ~level:`Debug Blog.process_all
 
 (* And there you have it, our blog is now finished. To be able to build your
    site from scratch, with even more flexibility, we invite you to read through

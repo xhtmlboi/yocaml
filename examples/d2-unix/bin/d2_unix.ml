@@ -28,4 +28,4 @@ let () =
         |> Option.value ~default:8000
       in
       Yocaml_unix.serve ~level:`Info ~target:D2.target ~port D2.process_all
-  | _ -> Yocaml_unix.run D2.process_all
+  | _ -> Yocaml_unix.run ~level:`Debug D2.process_all

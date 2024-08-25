@@ -29,4 +29,4 @@ let () =
       in
 
       Yocaml_eio.serve ~level:`Info ~target:D2.target ~port D2.process_all
-  | _ -> Yocaml_eio.run D2.process_all
+  | _ -> Yocaml_eio.run ~level:`Debug D2.process_all

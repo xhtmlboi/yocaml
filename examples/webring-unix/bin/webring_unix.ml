@@ -29,4 +29,4 @@ let () =
       in
       Yocaml_unix.serve ~level:`Info ~target:Webring.target ~port
         Webring.process_all
-  | _ -> Yocaml_unix.run Webring.process_all
+  | _ -> Yocaml_unix.run ~level:`Debug Webring.process_all

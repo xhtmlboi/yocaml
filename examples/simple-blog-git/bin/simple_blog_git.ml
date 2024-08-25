@@ -30,6 +30,6 @@ let () =
   Yocaml_git.run
     (module Source)
     (module Pclock)
-    ~context:`SSH ~author ~email ~message ~remote Blog.process_all
+    ~level:`Debug ~context:`SSH ~author ~email ~message ~remote Blog.process_all
   |> Lwt_main.run
   |> Result.iter_error (fun (`Msg err) -> invalid_arg err)
