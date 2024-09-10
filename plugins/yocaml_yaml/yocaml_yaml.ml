@@ -45,32 +45,4 @@ module Data_provider = struct
            Yocaml.Required.Parsing_error { given; message })
 end
 
-module Eff = struct
-  let read_file_with_metadata (type a)
-      (module R : Yocaml.Required.DATA_READABLE with type t = a)
-      ?extraction_strategy ~on path =
-    Yocaml.Eff.read_file_with_metadata
-      (module Data_provider)
-      (module R)
-      ?extraction_strategy ~on path
-
-  let read_file_as_metadata (type a)
-      (module R : Yocaml.Required.DATA_READABLE with type t = a) ~on path =
-    Yocaml.Eff.read_file_as_metadata (module Data_provider) (module R) ~on path
-end
-
-module Pipeline = struct
-  let read_file_with_metadata (type a)
-      (module R : Yocaml.Required.DATA_READABLE with type t = a)
-      ?extraction_strategy path =
-    Yocaml.Pipeline.read_file_with_metadata
-      (module Data_provider)
-      (module R)
-      ?extraction_strategy path
-
-  let read_file_as_metadata (type a)
-      (module R : Yocaml.Required.DATA_READABLE with type t = a) path =
-    Yocaml.Pipeline.read_file_as_metadata (module Data_provider) (module R) path
-end
-
-include Data_provider
+include Yocaml.Make.Data_reader (Data_provider)
