@@ -77,6 +77,15 @@
    (yaml (>= 3.2.0))))
 
 (package
+ (name yocaml_otoml)
+ (synopsis "Yocaml plugin for dealing with TOML as metadata provider")
+ (depends
+  (ocaml (>= 5.1.1))
+  (dune (>= 3.0.0))
+  (otoml (>= 1.0.5))))
+ 
+
+(package
   (name yocaml_omd)
   (synopsis "Yocaml plugin for using Markdown (via OMD package) as a Markup language")
   (depends

@@ -1,0 +1,4 @@
+(library
+ (name yocaml_otoml)
+ (public_name yocaml_otoml)
+ (libraries otoml yocaml))
