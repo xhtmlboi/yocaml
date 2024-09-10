@@ -14,27 +14,18 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-module Data = Data
-module Nel = Nel
-module Path = Path
-module Cache = Cache
-module Eff = Eff
-module Deps = Deps
-module Task = Task
-module Pipeline = Pipeline
-module Action = Action
-module Required = Required
-module Metadata = Metadata
-module Archetype = Archetype
-module Diagnostic = Diagnostic
-module Cmd = Cmd
-module Slug = Slug
-module Reader = Reader
-module Make = Make
+(** A set of functors designed to automate the construction of boring and
+    repetitive modules. *)
 
-module Sexp = struct
-  include Sexp
-  module Provider = Sexp_provider
-end
+(** A Runtime is an execution context (ie, Unix or Git). They describe the entry
+    point of a YOCaml program and abstract the file system. *)
+module Runtime (Runtime : Required.RUNTIME) :
+  Required.RUNNER with type 'a t := 'a Eff.t and module Runtime := Runtime
 
-module Runtime = Runtime
+(** Builds metadata reader functions based on a data provider. *)
+module Data_reader (DP : Required.DATA_PROVIDER) :
+  Required.DATA_READER
+    with type t = DP.t
+     and type 'a eff := 'a Eff.t
+     and type ('a, 'b) arr := ('a, 'b) Task.t
+     and type extraction_strategy := Metadata.extraction_strategy

@@ -63,6 +63,14 @@ module Action = Action
 module Eff = Eff
 module Runtime = Runtime
 
+(** {1 Functors}
+
+    Modules designed to automate the construction of certain recurring tasks.
+    For example, the automation of Pipelining functions and the production of
+    Effects on data reading or Runtimes. *)
+
+module Make = Make
+
 (** {1 Serialization}
 
     As the new version of YOCaml uses a cache based on the previous generation,

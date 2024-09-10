@@ -89,6 +89,78 @@ module type DATA_TEMPLATE = sig
       metadata into a template. *)
 end
 
+module type DATA_READER = sig
+  (** Describes a provider for reading Metadata from a [DATA_PROVIDER]. *)
+
+  type t
+  (** The type that describes the data provider *)
+
+  type 'a eff
+  (** Effect type. Usually {!type:Yocaml.Eff.t}. *)
+
+  type ('a, 'b) arr
+  (** Arrow type. Usually {!type:Yocaml.Task.t}. *)
+
+  type extraction_strategy
+  (** The extraction strategy. Usually
+      {!type:Yocaml.Metadata.extraction_strategy}*)
+
+  (** {1 Reading file with metadata}
+
+      Just as the [Yocaml] package describes a {i low-level} interface for
+      propagating effects, the {!module:Yocaml.Eff} module, and an interface for
+      composing arrows, via the {!module:Yocaml.Pipeline} module, the plugin
+      describes two sub-modules to serve the same needs. *)
+
+  module Eff : sig
+    (** Describes the {i low-level} interface for reading a file and parsing its
+        metadata described by the type {!type:t}. *)
+
+    val read_file_with_metadata :
+         (module DATA_READABLE with type t = 'a)
+      -> ?extraction_strategy:extraction_strategy
+      -> on:[ `Source | `Target ]
+      -> Path.t
+      -> ('a * string) eff
+    (** The analogous function of {!val:Yocaml.Eff.read_file_with_metadata}, not
+        requiring a [DATA_PROVIDER]. *)
+
+    val read_file_as_metadata :
+         (module DATA_READABLE with type t = 'a)
+      -> on:[ `Source | `Target ]
+      -> Path.t
+      -> 'a eff
+    (** The analogous function of {!val:Yocaml.Eff.read_file_as_metadata}, not
+        requiring a [DATA_PROVIDER].*)
+  end
+
+  module Pipeline : sig
+    (** Describes the {i arrowized} interface for reading a file and parsing its
+        metadata. *)
+
+    val read_file_with_metadata :
+         (module DATA_READABLE with type t = 'a)
+      -> ?extraction_strategy:extraction_strategy
+      -> Path.t
+      -> (unit, 'a * string) arr
+    (** The analogous function of
+        {!val:Yocaml.Pipeline.read_file_with_metadata}, not requiring a
+        [DATA_PROVIDER]. *)
+
+    val read_file_as_metadata :
+      (module DATA_READABLE with type t = 'a) -> Path.t -> (unit, 'a) arr
+    (** The analogous function of {!val:Yocaml.Pipeline.read_file_as_metadata},
+        not requiring a [DATA_PROVIDER]. *)
+  end
+
+  (** {1 Data Provider}
+
+      As it is possible to describe metadata as a [Data_provider]. *)
+
+  include DATA_PROVIDER with type t := t
+  (** @inline *)
+end
+
 (** {1 Runtime}
 
     A runtime is a context for executing a YOCaml program (for example, Unix).
