@@ -22,7 +22,19 @@
 val to_html : (string, string) Yocaml.Task.t
 (** [to_html] is an arrow that uses [OMD] to convert [Markdown] to [HTML]. *)
 
+val to_html_with_toc : (string, string option * string) Yocaml.Task.t
+(** [to_html_with_toc] is an arrow that uses [OMD] to convert [Markdown] to
+    [HTML], it returns a pair where the first argument is an HTML representation
+    of the table of contents, and the second one is the document. *)
+
 val content_to_html : unit -> ('a * string, 'a * string) Yocaml.Task.t
 (** [content_to_html] is an arrow that uses [OMD] to convert the content of a
     file from [Markdown] to [HTML]. (Since we usually read a file with metadata
     as a pair of metadata and string). *)
+
+val content_to_html_with_toc :
+  ('a -> string option -> 'b) -> ('a * string, 'b * string) Yocaml.Task.t
+(** [content_to_html_with_toc f] is an arrow that uses [OMD] to convert the
+    content of a file from [Markdown] to [HTML]. (Since we usually read a file
+    with metadata as a pair of metadata and string). The arrow takes also a [f]
+    that can merge the metadata with the computed table of contents. *)
