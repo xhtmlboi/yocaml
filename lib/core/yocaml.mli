@@ -95,3 +95,4 @@ module Data = Data
 
 module Diagnostic = Diagnostic
 module Reader = Reader
+module Markup = Markup

@@ -31,6 +31,7 @@ module Cmd = Cmd
 module Slug = Slug
 module Reader = Reader
 module Make = Make
+module Markup = Markup
 
 module Sexp = struct
   include Sexp
