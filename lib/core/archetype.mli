@@ -203,6 +203,9 @@ module Page : sig
       - [page_charset] an optional page charset
       - [description] an optional page description
       - [tags] an optional list of tags
+      - [display_toc] an optional flag to displaying the table of contents or
+        not
+      - [toc] an optional representation of the table of contents
 
       The separation between fields prefixed with [page_] and those without
       prefix allows you to distinguish between fields that describe
@@ -216,6 +219,7 @@ module Page : sig
   val charset : t -> string option
   val description : t -> string option
   val tags : t -> string list
+  val with_toc : t -> string option -> t
 
   (** {1 Deal with Page as Metadata}
 
@@ -253,6 +257,7 @@ module Article : sig
   val title : t -> string
   val synopsis : t -> string option
   val date : t -> Datetime.t
+  val with_toc : t -> string option -> t
 
   (** {1 Deal with Article as Metadata}
 
@@ -293,6 +298,8 @@ module Articles : sig
       consists of reading the page's metadata. Constructing the list of articles
       to be displayed in the index, converting the page into an article and then
       applying the corresponding template cascade. *)
+
+  val with_toc : t -> string option -> t
 
   val sort_by_date :
     ?increasing:bool -> (Path.t * Article.t) list -> (Path.t * Article.t) list

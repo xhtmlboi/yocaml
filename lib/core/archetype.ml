@@ -281,19 +281,27 @@ end
 module Page = struct
   let entity_name = "Page"
 
-  class type t = object
+  class type t = object ('a)
     method page_title : string option
     method page_charset : string option
     method description : string option
     method tags : string list
+    method display_toc : bool
+    method toc : string option
+    method with_toc : string option -> 'a
   end
 
-  class page ?title ?description ?charset ?(tags = []) () =
+  class page ?title ?description ?charset ?(tags = []) ?(display_toc = false)
+    ?toc () =
     object (_ : #t)
+      val toc_value = toc
       method page_title = title
       method page_charset = charset
       method description = description
       method tags = tags
+      method display_toc = display_toc
+      method toc = toc_value
+      method with_toc toc_value = {<toc_value>}
     end
 
   let title p = p#page_title
@@ -307,8 +315,11 @@ module Page = struct
     let+ title = optional fields "page_title" string
     and+ description = optional fields "description" string
     and+ charset = optional fields "page_charset" string
-    and+ tags = optional_or fields ~default:[] "tags" (list_of string) in
-    new page ?title ?description ?charset ~tags ()
+    and+ tags = optional_or fields ~default:[] "tags" (list_of string)
+    and+ display_toc = optional fields "display_toc" bool in
+    new page ?title ?description ?charset ~tags ?display_toc ()
+
+  let with_toc m toc = m#with_toc toc
 
   let validate =
     let open Data.Validation in
@@ -336,6 +347,8 @@ module Page = struct
     @ to_meta "description" p#description
     @ to_meta_kwd p#tags
 
+  let has_toc obj = obj#display_toc && Option.is_some obj#toc
+
   let normalize_parameters obj =
     Data.
       [
@@ -347,6 +360,8 @@ module Page = struct
       ; ("has_page_title", bool @@ Option.is_some obj#page_title)
       ; ("has_description", bool @@ Option.is_some obj#description)
       ; ("has_page_charset", bool @@ Option.is_some obj#page_charset)
+      ; ("has_toc", bool @@ has_toc obj)
+      ; ("toc", option string obj#toc)
       ]
 
   let normalize_meta obj = Data.[ ("meta", list @@ meta_list obj) ]
@@ -370,7 +385,7 @@ module Article = struct
       inherit
         Page.page
           ?title:page_title ?description ?charset:page#page_charset
-            ~tags:page#tags ()
+            ~tags:page#tags ~display_toc:page#display_toc ?toc:page#toc ()
 
       method title = title
       method synopsis = synopsis
@@ -381,6 +396,7 @@ module Article = struct
   let title a = a#title
   let synopsis a = a#synopsis
   let date a = a#date
+  let with_toc a = a#with_toc
 
   let neutral =
     Data.Validation.fail_with ~given:"null" "Cannot be null"
@@ -418,11 +434,13 @@ module Articles = struct
       inherit
         Page.page
           ?title:page#page_title ?description:page#description
-            ?charset:page#page_charset ~tags:page#tags ()
+            ?charset:page#page_charset ~tags:page#tags ?toc:page#toc
+            ~display_toc:page#display_toc ()
 
       method articles = articles
     end
 
+  let with_toc a = a#with_toc
   let from_page = Task.lift (fun (page, articles) -> new articles page articles)
 
   let sort_by_date ?(increasing = false) articles =
