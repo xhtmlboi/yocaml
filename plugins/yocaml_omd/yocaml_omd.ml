@@ -14,6 +14,8 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
+(* Mandatory because the API of OMD is particularly closed om some
+   things but totally open on the AST...*)
 let to_text elt =
   let rec aux acc = function
     | Omd.Text (_, value) | Omd.Code (_, value) -> acc ^ value
@@ -27,6 +29,8 @@ let to_text elt =
 
 let tag l x = Format.asprintf "<%s>%s</%s>" l x l
 
+(* Mandatory because the API of OMD is particularly closed om some
+   things but totally open on the AST...*)
 let inline_to_html elt =
   let rec aux acc = function
     | Omd.Text (_, value) -> acc ^ value
@@ -41,6 +45,8 @@ let inline_to_html elt =
   in
   aux "" elt
 
+(* Mandatory because the API of OMD is particularly closed om some
+   things but totally open on the AST...*)
 let rec without_links = function
   | Omd.Concat (attr, inlines) ->
       Omd.Concat (attr, List.map without_links inlines)

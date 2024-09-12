@@ -11,6 +11,11 @@
     {%- if has_synopsis -%}
     <div class="article-synopsis">{{ synopsis }}</div>
     {%- endif -%}
+    {%- if has_toc -%}
+    <div class="toc">
+      {%- autoescape false -%} {{ toc }} {%- endautoescape -%}
+    </div>
+    {%- endif -%}
     <ul class="mono tags">
       {%- for tag in tags -%}
       <li>{{ tag }}</li>
@@ -18,12 +23,6 @@
     </ul>
   </div>
 </div>
-
-{%- if has_toc -%}
-<div class="toc">
-  {%- autoescape false -%} {{ toc }} {%- endautoescape -%}
-</div>
-{%- endif -%}
 
 <article>
   {%- autoescape false -%} {{ yocaml_body }} {%- endautoescape -%}

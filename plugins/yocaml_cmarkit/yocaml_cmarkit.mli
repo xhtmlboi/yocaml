@@ -40,6 +40,14 @@ val to_html :
     provided comes from the user, this functionnality is disabled by default. If
     you want to activate this feature, you should set it to [true]. *)
 
+val to_html_with_toc :
+     ?strict:bool
+  -> ?safe:bool
+  -> unit
+  -> (string, string option * string) Yocaml.Task.t
+(** Same as [to_html] but it returns a pair where the first argument is an HTML
+    representation of the table of contents, and the second one is the document. *)
+
 val content_to_html :
   ?strict:bool -> ?safe:bool -> unit -> ('a * string, 'a * string) Yocaml.Task.t
 (** Since it is pretty common to deal with document and Metadata, which are
@@ -48,3 +56,13 @@ val content_to_html :
     Mark conversion on the second element (the content).
 
     [content_to_html ()] is equivalent of [Yocaml.Task.second to_html]. *)
+
+val content_to_html_with_toc :
+     ?strict:bool
+  -> ?safe:bool
+  -> ('a -> string option -> 'b)
+  -> ('a * string, 'b * string) Yocaml.Task.t
+(** Same as [content_to_html] but it returns a pair where the first argument is
+    an HTML representation of the table of contents, and the second one is the
+    document. The arrow takes also a [f] that can merge the metadata with the
+    computed table of contents. *)
