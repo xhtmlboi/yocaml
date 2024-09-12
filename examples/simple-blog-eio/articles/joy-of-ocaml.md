@@ -5,6 +5,7 @@ synopsis:
   Another bullshit article about OCaml. Maybe the article isn't wrong, 
   I don't know, I haven't read it either. Arf.
 tags: [ocaml, chatgpt, functional, programming]
+display_toc: true
 ---
 
 In the vast landscape of programming languages, OCaml stands out as a powerful yet elegant choice for developers seeking expressive and efficient solutions. In this article, we'll embark on a journey to uncover the essence of OCaml – its origins, key features, and why it continues to captivate programmers worldwide.

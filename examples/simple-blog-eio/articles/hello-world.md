@@ -6,6 +6,7 @@ synopsis:
   fusion of OCaml and Yaml. I'm not sure what the article is about, 
   I haven't read it.
 tags: [bullshit, chatgpt, article, example]
+display_toc: true
 ---
 
 In the realm of programming languages, innovation often arises from the fusion of existing concepts. Enter YOCaml – a modern language that combines the power of OCaml with the simplicity of YAML. In this article, we'll delve into what YOCaml is, its unique features, and why it's gaining traction among developers.

@@ -250,7 +250,7 @@ struct
             (module Archetype.Article)
             file
       (* We convert the Markdown content to HTML. *)
-      >>> Yocaml_omd.content_to_html ()
+      >>> Yocaml_omd.content_to_html_with_toc Archetype.Article.with_toc
       (* We apply the cascade of templates starting with that of an article.*)
       >>> Yocaml_jingoo.Pipeline.as_template
             (module Archetype.Article)

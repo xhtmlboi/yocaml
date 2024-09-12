@@ -19,6 +19,12 @@
   </div>
 </div>
 
+{%- if has_toc -%}
+<div class="toc">
+  {%- autoescape false -%} {{ toc }} {%- endautoescape -%}
+</div>
+{%- endif -%}
+
 <article>
   {%- autoescape false -%} {{ yocaml_body }} {%- endautoescape -%}
 </article>
