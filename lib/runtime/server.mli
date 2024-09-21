@@ -38,15 +38,15 @@ module Request_path : sig
   val content_type : string -> string
   (** Give the content-type of a filename. *)
 
-  val from_request :
+  val from_path :
        is_file:('a -> bool)
     -> is_directory:('a -> bool)
     -> concat:('a -> string -> 'a)
     -> native:('a -> string)
     -> 'a
-    -> Http.Request.t
+    -> path:string
     -> 'a t
-  (** [from_request] generically lift an HTTP request to a requested path. *)
+  (** [from_path] generically lift an HTTP path to a requested path. *)
 end
 
 module Pages : sig

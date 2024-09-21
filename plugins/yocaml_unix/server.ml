@@ -19,9 +19,9 @@ let is_directory k = is_file k && Sys.is_directory k
 let concat = Filename.concat
 let native = Fun.id
 
-let get_requested_uri =
-  Yocaml_runtime.Server.Request_path.from_request ~is_file ~is_directory ~concat
-    ~native
+let get_requested_uri env request =
+  Yocaml_runtime.Server.Request_path.from_path ~is_file ~is_directory ~concat
+    ~native env ~path:request.Cohttp.Request.resource
 
 let read_file path =
   Lwt_io.with_file ~mode:Lwt_io.Input path (fun channel -> Lwt_io.read channel)
@@ -31,13 +31,13 @@ let file ?(status = `OK) path =
   let content_type = Yocaml_runtime.Server.Request_path.content_type path in
   let* body = read_file path in
   Cohttp_lwt_unix.Server.respond_string
-    ~headers:(Http.Header.of_list [ ("content-type", content_type) ])
+    ~headers:(Cohttp.Header.of_list [ ("content-type", content_type) ])
     ~status ~body ()
 
 let render_html ?(status = `Not_found) body =
   Cohttp_lwt_unix.Server.respond_string
     ~headers:
-      (Http.Header.of_list [ ("content-type", "text/html; charset=utf-8") ])
+      (Cohttp.Header.of_list [ ("content-type", "text/html; charset=utf-8") ])
     ~status ~body ()
 
 let error404 htdoc =

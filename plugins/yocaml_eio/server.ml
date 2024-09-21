@@ -19,9 +19,9 @@ let is_directory = Eio.Path.is_directory
 let concat r x = Eio.Path.(r / x)
 let native = Eio.Path.native_exn
 
-let get_requested_uri =
-  Yocaml_runtime.Server.Request_path.from_request ~is_file ~is_directory ~concat
-    ~native
+let get_requested_uri env request =
+  Yocaml_runtime.Server.Request_path.from_path ~is_file ~is_directory ~concat
+    ~native env ~path:request.Http.Request.resource
 
 let file ?(status = `OK) path str =
   let content_type = Yocaml_runtime.Server.Request_path.content_type str in

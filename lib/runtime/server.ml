@@ -25,9 +25,9 @@ end
 module Request_path = struct
   type 'a t = File of 'a * string | Dir of 'a * string list | Error404
 
-  let from_request ~is_file ~is_directory ~concat ~native htdoc request =
+  let from_path ~is_file ~is_directory ~concat ~native htdoc ~path =
     let lpath =
-      Http.Request.resource request
+      path
       |> String.split_on_char '/'
       |> List.filter (fun s -> not String.(equal s empty))
     in
