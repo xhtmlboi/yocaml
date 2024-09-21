@@ -40,9 +40,16 @@ module Request_path = struct
       else if is_file path then File (path, pstr)
       else Error404
 
-  let content_type file =
-    if String.equal (Filename.extension file) ".html" then "text/html"
-    else Magic_mime.lookup ~default:"text/plain" file
+  let content_type file = match Filename.extension file with
+    | ".html" -> "text/html"
+    | ".jpg" | ".jpeg" -> "image/jpeg"
+    | ".png" -> "image/png"
+    | ".gif" -> "image/gif"
+    | ".svg" -> "image/svg+xml"
+    | ".css" -> "text/css"
+    | ".js" -> "text/javascript"
+    | ".json" -> "application/json"
+    | _ -> "text/plain"
 end
 
 module Pages = struct
