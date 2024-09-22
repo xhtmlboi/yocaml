@@ -19,35 +19,54 @@ let is_directory k = is_file k && Sys.is_directory k
 let concat = Filename.concat
 let native = Fun.id
 
-let get_requested_uri env request =
+let get_requested_uri env reqd =
+  let request = H1.Reqd.request reqd in
+  let path = request.H1.Request.target in
+  let path = if String.length path > 0 then String.sub path 1 (String.length path - 1) else path in
   Yocaml_runtime.Server.Request_path.from_path ~is_file ~is_directory ~concat
-    ~native env ~path:request.Cohttp.Request.resource
+    ~native env ~path
 
-let read_file path =
-  Lwt_io.with_file ~mode:Lwt_io.Input path (fun channel -> Lwt_io.read channel)
-
-let file ?(status = `OK) path =
-  let open Lwt.Syntax in
+let file ?(status = `OK) reqd path =
   let content_type = Yocaml_runtime.Server.Request_path.content_type path in
-  let* body = read_file path in
-  Cohttp_lwt_unix.Server.respond_string
-    ~headers:(Cohttp.Header.of_list [ ("content-type", content_type) ])
-    ~status ~body ()
+  let ic = open_in path in
+  let len = in_channel_length ic in
+  let tmp = Bytes.create 0x7ff in
+  let headers =
+    H1.Headers.of_list
+      [ ("content-type", content_type); ("content-length", string_of_int len) ]
+  in
+  let resp = H1.Response.create ~headers status in
+  let body = H1.Reqd.respond_with_streaming reqd resp in
+  let rec go () =
+    let len = input ic tmp 0 (Bytes.length tmp) in
+    if len = 0 then (
+      close_in ic;
+      H1.Body.Writer.close body)
+    else (
+      H1.Body.Writer.write_string body (Bytes.sub_string tmp 0 len);
+      H1.Body.Writer.flush body go)
+  in
+  go ()
 
-let render_html ?(status = `Not_found) body =
-  Cohttp_lwt_unix.Server.respond_string
-    ~headers:
-      (Cohttp.Header.of_list [ ("content-type", "text/html; charset=utf-8") ])
-    ~status ~body ()
+let render_html ?(status = `Not_found) reqd body =
+  let headers =
+    H1.Headers.of_list
+      [
+        ("content-type", "text/html; charset=utf-8")
+      ; ("content-length", string_of_int (String.length body))
+      ]
+  in
+  let resp = H1.Response.create ~headers status in
+  H1.Reqd.respond_with_string reqd resp body
 
-let error404 htdoc =
+let error404 reqd htdoc =
   let path = concat htdoc "404.html" in
-  if is_file path then file ~status:`Not_found path
-  else render_html @@ Yocaml_runtime.Server.Pages.error404 htdoc
+  if is_file path then file ~status:`Not_found reqd path
+  else render_html reqd (Yocaml_runtime.Server.Pages.error404 htdoc)
 
-let dir path lpath =
+let dir reqd path lpath =
   let index = concat path "index.html" in
-  if is_file index then file index
+  if is_file index then file reqd index
   else
     let children =
       path
@@ -56,25 +75,21 @@ let dir path lpath =
       |> List.map
            (Yocaml_runtime.Server.Kind.from_path ~is_directory ~concat path)
     in
-    render_html @@ Yocaml_runtime.Server.Pages.directory lpath children
+    render_html reqd (Yocaml_runtime.Server.Pages.directory lpath children)
 
-let handler htdoc refresh _socker request _body =
+let[@warning "-8"] handler htdoc refresh _socket
+    (`V1 reqd : Httpcats.Server.reqd) =
   let () = refresh () in
-  match get_requested_uri htdoc request with
-  | Error404 -> error404 htdoc
-  | File (path, _) -> file path
-  | Dir (path, lpath) -> dir path lpath
+  match get_requested_uri htdoc reqd with
+  | Error404 -> error404 reqd htdoc
+  | File (path, _) -> file reqd path
+  | Dir (path, lpath) -> dir reqd path lpath
 
 let run ?custom_error_handler directory port program =
   let refresh () = Runner.run ?custom_error_handler program in
   let htdoc = Yocaml.Path.to_string directory in
-  let callback = handler htdoc refresh in
-  let pp_exn ppf exn = Format.fprintf ppf "%s" (Printexc.to_string exn) in
-  let listener =
-    Cohttp_lwt_unix.Server.create
-      ~on_exn:(Yocaml_runtime.Server.exn_handler pp_exn)
-      ~mode:(`TCP (`Port port))
-      (Cohttp_lwt_unix.Server.make ~callback ())
-  in
-  let () = Yocaml_runtime.Server.prompt port in
-  Lwt_main.run listener
+  let handler = handler htdoc refresh in
+  let sockaddr = Unix.(ADDR_INET (inet_addr_loopback, port)) in
+  Miou_unix.run ~domains:0 @@ fun () ->
+  Yocaml_runtime.Server.prompt port;
+  Httpcats.Server.clear ~handler sockaddr

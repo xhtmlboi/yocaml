@@ -1,4 +1,4 @@
 (library
  (name yocaml_unix)
  (public_name yocaml_unix)
- (libraries unix yocaml yocaml_runtime cohttp-lwt-unix conduit-lwt))
+ (libraries httpcats yocaml yocaml_runtime))

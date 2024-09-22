@@ -62,8 +62,7 @@
   (depends
    (ocaml (>= 5.1.1))
    (dune (>= 3.0.0))
-   (cohttp-lwt-unix (>= 5.3.11))
-   (conduit-lwt-unix (>= 6.2.3))
+   (httpcats (>= 0.0.1))
    (yocaml (= :version))
    (yocaml_runtime (= :version))))
 
