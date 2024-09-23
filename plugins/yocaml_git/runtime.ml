@@ -103,12 +103,7 @@ struct
     let is_directory ~on path =
       match on with
       | `Source -> Source.lift @@ Source.is_directory ~on path
-      | `Target ->
-          let open Lwt.Syntax in
-          let+ file_exists = file_exists ~on path in
-          (* Since every path should be valid, we just ask if there is no files at
-             the location.*)
-          not file_exists
+      | `Target -> Lwt.return true
 
     let exec ?is_success prog args =
       lift_result @@ Source.exec ?is_success prog args
