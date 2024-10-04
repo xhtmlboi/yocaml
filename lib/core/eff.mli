@@ -16,7 +16,7 @@
 
 (** An overlay on expression and effect performance.
 
-    Currently ([OCaml 5.1.1]), the definition and interpretation of effects is a
+    Currently ([OCaml 5.2.x]), the definition and interpretation of effects is a
     feature dedicated to implementing concurrent primitives for OCaml, for
     example: {{:https://v2.ocaml.org/api/Domain.html} the Domain API}. However,
     the effects type system has not yet been implemented, so the use of effects

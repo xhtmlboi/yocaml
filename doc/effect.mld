@@ -1,1 +1,37 @@
 {0 Effect abstraction}
+
+YOCaml is based on the {{:https://ocaml.org/manual/5.2/effects.html}
+user-defined-effects of OCaml 5}, which makes it possible to enrich
+the set of effects in certain contexts (for example, tests) but also
+to abstract the execution context, making it possible to execute a
+YOCaml program via EIO (using {b Yocaml_eio}) or even on a simple Unix
+source, using {b Yocaml_unix}.
+
+However, for the moment, the effects of OCaml are not {i yet} tracked
+by the type system. For this, YOCaml uses a {{!module:Yocaml.Eff}
+cheap trick} described in the next section.
+
+{1 Eff, an IO Monad}
+
+The effects that can be propagated by YOCaml are described in the
+{!module:Yocaml.Eff} module, which describes a function that produces
+effects of type ['a Eff.t]. This means that any expression of type ['a
+Eff.t] ({!type:Yocaml.Eff.t}) must be interpreted (using the
+{!val:Yocaml.Eff.run} function). The use of the direct style is lost,
+but thanks to the {{:https://ocaml.org/manual/5.2/bindingops.html}
+binding operators}, the {i trade-off} seems slight. So, unfortunately,
+we don't capture the effects that can be propagated, we simply mark a
+function as being able to express effects, or not.
+
+The Eff module is described as a {i kind of IO monad}, whose type could be
+summarised as [type ‘a t = unit -> ’a], which is sufficient to
+delegate the execution of a coloured function to an OCaml effects
+handler (since the type is abstract).
+
+In YOCaml, many functions return values of type ['a Yocaml.Eff.t].
+These are generally the different building blocks that
+we will use {!val:Yocaml.Eff.bind} (and consort) to construct a
+complete YOCaml program.
+
+Please refer to the {{!module:Yocaml.Eff} module documentation} for
+more information.
