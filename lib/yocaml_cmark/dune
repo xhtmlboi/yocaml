@@ -1,7 +1,0 @@
-(library
- (name yocaml_cmark)
- (public_name yocaml_cmark)
- (libraries yocaml cmarkit preface))
-
-(documentation
- (package yocaml_cmark))
