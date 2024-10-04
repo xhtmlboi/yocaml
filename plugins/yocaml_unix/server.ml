@@ -22,7 +22,10 @@ let native = Fun.id
 let get_requested_uri env reqd =
   let request = H1.Reqd.request reqd in
   let path = request.H1.Request.target in
-  let path = if String.length path > 0 then String.sub path 1 (String.length path - 1) else path in
+  let path =
+    if String.length path > 0 then String.sub path 1 (String.length path - 1)
+    else path
+  in
   Yocaml_runtime.Server.Request_path.from_path ~is_file ~is_directory ~concat
     ~native env ~path
 
