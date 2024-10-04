@@ -9,7 +9,7 @@
 (source (github xhtmlboi/yocaml))
 (license GPL-3.0-or-later)
 (authors "The XHTMLBoy <xhtmlboi@gmail.com>")
-(maintainers "The Funkyworkers")
+(maintainers "The XHTMLBoy <xhtmlboi@gmail.com>")
 
 (package
   (name yocaml)

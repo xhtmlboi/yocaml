@@ -3,7 +3,7 @@ opam-version: "2.0"
 version: "dev"
 synopsis:
   "Yocaml plugin for using Markdown (via Cmarkit package) as a Markup language"
-maintainer: ["The Funkyworkers"]
+maintainer: ["The XHTMLBoy <xhtmlboi@gmail.com>"]
 authors: ["The XHTMLBoy <xhtmlboi@gmail.com>"]
 license: "GPL-3.0-or-later"
 homepage: "https://github.com/xhtmlboi/yocaml"
