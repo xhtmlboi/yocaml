@@ -21,7 +21,7 @@
    (odoc :with-doc)
    (sherlodoc :with-doc)
    (fmt :with-test)
-   (alcotest :with-test)
+   (alcotest (and :with-test (>= 1.3.0)))
    (qcheck :with-test)
    (qcheck-alcotest :with-test)
    ppx_expect
@@ -147,7 +147,7 @@
    (dune (>= 3.0.0))
    (yocaml (= :version))
    (fmt :with-test)
-   (alcotest :with-test)
+   (alcotest (and :with-test (>= 1.3.0)))
    (qcheck :with-test)
    (qcheck-alcotest :with-test)
    ppx_expect
