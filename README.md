@@ -1,6 +1,7 @@
 # YOCaml
 
-> YOCaml is a static site generator, written in OCaml.
+> YOCaml is framework for building static site generator, written in
+> OCaml.
 
 ## Dev setup
 
