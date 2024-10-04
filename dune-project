@@ -37,6 +37,7 @@
   (depends
    (ocaml (>= 5.1.1))
    (dune (>= 3.0.0))
+   (ppx_expect :with-test)
    (mdx (and :with-test (= 2.4.1)))
    (yocaml (= :version))
    (cohttp (>= 5.3.11))
@@ -51,6 +52,7 @@
    (depends
     (ocaml (>= 5.1.1))
     (dune (>= 3.0.0))
+    (ppx_expect :with-test)
     (mdx (and :with-test (= 2.4.1)))
     (yocaml (= :version))
     (yocaml_runtime (= :version))
@@ -64,6 +66,7 @@
   (depends
    (ocaml (>= 5.1.1))
    (dune (>= 3.0.0))
+   (ppx_expect :with-test)
    (mdx (and :with-test (= 2.4.1)))
    (httpcats (>= 0.0.1))
    (yocaml (= :version))
@@ -75,6 +78,7 @@
   (depends
    (ocaml (>= 5.1.1))
    (dune (>= 3.0.0))
+   (ppx_expect :with-test)
    (mdx (and :with-test (= 2.4.1)))
    (yocaml (= :version))
    (yaml (>= 3.2.0))))
@@ -85,15 +89,10 @@
  (depends
   (ocaml (>= 5.1.1))
   (dune (>= 3.0.0))
+  (ppx_expect :with-test)
   (mdx (and :with-test (= 2.4.1)))
   (yocaml (= :version)) 
-  (otoml (>= 1.0.5))
-  (fmt :with-test)
-  (alcotest :with-test)
-  (qcheck :with-test)
-  (qcheck-alcotest :with-test)
-  (ppx_expect :with-test)
-  (mdx (and :with-test (= 2.4.1)))))
+  (otoml (>= 1.0.5))))
  
 
 (package
@@ -102,6 +101,7 @@
   (depends
    (ocaml (>= 5.1.1))
    (dune (>= 3.0.0))
+   (ppx_expect :with-test)
    (mdx (and :with-test (= 2.4.1)))
    (yocaml (= :version))
    (omd (>= 2.0.0~alpha4))))
@@ -112,6 +112,7 @@
   (depends
    (ocaml (>= 5.1.1))
    (dune (>= 3.0.0))
+   (ppx_expect :with-test)
    (mdx (and :with-test (= 2.4.1)))
    (yocaml (= :version))
     cmarkit))
@@ -122,6 +123,7 @@
   (depends
    (ocaml (>= 5.1.1))
    (dune (>= 3.0.0))
+   (ppx_expect :with-test)
    (mdx (and :with-test (= 2.4.1)))
    (yocaml (= :version))
    (jingoo (>= 1.5.0))))
@@ -132,6 +134,7 @@
   (depends
    (ocaml (>= 5.1.1))
    (dune (>= 3.0.0))
+   (ppx_expect :with-test)
    (mdx (and :with-test (= 2.4.1)))
    (yocaml (= :version))
    (mustache (= 3.3.0))))
@@ -156,6 +159,7 @@
   (depends
    (ocaml (>= 5.1.1))
    (dune (>= 3.0.0))
+   (ppx_expect :with-test)
    (mdx (and :with-test (= 2.4.1)))
    (lwt (>= 5.7.0))
    (mimic (>= 0.0.9))
