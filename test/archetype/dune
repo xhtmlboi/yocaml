@@ -1,3 +1,4 @@
 (test
  (name yocaml_archetype_test)
+ (package yocaml)
  (libraries alcotest test_lib qcheck-alcotest yocaml))

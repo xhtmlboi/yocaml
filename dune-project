@@ -37,18 +37,13 @@
   (depends
    (ocaml (>= 5.1.1))
    (dune (>= 3.0.0))
+   (mdx (and :with-test (= 2.4.1)))
    (yocaml (= :version))
    (cohttp (>= 5.3.11))
    (magic-mime (>= 1.3.1))
    (logs (>= 0.7.0))
    (fmt (>= 0.9.0))
-   (digestif (>= 1.2.0))
-   (fmt :with-test)
-   (alcotest :with-test)
-   (qcheck :with-test)
-   (qcheck-alcotest :with-test)
-   (ppx_expect :with-test)
-   (mdx (and :with-test (= 2.4.1)))))
+   (digestif (>= 1.2.0))))
 
  (package
    (name yocaml_eio)
@@ -56,17 +51,12 @@
    (depends
     (ocaml (>= 5.1.1))
     (dune (>= 3.0.0))
+    (mdx (and :with-test (= 2.4.1)))
     (yocaml (= :version))
     (yocaml_runtime (= :version))
     (eio (= 1.1))
     (eio_main (= 1.1))
-    (cohttp-eio (= 6.0.0~beta2))
-    (fmt :with-test)
-    (alcotest :with-test)
-    (qcheck :with-test)
-    (qcheck-alcotest :with-test)
-    (ppx_expect :with-test)
-    (mdx (and :with-test (= 2.4.1)))))
+    (cohttp-eio (= 6.0.0~beta2))))
 
 (package
   (name yocaml_unix)
@@ -74,15 +64,10 @@
   (depends
    (ocaml (>= 5.1.1))
    (dune (>= 3.0.0))
+   (mdx (and :with-test (= 2.4.1)))
    (httpcats (>= 0.0.1))
    (yocaml (= :version))
-   (yocaml_runtime (= :version))
-   (fmt :with-test)
-   (alcotest :with-test)
-   (qcheck :with-test)
-   (qcheck-alcotest :with-test)
-   (ppx_expect :with-test)
-   (mdx (and :with-test (= 2.4.1)))))
+   (yocaml_runtime (= :version))))
 
 (package
   (name yocaml_yaml)
@@ -90,14 +75,9 @@
   (depends
    (ocaml (>= 5.1.1))
    (dune (>= 3.0.0))
+   (mdx (and :with-test (= 2.4.1)))
    (yocaml (= :version))
-   (yaml (>= 3.2.0))
-   (fmt :with-test)
-   (alcotest :with-test)
-   (qcheck :with-test)
-   (qcheck-alcotest :with-test)
-   (ppx_expect :with-test)
-   (mdx (and :with-test (= 2.4.1)))))
+   (yaml (>= 3.2.0))))
 
 (package
  (name yocaml_otoml)
@@ -105,6 +85,7 @@
  (depends
   (ocaml (>= 5.1.1))
   (dune (>= 3.0.0))
+  (mdx (and :with-test (= 2.4.1)))
   (yocaml (= :version)) 
   (otoml (>= 1.0.5))
   (fmt :with-test)
@@ -121,14 +102,9 @@
   (depends
    (ocaml (>= 5.1.1))
    (dune (>= 3.0.0))
+   (mdx (and :with-test (= 2.4.1)))
    (yocaml (= :version))
-   (omd (>= 2.0.0~alpha4))
-   (fmt :with-test)
-   (alcotest :with-test)
-   (qcheck :with-test)
-   (qcheck-alcotest :with-test)
-   (ppx_expect :with-test)
-   (mdx (and :with-test (= 2.4.1)))))
+   (omd (>= 2.0.0~alpha4))))
 
 (package
   (name yocaml_cmarkit)
@@ -136,14 +112,9 @@
   (depends
    (ocaml (>= 5.1.1))
    (dune (>= 3.0.0))
+   (mdx (and :with-test (= 2.4.1)))
    (yocaml (= :version))
-    cmarkit
-   (fmt :with-test)
-   (alcotest :with-test)
-   (qcheck :with-test)
-   (qcheck-alcotest :with-test)
-   (ppx_expect :with-test)
-   (mdx (and :with-test (= 2.4.1)))))
+    cmarkit))
 
 (package
   (name yocaml_jingoo)
@@ -151,14 +122,9 @@
   (depends
    (ocaml (>= 5.1.1))
    (dune (>= 3.0.0))
+   (mdx (and :with-test (= 2.4.1)))
    (yocaml (= :version))
-   (jingoo (>= 1.5.0))
-   (fmt :with-test)
-   (alcotest :with-test)
-   (qcheck :with-test)
-   (qcheck-alcotest :with-test)
-   (ppx_expect :with-test)
-   (mdx (and :with-test (= 2.4.1)))))
+   (jingoo (>= 1.5.0))))
 
 (package
   (name yocaml_mustache)
@@ -166,14 +132,9 @@
   (depends
    (ocaml (>= 5.1.1))
    (dune (>= 3.0.0))
+   (mdx (and :with-test (= 2.4.1)))
    (yocaml (= :version))
-   (mustache (= 3.3.0))
-   (fmt :with-test)
-   (alcotest :with-test)
-   (qcheck :with-test)
-   (qcheck-alcotest :with-test)
-   (ppx_expect :with-test)
-   (mdx (and :with-test (= 2.4.1)))))
+   (mustache (= 3.3.0))))
 
 (package
   (name yocaml_syndication)
@@ -195,6 +156,7 @@
   (depends
    (ocaml (>= 5.1.1))
    (dune (>= 3.0.0))
+   (mdx (and :with-test (= 2.4.1)))
    (lwt (>= 5.7.0))
    (mimic (>= 0.0.9))
    (cstruct (>= 6.2.0))
@@ -202,10 +164,4 @@
    (git-unix (>= 3.16.1))
    (mirage-clock (>= 4.2.0))
    (yocaml (= :version))
-   (yocaml_runtime (= :version))
-   (fmt :with-test)
-   (alcotest :with-test)
-   (qcheck :with-test)
-   (qcheck-alcotest :with-test)
-   (ppx_expect :with-test)
-   (mdx (and :with-test (= 2.4.1)))))
+   (yocaml_runtime (= :version))))
