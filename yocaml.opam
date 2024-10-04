@@ -9,7 +9,7 @@ license: "GPL-3.0-or-later"
 homepage: "https://github.com/xhtmlboi/yocaml"
 bug-reports: "https://github.com/xhtmlboi/yocaml/issues"
 depends: [
-  "ocaml" {>= "5.1.1"}
+  "ocaml" {>= "5.1.1" & < "5.3"}
   "dune" {>= "3.14" & >= "3.0.0"}
   "odoc" {with-doc}
   "sherlodoc" {with-doc}

@@ -16,7 +16,7 @@
   (synopsis "Core engine of the YOCaml Static Site Generator")
   (description "YOCaml is a build system dedicated to generate static document")
   (depends
-   (ocaml (>= 5.1.1))
+   (ocaml (and (>= 5.1.1) (< 5.3)))
    (dune (>= 3.0.0))
    (odoc :with-doc)
    (sherlodoc :with-doc)
