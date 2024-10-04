@@ -214,3 +214,7 @@ end
 
 include module type of Infix
 (** @inline *)
+
+(** {1 Map over using Path as keys} *)
+
+module Map : Map.S with type key = t

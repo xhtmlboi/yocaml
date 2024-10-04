@@ -14,31 +14,29 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-module Cache_map = Map.Make (Path)
-
 type entry = {
     hashed_content : string
   ; dynamic_dependencies : Deps.t
   ; last_build_date : int option
 }
 
-type t = entry Cache_map.t
+type t = entry Path.Map.t
 
 let entry ?last_build_date hashed_content dynamic_dependencies =
   { hashed_content; dynamic_dependencies; last_build_date }
 
-let empty = Cache_map.empty
-let from_list = Cache_map.of_list
+let empty = Path.Map.empty
+let from_list = Path.Map.of_list
 
 let update cache path ?(deps = Deps.empty) ~now content =
   let entry = entry ~last_build_date:now content deps in
-  Cache_map.add path entry cache
+  Path.Map.add path entry cache
 
 let get cache path =
   Option.map
     (fun { hashed_content; dynamic_dependencies; last_build_date } ->
       (hashed_content, dynamic_dependencies, last_build_date))
-    (Cache_map.find_opt path cache)
+    (Path.Map.find_opt path cache)
 
 let entry_to_sexp { hashed_content; dynamic_dependencies; last_build_date } =
   let open Sexp in
@@ -73,7 +71,7 @@ let entry_from_sexp sexp =
   | _ -> Error (Sexp.Invalid_sexp (sexp, "cache"))
 
 let to_sexp cache =
-  Cache_map.fold
+  Path.Map.fold
     (fun key entry acc ->
       let k = Path.to_sexp key in
       let v = entry_to_sexp entry in
@@ -97,7 +95,7 @@ let from_sexp sexp =
           Result.bind acc (fun acc ->
               line |> key_value_from_sexp |> Result.map (fun x -> x :: acc)))
         (Ok []) entries
-      |> Result.map Cache_map.of_list
+      |> Result.map Path.Map.of_list
   | _ -> Error (Sexp.Invalid_sexp (sexp, "cache"))
 
 let entry_equal
@@ -115,7 +113,7 @@ let entry_equal
   && Deps.equal deps_a deps_b
   && Option.equal Int.equal lbd_a lbd_b
 
-let equal = Cache_map.equal entry_equal
+let equal = Path.Map.equal entry_equal
 
 let pp_kv ppf (key, { hashed_content; dynamic_dependencies; last_build_date }) =
   Format.fprintf ppf "%a => deps: @[<v 0>%a@]@hash:%s (%a)" Path.pp key Deps.pp
@@ -128,4 +126,4 @@ let pp ppf cache =
     (Format.pp_print_list
        ~pp_sep:(fun ppf () -> Format.fprintf ppf ";@ ")
        pp_kv)
-    (Cache_map.to_list cache)
+    (Path.Map.to_list cache)

@@ -192,3 +192,9 @@ module Infix = struct
 end
 
 include Infix
+
+module Map = Map.Make (struct
+  type nonrec t = t
+
+  let compare = compare
+end)
