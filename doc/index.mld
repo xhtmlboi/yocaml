@@ -13,16 +13,22 @@ The YOCaml API (full documentation) can be accessed via {{!module:Yocaml} this
 link}. The various plugins are accessible via the {{: ../index.html}
 documentation root}.
 
+You can refer to the examples at the root of the source repository to
+see extensively documented examples of how to use YOCaml.
+
 {1 Specific guides}
 
-- {ul {- {{!page:data_validation} Generic validation of structured data}
+{{!page:data_validation} Generic validation of structured data}
 
-      YOCaml allows the use of {b a collection of generic formats}, so it must
-      be able to validate arbitrary data. In this guide, we'll look at how to
-      handle the validation of data (structured in the form of key values,
-      rather like a [JSON] document) and how to project it into controllable
-      OCaml types.} }
+YOCaml allows the use of {b a collection of generic formats}, so it must
+be able to validate arbitrary data. In this guide, we'll look at how to
+handle the validation of data (structured in the form of key values,
+rather like a [JSON] document) and how to project it into controllable
+OCaml types.
 
 {1 Design choices}
+
+A few notes about some design choices (which will probably be expanded
+upon in specific blog posts).
 
 - {{!page:effect} Effects abstraction}
