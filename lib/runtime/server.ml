@@ -40,7 +40,8 @@ module Request_path = struct
       else if is_file path then File (path, pstr)
       else Error404
 
-  let content_type file = match Filename.extension file with
+  let content_type file =
+    match Filename.extension file with
     | ".html" -> "text/html"
     | ".jpg" | ".jpeg" -> "image/jpeg"
     | ".png" -> "image/png"
