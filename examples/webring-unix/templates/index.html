@@ -1,0 +1,15 @@
+<section>
+  {%- autoescape false -%} {{ yocaml_body }} {%- endautoescape -%}
+</section>
+{%- if has_members -%}
+<ul>
+  {%- for member in members -%}
+  <li>
+    {%- if member.main_lang == "fr" -%} 🇫🇷 {%- else -%} 🇬🇧 {%- endif -%}
+    <a href="{{ member.url }}"> {{ member.id }}</a>
+  </li>
+  {%- endfor -%}
+</ul>
+{%- else -%}
+<p>The webring has no affiliates!</p>
+{%- endif -%}

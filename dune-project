@@ -1,2 +1,144 @@
-(lang dune 2.8)
+(lang dune 3.14)
+
 (name yocaml)
+(version dev)
+(generate_opam_files true)
+(executables_implicit_empty_intf)
+(using mdx 0.4)
+
+(source (gitlab funkywork/yocaml))
+(license GPL-3.0-or-later)
+(authors "The XHTMLBoy <xhtmlboi@gmail.com>")
+(maintainers "The Funkyworkers")
+
+(package
+  (name yocaml)
+  (synopsis "Core engine of the YOCaml Static Site Generator")
+  (description "YOCaml is a build system dedicated to generate static document")
+  (depends
+   (ocaml (>= 5.1.1))
+   (dune (>= 3.0.0))
+   (odoc :with-doc)
+   (sherlodoc :with-doc)
+   (fmt :with-test)
+   (alcotest :with-test)
+   (qcheck :with-test)
+   (qcheck-alcotest :with-test)
+   (ppx_expect :with-test)
+   (mdx (and :with-test (= 2.4.1)))
+   (ocamlformat :with-dev-setup)
+   (ocp-indent :with-dev-setup)
+   (merlin :with-dev-setup)
+   (utop :with-dev-setup)))
+
+ (package
+  (name yocaml_runtime)
+  (synopsis "Tool for describing runtimes (using Logs and Digestif)")
+  (depends
+   (ocaml (>= 5.1.1))
+   (dune (>= 3.0.0))
+   (yocaml (= :version))
+   (cohttp (>= 5.3.11))
+   (magic-mime (>= 1.3.1))
+   (logs (>= 0.7.0))
+   (fmt (>= 0.9.0))
+   (digestif (>= 1.2.0))))
+
+ (package
+   (name yocaml_eio)
+   (synopsis "The Eio runtime YOCaml")
+   (depends
+    (ocaml (>= 5.1.1))
+    (dune (>= 3.0.0))
+    (yocaml (= :version))
+    (yocaml_runtime (= :version))
+    (eio (= 1.1))
+    (eio_main (= 1.1))
+    (cohttp-eio (= 6.0.0~beta2))))
+
+(package
+  (name yocaml_unix)
+  (synopsis "The Unix runtime for YOCaml")
+  (depends
+   (ocaml (>= 5.1.1))
+   (dune (>= 3.0.0))
+   (httpcats (>= 0.0.1))
+   (yocaml (= :version))
+   (yocaml_runtime (= :version))))
+
+(package
+  (name yocaml_yaml)
+  (synopsis "Yocaml plugin for dealing with Yaml as metadata provider")
+  (depends
+   (ocaml (>= 5.1.1))
+   (dune (>= 3.0.0))
+   (yocaml (= :version))
+   (yaml (>= 3.2.0))))
+
+(package
+ (name yocaml_otoml)
+ (synopsis "Yocaml plugin for dealing with TOML as metadata provider")
+ (depends
+  (ocaml (>= 5.1.1))
+  (dune (>= 3.0.0))
+  (otoml (>= 1.0.5))))
+ 
+
+(package
+  (name yocaml_omd)
+  (synopsis "Yocaml plugin for using Markdown (via OMD package) as a Markup language")
+  (depends
+   (ocaml (>= 5.1.1))
+   (dune (>= 3.0.0))
+   (yocaml (= :version))
+   (omd (>= 2.0.0~alpha4))))
+
+(package
+  (name yocaml_cmarkit)
+  (synopsis "Yocaml plugin for using Markdown (via Cmarkit package) as a Markup language")
+  (depends
+   (ocaml (>= 5.1.1))
+   (dune (>= 3.0.0))
+   (yocaml (= :version))
+   cmarkit))
+
+(package
+  (name yocaml_jingoo)
+  (synopsis "Yocaml plugin for using Jingoo as a template language")
+  (depends
+   (ocaml (>= 5.1.1))
+   (dune (>= 3.0.0))
+   (yocaml (= :version))
+   (jingoo (>= 1.5.0))))
+
+(package
+  (name yocaml_mustache)
+  (synopsis "Yocaml plugin for using Mustache as a template language")
+  (depends
+   (ocaml (>= 5.1.1))
+   (dune (>= 3.0.0))
+   (yocaml (= :version))
+   (mustache (= 3.3.0))))
+
+(package
+  (name yocaml_syndication)
+  (synopsis "Yocaml plugin for dealing with RSS and Atom feed")
+  (depends
+   (ocaml (>= 5.1.1))
+   (dune (>= 3.0.0))
+   (yocaml (= :version))))
+
+(package
+  (name yocaml_git)
+  (synopsis "Yocaml plugins for generating Yocaml program into a Git repository")
+  (depends
+   (ocaml (>= 5.1.1))
+   (dune (>= 3.0.0))
+   (lwt (>= 5.7.0))
+   (mimic (>= 0.0.9))
+   (cstruct (>= 6.2.0))
+   (git-kv (>= 0.0.5))
+   (git-unix (>= 3.16.1))
+   (mirage-clock (>= 4.2.0))
+   (yocaml (= :version))
+   (yocaml_runtime (= :version))))

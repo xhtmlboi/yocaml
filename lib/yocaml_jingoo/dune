@@ -1,7 +1,0 @@
-(library
- (name yocaml_jingoo)
- (public_name yocaml_jingoo)
- (libraries yocaml jingoo preface))
-
-(documentation
- (package yocaml_jingoo))

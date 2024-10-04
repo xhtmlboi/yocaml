@@ -1,7 +1,0 @@
-(library
- (name yocaml_git)
- (public_name yocaml_git)
- (libraries ptime mirage-clock lwt git-kv preface yocaml))
-
-(documentation
- (package yocaml_git))

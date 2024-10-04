@@ -1,0 +1,3 @@
+(executable
+ (name simple_blog_unix)
+ (libraries yocaml simple_blog yocaml_unix))

@@ -1,0 +1,13 @@
+- id: xvw
+  url: https://xvw.lol
+  feed_url: https://xvw.lol/atom.xml
+  main_lang: fr
+
+- id: xhtmlboi
+  url: https://xhtmlboi.github.io
+  feed_url: https://xhtmlboi.github.io/feed.xml
+  main_lang: en
+
+- id: grim
+  url: https://gr-im.github.io
+  main_lang: en

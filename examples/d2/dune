@@ -1,0 +1,3 @@
+(library
+ (name d2)
+ (libraries yocaml))

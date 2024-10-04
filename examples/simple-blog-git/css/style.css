@@ -1,0 +1,283 @@
+:root {
+    --font-sans: "Roboto", sans-serif;
+    --font-mono: "Roboto Mono", monospace;
+    --font-slab: "Roboto Slab", serif;
+}
+
+body {
+    font-family: var(--font-sans);
+}
+
+.layout {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0;
+    padding-top: 32px;
+}
+
+.mono,
+.slab {
+    font-optical-sizing: auto;
+    font-style: normal;
+}
+
+.mono {
+    font-family: var(--font-mono);
+}
+
+.slab {
+    font-family: var(--font-slab);
+}
+
+header {
+    margin: 64px 0;
+}
+
+header h1 {
+    font-size: 4.125rem;
+    line-height: 4.125rem;
+    font-weight: 700;
+}
+
+header h2 {
+    font-size: 1.825rem;
+    line-height: 2.5rem;
+    font-weight: 400;
+}
+
+header nav {
+    margin: 16px 0;
+}
+
+header nav ul {
+    padding: 0;
+    list-style-type: none;
+}
+
+header nav ul > li {
+    display: inline-block;
+    border: 2px solid #000000;
+    padding: 2px 4px;
+}
+
+header nav ul > li > a {
+    text-decoration: none;
+    color: #000000;
+    font-weight: 700;
+}
+
+footer {
+    margin: 32px 0;
+    padding-top: 16px;
+}
+
+article code {
+    font-family: var(--font-mono);
+    font-optical-sizing: auto;
+    font-style: normal;
+}
+
+.articles-index {
+    margin-top: 32px;
+    padding: 0;
+    list-style-type: none;
+}
+
+.article-header,
+.articles-index > li {
+    margin-bottom: 64px;
+    display: inline-flex;
+    flex-direction: row;
+}
+
+.article-header > div:first-child,
+.articles-index > li > div:first-child {
+    flex: 0;
+    margin-right: 32px;
+    margin-top: 12px;
+}
+
+.article-header > div:last-child,
+.articles-index > li > div:last-child {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.article-header > div:last-child .article-synopsis,
+.articles-index > li > div:last-child .article-synopsis {
+    flex: 1;
+    margin: 24px 0;
+    font-size: 1.5rem;
+    font-weight: 300;
+}
+
+.article-header > div:last-child .article-synopsis {
+    margin: 8px 0;
+    font-size: 1.4rem;
+    line-height: 1.4rem;
+    font-weight: 300;
+}
+
+.page-title {
+    font-size: 2.8rem;
+    line-height: 2.8rem;
+    font-weight: 700;
+    margin-bottom: 32px;
+}
+.article-header,
+.articles-index > li h3 {
+    font-size: 1.8rem;
+    line-height: 2.5rem;
+    font-weight: 700;
+}
+
+.articles-index > li h3 a {
+    color: #000000;
+    text-decoration: underline;
+}
+
+.tags {
+    padding: 0;
+    list-style-type: none;
+}
+
+.article-header .tags {
+    font-size: 1rem;
+}
+
+.tags li {
+    display: inline-block;
+    margin-right: 6px;
+    color: #666666;
+    padding: 2px 4px;
+    font-weight: 700;
+}
+
+.tags li::before {
+    content: "#";
+    color: #999999;
+}
+
+.date {
+    border: 2px solid #000000;
+}
+
+.date .day {
+    font-size: 1.325rem;
+    line-height: 1.8rem;
+    font-weight: 700;
+    text-align: center;
+    padding: 6px 12px;
+}
+
+.article-header .date .day {
+    font-size: 2.325rem;
+}
+
+.date .year,
+.date .month {
+    text-align: center;
+    padding: 2px 12px;
+}
+
+.date .year {
+    border-bottom: 2px solid #000000;
+}
+
+.date .month {
+    border-top: 2px solid #000000;
+}
+
+article {
+    font-size: 1.4rem;
+    line-height: 1.6rem;
+}
+
+article p {
+    margin-bottom: 24px;
+}
+
+article p:last-child {
+    margin: 0;
+}
+
+article h1,
+article h2,
+article h3,
+article h4,
+article h5,
+article h6 {
+    font-optical-sizing: auto;
+    font-style: normal;
+    font-family: var(--font-slab);
+    font-weight: 700;
+}
+
+article h1 {
+    font-size: 2.125rem;
+    line-height: 2.125rem;
+    margin: 2em 0;
+}
+
+article h2 {
+    font-size: 1.875rem;
+    line-height: 1.875rem;
+    margin: 1.5em 0;
+}
+
+article h3 {
+    font-size: 1.5rem;
+    line-height: 1.5rem;
+    margin: 1em 0;
+}
+
+article h4 {
+    font-size: 1.2rem;
+    line-height: 1.2rem;
+    margin: 0.8em 0;
+}
+
+article h5 {
+    font-size: 1rem;
+    line-height: 1rem;
+    margin: 0.6em 0;
+}
+
+article ul > li,
+article ol > li {
+    margin-bottom: 12px;
+}
+
+article ul > li:last-child,
+article ol > li:last-child {
+    margin-bottom: 0;
+}
+
+article blockquote {
+    padding-left: 32px;
+    margin-bottom: 24px;
+    font-weight: 300;
+}
+
+article table {
+    margin: 64px auto;
+    border-collapse: collapse;
+    min-width: 600px;
+}
+
+article th {
+    background-color: #dddddd;
+}
+
+article th,
+article td {
+    border: 1px solid #000000;
+    padding: 6px 12px;
+}
+
+article td:empty {
+    visibility: hidden;
+    border: 0 solid transparent;
+}

@@ -1,0 +1,3 @@
+(library
+ (name simple_blog)
+ (libraries yocaml yocaml_omd yocaml_jingoo yocaml_yaml yocaml_syndication))

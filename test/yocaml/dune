@@ -1,0 +1,3 @@
+(test
+ (name yocaml_test)
+ (libraries alcotest test_lib qcheck-alcotest yocaml))

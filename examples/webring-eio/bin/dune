@@ -1,0 +1,3 @@
+(executable
+ (name webring_eio)
+ (libraries webring yocaml_eio))
