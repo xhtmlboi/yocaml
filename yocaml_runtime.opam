@@ -10,7 +10,7 @@ bug-reports: "https://github.com/xhtmlboi/yocaml/issues"
 depends: [
   "ocaml" {>= "5.1.1"}
   "dune" {>= "3.14" & >= "3.0.0"}
-  "ppx_expect" {with-test}
+  "ppx_expect"
   "mdx" {with-test & = "2.4.1"}
   "yocaml" {= version}
   "cohttp" {>= "5.3.11"}
