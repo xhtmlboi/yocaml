@@ -11,6 +11,12 @@ depends: [
   "ocaml" {>= "5.1.1"}
   "dune" {>= "3.14" & >= "3.0.0"}
   "yocaml" {= version}
+  "fmt" {with-test}
+  "alcotest" {with-test}
+  "qcheck" {with-test}
+  "qcheck-alcotest" {with-test}
+  "ppx_expect" {with-test}
+  "mdx" {with-test & = "2.4.1"}
   "odoc" {with-doc}
 ]
 build: [

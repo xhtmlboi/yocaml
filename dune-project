@@ -42,7 +42,13 @@
    (magic-mime (>= 1.3.1))
    (logs (>= 0.7.0))
    (fmt (>= 0.9.0))
-   (digestif (>= 1.2.0))))
+   (digestif (>= 1.2.0))
+   (fmt :with-test)
+   (alcotest :with-test)
+   (qcheck :with-test)
+   (qcheck-alcotest :with-test)
+   (ppx_expect :with-test)
+   (mdx (and :with-test (= 2.4.1)))))
 
  (package
    (name yocaml_eio)
@@ -54,7 +60,13 @@
     (yocaml_runtime (= :version))
     (eio (= 1.1))
     (eio_main (= 1.1))
-    (cohttp-eio (= 6.0.0~beta2))))
+    (cohttp-eio (= 6.0.0~beta2))
+    (fmt :with-test)
+    (alcotest :with-test)
+    (qcheck :with-test)
+    (qcheck-alcotest :with-test)
+    (ppx_expect :with-test)
+    (mdx (and :with-test (= 2.4.1)))))
 
 (package
   (name yocaml_unix)
@@ -64,7 +76,13 @@
    (dune (>= 3.0.0))
    (httpcats (>= 0.0.1))
    (yocaml (= :version))
-   (yocaml_runtime (= :version))))
+   (yocaml_runtime (= :version))
+   (fmt :with-test)
+   (alcotest :with-test)
+   (qcheck :with-test)
+   (qcheck-alcotest :with-test)
+   (ppx_expect :with-test)
+   (mdx (and :with-test (= 2.4.1)))))
 
 (package
   (name yocaml_yaml)
@@ -73,7 +91,13 @@
    (ocaml (>= 5.1.1))
    (dune (>= 3.0.0))
    (yocaml (= :version))
-   (yaml (>= 3.2.0))))
+   (yaml (>= 3.2.0))
+   (fmt :with-test)
+   (alcotest :with-test)
+   (qcheck :with-test)
+   (qcheck-alcotest :with-test)
+   (ppx_expect :with-test)
+   (mdx (and :with-test (= 2.4.1)))))
 
 (package
  (name yocaml_otoml)
@@ -82,7 +106,13 @@
   (ocaml (>= 5.1.1))
   (dune (>= 3.0.0))
   (yocaml (= :version)) 
-  (otoml (>= 1.0.5))))
+  (otoml (>= 1.0.5))
+  (fmt :with-test)
+  (alcotest :with-test)
+  (qcheck :with-test)
+  (qcheck-alcotest :with-test)
+  (ppx_expect :with-test)
+  (mdx (and :with-test (= 2.4.1)))))
  
 
 (package
@@ -92,7 +122,13 @@
    (ocaml (>= 5.1.1))
    (dune (>= 3.0.0))
    (yocaml (= :version))
-   (omd (>= 2.0.0~alpha4))))
+   (omd (>= 2.0.0~alpha4))
+   (fmt :with-test)
+   (alcotest :with-test)
+   (qcheck :with-test)
+   (qcheck-alcotest :with-test)
+   (ppx_expect :with-test)
+   (mdx (and :with-test (= 2.4.1)))))
 
 (package
   (name yocaml_cmarkit)
@@ -101,7 +137,13 @@
    (ocaml (>= 5.1.1))
    (dune (>= 3.0.0))
    (yocaml (= :version))
-   cmarkit))
+    cmarkit
+   (fmt :with-test)
+   (alcotest :with-test)
+   (qcheck :with-test)
+   (qcheck-alcotest :with-test)
+   (ppx_expect :with-test)
+   (mdx (and :with-test (= 2.4.1)))))
 
 (package
   (name yocaml_jingoo)
@@ -110,7 +152,13 @@
    (ocaml (>= 5.1.1))
    (dune (>= 3.0.0))
    (yocaml (= :version))
-   (jingoo (>= 1.5.0))))
+   (jingoo (>= 1.5.0))
+   (fmt :with-test)
+   (alcotest :with-test)
+   (qcheck :with-test)
+   (qcheck-alcotest :with-test)
+   (ppx_expect :with-test)
+   (mdx (and :with-test (= 2.4.1)))))
 
 (package
   (name yocaml_mustache)
@@ -119,7 +167,13 @@
    (ocaml (>= 5.1.1))
    (dune (>= 3.0.0))
    (yocaml (= :version))
-   (mustache (= 3.3.0))))
+   (mustache (= 3.3.0))
+   (fmt :with-test)
+   (alcotest :with-test)
+   (qcheck :with-test)
+   (qcheck-alcotest :with-test)
+   (ppx_expect :with-test)
+   (mdx (and :with-test (= 2.4.1)))))
 
 (package
   (name yocaml_syndication)
@@ -127,7 +181,13 @@
   (depends
    (ocaml (>= 5.1.1))
    (dune (>= 3.0.0))
-   (yocaml (= :version))))
+   (yocaml (= :version))
+   (fmt :with-test)
+   (alcotest :with-test)
+   (qcheck :with-test)
+   (qcheck-alcotest :with-test)
+   (ppx_expect :with-test)
+   (mdx (and :with-test (= 2.4.1)))))
 
 (package
   (name yocaml_git)
@@ -142,4 +202,10 @@
    (git-unix (>= 3.16.1))
    (mirage-clock (>= 4.2.0))
    (yocaml (= :version))
-   (yocaml_runtime (= :version))))
+   (yocaml_runtime (= :version))
+   (fmt :with-test)
+   (alcotest :with-test)
+   (qcheck :with-test)
+   (qcheck-alcotest :with-test)
+   (ppx_expect :with-test)
+   (mdx (and :with-test (= 2.4.1)))))

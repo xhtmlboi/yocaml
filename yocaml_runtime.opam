@@ -16,6 +16,12 @@ depends: [
   "logs" {>= "0.7.0"}
   "fmt" {>= "0.9.0"}
   "digestif" {>= "1.2.0"}
+  "fmt" {with-test}
+  "alcotest" {with-test}
+  "qcheck" {with-test}
+  "qcheck-alcotest" {with-test}
+  "ppx_expect" {with-test}
+  "mdx" {with-test & = "2.4.1"}
   "odoc" {with-doc}
 ]
 build: [

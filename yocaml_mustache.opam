@@ -12,6 +12,12 @@ depends: [
   "dune" {>= "3.14" & >= "3.0.0"}
   "yocaml" {= version}
   "mustache" {= "3.3.0"}
+  "fmt" {with-test}
+  "alcotest" {with-test}
+  "qcheck" {with-test}
+  "qcheck-alcotest" {with-test}
+  "ppx_expect" {with-test}
+  "mdx" {with-test & = "2.4.1"}
   "odoc" {with-doc}
 ]
 build: [
