@@ -1,4 +1,4 @@
-### dev (unreleased)
+### v2.0.0 2024-10-04 Nantes (France)
 
 #### yocaml
 
