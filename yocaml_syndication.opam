@@ -5,8 +5,8 @@ synopsis: "Yocaml plugin for dealing with RSS and Atom feed"
 maintainer: ["The Funkyworkers"]
 authors: ["The XHTMLBoy <xhtmlboi@gmail.com>"]
 license: "GPL-3.0-or-later"
-homepage: "https://gitlab.com/funkywork/yocaml"
-bug-reports: "https://gitlab.com/funkywork/yocaml/-/issues"
+homepage: "https://github.com/xhtmlboi/yocaml"
+bug-reports: "https://github.com/xhtmlboi/yocaml/issues"
 depends: [
   "ocaml" {>= "5.1.1"}
   "dune" {>= "3.14" & >= "3.0.0"}
@@ -27,4 +27,4 @@ build: [
     "@doc" {with-doc}
   ]
 ]
-dev-repo: "git+https://gitlab.com/funkywork/yocaml.git"
+dev-repo: "git+https://github.com/xhtmlboi/yocaml.git"

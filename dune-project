@@ -6,7 +6,7 @@
 (executables_implicit_empty_intf)
 (using mdx 0.4)
 
-(source (gitlab funkywork/yocaml))
+(source (github xhtmlboi/yocaml))
 (license GPL-3.0-or-later)
 (authors "The XHTMLBoy <xhtmlboi@gmail.com>")
 (maintainers "The Funkyworkers")
