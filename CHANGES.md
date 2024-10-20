@@ -1,3 +1,10 @@
+### dev (unreleased)
+
+#### yocaml
+
+- Move some modules (`Datetime` and `Toc`) at the Toplevel of `Yocaml` [xvw](https://github.com/xvw)
+
+
 ### v2.0.0 2024-10-04 Nantes (France)
 
 #### yocaml

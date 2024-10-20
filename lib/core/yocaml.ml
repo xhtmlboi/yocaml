@@ -32,6 +32,8 @@ module Slug = Slug
 module Reader = Reader
 module Make = Make
 module Markup = Markup
+module Toc = Markup.Toc
+module Datetime = Archetype.Datetime
 
 module Sexp = struct
   include Sexp

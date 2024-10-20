@@ -14,16 +14,16 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-type t = Tz.t * Yocaml.Archetype.Datetime.t
+type t = Tz.t * Yocaml.Datetime.t
 
 let make ?(tz = Tz.Gmt) date = (tz, date)
 
 let to_string (tz, dt) =
   let tz = Tz.to_string tz in
-  Format.asprintf "%a" (Yocaml.Archetype.Datetime.pp_rfc822 ~tz ()) dt
+  Format.asprintf "%a" (Yocaml.Datetime.pp_rfc822 ~tz ()) dt
 
 let to_string_rfc3339 (tz, dt) =
   let tz = Tz.to_string_rfc3339 tz in
-  Format.asprintf "%a" (Yocaml.Archetype.Datetime.pp_rfc3339 ~tz ()) dt
+  Format.asprintf "%a" (Yocaml.Datetime.pp_rfc3339 ~tz ()) dt
 
-let compare (_, a) (_, b) = Yocaml.Archetype.Datetime.compare a b
+let compare (_, a) (_, b) = Yocaml.Datetime.compare a b
