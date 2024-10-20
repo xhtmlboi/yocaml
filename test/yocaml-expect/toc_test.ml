@@ -233,6 +233,100 @@ let%expect_test "generate toc - from xvw.lol articles - 2" =
     5-Pour conclure
     |}]
 
+let%expect_test "generate toc - from xvw.lol articles - 3" =
+  print_toc_str ~check_label:false
+  @@ from_markdown_title
+       [
+         "### Mise en contexte"
+       ; "#### Simple, mais pas sur tous les aspects"
+       ; "#### Découverte des règles via Internet"
+       ; "## Le Tetra Master"
+       ; "### Les cartes dans l'histoire"
+       ; "### La collecte des cartes"
+       ; "#### Une brève note sur l'aléatoire"
+       ; "### Les règles selon le manuel"
+       ; "#### Défier un adversaire"
+       ; "#### Règles basiques"
+       ; "##### Gagner une carte"
+       ; "##### Récompenses et pénalités"
+       ; "#### Nombre limite de cartes et menu"
+       ; "#### Conclusion de la lecture du manuel"
+       ; "### Règles détaillées"
+       ; "#### Initiation d'une partie"
+       ; "#### Plateau de jeu"
+       ; "#### Prise de cartes simple"
+       ; "#### Bataille"
+       ; "##### Batailles multiples"
+       ; "##### Anatomie d'une carte"
+       ; "##### Lire les statistiques d'une carte"
+       ; "##### Interprétation des statistiques hexadécimales"
+       ; "##### Déroulé de la bataille, toujours plus d'aléas"
+       ; "##### Calcul des probabilités de victoire en duel"
+       ; "##### Les combos"
+       ; "#### Pré-conclusion sur les règles"
+       ; "### Expérience et évolution des cartes"
+       ; "#### Evolution de l'attaque et des défenses"
+       ; "#### Evolution du type de cartes"
+       ; "#### Liste des cartes"
+       ; "### Le niveau de collectionneur"
+       ; "#### Les différents niveaux"
+       ; "#### Sur la distinction des cartes"
+       ; "#### Les points attribués par cartes"
+       ; "##### Note sur les permutations de motifs"
+       ; "#### La cerise sur le gateau"
+       ; "## Pour conclure, enfin"
+       ; "### Qu'en tirer"
+       ; "### La suite"
+       ; "### Remerciements"
+       ; "### L'ultime mot de la fin"
+       ];
+  [%expect
+    {|
+    TOC:
+    1-Mise en contexte
+    1.1-Simple, mais pas sur tous les aspects
+    1.2-Découverte des règles via Internet
+    2-Le Tetra Master
+    2.1-Les cartes dans l'histoire
+    2.2-La collecte des cartes
+    2.2.1-Une brève note sur l'aléatoire
+    2.3-Les règles selon le manuel
+    2.3.1-Défier un adversaire
+    2.3.2-Règles basiques
+    2.3.2.1-Gagner une carte
+    2.3.2.2-Récompenses et pénalités
+    2.3.3-Nombre limite de cartes et menu
+    2.3.4-Conclusion de la lecture du manuel
+    2.4-Règles détaillées
+    2.4.1-Initiation d'une partie
+    2.4.2-Plateau de jeu
+    2.4.3-Prise de cartes simple
+    2.4.4-Bataille
+    2.4.4.1-Batailles multiples
+    2.4.4.2-Anatomie d'une carte
+    2.4.4.3-Lire les statistiques d'une carte
+    2.4.4.4-Interprétation des statistiques hexadécimales
+    2.4.4.5-Déroulé de la bataille, toujours plus d'aléas
+    2.4.4.6-Calcul des probabilités de victoire en duel
+    2.4.4.7-Les combos
+    2.4.5-Pré-conclusion sur les règles
+    2.5-Expérience et évolution des cartes
+    2.5.1-Evolution de l'attaque et des défenses
+    2.5.2-Evolution du type de cartes
+    2.5.3-Liste des cartes
+    2.6-Le niveau de collectionneur
+    2.6.1-Les différents niveaux
+    2.6.2-Sur la distinction des cartes
+    2.6.3-Les points attribués par cartes
+    2.6.3.1-Note sur les permutations de motifs
+    2.6.4-La cerise sur le gateau
+    3-Pour conclure, enfin
+    3.1-Qu'en tirer
+    3.2-La suite
+    3.3-Remerciements
+    3.4-L'ultime mot de la fin
+    |}]
+
 let%expect_test "from toc to html" =
   print_html [];
   [%expect {| <div class='hidden'></div> |}]
