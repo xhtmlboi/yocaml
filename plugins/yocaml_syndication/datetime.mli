@@ -27,7 +27,7 @@ val compare : t -> t -> int
     Timezone (because we expect that every RSS/Atom elements are published on
     the same Timezone). *)
 
-val make : ?tz:Tz.t -> Yocaml.Archetype.Datetime.t -> t
+val make : ?tz:Tz.t -> Yocaml.Datetime.t -> t
 (** [make ?tz datetime] build a [datetime] associated with a Timezone. *)
 
 val to_string : t -> string

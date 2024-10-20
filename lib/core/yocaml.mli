@@ -36,6 +36,8 @@ module Metadata = Metadata
 module Archetype = Archetype
 module Cmd = Cmd
 module Slug = Slug
+module Toc = Markup.Toc
+module Datetime = Archetype.Datetime
 
 (** {1 Building tasks}
 

@@ -1,3 +1,12 @@
+### v2.0.1 2024-10-20 Nantes (France)
+
+#### yocaml
+
+- Fix Table of contents computation when the first index is lower than followers by [xvw](https://github.com/xvw)
+- Remove `charset` of the computed `meta` (since it does not follow the form `name => content`) by [xvw](https://github.com/xvw)
+- Move some modules (`Datetime` and `Toc`) at the Toplevel of `Yocaml` by [xvw](https://github.com/xvw)
+
+
 ### v2.0.0 2024-10-04 Nantes (France)
 
 #### yocaml
