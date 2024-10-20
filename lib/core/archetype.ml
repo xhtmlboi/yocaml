@@ -342,11 +342,7 @@ module Page = struct
               ])
         ]
 
-  let meta_list p =
-    to_meta "charset" p#page_charset
-    @ to_meta "description" p#description
-    @ to_meta_kwd p#tags
-
+  let meta_list p = to_meta "description" p#description @ to_meta_kwd p#tags
   let has_toc obj = obj#display_toc && Option.is_some obj#toc
 
   let normalize_parameters obj =
