@@ -17,7 +17,6 @@
   (description "YOCaml is a build system dedicated to generate static document")
   (depends
    (ocaml (and (>= 5.1.1) (< 5.3)))
-   (dune (>= 3.0.0))
    (odoc :with-doc)
    (sherlodoc :with-doc)
    (fmt :with-test)
@@ -36,7 +35,6 @@
   (synopsis "Tool for describing runtimes (using Logs and Digestif)")
   (depends
    (ocaml (>= 5.1.1))
-   (dune (>= 3.0.0))
    ppx_expect
    (mdx (and :with-test (= 2.4.1)))
    (yocaml (= :version))
@@ -51,7 +49,6 @@
    (synopsis "The Eio runtime YOCaml")
    (depends
     (ocaml (>= 5.1.1))
-    (dune (>= 3.0.0))
     ppx_expect
     (mdx (and :with-test (= 2.4.1)))
     (yocaml (= :version))
@@ -65,7 +62,6 @@
   (synopsis "The Unix runtime for YOCaml")
   (depends
    (ocaml (>= 5.1.1))
-   (dune (>= 3.0.0))
    ppx_expect
    (mdx (and :with-test (= 2.4.1)))
    (httpcats (>= 0.0.1))
@@ -77,7 +73,6 @@
   (synopsis "Yocaml plugin for dealing with Yaml as metadata provider")
   (depends
    (ocaml (>= 5.1.1))
-   (dune (>= 3.0.0))
    ppx_expect
    (mdx (and :with-test (= 2.4.1)))
    (yocaml (= :version))
@@ -88,7 +83,6 @@
  (synopsis "Yocaml plugin for dealing with TOML as metadata provider")
  (depends
   (ocaml (>= 5.1.1))
-  (dune (>= 3.0.0))
   ppx_expect
   (mdx (and :with-test (= 2.4.1)))
   (yocaml (= :version)) 
@@ -100,7 +94,6 @@
   (synopsis "Yocaml plugin for using Markdown (via OMD package) as a Markup language")
   (depends
    (ocaml (>= 5.1.1))
-   (dune (>= 3.0.0))
    ppx_expect
    (mdx (and :with-test (= 2.4.1)))
    (yocaml (= :version))
@@ -111,7 +104,6 @@
   (synopsis "Yocaml plugin for using Markdown (via Cmarkit package) as a Markup language")
   (depends
    (ocaml (>= 5.1.1))
-   (dune (>= 3.0.0))
    ppx_expect
    (mdx (and :with-test (= 2.4.1)))
    (yocaml (= :version))
@@ -122,7 +114,6 @@
   (synopsis "Yocaml plugin for using Jingoo as a template language")
   (depends
    (ocaml (>= 5.1.1))
-   (dune (>= 3.0.0))
    ppx_expect
    (mdx (and :with-test (= 2.4.1)))
    (yocaml (= :version))
@@ -133,7 +124,6 @@
   (synopsis "Yocaml plugin for using Mustache as a template language")
   (depends
    (ocaml (>= 5.1.1))
-   (dune (>= 3.0.0))
    ppx_expect
    (mdx (and :with-test (= 2.4.1)))
    (yocaml (= :version))
@@ -144,7 +134,6 @@
   (synopsis "Yocaml plugin for dealing with RSS and Atom feed")
   (depends
    (ocaml (>= 5.1.1))
-   (dune (>= 3.0.0))
    (yocaml (= :version))
    (fmt :with-test)
    (alcotest (and :with-test (>= 1.3.0)))
@@ -158,7 +147,6 @@
   (synopsis "Yocaml plugins for generating Yocaml program into a Git repository")
   (depends
    (ocaml (>= 5.1.1))
-   (dune (>= 3.0.0))
    ppx_expect
    (mdx (and :with-test (= 2.4.1)))
    (lwt (>= 5.7.0))
