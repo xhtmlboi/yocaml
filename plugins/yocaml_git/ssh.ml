@@ -30,16 +30,13 @@ module Ctx = struct
   type endpoint = {
       user : string
     ; path : string
-    ; host : Unix.inet_addr
+    ; host : string
     ; port : int
     ; mode : [ `Rd | `Wr ]
   }
 
-  let pp_inet_addr ppf inet_addr =
-    Fmt.string ppf (Unix.string_of_inet_addr inet_addr)
-
   let connect { user; path; host; port; mode } =
-    let edn = Fmt.str "%s@%a" user pp_inet_addr host in
+    let edn = Fmt.str "%s@%s" user host in
     let cmd =
       match mode with
       | `Wr -> Fmt.str {sh|git-receive-pack '%s'|sh} path
@@ -99,9 +96,8 @@ let register ?priority ?(name = "ssh") () =
 let context () =
   let ssh_edn, _ = register () in
   let k scheme user path host port mode =
-    match (scheme, Unix.gethostbyname host) with
-    | `SSH, { Unix.h_addr_list; _ } when Array.length h_addr_list > 0 ->
-        Lwt.return_some { Ctx.user; path; host = h_addr_list.(0); port; mode }
+    match scheme with
+    | `SSH -> Lwt.return_some { Ctx.user; path; host; port; mode }
     | _ -> Lwt.return_none
   in
   let open Lwt.Syntax in
