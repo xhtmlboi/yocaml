@@ -16,7 +16,7 @@
   (synopsis "Core engine of the YOCaml Static Site Generator")
   (description "YOCaml is a build system dedicated to generate static document")
   (depends
-   (ocaml (and (>= 5.1.1) (< 5.3)))
+   (ocaml (>= 5.1.1))
    (odoc :with-doc)
    (sherlodoc :with-doc)
    (fmt :with-test)
@@ -24,7 +24,7 @@
    (qcheck :with-test)
    (qcheck-alcotest :with-test)
    ppx_expect
-   (mdx (and :with-test (= 2.4.1)))
+   (mdx (and :with-test (= 2.5.0)))
    (ocamlformat :with-dev-setup)
    (ocp-indent :with-dev-setup)
    (merlin :with-dev-setup)
@@ -36,7 +36,7 @@
   (depends
    (ocaml (>= 5.1.1))
    ppx_expect
-   (mdx (and :with-test (= 2.4.1)))
+   (mdx (and :with-test (= 2.5.0)))
    (yocaml (= :version))
    (cohttp (>= 5.3.11))
    (magic-mime (>= 1.3.1))
@@ -50,12 +50,12 @@
    (depends
     (ocaml (>= 5.1.1))
     ppx_expect
-    (mdx (and :with-test (= 2.4.1)))
+    (mdx (and :with-test (= 2.5.0)))
     (yocaml (= :version))
     (yocaml_runtime (= :version))
     (eio (= 1.1))
     (eio_main (= 1.1))
-    (cohttp-eio (= 6.0.0~beta2))))
+    (cohttp-eio (>= 6.0.0~beta2))))
 
 (package
   (name yocaml_unix)
@@ -63,7 +63,7 @@
   (depends
    (ocaml (>= 5.1.1))
    ppx_expect
-   (mdx (and :with-test (= 2.4.1)))
+   (mdx (and :with-test (= 2.5.0)))
    (httpcats (>= 0.0.1))
    (yocaml (= :version))
    (yocaml_runtime (= :version))))
@@ -74,7 +74,7 @@
   (depends
    (ocaml (>= 5.1.1))
    ppx_expect
-   (mdx (and :with-test (= 2.4.1)))
+   (mdx (and :with-test (= 2.5.0)))
    (yocaml (= :version))
    (yaml (>= 3.2.0))))
 
@@ -84,7 +84,7 @@
  (depends
   (ocaml (>= 5.1.1))
   ppx_expect
-  (mdx (and :with-test (= 2.4.1)))
+  (mdx (and :with-test (= 2.5.0)))
   (yocaml (= :version)) 
   (otoml (>= 1.0.5))))
  
@@ -95,7 +95,7 @@
   (depends
    (ocaml (>= 5.1.1))
    ppx_expect
-   (mdx (and :with-test (= 2.4.1)))
+   (mdx (and :with-test (= 2.5.0)))
    (yocaml (= :version))
    (omd (>= 2.0.0~alpha4))))
 
@@ -105,7 +105,7 @@
   (depends
    (ocaml (>= 5.1.1))
    ppx_expect
-   (mdx (and :with-test (= 2.4.1)))
+   (mdx (and :with-test (= 2.5.0)))
    (yocaml (= :version))
     cmarkit))
 
@@ -115,7 +115,7 @@
   (depends
    (ocaml (>= 5.1.1))
    ppx_expect
-   (mdx (and :with-test (= 2.4.1)))
+   (mdx (and :with-test (= 2.5.0)))
    (yocaml (= :version))
    (jingoo (>= 1.5.0))))
 
@@ -125,7 +125,7 @@
   (depends
    (ocaml (>= 5.1.1))
    ppx_expect
-   (mdx (and :with-test (= 2.4.1)))
+   (mdx (and :with-test (= 2.5.0)))
    (yocaml (= :version))
    (mustache (= 3.3.0))))
 
@@ -140,7 +140,7 @@
    (qcheck :with-test)
    (qcheck-alcotest :with-test)
    ppx_expect
-   (mdx (and :with-test (= 2.4.1)))))
+   (mdx (and :with-test (= 2.5.0)))))
 
 (package
   (name yocaml_git)
@@ -148,7 +148,7 @@
   (depends
    (ocaml (>= 5.1.1))
    ppx_expect
-   (mdx (and :with-test (= 2.4.1)))
+   (mdx (and :with-test (= 2.5.0)))
    (lwt (>= 5.7.0))
    (mimic (>= 0.0.9))
    (cstruct (>= 6.2.0))
