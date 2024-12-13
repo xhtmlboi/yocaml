@@ -10,7 +10,7 @@ homepage: "https://github.com/xhtmlboi/yocaml"
 bug-reports: "https://github.com/xhtmlboi/yocaml/issues"
 depends: [
   "dune" {>= "3.14"}
-  "ocaml" {>= "5.1.1" & < "5.3"}
+  "ocaml" {>= "5.1.1"}
   "odoc" {with-doc}
   "sherlodoc" {with-doc}
   "fmt" {with-test}
@@ -18,7 +18,7 @@ depends: [
   "qcheck" {with-test}
   "qcheck-alcotest" {with-test}
   "ppx_expect"
-  "mdx" {with-test & = "2.4.1"}
+  "mdx" {with-test & = "2.5.0"}
   "ocamlformat" {with-dev-setup}
   "ocp-indent" {with-dev-setup}
   "merlin" {with-dev-setup}
