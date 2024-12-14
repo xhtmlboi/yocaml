@@ -1,3 +1,8 @@
+### v2.1.0 2024-12-14 Nantes (France)
+
+- Support for OCaml `5.3.0` (by [kit-ty-kate](https://github.com/kit-ty-kate))
+
+
 ### v2.0.1 2024-10-20 Nantes (France)
 
 #### yocaml
