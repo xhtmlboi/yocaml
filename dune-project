@@ -24,7 +24,7 @@
    (qcheck :with-test)
    (qcheck-alcotest :with-test)
    ppx_expect
-   (mdx (and :with-test (= 2.5.0)))
+   (mdx (= 2.5.0))
    (ocamlformat :with-dev-setup)
    (ocp-indent :with-dev-setup)
    (merlin :with-dev-setup)
