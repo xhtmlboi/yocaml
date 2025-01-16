@@ -1,3 +1,8 @@
+### Next
+
+- Update to git-kv 1.0.2 and work around last modified behavior inside a `Git_kv.change_and_push` call (by [reynir](https://reyn.ir))
+
+
 ### v2.1.0 2024-12-14 Nantes (France)
 
 - Support for OCaml `5.3.0` (by [kit-ty-kate](https://github.com/kit-ty-kate))
