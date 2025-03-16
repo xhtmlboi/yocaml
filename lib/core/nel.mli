@@ -21,7 +21,7 @@
 (** {1 Types} *)
 
 (** A non-empty list is nothing more than a pair of a value and a list.*)
-type 'a t = ( :: ) of ('a * 'a list)
+type 'a t = ( :: ) of 'a * 'a list
 
 (** {1 Creating lists} *)
 
