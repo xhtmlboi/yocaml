@@ -228,9 +228,9 @@ Error
       ((3,
         V.Invalid_shape
          {V.expected = "strict-string"; given = Yocaml.Data.Bool false}),
-       [(1,
-         V.Invalid_shape
-          {V.expected = "strict-string"; given = Yocaml.Data.Int 42})]);
+      [(1,
+        V.Invalid_shape
+         {V.expected = "strict-string"; given = Yocaml.Data.Int 42})]);
     given =
      [Yocaml.Data.String "hello"; Yocaml.Data.Int 42;
       Yocaml.Data.String "world"; Yocaml.Data.Bool false]})
@@ -349,42 +349,41 @@ Error
      Yocaml__.Nel.(::)
       (Yocaml.Data.Validation.Missing_field
         {Yocaml.Data.Validation.field = "username"},
-       [Yocaml.Data.Validation.Invalid_field
-         {Yocaml.Data.Validation.given = Yocaml.Data.Bool true;
-          field = "age";
-          error =
-           Yocaml.Data.Validation.Invalid_shape
-            {Yocaml.Data.Validation.expected = "int";
-             given = Yocaml.Data.Bool true}};
-        Yocaml.Data.Validation.Invalid_field
-         {Yocaml.Data.Validation.given =
-           Yocaml.Data.List
-            [Yocaml.Data.Int 1; Yocaml.Data.Int 2; Yocaml.Data.Int 3;
-             Yocaml.Data.Int 4];
-          field = "nouns";
-          error =
-           Yocaml.Data.Validation.Invalid_list
-            {Yocaml.Data.Validation.errors =
-              Yocaml__.Nel.(::)
-               ((3,
-                 Yocaml.Data.Validation.Invalid_shape
-                  {Yocaml.Data.Validation.expected = "strict-string";
-                   given = Yocaml.Data.Int 4}),
-                [(2,
-                  Yocaml.Data.Validation.Invalid_shape
-                   {Yocaml.Data.Validation.expected = "strict-string";
-                    given = Yocaml.Data.Int 3});
-                 (1,
-                  Yocaml.Data.Validation.Invalid_shape
-                   {Yocaml.Data.Validation.expected = "strict-string";
-                    given = Yocaml.Data.Int 2});
-                 (0,
-                  Yocaml.Data.Validation.Invalid_shape
-                   {Yocaml.Data.Validation.expected = "strict-string";
-                    given = Yocaml.Data.Int 1})]);
-             given =
-              [Yocaml.Data.Int 1; Yocaml.Data.Int 2; Yocaml.Data.Int 3;
-               Yocaml.Data.Int 4]}}]);
+      [Yocaml.Data.Validation.Invalid_field
+        {Yocaml.Data.Validation.given = Yocaml.Data.Bool true; field = "age";
+         error =
+          Yocaml.Data.Validation.Invalid_shape
+           {Yocaml.Data.Validation.expected = "int";
+            given = Yocaml.Data.Bool true}};
+       Yocaml.Data.Validation.Invalid_field
+        {Yocaml.Data.Validation.given =
+          Yocaml.Data.List
+           [Yocaml.Data.Int 1; Yocaml.Data.Int 2; Yocaml.Data.Int 3;
+            Yocaml.Data.Int 4];
+         field = "nouns";
+         error =
+          Yocaml.Data.Validation.Invalid_list
+           {Yocaml.Data.Validation.errors =
+             Yocaml__.Nel.(::)
+              ((3,
+                Yocaml.Data.Validation.Invalid_shape
+                 {Yocaml.Data.Validation.expected = "strict-string";
+                  given = Yocaml.Data.Int 4}),
+              [(2,
+                Yocaml.Data.Validation.Invalid_shape
+                 {Yocaml.Data.Validation.expected = "strict-string";
+                  given = Yocaml.Data.Int 3});
+               (1,
+                Yocaml.Data.Validation.Invalid_shape
+                 {Yocaml.Data.Validation.expected = "strict-string";
+                  given = Yocaml.Data.Int 2});
+               (0,
+                Yocaml.Data.Validation.Invalid_shape
+                 {Yocaml.Data.Validation.expected = "strict-string";
+                  given = Yocaml.Data.Int 1})]);
+            given =
+             [Yocaml.Data.Int 1; Yocaml.Data.Int 2; Yocaml.Data.Int 3;
+              Yocaml.Data.Int 4]}}]);
     given =
      [("usernme", Yocaml.Data.String "JohnDoe42");
       ("age", Yocaml.Data.Bool true);
@@ -496,11 +495,11 @@ Error
          error =
           V.Invalid_shape
            {V.expected = "strict-string"; given = Yocaml.Data.Bool false}},
-       [V.Invalid_field
-         {V.given = Yocaml.Data.String "foo"; field = "snd";
-          error =
-           V.Invalid_shape
-            {V.expected = "int"; given = Yocaml.Data.String "foo"}}]);
+      [V.Invalid_field
+        {V.given = Yocaml.Data.String "foo"; field = "snd";
+         error =
+          V.Invalid_shape
+           {V.expected = "int"; given = Yocaml.Data.String "foo"}}]);
     given =
      [("fst", Yocaml.Data.Bool false); ("snd", Yocaml.Data.String "foo")]})
 ]eof}
@@ -978,7 +977,7 @@ Result.Error
           Yocaml.Data.Validation.With_message
            {Yocaml.Data.Validation.given = "JohnDoe43";
             message = "should be equal to JohnDoe42"}},
-       []);
+      []);
     given =
      [("username", Yocaml.Data.String "JohnDoe42");
       ("age", Yocaml.Data.Int 42);
