@@ -22,7 +22,6 @@
 
 val run :
      (module Required.SOURCE)
-  -> (module Mirage_clock.PCLOCK)
   -> context:[ `SSH ]
   -> ?author:string
   -> ?email:string

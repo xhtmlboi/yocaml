@@ -16,16 +16,14 @@
 
 module Required = Required
 
-let run (module Source : Required.SOURCE) (module Clock : Mirage_clock.PCLOCK)
-    ~context ?author ?email ?message ~remote ?level ?custom_error_handler
-    program =
+let run (module Source : Required.SOURCE) ~context ?author ?email ?message
+    ~remote ?level ?custom_error_handler program =
   let open Lwt.Syntax in
   let () = Mirage_crypto_rng_unix.use_default () in
   let* context = match context with `SSH -> Ssh.context () in
   let* store = Git_kv.connect context remote in
-  let module Store = Git_kv.Make (Clock) in
   let module Store = struct
-    include Store
+    include Git_kv
 
     (* last_modified and change_and_push have a weird interaction;
        so we show the old last_modified *)

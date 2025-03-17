@@ -1,4 +1,4 @@
 (library
  (name yocaml_unix)
  (public_name yocaml_unix)
- (libraries httpcats mirage-clock-unix yocaml yocaml_runtime))
+ (libraries httpcats yocaml yocaml_runtime))
