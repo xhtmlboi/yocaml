@@ -30,7 +30,9 @@
 
 (**/**)
 
-(** {eof@ocaml[# #install_printer Yocaml.Path.pp]eof} *)
+(** {eof@ocaml[
+      # #install_printer Yocaml.Path.pp
+    ]eof} *)
 
 (**/**)
 
@@ -46,8 +48,8 @@ type fragment = string
 type t
 (** A path ([Path.t]) is just a line of fragments. Building paths that are
     "correct by construction" is an attractive idea, but it involves working
-    with more complicated types. We prefer to use {{!module:Eff} Effect
-    interpretation} to deal with incorrect path errors. *)
+    with more complicated types. We prefer to use
+    {{!module:Eff} Effect interpretation} to deal with incorrect path errors. *)
 
 (** {1 Path manipulation} *)
 
@@ -149,8 +151,7 @@ val relocate : into:t -> t -> t
     {eof@ocaml[
       # relocate ~into:(rel ["foo"; "bar"]) (rel ["bar"; "index.html"]) ;;
       - : t = ./foo/bar/bar/index.html
-    ]eof}
-*)
+    ]eof} *)
 
 (** {1 Utils} *)
 

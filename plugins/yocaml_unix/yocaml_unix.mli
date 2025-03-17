@@ -41,7 +41,8 @@ val serve :
   -> unit
 (** [serve ?level ?custom_error_handler ~target ~port program] serve the
     directory [target] statically and re-run [program] on each refresh. If the
-    user want to set-up a custom reporter, the [level flag] should be ignored. *)
+    user want to set-up a custom reporter, the [level flag] should be ignored.
+*)
 
 (** {1 Runtime} *)
 

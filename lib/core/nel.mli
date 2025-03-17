@@ -106,7 +106,8 @@ val mapi : (int -> 'a -> 'b) -> 'a t -> 'b t
     second argument. *)
 
 val rev_map : ('a -> 'b) -> 'a t -> 'b t
-(** [rev_map f nel] is a more efficient way of making [Nel.(rev (map f nel))]. *)
+(** [rev_map f nel] is a more efficient way of making [Nel.(rev (map f nel))].
+*)
 
 val rev_mapi : (int -> 'a -> 'b) -> 'a t -> 'b t
 (** [rev_mapi f nel] same as {!val:rev_map} but the function is applied to the
@@ -117,7 +118,8 @@ val concat_map : ('a -> 'b t) -> 'a t -> 'b t
 (** [concat_map f nel] is [Nel.concat (Nel.map f nel)]. *)
 
 val flat_map : ('a -> 'b t) -> 'a t -> 'b t
-(** [flat_map f nel] same as {!val:concat_map} (present for convention reason). *)
+(** [flat_map f nel] same as {!val:concat_map} (present for convention reason).
+*)
 
 val concat_mapi : (int -> 'a -> 'b t) -> 'a t -> 'b t
 (** [concat_mapi f nel] same as {!val:concat_map} but the function is applied to
@@ -126,8 +128,7 @@ val concat_mapi : (int -> 'a -> 'b t) -> 'a t -> 'b t
 
 val fold_left : ('acc -> 'a -> 'acc) -> 'acc -> 'a t -> 'acc
 (** [fold_left reducer default nel] is
-    [fold_left f init [b1; ...; bn] is f (...
-    (f (f init b1) b2) ...) bn]. *)
+    [fold_left f init [b1; ...; bn] is f (... (f (f init b1) b2) ...) bn]. *)
 
 val fold_lefti : (int -> 'acc -> 'a -> 'acc) -> 'acc -> 'a t -> 'acc
 (** [fold_lefti f default nel] same as {!val:fold_left} but the function is
@@ -136,8 +137,7 @@ val fold_lefti : (int -> 'acc -> 'a -> 'acc) -> 'acc -> 'a t -> 'acc
 
 val fold_right : ('a -> 'acc -> 'acc) -> 'a t -> 'acc -> 'acc
 (** [fold_right f nel default] is
-    [fold_right f [a1; ...; an] init is f a1 (f a2
-    (... (f an init) ...))]. *)
+    [fold_right f [a1; ...; an] init is f a1 (f a2 (... (f an init) ...))]. *)
 
 val fold_righti : (int -> 'a -> 'acc -> 'acc) -> 'a t -> 'acc -> 'acc
 (** [fold_righti f nel default] same as {!val:fold_right} but the function is

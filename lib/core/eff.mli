@@ -366,8 +366,8 @@ val read_file_with_metadata :
   -> on:filesystem
   -> Path.t
   -> ('a * string) t
-(** [read_file_with_metadata (module P) (module R) ?extraction_strategy ~on path]
-    reads a file located by a [path] on a data source ([on]) and uses an
+(** [read_file_with_metadata (module P) (module R) ?extraction_strategy ~on
+     path] reads a file located by a [path] on a data source ([on]) and uses an
     [extraction_strategy] to separate the metadata from the content and
     validates the metadata according to a
     {!module-type:Yocaml.Required.DATA_PROVIDER}, [P], using the description

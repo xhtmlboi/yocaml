@@ -18,8 +18,8 @@
     {{:https://en.wikipedia.org/wiki/S-expression} S-expression} that support
     serialization to
     {{:https://en.wikipedia.org/wiki/Canonical_S-expressions} Canonical
-      S-Expressions} used to serialise (and persist to disk) arbitrary OCaml
-    data structures.
+     S-Expressions} used to serialise (and persist to disk) arbitrary OCaml data
+    structures.
 
     As the heart of YOCaml is designed to be as small as possible. This is a
     manual reimplementation.*)

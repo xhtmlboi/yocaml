@@ -35,5 +35,6 @@ module Toc : sig
 
   val to_html : ?ol:bool -> ('a -> string) -> (string * 'a) t -> string option
   (** [to_html ?ol label_to_string toc_of_id_and_label] from a table of contents
-      build on top of a list of [id * label], generate the corresponding HTML. *)
+      build on top of a list of [id * label], generate the corresponding HTML.
+  *)
 end

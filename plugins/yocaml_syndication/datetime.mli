@@ -14,7 +14,8 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-(** An extension of {!type:Yocaml.Archetype.Datetime.t} with Timezone support. *)
+(** An extension of {!type:Yocaml.Archetype.Datetime.t} with Timezone support.
+*)
 
 (** {1 Types} *)
 

@@ -60,8 +60,8 @@ let%expect_test "Pretty-printing a simple xml document" =
     <element>Hello World</element>
     |}]
 
-let%expect_test "Pretty-printing a simple xml document with custom encoding \
-                 and version" =
+let%expect_test
+    "Pretty-printing a simple xml document with custom encoding and version" =
   let open Xml in
   let document =
     document ~version:"2.0" ~encoding:"utf-16" ~standalone:true

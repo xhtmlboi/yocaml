@@ -60,7 +60,7 @@ module Action = Action
 
     Modules relating to the
     {{:https://v2.ocaml.org/releases/5.1/htmlman/effects.html#s%3Aeffect-handlers}
-      abstraction and performance of effects}. *)
+     abstraction and performance of effects}. *)
 
 module Eff = Eff
 module Runtime = Runtime
