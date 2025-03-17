@@ -19,7 +19,8 @@ let csexp =
   let atom = small_string ~gen:printable |> map Yocaml.Sexp.atom in
   let node self n = small_list (self (n / 10)) |> map Yocaml.Sexp.node in
   fix (fun self -> function
-    | 0 -> atom | n -> frequency [ (1, atom); (5, node self n) ])
+    | 0 -> atom
+    | n -> frequency [ (1, atom); (5, node self n) ])
   |> sized
 
 let alphanumeric =
@@ -33,7 +34,8 @@ let sexp =
   in
   let node self n = small_list (self (n / 10)) |> map Yocaml.Sexp.node in
   fix (fun self -> function
-    | 0 -> atom | n -> frequency [ (1, atom); (5, node self n) ])
+    | 0 -> atom
+    | n -> frequency [ (1, atom); (5, node self n) ])
   |> sized
 
 let path =

@@ -28,32 +28,39 @@
 type days = Mon | Tue | Wed | Thu | Fri | Sat | Sun
 
 (** Type describing the cloud protocol.
-    @see <https://www.rssboard.org/rss-specification#ltcloudgtSubelementOfLtchannelgt> *)
+    @see <https://www.rssboard.org/rss-specification#ltcloudgtSubelementOfLtchannelgt>
+*)
 type cloud_protocol = Xml_rpc | Soap | Http_post
 
 type cloud
 (** Type describing the cloud attribute.
-    @see <https://www.rssboard.org/rss-specification#ltcloudgtSubelementOfLtchannelgt> *)
+    @see <https://www.rssboard.org/rss-specification#ltcloudgtSubelementOfLtchannelgt>
+*)
 
 type enclosure
 (** Type describing the enclosure attribute.
-    @see <https://www.rssboard.org/rss-specification#ltenclosuregtSubelementOfLtitemgt> *)
+    @see <https://www.rssboard.org/rss-specification#ltenclosuregtSubelementOfLtitemgt>
+*)
 
 type guid
 (** Type describing the guid attribute.
-    @see <https://www.rssboard.org/rss-specification#ltguidgtSubelementOfLtitemgt> *)
+    @see <https://www.rssboard.org/rss-specification#ltguidgtSubelementOfLtitemgt>
+*)
 
 type guid_strategy
 (** Type describing the guid inference attribute.
-    @see <https://www.rssboard.org/rss-specification#ltguidgtSubelementOfLtitemgt> *)
+    @see <https://www.rssboard.org/rss-specification#ltguidgtSubelementOfLtitemgt>
+*)
 
 type source
 (** Type describing the source attribute.
-    @see <https://www.rssboard.org/rss-specification#ltsourcegtSubelementOfLtitemgt> *)
+    @see <https://www.rssboard.org/rss-specification#ltsourcegtSubelementOfLtitemgt>
+*)
 
 type image
 (** Type describing the image attribute.
-    @see <https://www.rssboard.org/rss-specification#ltimagegtSubelementOfLtchannelgt> *)
+    @see <https://www.rssboard.org/rss-specification#ltimagegtSubelementOfLtchannelgt>
+*)
 
 type item
 (** Type describing an item.
@@ -69,11 +76,13 @@ val cloud :
   -> register_procedure:string
   -> cloud
 (** Type describing the cloud attribute.
-    @see <https://www.rssboard.org/rss-specification#ltcloudgtSubelementOfLtchannelgt> *)
+    @see <https://www.rssboard.org/rss-specification#ltcloudgtSubelementOfLtchannelgt>
+*)
 
 val enclosure : url:string -> media_type:Media_type.t -> length:int -> enclosure
 (** Type describing the enclosure attribute.
-    @see <https://www.rssboard.org/rss-specification#ltenclosuregtSubelementOfLtitemgt> *)
+    @see <https://www.rssboard.org/rss-specification#ltenclosuregtSubelementOfLtitemgt>
+*)
 
 val guid_from_title : guid_strategy
 (** Infer GUID from the item title. *)
@@ -83,11 +92,13 @@ val guid_from_link : guid_strategy
 
 val guid : is_permalink:bool -> string -> guid_strategy
 (** Build a guid.
-    @see <https://www.rssboard.org/rss-specification#ltguidgtSubelementOfLtitemgt> *)
+    @see <https://www.rssboard.org/rss-specification#ltguidgtSubelementOfLtitemgt>
+*)
 
 val source : title:string -> url:string -> source
 (** Build a sourcee.
-    @see <https://www.rssboard.org/rss-specification#ltsourcegtSubelementOfLtitemgt> *)
+    @see <https://www.rssboard.org/rss-specification#ltsourcegtSubelementOfLtitemgt>
+*)
 
 val image :
      title:string
@@ -99,7 +110,8 @@ val image :
   -> unit
   -> image
 (** Build an image.
-    @see <https://www.rssboard.org/rss-specification#ltimagegtSubelementOfLtchannelgt> *)
+    @see <https://www.rssboard.org/rss-specification#ltimagegtSubelementOfLtchannelgt>
+*)
 
 val item :
      ?author:Person.t

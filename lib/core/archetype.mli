@@ -129,7 +129,8 @@ module Datetime : sig
     (** [a = b] returns [true] if [a] equal [b], [false] otherwise. *)
 
     val ( <> ) : t -> t -> bool
-    (** [a <> b] returns [true] if [a] is not equal to [b], [false] otherwise. *)
+    (** [a <> b] returns [true] if [a] is not equal to [b], [false] otherwise.
+    *)
 
     val ( > ) : t -> t -> bool
     (** [a > b] returns [true] if [a] is greater than [b], [false] otherwise. *)
@@ -172,7 +173,8 @@ module Datetime : sig
 
   val pp_rfc3339 : ?tz:string -> unit -> Format.formatter -> t -> unit
   (** Pretty printer according to the
-      {{:https://datatracker.ietf.org/doc/html/rfc3339} RFC822} specification. *)
+      {{:https://datatracker.ietf.org/doc/html/rfc3339} RFC822} specification.
+  *)
 
   val dummy : t
   (** A dummy datetime. *)
@@ -309,7 +311,8 @@ module Articles : sig
       the flag is set to [false]. *)
 
   val from_page : (Page.t * (Path.t * Article.t) list, t) Task.t
-  (** [from_page articles page] transforms a regular page into an article index. *)
+  (** [from_page articles page] transforms a regular page into an article index.
+  *)
 
   val fetch :
        (module Required.DATA_PROVIDER)

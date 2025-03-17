@@ -16,8 +16,8 @@
 
 (** Describes an mostly compatible
     {{:https://github.com/mirage/ezjsonm/blob/master/lib/ezjsonm.ml#L18}
-      Ezjsonm} AST that acts as a generic AST for describing metadata that can
-    be exchanged between source documents and templates. To summarise, source
+     Ezjsonm} AST that acts as a generic AST for describing metadata that can be
+    exchanged between source documents and templates. To summarise, source
     metadata is ultimately projected into a value of type {!type:Yocaml.Data.t}
     and data injected into templates is projected from values of type
     {!type:Yocaml.Data.t}.
@@ -331,7 +331,8 @@ module Validation : sig
 
         Infix operators are used to trivially compose validators. If you have a
         complicated set of validation rules, it is advisable to build a
-        dedicated function to avoid making the validation rule complex to read. *)
+        dedicated function to avoid making the validation rule complex to read.
+    *)
 
     val ( & ) :
          ('a -> 'b validated_value)

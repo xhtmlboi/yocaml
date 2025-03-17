@@ -42,7 +42,8 @@ val lift : ?has_dynamic_dependencies:bool -> ('a -> 'b) -> ('a, 'b) t
 
 val id : ('a, 'a) t
 (** Task is in fact a Strong Profonctor, and therefore an Arrow, hence the
-    presence of an identity morphism, associated with an empty dependency set. *)
+    presence of an identity morphism, associated with an empty dependency set.
+*)
 
 (** {1 Composing tasks}
 
@@ -115,7 +116,8 @@ val first : ('a, 'b) t -> ('a * 'c, 'b * 'c) t
 (** [first t] expand the arrow to act only on the first part of the product. *)
 
 val second : ('a, 'b) t -> ('c * 'a, 'c * 'b) t
-(** [second t] expand the arrow to act only on the second part of the product. *)
+(** [second t] expand the arrow to act only on the second part of the product.
+*)
 
 val uncurry : ('a, 'b -> 'c) t -> ('a * 'b, 'c) t
 (** Uncurry an arrow. *)
@@ -338,7 +340,8 @@ val empty_body : unit -> ('a, 'a * string) t
 (** An arrow that attach an empty body *)
 
 val const : 'a -> ('b, 'a) t
-(** [const x] is an arrow that discard the previous output to replace-it by [k]. *)
+(** [const x] is an arrow that discard the previous output to replace-it by [k].
+*)
 
 val with_dynamic_dependencies : Path.t list -> ('a, 'a * Deps.t) t
 (** [with_dynamic_dependencies dependenices_list] allows to add a set of dynamic

@@ -24,14 +24,12 @@
 
 (**/**)
 
-(**
-    {eof@ocaml[
-    # #install_printer Yocaml.Cmd.pp ;;
-    # #install_printer Yocaml.Cmd.pp_arg ;;
-    # #install_printer Yocaml.Path.pp ;;
-    # open Yocaml.Cmd ;;
-    ]eof}
-*)
+(** {eof@ocaml[
+      # #install_printer Yocaml.Cmd.pp ;;
+      # #install_printer Yocaml.Cmd.pp_arg ;;
+      # #install_printer Yocaml.Path.pp ;;
+      # open Yocaml.Cmd ;;
+    ]eof} *)
 
 (**/**)
 
@@ -49,18 +47,16 @@
     watched to form a dependency set).
 
     {eof@ocaml[
-    # make "a-complicated_command" [
-         flag "f";
-         flag "w";
-         param ~suffix:"=" "priority" @@ s "high";
-         param "into" @@ w (Yocaml.Path.rel ["foo"; "bar"; "baz"]);
-         arg @@ list ["a"; "b"; "c"; "d"]
-      ] ;;
-    - : t =
-    a-complicated_command -f -w --priority=high --into ./foo/bar/baz a b c d
-    ]eof}
-
-*)
+      # make "a-complicated_command" [
+           flag "f";
+           flag "w";
+           param ~suffix:"=" "priority" @@ s "high";
+           param "into" @@ w (Yocaml.Path.rel ["foo"; "bar"; "baz"]);
+           arg @@ list ["a"; "b"; "c"; "d"]
+        ] ;;
+      - : t =
+      a-complicated_command -f -w --priority=high --into ./foo/bar/baz a b c d
+    ]eof} *)
 
 type t
 (** Describe a full command. *)
@@ -82,15 +78,12 @@ val flag : ?prefix:string -> string -> arg
 (** [flag ?prefix name] build a shell flag. The default [prefix] is [-]. Ie:
     [flag "foo"] is ["-foo"], but [flag ~prefix:"--T" "foo"] is ["--Tfoo"].
 
-
     {eof@ocaml[
-    # flag "foo" ;;
-    - : arg = -foo
-    # flag ~prefix:"--T" "foo" ;;
-    - : arg = --Tfoo
-    ]eof}
-
-*)
+      # flag "foo" ;;
+      - : arg = -foo
+      # flag ~prefix:"--T" "foo" ;;
+      - : arg = --Tfoo
+    ]eof} *)
 
 val param : ?prefix:string -> ?suffix:string -> string -> value -> arg
 (** [param ?prefix ?suffix key value] build a shell labeled argument. The
@@ -100,12 +93,11 @@ val param : ?prefix:string -> ?suffix:string -> string -> value -> arg
     [param ~prefix:"--T" ~suffix:"=" "foo" (int 10)] is [--Tfoo=10].
 
     {eof@ocaml[
-    # param "foo" @@ string "bar" ;;
-    - : arg = --foo bar
-    # param ~prefix:"--T" ~suffix:"=" "foo" @@ int 10 ;;
-    - : arg = --Tfoo=10
-    ]eof}
-*)
+      # param "foo" @@ string "bar" ;;
+      - : arg = --foo bar
+      # param ~prefix:"--T" ~suffix:"=" "foo" @@ int 10 ;;
+      - : arg = --Tfoo=10
+    ]eof} *)
 
 val arg : value -> arg
 (** [arg x] create a plain argument. Ie: [arg (string "foo")] is [foo]. Value
@@ -175,17 +167,15 @@ val deps_of : t -> Path.t list
 (** [deps_of cmd] gives the set of observed dependencies. For example :
 
     {eof@ocaml[
-    # deps_of @@ make "foo" [
-         param "input"  @@ w (Yocaml.Path.rel ["a"; "b"; "c.txt"])
-       ; param "with"   @@ w (Yocaml.Path.rel ["deps.txt"])
-       ; param "output" @@ p (Yocaml.Path.rel ["out"; "abc.txt"])
-      ] ;;
-    - : Yocaml.Path.t list = [./a/b/c.txt; ./deps.txt]
+      # deps_of @@ make "foo" [
+           param "input"  @@ w (Yocaml.Path.rel ["a"; "b"; "c.txt"])
+         ; param "with"   @@ w (Yocaml.Path.rel ["deps.txt"])
+         ; param "output" @@ p (Yocaml.Path.rel ["out"; "abc.txt"])
+        ] ;;
+      - : Yocaml.Path.t list = [./a/b/c.txt; ./deps.txt]
     ]eof}
 
-    (The output path is not watched).
-
-*)
+    (The output path is not watched). *)
 
 (** {1 Helpers} *)
 

@@ -106,7 +106,8 @@ val node : ?ns:string -> name:string -> ?attr:Attr.t list -> node list -> node
 (** Describesa node that contains nested nodes. *)
 
 val namespace : ns:string -> node -> node
-(** [namespace ~ns node] adds a namespace to the node and every node children. *)
+(** [namespace ~ns node] adds a namespace to the node and every node children.
+*)
 
 val opt : node option -> node
 (** [opt node] conditionnally adds [node]. *)

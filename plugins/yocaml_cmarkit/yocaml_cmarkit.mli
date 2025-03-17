@@ -46,7 +46,8 @@ val to_html_with_toc :
   -> unit
   -> (string, string option * string) Yocaml.Task.t
 (** Same as [to_html] but it returns a pair where the first argument is an HTML
-    representation of the table of contents, and the second one is the document. *)
+    representation of the table of contents, and the second one is the document.
+*)
 
 val content_to_html :
   ?strict:bool -> ?safe:bool -> unit -> ('a * string, 'a * string) Yocaml.Task.t

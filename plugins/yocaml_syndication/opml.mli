@@ -16,7 +16,7 @@
 
 (** Implementation of the OPML (1 and 2) specification documented here:
     - {{:https://archive.wikiwix.com/cache/index2.php?url=http%3A%2F%2Fdev.opml.org%2Fspec1.html#federation=archive.wikiwix.com&tab=url}
-        OPML 1.0}
+       OPML 1.0}
     - {{:http://opml.org/spec2.opml} OPML 2.0}
 
     In fact, a document complying with the OPML2 specification is broadly
@@ -101,7 +101,8 @@ val to_opml2 : ?encoding:string -> ?standalone:bool -> t -> Xml.t
 
 val to_opml1 : ?encoding:string -> ?standalone:bool -> t -> Xml.t
 (** Generates an OPML stream in accordance with specification 1.
-    @see <https://archive.wikiwix.com/cache/index2.php?url=http%3A%2F%2Fdev.opml.org%2Fspec1.html#federation=archive.wikiwix.com&tab=url> *)
+    @see <https://archive.wikiwix.com/cache/index2.php?url=http%3A%2F%2Fdev.opml.org%2Fspec1.html#federation=archive.wikiwix.com&tab=url>
+*)
 
 (** {1 Arrows for building a feed} *)
 

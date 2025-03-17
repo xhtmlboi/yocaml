@@ -14,7 +14,7 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-type 'a t = ( :: ) of ('a * 'a list)
+type 'a t = ( :: ) of 'a * 'a list
 
 let singleton x = [ x ]
 let cons x (y :: z) = x :: y :: z
