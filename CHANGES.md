@@ -1,5 +1,6 @@
 ### Next
 
+- Some minor fixes (by [xvw](https://xvw.lol))
 - Update to git-kv 1.0.2 and work around last modified behavior inside a `Git_kv.change_and_push` call (by [reynir](https://reyn.ir))
 
 
