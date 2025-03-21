@@ -20,3 +20,4 @@ setup.log
 *.install
 _opam/
 *.exe
+_html/
