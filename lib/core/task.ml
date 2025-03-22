@@ -211,6 +211,7 @@ end
 module Dynamic = struct
   let on_content arr = first (Static.on_content arr)
   let on_metadata arr = first (Static.on_metadata arr)
+  let on_static arr = first arr
   let on_dependencies arr = second arr
   let keep_content () = lift (fun ((_, c), d) -> (c, d))
   let empty_body () = lift (fun (x, d) -> ((x, ""), d))

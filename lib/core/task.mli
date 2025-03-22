@@ -388,6 +388,14 @@ module Dynamic : sig
   (** [on_metadata arr] lift an arrow to deal only with the associated metadata
       of a task. *)
 
+  val on_static :
+       ('meta_in * 'content_in, 'meta_out * 'content_out) t
+    -> ( ('meta_in * 'content_in) * Deps.t
+       , ('meta_out * 'content_out) * Deps.t )
+       t
+  (** [on_static arr] lift an arrow to deal only with the static part (the
+      couple [meta/content]). *)
+
   val on_dependencies :
        (Deps.t, Deps.t) t
     -> (('meta * 'content) * Deps.t, ('meta * 'content) * Deps.t) t
