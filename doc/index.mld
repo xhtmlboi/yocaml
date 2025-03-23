@@ -1,9 +1,15 @@
+@children_order introduction data_validation
+
 {0 YOCaml}
 
-{!module:Yocaml} is a framework for building construction rules. Its
-implementation is biased towards facilitating the construction of static site
-(or document) generators. Conceptually, it is fairly close to version 3 of
-{{:https://jaspervdj.be/hakyll/} Hakyll}, a generator written in
+{{!module:Yocaml} YOCaml} is a framework for building static site
+generators, written in OCaml. It provides a flexible and efficient way
+to generate static websites by leveraging OCaml’s powerful type system
+and functional programming features. YOCaml simplifies content
+processing, templating, and site generation, making it a great choice
+for developers who want a statically typed and functional approach to
+static site generation. Conceptually, it is fairly close to version 3
+of {{:https://jaspervdj.be/hakyll/} Hakyll}, a generator written in
 {{:https://www.haskell.org/} Haskell}.
 
 This page serves as an index of documents describing and justifying certain {i
@@ -16,19 +22,22 @@ documentation root}.
 You can refer to the examples at the root of the source repository to
 see extensively documented examples of how to use YOCaml.
 
+{1 General guides}
+
+A set of general guides for building static sites with YOCaml.
+
+- {{!page:introduction} Installation and start-up}, a guide
+  explaining how to install YOCaml and the various concepts needed to
+  get a project off to a good start.
+
+
 {1 Specific guides}
 
-{{!page:data_validation} Generic validation of structured data}
+A set of guides covering specific cases related to the use of YOCaml.
 
-YOCaml allows the use of {b a collection of generic formats}, so it must
-be able to validate arbitrary data. In this guide, we'll look at how to
-handle the validation of data (structured in the form of key values,
-rather like a [JSON] document) and how to project it into controllable
-OCaml types.
-
-{1 Design choices}
-
-A few notes about some design choices (which will probably be expanded
-upon in specific blog posts).
-
-- {{!page:effect} Effects abstraction}
+- {{!page:data_validation} Generic validation of structured data},
+YOCaml allows the use of {b a collection of generic formats}, so it
+must be able to validate arbitrary data. In this guide, we'll look at
+how to handle the validation of data (structured in the form of key
+values, rather like a [JSON] document) and how to project it into
+controllable OCaml types.

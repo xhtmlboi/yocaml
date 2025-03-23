@@ -1,0 +1,404 @@
+{0 Installation and start-up}
+
+In this first guide, we'll look at the different points you need to
+understand/know in order to get a YOCaml project off to a good start,
+and cover a little terminology. In broad terms, we’ll be setting up a
+development environment with YOCaml {i from scratch}, and we’ll describe a
+programme that uses YOCaml to log the message [Hello From YOCaml] to
+the standard output. Nothing too ambitious! The tutorial assumes that
+you are familiar with the OCaml toolchain and that your development
+environment {{:https://ocaml.org/install#linux_mac_bsd} is correctly
+configured}, including the presence of available tools:
+
+- {{:https://opam.ocaml.org/doc/Install.html} OPAM}, the OCaml package manager
+- {{:https://dune.build/} Dune}, the OCaml (recommanded) build-system
+- A decent {{:https://ocaml.org/docs/set-up-editor} editor support}.
+
+{1 Aside note about switches}
+
+A common practice is to sandbox,
+{{:https://ocaml.org/docs/opam-switch-introduction} using switches},
+your project so as not to share dependencies with your other
+projects. All the tutorials are built in specific switches, but if you
+are familiar with the OCaml ecosystem (and OPAM), you are of course
+free to organise your dependencies as you see fit.
+
+{2 Create an empty switch for the project}
+
+Although YOCaml works with all versions [>= 5.1.0], the version used
+for the various tutorials is [5.3.0]. You can start an OCaml project
+in this way:
+
+{@shell[
+# mkdir my-first-blog
+# cd my-first-blog
+# opam switch create . 5.3.0 -y
+# opam install dune
+]}
+
+- We start by creating a directory for our project, in this case [my-first-blog]
+- Then we move into this directory
+- Then we create a switch for version [5.3.0] in our freshly created directory
+- Then we install [dune], which we'll need to build our OPAM file to centralise the expression of our dependencies via the [dune-project] file
+
+Our working environment is ready to build our first YOCaml
+application!
+
+{1 Setting up the project}
+
+This part may seem a little overdone, as it would be possible to start
+the project in a slightly {i ad-hoc} way by launching the appropriate
+commands as we go along. But the advantage of doing a clean set-up is
+that it will become easy for anyone to simply clone your project and
+build it locally, which has the effect of potentially simplifying the
+setting up of the CI to easily deploy the site.
+
+Although there are methods for initialising a project via the Dune CLI
+(using [dune init]), we're going to create the skeleton of our blog
+generator by hand. Firstly, we're going to build a [dune-project] that
+{b describes our project} and {b lists all its dependencies}. At the
+root of [my-first-blog], let's create a file [dune-project] filled in
+like this:
+
+{[
+(lang dune 3.16)
+(name blog)
+(version dev)
+(generate_opam_files)
+(executables_implicit_empty_intf)
+
+(source (github username/blog))
+(license MIT)
+(authors "your name <you@domain.com>")
+(maintainers "your name <you@domain.com>")
+
+(package
+ (name blog)
+ (synopsis "My first blog using YOCaml")
+ (description "My first personal blog using YOCaml for fun and profit")
+ (depends
+  (ocaml (>= 5.3.0))))
+]}
+
+The first section of the file describes general information about the
+project. The two primitives that can be a little confusing are:
+
+- [(generate_opam_files)] whose role is to rebuild the [blog.opam] file each time the [dune build] command is run
+- [(executables_implicit_empty_intf)] will generate empty interfaces for binaries, allowing you to take advantage of encapsulation to track unused functions (as a binary is essentially the execution of toplevel functions of the following form [let () = ...]
+
+The second section describes additional metadata. Don't forget to
+change the source repository (which will generate additional
+information, such as the project bug-tracker) and the list of authors
+and maintainers. It is also possible to describe the license using the
+SPDX standard to specify a {{:https://spdx.dev/use/overview/} license
+identifier}.
+
+The last section simply describes the [blog] package, our future
+binary, which we will use to build our site.
+
+Running the [dune build] command should have two effects:
+- create the file [blog.opam] (and a directory [_build] containing the compilation artefacts)
+- Complaining that the [blog] package is not associated with any stanza, we can ignore this error for the time being, but it will soon be fixed.
+
+{2 In a fresh switch}
+
+If we're in a new switch, we'll probably want to set up a development
+environment. Here's the one I usually use. Let's update our [dune-project]:
+
+{@diff[
+ (package
+  (name blog)
+  (synopsis "My first blog using YOCaml")
+  (description "My first personal blog using YOCaml for fun and profit")
+  (depends
+-  (ocaml (>= 5.3.0))))
++  (ocaml (>= 5.3.0))
++
++  ;; Dev setup
++  (utop :with-dev-setup)
++  (ocamlformat :with-dev-setup)
++  (ocp-indent :with-dev-setup)
++  (merlin :with-dev-setup)
++  (ocaml-lsp-server :with-dev-setup)))
+]}
+
+In a well-configured development environment, via Vim, Emacs or
+VSCode, all these packages provide a very smooth development
+experience in OCaml:
+
+- {{:https://github.com/ocaml-community/utop} Utop} offers a REPL that works well with Dune and offers advanced functions (such as completion)
+- {{:https://github.com/ocaml-ppx/ocamlformat} OCamlformat} allows you to format code according to a profile
+- {{:https://github.com/OCamlPro/ocp-indent} Ocp-indent} is used to tell the editor where to place the cursor after a line break 
+- {{:https://github.com/ocaml/merlin} Merlin} provides IDE services for Emacs and Vim
+- {{:https://github.com/ocaml/ocaml-lsp} OCaml-lsp-server} enables IDE services to be provided for publishers using {{:https://microsoft.github.io/language-server-protocol/} LSP}
+
+Having both [Merlin] and [OCaml-lsp-server] may seem redundant, but
+the benefit of this approach is that it ensures your development
+environment works for nearly everyone, whether they use an editor set
+up with Merlin or one configured for LSP. Moreover, as OCaml-lsp
+relies on the libraries provided by Merlin, it’s a lightweight
+solution that helps maximise compatibility across different machines
+and contexts!
+
+This is the set of dependencies I typically include in all my
+projects, and it strikes me as sufficiently robust.
+
+{2 Setting up formatting}
+
+Since having automatic code formatting is very convenient, we can
+simply add an empty [.ocamlformat] file at the root of our
+project. This will trigger [ocamlformat]. Of course, you can
+{{:https://github.com/ocaml-ppx/ocamlformat?tab=readme-ov-file#usage}
+fine-tune its configuration} to suit your preferences!
+
+Now, we can run the following command to install our dependencies in
+our current switch:
+
+{@shell[
+# opam install . --deps-only --with-dev-setup -y
+]}
+
+{1 A gentle introduction to runtime}
+
+Now that  our environment  is up  and running,  let's build  our first
+YOCaml programme!  To do this, we’ll  start by adding [yocaml]  to our
+dependencies. At  the time of  writing this tutorial,  the recommended
+version is  [2.1.0] or  later. Without further  ado, let’s  update our
+[dune-project]:
+
+{@diff[
+ (package
+  (name blog)
+  (synopsis "My first blog using YOCaml")
+  (description "My first personal blog using YOCaml for fun and profit")
+  (depends
+   (ocaml (>= 5.3.0))))
+   (ocaml (>= 5.3.0))
+ -
+ + ;; YOCaml setup
+ + (yocaml (>= 2.1.0))
+ + 
+   ;; Dev setup
+   (utop :with-dev-setup)
+   (ocamlformat :with-dev-setup)
+   (ocp-indent :with-dev-setup)
+   (merlin :with-dev-setup)
+   (ocaml-lsp-server :with-dev-setup)))
+]}
+
+Let's update our file ([dune build]) and install the missing
+dependencies:
+
+{@shell[
+# dune build
+# opam install . --deps-only --with-dev-setup -y
+]}
+
+However, this dependency is not sufficient to run YOCaml
+programmes. Indeed, YOCaml is a very generic framework. The [yocaml]
+library only allows you to describe programmes; however, to execute a
+programme description, a runtime is needed. YOCaml has several
+runtimes, and for the purposes of this tutorial, we will use the
+[yocaml_eio] runtime rather than the [yocaml_unix] runtime. In
+practice, both runtimes are identical. So, if you understand how to
+use [yocaml_eio], switching to [yocaml_unix] is straightforward!
+
+In practice, the concept of a runtime simply explains how we interact
+with the file system. Behind the scenes, YOCaml uses
+{{:https://ocaml.org/manual/5.3/effects.html} {b user-defined
+effects}}, allowing a YOCaml programme to be used in various contexts
+(for example, in unit testing, where the file system is entirely
+virtual, or, if you're feeling inventive, in a web browser, using
+LocalStorage as the file system, or more realistically, in a Git
+repository, via [yocaml_git]). In the introductory tutorials, we will
+focus on a Unix-like file system through
+{{:https://github.com/ocaml-multicore/eio} Eio}.
+
+So let's add to our file [yocaml_eio]:
+
+{@diff[
+ (package
+  (name blog)
+  (synopsis "My first blog using YOCaml")
+  (description "My first personal blog using YOCaml for fun and profit")
+  (depends
+   (ocaml (>= 5.3.0))))
+   (ocaml (>= 5.3.0))
+  
+   ;; YOCaml setup
+   (yocaml (>= 2.1.0))
+ - 
+ + (yocaml_eio (>= 2.1.0))
+ +
+   ;; Dev setup
+   (utop :with-dev-setup)
+   (ocamlformat :with-dev-setup)
+   (ocp-indent :with-dev-setup)
+   (merlin :with-dev-setup)
+   (ocaml-lsp-server :with-dev-setup)))
+]}
+
+And our file ([dune build]) and install the missing dependencies,
+here, [yocaml_eio]:
+
+{@shell[
+# dune build
+# opam install . --deps-only --with-dev-setup -y
+]}
+
+We now have all the building blocks to describe our first YOCaml
+programme! We’ve quickly covered the concept of a runtime, but
+throughout the tutorials, we’ll aim to spend more time describing the
+features offered by the runtimes. For now, let’s just remember that a
+runtime allows us to execute a YOCaml programme. Without further ado,
+let’s initiate our [blog.exe] binary, which will, in the near future,
+be our blog generator!
+
+{1 Our first binary}
+
+It's time to fix the error telling us that we don't have a stanza
+attached to our [blog] package, and actually use the YOCaml API! It’s
+quite common to separate the library from the binary. However, for
+now, this separation would be a bit excessive. That said, I encourage
+you to keep in mind that, as YOCaml is a framework, you're free to
+structure your project however you like. For the sake of simplicity in
+our guides, we will generally focus on building just binaries. Another
+(implicit) convention in the OCaml community is to place the code for
+our binaries in a [bin/] directory:
+
+{@shell[
+# mkdir bin
+# touch bin/dune
+# touch bin/blog.ml
+]}
+
+First, we will modify [blog.ml] to make it print ["Hello World"] to
+the standard output:
+
+{@ocaml[
+let () = print_endline "Hello World"
+]}
+
+Now, let's describe the binary by attaching it to the [blog]
+stanza. To do this, let's fill in the [bin/dune] file like this:
+
+{[
+(executable
+ (public_name blog)
+ (libraries yocaml yocaml_eio))
+]}
+
+Normally, running [dune exec bin/blog.exe] at the root of the project
+should print ["Hello World"] to the standard output! Wonderful!
+
+{2 Logging using YOCaml}
+
+Right, now that we're confident our binary is working, let's use
+YOCaml to display something! YOCaml has a [log function] that allows
+us to log information to the standard output:
+{!val:Yocaml.Eff.log}. Let's use it to print our message:
+
+{@ocaml[
+open Yocaml
+
+let program () = Eff.log ~level:`Info "Hello From YOCaml!"
+]}
+
+The function takes a logging level as an argument (which can be
+[`App], [`Debug], [`Info], [`Warning] or [`Error], following some
+{{:https://ocaml.org/u/57f3e04d2ea9fc187e36eaa25a66bb18/logs/0.7.0/doc/Logs/index.html#usage}
+usual convention}) and a string to display. When we inspect the type
+of our [program] function, our editor informs us that it has the type
+[unit -> unit Yocaml.Eff.t].
+
+A programme of this type is, as briefly mentioned in the section
+explaining runtimes, a programme description. Therefore, we need to
+pass it to a function capable of executing our programme. Here, we
+will use an {b handler}. Here, since we are using the [Yocaml_eio]
+runtime, we will use the following function:
+
+{@ocaml[
+val run :
+     ?level:Yocaml_runtime.Log.level
+  -> ?custom_error_handler:
+       (Format.formatter -> Yocaml.Data.Validation.custom_error -> unit)
+  -> (unit -> unit Yocaml.Eff.t)
+  -> unit
+]}
+
+For now, we don't need to worry about the default arguments. The
+first, labelled [level], allows us to specify the minimum log level to
+display, while the second lets us define our own validation errors
+(which we won't be using at all in these tutorials). The interesting
+argument is the function [unit -> unit Yocaml.Eff.t]. Indeed, the role
+of the [run] function is to execute a programme description, just like
+the one we've defined a little earlier!
+
+{@ocaml[
+open Yocaml
+
+let program () = Eff.log ~level:`Info "Hello From YOCaml!"
+let () = Yocaml_eio.run program
+]}
+
+But if we try to run our programme with [dune exec bin/blog.exe], it
+compiles fine, yet nothing appears on the standard output! This is
+because, as we haven't specified a log level, YOCaml assumes the user
+will provide their own log reporter. Let's quickly specify the lowest
+log level, so everything is displayed on our standard output:
+[`Debug]:
+
+{@diff[
+  open Yocaml
+
+  let program () = Eff.log ~level:`Info "Hello From YOCaml!"
+- let () = Yocaml_eio.run program
++ let () = Yocaml_eio.run ~level:`Debug program
+]}
+
+Running the programme ([dune exec bin/blog.exe]) should now print the
+following message to the standard output: ["[INFO]Hello From
+YOCaml!"]. There we go! We've seen how to describe a very simple
+YOCaml programme and how to execute it within the [Eio] context. Now,
+we can move on to the next tutorial: how to create a proper blog!
+
+{1 A Readme}
+
+To allow external contributors to participate in your blog (for
+example, by fixing typos), it's common to write a README that
+describes how to build the blog locally. Here's an example you can
+consider, which you can, of course, modify to suit your needs:
+
+{@markdown[
+# My blog
+
+> Here are the sources for my personal website! It's written with
+> YOCaml, a highly versatile static site generator framework!
+
+## Build it locally
+
+Assuming you have a properly [set up OCaml development
+environment](https://ocaml.org/install#linux_mac_bsd), the recommended
+approach is to use a local switch to manage the project
+dependencies. Then, to install the dependencies and development
+dependencies locally, please run the following commands at the root of
+the project!
+
+```shell
+opam switch create . --deps-only --with-dev-setup -y
+```
+
+## Generate the site locally
+
+To generate the site locally, you can run the following command:
+
+```shell
+dune build bin/blog.exe
+```
+
+And the site will be generated in the `_www/` directory, at the root
+of the project. Enjoy!
+]}
+
+We’ve completed our first tutorial! We now have a project that will
+serve as a foundation for building a proper static blog, step by step.
