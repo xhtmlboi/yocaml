@@ -1,0 +1,33 @@
+{0 Your first blog}
+
+In this guide, we’ll walk through the process of creating our very
+first blog—a fully functional website featuring a custom stylesheet,
+templates (using the excellent
+{{:https://github.com/tategakibunko/jingoo} Jingoo} templating
+engine), articles and pages written in Markdown, an article index
+serving as the homepage, and an Atom feed for syndication. Along the
+way, we’ll familiarise ourselves with YOCaml’s terminology and key
+principles. By the end of this guide, I hope you’ll feel confident
+building your own site independently and exploring the documentation
+to push customisation as far as you wish!
+
+{1 Foreword}
+
+This course is based on the project setup covered in the
+{{!page:introduction} Introduction guide} and uses the concepts
+presented in the {{!page:key_concepts} key concepts section}. If you
+haven't read it yet, I encourage you to skim through it to ensure you
+start with a strong foundation.
+
+Since YOCaml is a framework, there are many ways to achieve the same
+result. I don’t claim that the approach presented here is the best or
+most efficient—its aim is simply to be the most accessible for
+learning YOCaml’s core concepts.
+
+Moreover, to keep things as clear as possible, we won’t dwell too much
+on signatures ([mli]). However, do keep in mind that a YOCaml project
+is just like any other OCaml project—you are free to structure it
+however you like. For a real-world project (beyond this educational
+example), it is, of course, advisable to enforce as many constraints
+as possible through encapsulation and well-defined interfaces.
+

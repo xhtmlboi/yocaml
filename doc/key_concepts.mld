@@ -1,0 +1,120 @@
+{0 Key concepts}
+
+Before we get down to the nitty-gritty of building our blog, we're
+going to look at the different {b pillars} that need to be implemented
+to build build YOCaml programs.
+
+{1 Effects}
+
+We saw earlier that, in order to be executed, you need to produce a
+programme, which is in fact a function of type [unit -> unit
+Yocaml.Eff.t]. In general, you don't need to worry about what's under
+the bonnet of YOCaml effects. You can think of them as a {i suspended
+computation}, waiting to be passed to a handler (our [Yocaml_eio.run]
+function). It is possible to simplify the sequencing of effectful
+operations by using {{:https://ocaml.org/manual/5.3/bindingops.html}
+the binding operators} (present in {!module:Yocaml.Eff.Syntax}, also
+included in {!module:Yocaml.Eff}):
+
+{@ocaml[
+let an_effectful_computation : unit -> unit Yocaml.Eff.t =
+  fun () ->
+    let* a = a_first_effectful_computation () in
+    let* b = a_second_effectful_computation a in
+    a_third_effectful_computation a b
+]}
+
+Even though YOCaml effects are a fundamental concept, in general, the
+general YOCaml API allows you to abstract them and you will quickly
+realise that the construction of a blog is often mechanical, allowing
+you to {i hide} this untimely use of effects!
+
+{1 Static (and dynamic) dependencies}
+
+The aim of YOCaml is to provide an expressive DSL for describing
+action. For example:
+
+- read the file [article.md]
+- converts the content of the file from Markdown to HTML
+- injects the content of the file into the template [layout.html].
+- writes everything to [output/article.html]
+
+In this example, we can denote static dependencies (i.e. dependencies
+that we know about, without needing to read the files or produce any
+effects). Here: [article.md] and [layout.html].
+
+YOCaml's computation model means that this action only needs to be
+executed {b if} [output/article.html] does not exist or its
+modification date is earlier than that of [article.md] or [layout.md].
+This ensures {b minimality} by executing only the necessary
+tasks. These kinds of dependencies are called {b static dependencies}.
+YOCaml also allows dynamic dependencies to be described, dependencies
+which are computed when an effect is executed.
+
+{1 Action}
+
+We found that YOCaml was very effective at tracking static
+dependencies, but it can also preserve a set of dynamic
+dependencies. To maintain these dynamic dependencies across different
+builds, YOCaml uses a cache. This cache of actions. In other words, an
+action is a function that takes a cache as an argument and returns a
+cache effect: [type action = Yocaml.Cache.t -> Yocaml.Cache.t
+Yocaml.Eff.t].
+
+The actions will be the different stages required to build a site. And
+they are generally sequenced in the main programme. As an action
+returns a cache wrapped in an effect, it is common to use the
+{!val:Yocaml.Eff.bind} operator (abbreviated as [>>=]) to sequence
+actions. For example:
+
+{@ocaml[
+let program () =
+  let open Yocaml.Eff.Infix in
+  Yocaml.Action.restore_cache cache_location
+  >>= action_a
+  >>= action_b
+  >>= action_c
+  >>= action_d
+  >>= Yocaml.Action.store_cache cache_location
+]}
+
+In this example, the {!val:Yocaml.Action.restore_cache} function will
+look for the cache in our filesystem (if it doesn't exist, the
+function will return an empty cache) and then we will sequentially
+perform [action_a], [action_b], [action_c] and [action_d] to finish by
+saving the cache once all the changes have been made.
+
+Note that the actions can be {{!val:Yocaml.Action.Batch} batched} and
+that they generally form the different explicit stages of a
+generation, for example: copying CSS files, copying images,
+transforming articles, etc.
+
+{2 Note on binding operators}
+
+We saw earlier that binding operators can be used to sequence
+effects. Even if, in general, it makes the code more explicit and
+readable, in this example, as we would like each action to return a
+cache and pass it to the next function, we find the infix operator
+more convenient. Using [let*], the code would look like this:
+
+{@ocaml[
+let program () =
+  let open Yocaml.Eff.Syntax in
+  let* cache = Yocaml.Action.restore_cache cache_location in
+  let* cache = action_a in
+  let* cache = action_b in
+  let* cache = action_c in
+  let* cache = action_d in
+  Yocaml.Action.store_cache cache_location
+]}
+
+The two formulations are identical, but the first is more
+concise. Don't forget that you can choose the wording you prefer, but
+in our examples, for the specific sequencing of actions, we'll use
+[>>=].
+
+{1 Task}
+
+The relationship between effects and actions is fairly explicit, but
+although we've skimmed over the notion of dependencies, the
+relationship between actions and dependencies seems more blurred.

@@ -360,7 +360,7 @@ Running the programme ([dune exec bin/blog.exe]) should now print the
 following message to the standard output: ["[INFO]Hello From
 YOCaml!"]. There we go! We've seen how to describe a very simple
 YOCaml programme and how to execute it within the [Eio] context. Now,
-we can move on to the next tutorial: how to create a proper blog!
+we can move on to the next tutorial: {!page:key_concepts}!
 
 {1 A Readme}
 
@@ -401,4 +401,5 @@ of the project. Enjoy!
 ]}
 
 We’ve completed our first tutorial! We now have a project that will
-serve as a foundation for building a proper static blog, step by step.
+serve as a foundation for {{!page:simple_blog} building a proper
+static blog}, step by step.

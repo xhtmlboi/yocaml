@@ -1,4 +1,4 @@
-@children_order introduction data_validation
+@children_order introduction key_concepts simple_blog data_validation
 
 {0 YOCaml}
 
@@ -29,6 +29,10 @@ A set of general guides for building static sites with YOCaml.
 - {{!page:introduction} Installation and start-up}, a guide
   explaining how to install YOCaml and the various concepts needed to
   get a project off to a good start.
+
+- {{!page:simple_blog} Your first blog}, A guide explaining how to
+  build your own blog, step by step, covering the key concepts related
+  to writing a static site generator with YOCaml.
 
 
 {1 Specific guides}
