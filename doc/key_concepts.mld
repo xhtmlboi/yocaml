@@ -1,8 +1,12 @@
 {0 Key concepts}
 
 Before we get down to the nitty-gritty of building our blog, we're
-going to look at the different {b pillars} that need to be implemented
-to build build YOCaml programs.
+going to look at the different {b pillars} to build YOCaml
+programs. Even though at times we may go into considerable detail to
+illustrate certain concepts, the goal is not to understand every
+single detail of the presented code but to grasp the overall
+idea. These examples will be extensively documented in the upcoming
+guides.
 
 {1 Effects}
 
@@ -84,7 +88,7 @@ function will return an empty cache) and then we will sequentially
 perform [action_a], [action_b], [action_c] and [action_d] to finish by
 saving the cache once all the changes have been made.
 
-Note that the actions can be {{!val:Yocaml.Action.Batch} batched} and
+Note that the actions can be {{!val:Yocaml.Action.batch} batched} and
 that they generally form the different explicit stages of a
 generation, for example: copying CSS files, copying images,
 transforming articles, etc.
@@ -117,4 +121,233 @@ in our examples, for the specific sequencing of actions, we'll use
 
 The relationship between effects and actions is fairly explicit, but
 although we've skimmed over the notion of dependencies, the
-relationship between actions and dependencies seems more blurred.
+relationship between actions and dependencies seems more
+blurred. That's because some actions take {{!module:Yocaml.Task}
+tasks} as arguments. A task is a particular example of a function
+(which maintains a set of static dependencies). For example, let's go
+back to our previous example, introduced in the section on static and
+dynamic dependencies:
+
+- read the file [article.md]
+- converts the content of the file from Markdown to HTML
+- injects the content of the file into the template [layout.html].
+- writes everything to [output/article.html]
+
+To fully understand the principle of tasks, we're going to implement
+it concretely, using the {!val:Yocaml.Action.Static.write_file}
+function. The fact that the function is in the [Static] module
+indicates that our function will not build dynamic dependencies. If we
+look at its type :
+
+{@ocaml[
+val write_file : Yocaml.Path.t
+               -> (unit, string) Yocaml.Task.t
+               -> Yocaml.Action.t
+]}
+
+We can see that the function takes a file path (we'll look at the
+notion of [Path] a little later), a task, i.e. a kind of function
+going from [unit] to [string], the [string] being the contents of the
+file, and that it returns an action (the function takes a cache and
+returns the modified cache wrapped in an effect). The task will
+transport the dependencies and the [write_file] function will decide
+whether to execute the task or not (depending on the cache and the
+file to be built).
+
+Several tasks can be found in the {!module:Yocaml.Pipeline} module
+and, in the same way as classic functions, tasks can be {b
+composed}. At first glance, tasks may seem a little complicated,
+because they are based on a rather frightening abstraction:
+{{:https://en.wikipedia.org/wiki/Arrow_(computer_science)} Arrows},
+and they require you to program in a {i pointfree} style. However, in
+the case of YOCaml, tasks are relatively trivial to use!
+
+{2 A First example, a copy action}
+
+To quickly understand how to use a trivial task, we're going to use
+the {!val:Yocaml.Action.Static.write_file} function to write an action
+whose role is to copy a file. To do this, we're going to use the
+{!val:Yocaml.Pipeline.read_file} task. [read_file] has the type
+[Path.t -> (unit, string) Task.t]. We pass the file path to the
+[read_file] function and it returns a task [(unit, string) Task.t],
+i.e. a task compatible with our [write_file] function.
+
+{@ocaml[
+let copy_file ~source ~target cache =
+  let pipeline = Yocaml.Pipeline.read_file source in
+  Yocaml.Action.Static.write_file target pipeline cache
+]}
+
+We now have an action which allows you to copy/paste a source file to
+a target, and which will only be executed if the source has been
+modified after the target (or if the target does not exist).
+
+{2 Composition of tasks}
+
+Our example isn't very realistic, because the action already exists in
+the standard YOCaml library ({!val:Yocaml.Action.copy_file}) (however,
+its implementation isn't particularly different from ours), but above
+all because it's very rare for our pipeline to invoke only one
+dependency. In fact, [('a, “b) Task.t] can be combined with [(”b, “c)
+Task.t], using the [>>>] operator, producing [(”a, ’c) Task.t]
+tasks. The {!module:Yocaml.Task} module has a multitude of operators
+for arbitrarily composing tasks, visible in the
+{!module:Yocaml.Task.Infix} module.
+
+So for example, [>>|] can compose a task with a regular function. Here
+is an example that copy a file (and uppercase the content of the file,
+and finally, reverse-it, because we can):
+
+{@ocaml[
+let copy_file ~source ~target cache =
+  let pipeline =
+    let open Yocaml.Task.Infix in
+    Yocaml.Pipeline.read_file source
+    >>| String.uppercase_ascii
+    >>| String.fold_left (fun acc char ->
+           String.make 1 char ^ acc
+        ) ""
+  in
+  Yocaml.Action.Static.write_file target pipeline cache
+]}
+
+The arbitrary composition of our tasks (and the combination with
+regular functions) gives us the basis for understanding how to create
+pipelines that are a little less artificial, for example, our example
+in the preamble to this section.
+
+{2 A Real World Example}
+
+Usually, when you build a blog, you want to read markdown files, which
+are associated with metadata (title, synopsis, publication date,
+etc.), written in any description language like Yaml, Toml, Json. For
+example, here is a markdown file with metadata expressed in Yaml:
+
+{@markdown[
+---
+title: My article title
+date: 2025-03-27
+synopsis:
+  Here is my first article
+---
+
+Here is the content of **my superb first article**. Do you know
+[OCaml](https://ocaml.org)?
+]}
+
+Our aim is to read a Markdown file, separate its metadata from its
+content (our Task will therefore work on a pair consisting of our set
+of metadata and a string, the file content), transform the file
+content from Markdown to HTML and then inject the content of our file
+and the set of metadata into a template. This is extremely close to
+the example proposed in the preamble to the section on tasks).
+
+{3 Read a file and its metadata}
+
+YOCaml has a pipeline for reading a file and its metadata:
+{!val:Yocaml.Pipeline.read_file_with_metadata}. Its signature may seem
+a little intimidating, but don't panic, we're going to break it down:
+
+{@ocaml[
+val read_file_with_metadata :
+     (module Required.DATA_PROVIDER)
+  -> (module Required.DATA_READABLE with type t = 'a)
+  -> ?extraction_strategy:Metadata.extraction_strategy
+  -> Path.t
+  -> (unit, 'a * string) Task.t
+]}
+
+- the [DATA_PROVIDER] module describes how to parse metadata. For
+  example, if it's Yaml, we can use the [Yocaml_yaml] module (but we
+  could have used [Yocaml_otoml] for example, if we wanted to work
+  with ToML).
+
+- The [DATA_READABLE] module describes how to validate data to ensure
+  that the file correctly declares the minimum required metadata. For
+  the sake of conciseness in this exercise, we will use a validator
+  provided by YOCaml, the module {!module:Yocaml.Archetype.Article}.
+
+- The [extraction_strategy] is a function that defines how to separate
+  content from its metadata. By default, YOCaml uses Jekyll, assuming
+  that files follow the same format as the example we provided, where
+  a file starts with [---] and all metadata is placed between [---]
+  and [---]. For our example, we won’t worry about it!
+
+- The [Path.t] is, logically, the file we want to read.
+
+The function returns a Task that takes [unit] and returns a pair
+consisting of [metadata] and [file content], where the type of
+[metadata] is constrained by the signature of our [DATA_READABLE]
+module. Here, the type of our expression will be [Path.t -> (unit,
+Archetype.Article.t * string) Task.t]
+
+{@ocaml[
+let f file =
+  Yocaml.Pipeline.read_file_with_metadata
+    (module Yocaml_yaml)
+    (module Archetype.Article)
+    file
+]}
+
+For convenience, the [Yocaml_yaml] module provides simplified
+pipelines. For example, the function [f] can be rewritten as follows:
+
+{@ocaml[
+let f file =
+  Yocaml_yaml.Pipeline.read_file_with_metadata
+    (module Archetype.Article)
+    file
+]}
+
+{3 Convert our Markdown into HTML}
+
+To convert Markdown into HTML, YOCaml provides two plugins: the first,
+somewhat legacy, is based on
+{{:https://github.com/ocaml-community/omd} OMD} (Yocaml_omd), while
+the second, more modern, is based on
+{{:https://github.com/dbuenzli/cmarkit} Cmarkit}
+(Yocaml_cmarkit). For our example, we will use Yocaml_cmarkit,
+which offers several functions for converting Markdown.
+
+{@ocaml[
+val to_html : ?strict:bool
+            -> ?safe:bool
+            -> unit
+            -> (string, string) Yocaml.Task.t
+
+val content_to_html : ?strict:bool
+                    -> ?safe:bool
+                    -> unit
+                    -> ('a * string, 'a * string) Yocaml.Task.t
+]}
+
+There are also alternatives that allow us to build a table of
+contents, but for now, let's not worry about that!
+
+Broadly speaking, the two functions are quite similar, except that the
+variation [content_to_html] assumes we are in a pipeline that
+maintains a set of metadata—which is our case.
+
+So, we can start outlining a function that will create an action to
+process our articles:
+
+{@ocaml[
+open Yocaml
+
+let action_article file =
+  let open Task in
+  Yocaml_yaml.Pipeline.read_file_with_metadata
+      (module Archetype.Article)
+      file
+  >>> Yocaml_cmarkit.content_to_html ()
+]}
+
+Our first pipeline, which reads a file and extracts its metadata, has
+the type [(unit, Archetype.Article.t * string)]. We then compose it
+with our Markdown converter (which is a task of type [('a * string, 'a
+* string) Task.t]), making it compatible as the continuation of our
+previous task!
+
+{3 Injecting content into a templates}
+
+{4 Cascading (and nesting templates)}

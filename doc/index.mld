@@ -12,12 +12,13 @@ static site generation. Conceptually, it is fairly close to version 3
 of {{:https://jaspervdj.be/hakyll/} Hakyll}, a generator written in
 {{:https://www.haskell.org/} Haskell}.
 
-This page serves as an index of documents describing and justifying certain {i
-design} choices, as well as guides on how to use YOCaml to build projects.
+This page serves as an index of documents describing and justifying
+certain {i design} choices, as well as guides on how to use YOCaml to
+build projects.
 
-The YOCaml API (full documentation) can be accessed via {{!module:Yocaml} this
-link}. The various plugins are accessible via the {{: ../index.html}
-documentation root}.
+The YOCaml API (full documentation) can be accessed via
+{{!module:Yocaml} this link}. The various plugins are accessible via
+the {{: ../index.html} documentation root}.
 
 You can refer to the examples at the root of the source repository to
 see extensively documented examples of how to use YOCaml.
@@ -29,6 +30,9 @@ A set of general guides for building static sites with YOCaml.
 - {{!page:introduction} Installation and start-up}, a guide
   explaining how to install YOCaml and the various concepts needed to
   get a project off to a good start.
+
+- {{!page:key_concepts} Key concepts}, a guide to some important
+  YOCaml concepts
 
 - {{!page:simple_blog} Your first blog}, A guide explaining how to
   build your own blog, step by step, covering the key concepts related

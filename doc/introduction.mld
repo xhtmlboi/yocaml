@@ -10,8 +10,11 @@ you are familiar with the OCaml toolchain and that your development
 environment {{:https://ocaml.org/install#linux_mac_bsd} is correctly
 configured}, including the presence of available tools:
 
-- {{:https://opam.ocaml.org/doc/Install.html} OPAM}, the OCaml package manager
+- {{:https://opam.ocaml.org/doc/Install.html} OPAM}, the OCaml package
+  manager
+
 - {{:https://dune.build/} Dune}, the OCaml (recommanded) build-system
+
 - A decent {{:https://ocaml.org/docs/set-up-editor} editor support}.
 
 {1 Aside note about switches}
@@ -36,10 +39,17 @@ in this way:
 # opam install dune
 ]}
 
-- We start by creating a directory for our project, in this case [my-first-blog]
+- We start by creating a directory for our project, in this case
+  [my-first-blog]
+
 - Then we move into this directory
-- Then we create a switch for version [5.3.0] in our freshly created directory
-- Then we install [dune], which we'll need to build our OPAM file to centralise the expression of our dependencies via the [dune-project] file
+
+- Then we create a switch for version [5.3.0] in our freshly created
+  directory
+
+- Then we install [dune], which we'll need to build our OPAM file to
+  centralise the expression of our dependencies via the [dune-project]
+  file
 
 Our working environment is ready to build our first YOCaml
 application!
@@ -83,8 +93,13 @@ like this:
 The first section of the file describes general information about the
 project. The two primitives that can be a little confusing are:
 
-- [(generate_opam_files)] whose role is to rebuild the [blog.opam] file each time the [dune build] command is run
-- [(executables_implicit_empty_intf)] will generate empty interfaces for binaries, allowing you to take advantage of encapsulation to track unused functions (as a binary is essentially the execution of toplevel functions of the following form [let () = ...]
+- [(generate_opam_files)] whose role is to rebuild the [blog.opam]
+  file each time the [dune build] command is run
+
+- [(executables_implicit_empty_intf)] will generate empty interfaces
+  for binaries, allowing you to take advantage of encapsulation to
+  track unused functions (as a binary is essentially the execution of
+  toplevel functions of the following form [let () = ...]
 
 The second section describes additional metadata. Don't forget to
 change the source repository (which will generate additional
@@ -97,8 +112,13 @@ The last section simply describes the [blog] package, our future
 binary, which we will use to build our site.
 
 Running the [dune build] command should have two effects:
-- create the file [blog.opam] (and a directory [_build] containing the compilation artefacts)
-- Complaining that the [blog] package is not associated with any stanza, we can ignore this error for the time being, but it will soon be fixed.
+
+- create the file [blog.opam] (and a directory [_build] containing the
+  compilation artefacts)
+
+- Complaining that the [blog] package is not associated with any
+  stanza, we can ignore this error for the time being, but it will
+  soon be fixed.
 
 {2 In a fresh switch}
 
@@ -126,11 +146,22 @@ In a well-configured development environment, via Vim, Emacs or
 VSCode, all these packages provide a very smooth development
 experience in OCaml:
 
-- {{:https://github.com/ocaml-community/utop} Utop} offers a REPL that works well with Dune and offers advanced functions (such as completion)
-- {{:https://github.com/ocaml-ppx/ocamlformat} OCamlformat} allows you to format code according to a profile
-- {{:https://github.com/OCamlPro/ocp-indent} Ocp-indent} is used to tell the editor where to place the cursor after a line break 
-- {{:https://github.com/ocaml/merlin} Merlin} provides IDE services for Emacs and Vim
-- {{:https://github.com/ocaml/ocaml-lsp} OCaml-lsp-server} enables IDE services to be provided for publishers using {{:https://microsoft.github.io/language-server-protocol/} LSP}
+- {{:https://github.com/ocaml-community/utop} Utop} offers a REPL that
+  works well with Dune and offers advanced functions (such as
+  completion)
+
+- {{:https://github.com/ocaml-ppx/ocamlformat} OCamlformat} allows you
+  to format code according to a profile
+
+- {{:https://github.com/OCamlPro/ocp-indent} Ocp-indent} is used to
+  tell the editor where to place the cursor after a line break
+
+- {{:https://github.com/ocaml/merlin} Merlin} provides IDE services
+  for Emacs and Vim
+
+- {{:https://github.com/ocaml/ocaml-lsp} OCaml-lsp-server} enables IDE
+  services to be provided for publishers using
+  {{:https://microsoft.github.io/language-server-protocol/} LSP}
 
 Having both [Merlin] and [OCaml-lsp-server] may seem redundant, but
 the benefit of this approach is that it ensures your development
