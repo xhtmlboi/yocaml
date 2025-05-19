@@ -1,3 +1,7 @@
+### Unreleased
+
+- Fix `Yocaml.Datetime.max` (by [xvw](https://xvw.lol))
+
 ### v2.2.0 2025-03-22 Brussels (Belgium)
 
 - Some minor fixes (by [xvw](https://xvw.lol))
