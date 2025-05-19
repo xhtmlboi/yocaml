@@ -273,7 +273,7 @@ module Datetime = struct
   end
 
   let min a b = if Infix.(b > a) then a else b
-  let max a b = if Infix.(a < b) then a else b
+  let max a b = if Infix.(a > b) then a else b
 
   include Infix
 end
