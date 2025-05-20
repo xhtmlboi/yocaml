@@ -14,8 +14,8 @@ depends: [
   "mdx" {with-test & = "2.5.0"}
   "yocaml" {= version}
   "yocaml_runtime" {= version}
-  "eio" {= "1.1"}
-  "eio_main" {= "1.1"}
+  "eio" {>= "1.1"}
+  "eio_main" {>= "1.1"}
   "cohttp-eio" {>= "6.0.0~beta2"}
   "odoc" {with-doc}
 ]

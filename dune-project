@@ -53,8 +53,8 @@
     (mdx (and :with-test (= 2.5.0)))
     (yocaml (= :version))
     (yocaml_runtime (= :version))
-    (eio (= 1.1))
-    (eio_main (= 1.1))
+    (eio (>= 1.1))
+    (eio_main (>= 1.1))
     (cohttp-eio (>= 6.0.0~beta2))))
 
 (package
@@ -63,7 +63,7 @@
   (depends
    (ocaml (>= 5.1.1))
    ppx_expect
-   (mdx (and :with-test (= 2.5.0)))
+   (mdx (and :with-test (>= 2.5.0)))
    (httpcats (>= 0.0.1))
    (yocaml (= :version))
    (yocaml_runtime (= :version))))
@@ -74,7 +74,7 @@
   (depends
    (ocaml (>= 5.1.1))
    ppx_expect
-   (mdx (and :with-test (= 2.5.0)))
+   (mdx (and :with-test (>= 2.5.0)))
    (yocaml (= :version))
    (yaml (>= 3.2.0))))
 
@@ -84,7 +84,7 @@
  (depends
   (ocaml (>= 5.1.1))
   ppx_expect
-  (mdx (and :with-test (= 2.5.0)))
+  (mdx (and :with-test (>= 2.5.0)))
   (yocaml (= :version)) 
   (otoml (>= 1.0.5))))
  
@@ -95,7 +95,7 @@
   (depends
    (ocaml (>= 5.1.1))
    ppx_expect
-   (mdx (and :with-test (= 2.5.0)))
+   (mdx (and :with-test (>= 2.5.0)))
    (yocaml (= :version))
    (omd (>= 2.0.0~alpha4))))
 
@@ -105,7 +105,7 @@
   (depends
    (ocaml (>= 5.1.1))
    ppx_expect
-   (mdx (and :with-test (= 2.5.0)))
+   (mdx (and :with-test (>= 2.5.0)))
    (yocaml (= :version))
     cmarkit))
 
@@ -115,7 +115,7 @@
   (depends
    (ocaml (>= 5.1.1))
    ppx_expect
-   (mdx (and :with-test (= 2.5.0)))
+   (mdx (and :with-test (>= 2.5.0)))
    (yocaml (= :version))
    (jingoo (>= 1.5.0))))
 
@@ -125,7 +125,7 @@
   (depends
    (ocaml (>= 5.1.1))
    ppx_expect
-   (mdx (and :with-test (= 2.5.0)))
+   (mdx (and :with-test (>= 2.5.0)))
    (yocaml (= :version))
    (mustache (= 3.3.0))))
 
@@ -140,7 +140,7 @@
    (qcheck :with-test)
    (qcheck-alcotest :with-test)
    ppx_expect
-   (mdx (and :with-test (= 2.5.0)))))
+   (mdx (and :with-test (>= 2.5.0)))))
 
 (package
   (name yocaml_git)
@@ -148,7 +148,7 @@
   (depends
    (ocaml (>= 5.1.1))
    ppx_expect
-   (mdx (and :with-test (= 2.5.0)))
+   (mdx (and :with-test (>= 2.5.0)))
    (lwt (>= 5.7.0))
    (mimic (>= 0.0.9))
    (cstruct (>= 6.2.0))

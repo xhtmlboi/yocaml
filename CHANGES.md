@@ -1,15 +1,24 @@
 ### Unreleased
 
+#### Yocaml
+
 - Fix `Yocaml.Datetime.max` (by [xvw](https://xvw.lol))
+- Remove occurences of `gitlab` (and outdated repositories) in examples ([xhtmlboi](https://github.com/xhtmlboi))
+- Be kind about `eio` dependencies ([xhtmlboi](https://github.com/xhtmlboi))
 
 ### v2.2.0 2025-03-22 Brussels (Belgium)
 
+#### Yocaml
+
 - Some minor fixes (by [xvw](https://xvw.lol))
-- Update to git-kv 1.0.2 and work around last modified behavior inside a `Git_kv.change_and_push` call (by [reynir](https://reyn.ir))
-- Update `git` dependencies (by [xvw](https://xvw.lol))
 - Fix `Nel` representation (by [xvw](https://xvw.lol))
 - Restore DOC-ci (by [xvw](https://xvw.lol))
 - Add more helpers for dealing with dynamic dependencies (by [xvw](https://xvw.lol))
+
+#### Yocaml_git
+
+- Update to git-kv 1.0.2 and work around last modified behavior inside a `Git_kv.change_and_push` call (by [reynir](https://reyn.ir))
+- Update `git` dependencies (by [xvw](https://xvw.lol))
 
 
 ### v2.1.0 2024-12-14 Nantes (France)
