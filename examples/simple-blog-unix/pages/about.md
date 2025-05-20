@@ -12,7 +12,7 @@ YOCaml (using _archetypes_).
 > completely uninteresting) articles. Sorry about that!
 
 You can refer to the [code of this
-project](https://gitlab.com/funkywork/yocaml/-/blob/main/examples/simple-blog/bin/simple_blog.ml?ref_type=heads)
+project](github.com/xhtmlboi/yocaml/tree/main/examples/simple-blog-unix)
 to see how to build a _blog_ **yourself** using, for example, [this
 template](https://github.com/xvw/yocaml2-empty-template) that allows you to
 bootstrap an empty project filled with YOCaml dependencies.
