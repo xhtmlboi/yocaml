@@ -107,6 +107,9 @@ val choose :
 val fan_in : ('a, 'c) t -> ('b, 'c) t -> (('a, 'b) Either.t, 'c) t
 (** Split the input between the two argument arrows, merging their outputs. *)
 
+val with_default : ('a, ('b, 'c) Either.t) t -> ('c, 'b) t -> ('a, 'b) t
+(** [with_default f g] performs [g] if [f] returns [right]. *)
+
 (** {2 Strong operations}
 
     Profunctors with strength, to act on product-types (using [('a * 'b)] to
@@ -276,6 +279,12 @@ module Infix : sig
 
   val ( ||| ) : ('a, 'c) t -> ('b, 'c) t -> (('a, 'b) Either.t, 'c) t
   (** [t1 ||| t2] is [fan_in t1 t2]. *)
+
+  val ( <?< ) : ('a, ('b, 'c) Either.t) t -> ('c, 'b) t -> ('a, 'b) t
+  (** [f <?< g] performs [g] if [f] returns [right]. *)
+
+  val ( >?> ) : ('a, 'b) t -> ('c, ('b, 'a) Either.t) t -> ('c, 'b) t
+  (** [f >?> g] performs [f] if [g] returns [right]. *)
 
   val ( *** ) : ('a, 'b) t -> ('c, 'd) t -> ('a * 'c, 'b * 'd) t
   (** [t1 *** t2] is [split t1 t2]. *)
