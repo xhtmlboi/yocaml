@@ -3,8 +3,9 @@
 #### Yocaml
 
 - Fix `Yocaml.Datetime.max` (by [xvw](https://xvw.lol))
-- Remove occurences of `gitlab` (and outdated repositories) in examples ([xhtmlboi](https://github.com/xhtmlboi))
-- Be kind about `eio` dependencies ([xhtmlboi](https://github.com/xhtmlboi))
+- Remove occurences of `gitlab` (and outdated repositories) in examples (by [xhtmlboi](https://github.com/xhtmlboi))
+- Be kind about `eio` dependencies (by [xhtmlboi](https://github.com/xhtmlboi))
+- A better support for conditionals Task execution (by [xvw](https://xvw.lol))
 
 ### v2.2.0 2025-03-22 Brussels (Belgium)
 

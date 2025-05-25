@@ -32,6 +32,16 @@ val track_files : Path.t list -> (unit, unit) Task.t
 val read_file : Path.t -> (unit, string) Task.t
 (** [read_file path] is a task that read the content of a file. *)
 
+val directory_exists : Path.t -> (unit, bool) Task.t
+(** [directory_exists path] is a task that ensure that [path] exists as a
+    directory. (Fit well with {!val:Yocaml.Task.when_}). [path] is not added to
+    the dependency set. *)
+
+val file_exists : Path.t -> (unit, bool) Task.t
+(** [file_exists path] is a task that ensure that [path] exists as a file. (Fit
+    well with {!val:Yocaml.Task.when_}). [path] is not added to the dependency
+    set. *)
+
 val pipe : ('a -> 'b -> 'c) -> (unit, 'b) Task.t -> ('a, 'c) Task.t
 (** [pipe f arr] will pipe an arrow applying [f previous_result result_of arr].
     For example, it can be used for piping files content :

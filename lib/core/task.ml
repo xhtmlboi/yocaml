@@ -169,6 +169,14 @@ let with_dynamic_dependencies files =
 
 let empty_body () = lift (fun x -> (x, ""))
 let const k = lift (fun _ -> k)
+let with_default f g = rcompose f (fan_in id g)
+
+let when_ predicate when_true when_false =
+  rcompose
+    (post_rcompose predicate (function
+      | true -> Either.left ()
+      | false -> Either.right ()))
+    (fan_in when_true when_false)
 
 module Infix = struct
   let ( <<< ) = compose
@@ -185,6 +193,8 @@ module Infix = struct
   let ( >>| ) = post_rcompose
   let ( +++ ) = choose
   let ( ||| ) = fan_in
+  let ( <?< ) f g = with_default f g
+  let ( >?> ) f g = with_default g f
   let ( *** ) = split
   let ( &&& ) = fan_out
   let ( <$> ) = map

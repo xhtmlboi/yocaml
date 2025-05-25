@@ -87,6 +87,13 @@ let rec get fs path =
   | _ :: xs, path -> get xs path
   | [], _ -> None
 
+let cat fs path =
+  let p = String.split_on_char '/' path in
+  match get fs p with
+  | None -> Format.asprintf "cat: %s: No such file or directory" path
+  | Some (Dir _) -> Format.asprintf "cat: %s: Is a directory" path
+  | Some (File { content; _ }) -> content
+
 let ( .%{} ) fs path = get fs @@ String.split_on_char '/' path
 
 let split_path_and_target path =
@@ -304,15 +311,17 @@ let run ~trace program input =
                     | _ ->
                         Stdlib.raise
                         @@ Yocaml.Eff.File_not_exists (`Source, gpath))
-            | Yocaml_get_mtime (on, path) ->
+            | Yocaml_get_mtime (on, gpath) ->
                 Some
                   (fun (k : (a, _) continuation) ->
-                    let () = trace := push_mtime !trace on path in
-                    let path = Yocaml.Path.to_list path in
+                    let () = trace := push_mtime !trace on gpath in
+                    let path = Yocaml.Path.to_list gpath in
                     match get !trace.system path with
                     | Some (File { mtime; _ } | Dir { mtime; _ }) ->
                         continue k mtime
-                    | _ -> continue k 0)
+                    | _ ->
+                        Stdlib.raise
+                        @@ Yocaml.Eff.File_not_exists (`Source, gpath))
             | Yocaml_hash_content content ->
                 Some
                   (fun (k : (a, _) continuation) ->
