@@ -75,6 +75,9 @@ val get : t -> string list -> item option
     example, the path [/foo/bar] will be described by the list
     [/["foo"; "bar"/]]. *)
 
+val cat : t -> string -> string
+(** [cat fs path] is a mimic of the unix [cat] command. *)
+
 val update :
      t
   -> string list
