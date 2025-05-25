@@ -110,6 +110,10 @@ val fan_in : ('a, 'c) t -> ('b, 'c) t -> (('a, 'b) Either.t, 'c) t
 val with_default : ('a, ('b, 'c) Either.t) t -> ('c, 'b) t -> ('a, 'b) t
 (** [with_default f g] performs [g] if [f] returns [right]. *)
 
+val when_ : ('a, bool) t -> (unit, 'b) t -> (unit, 'b) t -> ('a, 'b) t
+(** [when_ pred when_true when_false] performs [when_true] is [pred] returns
+    [true], [when_false] otherwise. *)
+
 (** {2 Strong operations}
 
     Profunctors with strength, to act on product-types (using [('a * 'b)] to

@@ -183,8 +183,9 @@ let read_file_with_metadata (type a) (module P : Required.DATA_PROVIDER)
        ~error:(fun err -> raise @@ Provider_error err)
        ~ok:(fun metadata -> return (metadata, content))
 
-let get_mtime ~on =
-  ensure_file_exists ~on (fun path -> perform @@ Yocaml_get_mtime (on, path))
+let get_mtime ~on path =
+  let* exists = file_exists ~on path in
+  if exists then perform @@ Yocaml_get_mtime (on, path) else return 0
 
 let hash str = perform @@ Yocaml_hash_content str
 

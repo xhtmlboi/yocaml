@@ -20,6 +20,14 @@ let track_file file = track_files [ file ]
 let read_file file =
   Task.make (Deps.singleton file) (fun () -> Eff.read_file ~on:`Source file)
 
+let directory_exists path =
+  Task.from_effect ~has_dynamic_dependencies:false (fun () ->
+      Eff.is_directory ~on:`Source path)
+
+let file_exists path =
+  Task.from_effect ~has_dynamic_dependencies:false (fun () ->
+      Eff.is_file ~on:`Source path)
+
 let read_file_with_metadata (type a) (module P : Required.DATA_PROVIDER)
     (module R : Required.DATA_READABLE with type t = a) ?extraction_strategy
     path =
