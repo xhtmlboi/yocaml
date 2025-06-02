@@ -185,7 +185,11 @@ module type RUNTIME = sig
   val return : 'a -> 'a t
   (** the return primitive for {!type:t}. *)
 
-  val log : [ `App | `Error | `Warning | `Info | `Debug ] -> string -> unit t
+  val log :
+       ?src:Logs.src
+    -> [ `App | `Error | `Warning | `Info | `Debug ]
+    -> string
+    -> unit t
   (** [log level message] log a [message] with a given [message]. *)
 
   val get_time : unit -> int t

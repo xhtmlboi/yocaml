@@ -283,7 +283,7 @@ let run ~trace program input =
                         exn
                     in
                     Stdlib.raise @@ Failure s)
-            | Yocaml_log (level, message) ->
+            | Yocaml_log (_, level, message) ->
                 Some
                   (fun (k : (a, _) continuation) ->
                     let () = trace := push_log !trace level message in

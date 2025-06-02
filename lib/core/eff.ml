@@ -100,7 +100,7 @@ type filesystem = [ `Source | `Target ]
 
 type _ Effect.t +=
   | Yocaml_log :
-      ([ `App | `Error | `Warning | `Info | `Debug ] * string)
+      (Logs.src option * [ `App | `Error | `Warning | `Info | `Debug ] * string)
       -> unit Effect.t
   | Yocaml_failwith : exn -> 'a Effect.t
   | Yocaml_get_time : unit -> int Effect.t
@@ -128,12 +128,19 @@ exception Directory_is_a_file of filesystem * Path.t
 exception Directory_not_exists of filesystem * Path.t
 exception Provider_error of Required.provider_error
 
-let log ?(level = `Debug) message = perform @@ Yocaml_log (level, message)
+let yocaml_log_src = Logs.Src.create ~doc:"Log emitted by YOCaml" "yocaml"
+
+let log ?src ?(level = `Debug) message =
+  perform @@ Yocaml_log (src, level, message)
+
 let raise exn = perform @@ Yocaml_failwith exn
 let failwith message = perform @@ Yocaml_failwith (Failure message)
 let get_time () = perform @@ Yocaml_get_time ()
 let file_exists ~on path = perform @@ Yocaml_file_exists (on, path)
-let logf ?(level = `Debug) = Format.kasprintf (fun result -> log ~level result)
+
+let logf ?src ?(level = `Debug) =
+  Format.kasprintf (fun result -> log ?src ~level result)
+
 let is_directory ~on path = perform @@ Yocaml_is_directory (on, path)
 
 let exec ?(is_success = Int.equal 0) exec_name ?(args = []) =
@@ -226,7 +233,9 @@ let read_directory ~on ?(only = `Both) ?(where = fun _ -> true) path =
     let* children = perform @@ Yocaml_read_dir (on, path) in
     List.filter_map predicate children
   else
-    let+ () = logf ~level:`Warning "%a does not exists" Path.pp path in
+    let+ () =
+      logf ~src:yocaml_log_src ~level:`Warning "%a does not exists" Path.pp path
+    in
     []
 
 let mtime ~on path =
@@ -263,14 +272,16 @@ let copy_recursive ?new_name ~into source =
       let* source_is_file = is_file ~on:`Source source in
       if source_is_file then
         let* () =
-          log ~level:`Debug @@ Lexicon.copy_file ?new_name ~into source
+          log ~src:yocaml_log_src ~level:`Debug
+          @@ Lexicon.copy_file ?new_name ~into source
         in
         copy_file into source
       else
         let* source_is_directory = is_directory ~on:`Source source in
         if source_is_directory then
           let* () =
-            log ~level:`Debug @@ Lexicon.copy_directory ?new_name ~into source
+            log ~src:yocaml_log_src ~level:`Debug
+            @@ Lexicon.copy_directory ?new_name ~into source
           in
           let* name = get_basename source in
           let name = Option.value new_name ~default:name in

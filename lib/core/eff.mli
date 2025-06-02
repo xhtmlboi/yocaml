@@ -235,7 +235,7 @@ type filesystem = [ `Source | `Target ]
 
 type _ Effect.t +=
   | Yocaml_log :
-      ([ `App | `Error | `Warning | `Info | `Debug ] * string)
+      (Logs.src option * [ `App | `Error | `Warning | `Info | `Debug ] * string)
       -> unit Effect.t
         (** Effect describing the logging of a message attached to a log level.
             The log level uses the various conventional levels offered, in
@@ -304,17 +304,24 @@ exception Provider_error of Required.provider_error
 
     Functions producing defined effects. *)
 
+val yocaml_log_src : Logs.src
+(** A source for YOCaml. *)
+
 val log :
-  ?level:[ `App | `Error | `Warning | `Info | `Debug ] -> string -> unit t
-(** [log ~level message] performs the effect [Yocaml_log] with a given [level]
-    and a [message]. *)
+     ?src:Logs.src
+  -> ?level:[ `App | `Error | `Warning | `Info | `Debug ]
+  -> string
+  -> unit t
+(** [log ?src ~level message] performs the effect [Yocaml_log] with a given
+    [level] and a [message]. *)
 
 val logf :
-     ?level:[ `App | `Error | `Warning | `Info | `Debug ]
+     ?src:Logs.src
+  -> ?level:[ `App | `Error | `Warning | `Info | `Debug ]
   -> ('a, Format.formatter, unit, unit t) format4
   -> 'a
-(** [logf ~level format] performs the effect [Yocaml_log] with a given [level]
-    and using a format (like Printf). *)
+(** [logf ?src ~level format] performs the effect [Yocaml_log] with a given
+    [level] and using a format (like Printf). *)
 
 val raise : exn -> 'a t
 (** [raise exn] performs the effect [Yocaml_failwith] with a given [exn]. *)

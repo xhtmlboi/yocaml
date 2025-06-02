@@ -42,10 +42,10 @@ module Make (Runtime : Required.RUNTIME) = struct
             (fun (type a) (eff : a Effect.t) ->
               match eff with
               | Eff.Yocaml_failwith exn -> Some (fun _k -> exnc exn)
-              | Eff.Yocaml_log (level, message) ->
+              | Eff.Yocaml_log (src, level, message) ->
                   Some
                     (fun (k : (a, _) continuation) ->
-                      Runtime.bind (continue k) (Runtime.log level message))
+                      Runtime.bind (continue k) (Runtime.log ?src level message))
               | Eff.Yocaml_get_time () ->
                   Some
                     (fun (k : (a, _) continuation) ->

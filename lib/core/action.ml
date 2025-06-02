@@ -38,7 +38,8 @@ let need_update cache has_dynamic_deps deps target =
              dynamic dependencies, try to rebuild the file taking into account
              the dynamic dependencies. *)
           let+ () =
-            Eff.log ~level:`Debug @@ Lexicon.found_dynamic_dependencies target
+            Eff.log ~src:Eff.yocaml_log_src ~level:`Debug
+            @@ Lexicon.found_dynamic_dependencies target
           in
           (false, Deps.concat deps dynamic_deps, last_build_date)
       | Some (_, _, last_build_date) -> Eff.return (false, deps, last_build_date)
@@ -67,7 +68,8 @@ let perform target task ~when_creation ~when_update cache =
   match interaction with
   | Nothing ->
       let+ () =
-        Eff.log ~level:`Debug @@ Lexicon.target_already_up_to_date target
+        Eff.log ~src:Eff.yocaml_log_src ~level:`Debug
+        @@ Lexicon.target_already_up_to_date target
       in
       cache
   | Create -> when_creation now target eff cache
@@ -75,9 +77,15 @@ let perform target task ~when_creation ~when_update cache =
 
 let perform_writing now target cache fc hc dynamic_deps =
   let open Eff.Syntax in
-  let* () = Eff.log ~level:`Debug @@ Lexicon.target_is_written target in
+  let* () =
+    Eff.log ~src:Eff.yocaml_log_src ~level:`Debug
+    @@ Lexicon.target_is_written target
+  in
   let* () = Eff.write_file ~on:`Target target fc in
-  let+ () = Eff.log ~level:`Info @@ Lexicon.target_was_written target in
+  let+ () =
+    Eff.log ~src:Eff.yocaml_log_src ~level:`Info
+    @@ Lexicon.target_was_written target
+  in
   Cache.update ~deps:dynamic_deps ~now cache target hc
 
 let perform_update now target eff cache =
@@ -87,12 +95,14 @@ let perform_update now target eff cache =
   match Cache.get cache target with
   | Some (pred_h, _, _) when String.equal hc pred_h ->
       let+ () =
-        Eff.log ~level:`Debug @@ Lexicon.target_hash_is_unchanged target
+        Eff.log ~src:Eff.yocaml_log_src ~level:`Debug
+        @@ Lexicon.target_hash_is_unchanged target
       in
       Cache.update ~deps:dynamic_deps ~now cache target pred_h
   | _ ->
       let* () =
-        Eff.log ~level:`Debug @@ Lexicon.target_hash_is_changed target
+        Eff.log ~src:Eff.yocaml_log_src ~level:`Debug
+        @@ Lexicon.target_hash_is_changed target
       in
       perform_writing now target cache fc hc dynamic_deps
 
@@ -183,28 +193,38 @@ let restore_cache ?(on = `Target) path =
     let sexp = Sexp.Canonical.from_string cache_content in
     match sexp with
     | Error _ ->
-        let+ () = Eff.log ~level:`Warning @@ Lexicon.cache_invalid_csexp path in
+        let+ () =
+          Eff.log ~src:Eff.yocaml_log_src ~level:`Warning
+          @@ Lexicon.cache_invalid_csexp path
+        in
         Cache.empty
     | Ok sexp ->
         Result.fold
           ~ok:(fun cache ->
-            let+ () = Eff.log ~level:`Debug @@ Lexicon.cache_restored path in
+            let+ () =
+              Eff.log ~src:Eff.yocaml_log_src ~level:`Debug
+              @@ Lexicon.cache_restored path
+            in
             cache)
           ~error:(fun _ ->
             let+ () =
-              Eff.log ~level:`Warning @@ Lexicon.cache_invalid_repr path
+              Eff.log ~src:Eff.yocaml_log_src ~level:`Warning
+              @@ Lexicon.cache_invalid_repr path
             in
             Cache.empty)
           (Cache.from_sexp sexp)
   else
-    let+ () = Eff.log ~level:`Debug @@ Lexicon.cache_initiated path in
+    let+ () =
+      Eff.log ~src:Eff.yocaml_log_src ~level:`Debug
+      @@ Lexicon.cache_initiated path
+    in
     Cache.empty
 
 let store_cache ?(on = `Target) path cache =
   let open Eff.Syntax in
   let sexp_str = cache |> Cache.to_sexp |> Sexp.Canonical.to_string in
   let* () = Eff.write_file ~on path sexp_str in
-  Eff.log ~level:`Debug @@ Lexicon.cache_stored path
+  Eff.log ~src:Eff.yocaml_log_src ~level:`Debug @@ Lexicon.cache_stored path
 
 let exec_cmd ?is_success cmd target =
   let action _ _ eff cache =

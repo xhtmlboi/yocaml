@@ -28,7 +28,7 @@ struct
 
     let bind f x = Lwt.bind x f
     let return = Lwt.return
-    let log level message = Source.lift @@ Source.log level message
+    let log ?src level message = Source.lift @@ Source.log ?src level message
 
     type runtime_error =
       | Git of Yocaml_runtime.Error.common
