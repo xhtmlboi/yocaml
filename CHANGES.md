@@ -1,3 +1,7 @@
+### Unreleased
+
+- Add template chain (by [xvw](https://xvw.lol))
+
 ### v2.3.0 2025-05-25 Nantes (France)
 
 #### Yocaml
