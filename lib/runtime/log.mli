@@ -24,7 +24,7 @@ type level = [ `App | `Error | `Warning | `Info | `Debug ]
 
 (** {1 Helpers} *)
 
-val msg : level -> string -> unit
+val msg : ?src:Logs.src -> level -> string -> unit
 (** [msg level message] log a [message] with a given [message]. *)
 
 val setup : ?level:level -> unit -> unit

@@ -45,7 +45,7 @@ let lift ?has_dynamic_dependencies f =
 let id =
   let dependencies = Deps.empty in
   let action = Eff.return in
-  { dependencies; action; has_dynamic_dependencies = true }
+  { dependencies; action; has_dynamic_dependencies = false }
 
 let dimap f g { dependencies; action; has_dynamic_dependencies } =
   let action x = Eff.map g (action (f x)) in
@@ -168,7 +168,7 @@ let with_dynamic_dependencies files =
   lift (fun x -> (x, set))
 
 let empty_body () = lift (fun x -> (x, ""))
-let const k = lift (fun _ -> k)
+let const k = lift ~has_dynamic_dependencies:false (fun _ -> k)
 let with_default f g = rcompose f (fan_in id g)
 
 let when_ predicate when_true when_false =

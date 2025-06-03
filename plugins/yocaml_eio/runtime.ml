@@ -31,12 +31,12 @@ let to_eio_path env p =
   let k, fragments = Yocaml.Path.to_pair p in
   let root =
     match k with
-    | `Rel -> Eio.Stdenv.cwd env
+    | `Rel -> Eio.Stdenv.fs env
     | `Root -> Eio.Path.(Eio.Stdenv.fs env / "/")
   in
   List.fold_left Eio.Path.( / ) root fragments
 
-let log level message _env = Yocaml_runtime.Log.msg level message
+let log ?src level message _env = Yocaml_runtime.Log.msg ?src level message
 
 let get_time () env =
   let clock = Eio.Stdenv.clock env in

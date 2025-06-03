@@ -2,7 +2,8 @@
  (name yocaml)
  (public_name yocaml)
  (synopsis "The core engine of YOCaml")
- (modules_without_implementation required))
+ (modules_without_implementation required)
+ (libraries logs))
 
 (documentation
  (package yocaml))

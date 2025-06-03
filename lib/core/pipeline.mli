@@ -95,3 +95,16 @@ val as_template :
   -> ('a * string, 'a * string) Task.t
 (** [as_template (module T) (module M) ?strict path] is an arrow that apply a
     [path] as a template. *)
+
+val chain_templates :
+     (module Required.DATA_TEMPLATE)
+  -> (module Required.DATA_INJECTABLE with type t = 'a)
+  -> ?strict:bool
+  -> Path.t list
+  -> ('a * string, 'a * string) Task.t
+(** [chain_templates (module T) (module M) ?strict [list_of_path]] is an arrow
+    that apply a sequentially the list of path as a templates.
+
+    ie: [chain_templates (module T) (module M) [a; b]] is
+    [as_template (module T) (module M) ?strict a >>> as_template (module T)
+     (module M) ?strict b]. *)

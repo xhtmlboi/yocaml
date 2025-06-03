@@ -11,6 +11,7 @@ bug-reports: "https://github.com/xhtmlboi/yocaml/issues"
 depends: [
   "dune" {>= "3.14"}
   "ocaml" {>= "5.1.1"}
+  "logs" {>= "0.7.0"}
   "odoc" {with-doc}
   "sherlodoc" {with-doc}
   "fmt" {with-test}

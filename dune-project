@@ -17,6 +17,7 @@
   (description "YOCaml is a build system dedicated to generate static document")
   (depends
    (ocaml (>= 5.1.1))
+   (logs (>= 0.7.0))
    (odoc :with-doc)
    (sherlodoc :with-doc)
    (fmt :with-test)

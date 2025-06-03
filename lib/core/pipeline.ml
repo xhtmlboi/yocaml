@@ -56,6 +56,15 @@ let as_template (type a) (module T : Required.DATA_TEMPLATE)
   let open Task in
   (fun x -> (x, ())) |>> second (read_file template) >>* action
 
+let chain_templates (type a) (module T : Required.DATA_TEMPLATE)
+    (module I : Required.DATA_INJECTABLE with type t = a) ?(strict = true)
+    templates =
+  List.fold_left
+    (fun task template ->
+      let open Task in
+      task >>> as_template ~strict (module T) (module I) template)
+    Task.id templates
+
 let exec_cmd_with_result ?is_success cmd =
   let deps = cmd |> Cmd.deps_of |> Deps.from_list in
   Task.make ~has_dynamic_dependencies:false deps (fun () ->

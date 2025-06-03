@@ -23,9 +23,9 @@ let level_to_logs = function
   | `Info -> Logs.Info
   | `Debug -> Logs.Debug
 
-let msg level message =
+let msg ?src level message =
   let level = level_to_logs level in
-  Logs.msg level (fun print -> print "%s" message)
+  Logs.msg ?src level (fun print -> print "%s" message)
 
 let setup ?level () =
   match level with
