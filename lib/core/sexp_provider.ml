@@ -52,6 +52,7 @@ module Data_provider = struct
     List.for_all (function Sexp.Node [ Atom _; _ ] -> true | _ -> false)
 
   let rec normalize = function
+    | Sexp.Atom "null" -> Data.null
     | Sexp.Atom x -> normalize_atom x
     | Node [] -> Data.list []
     | Node node when is_record node ->

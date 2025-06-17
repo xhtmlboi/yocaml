@@ -100,6 +100,9 @@ val either : ('a -> t) -> ('b -> t) -> ('a, 'b) Either.t -> t
 (** [either f g x] construct either as a {!type:t}. Either has the structure
     [{"constr": "left | right", "value": e}]. *)
 
+val to_sexp : t -> Sexp.t
+(** [to_sexp] convert to a {!type:Yocaml.Sexp.t}. *)
+
 (** {1 Validating Data values} *)
 
 module Validation : sig

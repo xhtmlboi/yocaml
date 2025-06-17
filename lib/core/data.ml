@@ -84,6 +84,24 @@ let rec pp ppf = function
              Format.fprintf ppf {|"%s":@, %a|} key pp value))
         x
 
+let rec to_sexp = function
+  | Null -> Sexp.atom "null"
+  | Bool x -> Sexp.atom (string_of_bool x)
+  | Int x -> Sexp.atom (string_of_int x)
+  | Float x -> Sexp.atom (string_of_float x)
+  | String x -> Sexp.atom x
+  | List x ->
+      Sexp.node
+        (Stdlib.List.concat_map (function Null -> [] | x -> [ to_sexp x ]) x)
+  | Record xs ->
+      Sexp.node
+        (Stdlib.List.concat_map
+           (fun (k, v) ->
+             match v with
+             | Null -> []
+             | v -> [ Sexp.(node [ atom k; to_sexp v ]) ])
+           xs)
+
 let rec to_ezjsonm = function
   | Null -> `Null
   | Bool b -> `Bool b
