@@ -764,7 +764,7 @@ to a string, I can easily use [$]:
 
 {eof@ocaml[
 # V.(int $ string_of_int) (D.int 23) ;;
-- : string V.validated_value = Ok "23"
+- : (string, V.value_error) result = Result.Ok "23"
 ]eof}
 
 We used [$] to transform a validated value and project it into the desired
@@ -791,8 +791,8 @@ Let's try it with an integer that doesn't respect the expectation:
 
 {eof@ocaml[
 # positive_and_even (D.int (-23)) ;;
-- : int Yocaml.Data.Validation.validated_value =
-Error
+- : (int, V.value_error) result =
+Result.Error
  (Yocaml.Data.Validation.With_message
    {Yocaml.Data.Validation.given = "-23"; message = "should be positive"})
 ]eof}
@@ -802,8 +802,8 @@ reason:
 
 {eof@ocaml[
 # positive_and_even (D.int 25) ;;
-- : int Yocaml.Data.Validation.validated_value =
-Error
+- : (int, V.value_error) result =
+Result.Error
  (Yocaml.Data.Validation.With_message
    {Yocaml.Data.Validation.given = "*"; message = "unsatisfied predicate"})
 ]eof}
@@ -812,7 +812,7 @@ And let's finally try it with a valid integer!
 
 {eof@ocaml[
 # positive_and_even (D.int 24) ;;
-- : int Yocaml.Data.Validation.validated_value = Ok 24
+- : (int, V.value_error) result = Result.Ok 24
 ]eof}
 
 The sequential application lets you chain validators to build validation
@@ -836,17 +836,17 @@ And it can be used with const in the event of absolute valis failure :
 
 {eof@ocaml[
 # V.(my_v / const "erf") (D.string "Hello") ;;
-- : string V.validated_value = Ok "Hello"
+- : (string, V.value_error) result = Result.Ok "Hello"
 ]eof}
 
 {eof@ocaml[
 # V.(my_v / const "erf") (D.int 1234) ;;
-- : string V.validated_value = Ok "1234"
+- : (string, V.value_error) result = Result.Ok "1234"
 ]eof}
 
 {eof@ocaml[
 # V.(my_v / const "erf") D.(list_of string ["Hello"]) ;;
-- : string V.validated_value = Ok "erf"
+- : (string, V.value_error) result = Result.Ok "erf"
 ]eof}
 
 With the support of alternatives, we've seen all the ways to build increasingly
@@ -991,3 +991,104 @@ Result.Error
 
 In some cases, dependent validation makes it possible to construct increasingly
 complex situations, so it should only be used when really necessary.
+
+
+{1 A more generic approach of record validation}
+
+Controlling the optionality (or otherwise) of a field can be a
+handicap, which is why, since more recent versions of YOCaml, there is
+the {!val:Yocaml.Data.Validation.field} primitive. Let's imagine the
+following type:
+
+{eof@ocaml[
+type my_type = {
+  username: string;
+  age: int;
+  gender : string option;
+  is_activated : bool
+}
+]eof}
+
+We could imagine the following validation function:
+
+{eof@ocaml[
+# let validate_my_type =
+    let open Yocaml.Data.Validation in
+    record (fun fields ->
+      let+ username = field (fetch fields "username") string
+      and+ age = field (fetch fields "age") (int & positive)
+      and+ gender = field (fetch fields "gender") (option string)
+      and+ is_activated =
+            field (fetch fields "activated") (option bool)
+            |? field (fetch fields "active") (option bool)
+            |? field (fetch fields "is_activated") (option bool)
+            $? Ok false
+      in
+      { username; age; gender; is_activated }
+    ) ;;
+val validate_my_type : D.t -> my_type Yocaml.Data.Validation.validated_value =
+  <fun>
+]eof}
+
+We can now validate an arbitrary record:
+
+{eof@ocaml[
+# validate_my_type Yocaml.Data.(record [
+     "username", string "bar"
+    ; "age", int 3
+    ; "active", bool true
+  ]) ;;
+- : my_type Yocaml.Data.Validation.validated_value =
+Ok {username = "bar"; age = 3; gender = None; is_activated = true}
+]eof}
+
+{eof@ocaml[
+# validate_my_type Yocaml.Data.(record [
+     "username", string "bar"
+    ; "age", int 3
+    ; "is_activated", bool true
+  ]) ;;
+- : my_type Yocaml.Data.Validation.validated_value =
+Ok {username = "bar"; age = 3; gender = None; is_activated = true}
+]eof}
+
+{eof@ocaml[
+# validate_my_type Yocaml.Data.(record [
+     "username", string "bar"
+    ; "age", int 3
+    ; "activated", bool true
+  ]) ;;
+- : my_type Yocaml.Data.Validation.validated_value =
+Ok {username = "bar"; age = 3; gender = None; is_activated = true}
+]eof}
+
+There is also an infix notation to simplify writing [fetch]:
+
+{eof@ocaml[
+# let validate_my_type =
+    let open Yocaml.Data.Validation in
+    record (fun fields ->
+      let+ username = field fields.${"username"} string
+      and+ age = field fields.${"age"} (int & positive)
+      and+ gender = field fields.${"gender"} (option string)
+      and+ is_activated =
+            field (fetch fields "activated") (option bool)
+            |? field (fetch fields "active") (option bool)
+            |? field (fetch fields "is_activated") (option bool)
+            $! false
+      in
+      { username; age; gender; is_activated }
+    ) ;;
+val validate_my_type : D.t -> my_type Yocaml.Data.Validation.validated_value =
+  <fun>
+]eof}
+
+{eof@ocaml[
+# validate_my_type Yocaml.Data.(record [
+     "username", string "bar"
+    ; "age", int 3
+    ; "activated", bool true
+  ]) ;;
+- : my_type Yocaml.Data.Validation.validated_value =
+Ok {username = "bar"; age = 3; gender = None; is_activated = true}
+]eof}

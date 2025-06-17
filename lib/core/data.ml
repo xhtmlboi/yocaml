@@ -40,6 +40,7 @@ let list v = List v
 let list_of f l = list @@ List.map f l
 let record fields = Record fields
 let option some = Option.fold ~none:null ~some
+let path p = string (Path.to_string p)
 
 let sum f value =
   let k, v = f value in
@@ -83,6 +84,24 @@ let rec pp ppf = function
         (Format.pp_print_list ~pp_sep:pp_delim (fun ppf (key, value) ->
              Format.fprintf ppf {|"%s":@, %a|} key pp value))
         x
+
+let rec to_sexp = function
+  | Null -> Sexp.atom "null"
+  | Bool x -> Sexp.atom (string_of_bool x)
+  | Int x -> Sexp.atom (string_of_int x)
+  | Float x -> Sexp.atom (string_of_float x)
+  | String x -> Sexp.atom x
+  | List x ->
+      Sexp.node
+        (Stdlib.List.concat_map (function Null -> [] | x -> [ to_sexp x ]) x)
+  | Record xs ->
+      Sexp.node
+        (Stdlib.List.concat_map
+           (fun (k, v) ->
+             match v with
+             | Null -> []
+             | v -> [ Sexp.(node [ atom k; to_sexp v ]) ])
+           xs)
 
 let rec to_ezjsonm = function
   | Null -> `Null
@@ -312,6 +331,17 @@ module Validation = struct
                Invalid_record { errors; given = li })
     | invalid_value -> invalid_shape "record" invalid_value
 
+  let field fetch validator =
+    let field, value = fetch () in
+    let value = Option.value ~default:Null value in
+    value
+    |> validator
+    |> Result.map_error (fun error ->
+           Nel.singleton @@ Invalid_field { given = value; error; field })
+
+  let fetch fields field () = (field, find_assoc field fields)
+  let ( .${} ) fields field = fetch fields field
+
   let optional assoc field validator =
     match find_assoc field assoc with
     | None | Some Null -> Ok None
@@ -341,6 +371,11 @@ module Validation = struct
     let ( & ) l r x = Result.bind (l x) r
     let ( / ) l r x = Result.fold ~ok:Result.ok ~error:(fun _ -> r x) (l x)
     let ( $ ) l f x = Result.map f (l x)
+    let ( $? ) l f = Result.bind l (function None -> f | Some x -> Ok x)
+    let ( $! ) l f = Result.bind l (function None -> Ok f | Some x -> Ok x)
+
+    let ( |? ) l f =
+      Result.bind l (function None -> f | Some x -> Ok (Some x))
   end
 
   module Syntax = struct
@@ -373,4 +408,6 @@ module Validation = struct
     x
     |> pair f (triple g h i)
     |> Result.map (fun (w, (x, y, z)) -> (w, x, y, z))
+
+  let path = string $ Path.from_string
 end

@@ -100,6 +100,11 @@ val either : ('a -> t) -> ('b -> t) -> ('a, 'b) Either.t -> t
 (** [either f g x] construct either as a {!type:t}. Either has the structure
     [{"constr": "left | right", "value": e}]. *)
 
+(** {2 Specific Data values} *)
+
+val path : Path.t -> t
+(** Normalize a Path. *)
+
 (** {1 Validating Data values} *)
 
 module Validation : sig
@@ -226,6 +231,9 @@ module Validation : sig
     -> ('a, 'b) Either.t validated_value
   (** [either left right v] validated a [either] value. *)
 
+  val path : t -> Path.t validated_value
+  (** Validate a Path. *)
+
   (** {2 Validators on parsed data}
 
       Validators to use when data is already parsed. *)
@@ -335,23 +343,33 @@ module Validation : sig
     *)
 
     val ( & ) :
-         ('a -> 'b validated_value)
-      -> ('b -> 'c validated_value)
+         ('a -> ('b, 'e) Result.t)
+      -> ('b -> ('c, 'e) Result.t)
       -> 'a
-      -> 'c validated_value
+      -> ('c, 'e) Result.t
     (** [(v1 & v2) x] sequentially compose [v2 (v1 x)], so [v1] following by
         [v2]. For example : [int &> positive &> c]. *)
 
     val ( / ) :
-         ('a -> 'b validated_value)
-      -> ('a -> 'b validated_value)
+         ('a -> ('b, 'e) Result.t)
+      -> ('a -> ('b, 'e) Result.t)
       -> 'a
-      -> 'b validated_value
+      -> ('b, 'e) Result.t
     (** [(v1 / v2) x] perform [v1 x] and if it fail, performs [v2 x]. *)
 
     val ( $ ) :
-      ('a -> 'b validated_value) -> ('b -> 'c) -> 'a -> 'c validated_value
+      ('a -> ('b, 'c) Result.t) -> ('b -> 'd) -> 'a -> ('d, 'c) Result.t
     (** [(v1 $ f) x] perform [f] on the result of [v1 x]. *)
+
+    val ( $? ) : ('a option, 'b) result -> ('a, 'b) result -> ('a, 'b) result
+    (** [f $? k] is [k] if [f] is [None] or [x] if [f] is [Some x]. *)
+
+    val ( $! ) : ('a option, 'b) result -> 'a -> ('a, 'b) result
+    (** [f $? k] is [Ok k] if [f] is [None] or [x] if [f] is [Some x]. *)
+
+    val ( |? ) :
+      ('a option, 'b) result -> ('a option, 'b) result -> ('a option, 'b) result
+    (** [f |? k] is [k] if [f] is [None], [f] otherwise. *)
   end
 
   include module type of Infix
@@ -389,6 +407,18 @@ module Validation : sig
   (** [optional_or ~default assoc field validator] optional [field] of [assoc],
       validated by [validator]. If the field does not exists, it return default.
       ([default] is not validated) *)
+
+  val field :
+       (unit -> string * t option)
+    -> (t -> 'a validated_value)
+    -> 'a validated_record
+  (** [field f validator] is a more generic validator for record fields. *)
+
+  val fetch : (string * t) list -> string -> unit -> string * t option
+  (** To be used with [field], ie: [field (fetch "foo" fieldset) v]*)
+
+  val ( .${} ) : (string * t) list -> string -> unit -> string * t option
+  (** An indexing version of [fetch]. *)
 
   (** {2 Bindings operators} *)
 
@@ -437,6 +467,9 @@ val equal : t -> t -> bool
 
 val pp : Format.formatter -> t -> unit
 (** Pretty-printer for {!type:t} (mostly used for debugging issue). *)
+
+val to_sexp : t -> Sexp.t
+(** [to_sexp] convert to a {!type:Yocaml.Sexp.t}. *)
 
 val to_ezjsonm : t -> ezjsonm
 (** [to_ezjsonm v] converts a {!type:t} into a {!type:ezjsonm}. *)

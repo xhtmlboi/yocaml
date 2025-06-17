@@ -14,4 +14,19 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-include Required.DATA_PROVIDER with type t = Sexp.t
+(** Dealing with canonical Sexp. *)
+
+module Canonical :
+  Required.DATA_READER
+    with type t = Sexp.t
+     and type 'a eff := 'a Eff.t
+     and type ('a, 'b) arr := ('a, 'b) Task.t
+     and type extraction_strategy := Metadata.extraction_strategy
+
+(** @inline *)
+include
+  Required.DATA_READER
+    with type t = Sexp.t
+     and type 'a eff := 'a Eff.t
+     and type ('a, 'b) arr := ('a, 'b) Task.t
+     and type extraction_strategy := Metadata.extraction_strategy
