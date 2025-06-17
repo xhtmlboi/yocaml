@@ -991,3 +991,104 @@ Result.Error
 
 In some cases, dependent validation makes it possible to construct increasingly
 complex situations, so it should only be used when really necessary.
+
+
+{1 A more generic approach of record validation}
+
+Controlling the optionality (or otherwise) of a field can be a
+handicap, which is why, since more recent versions of YOCaml, there is
+the {!val:Yocaml.Data.Validation.field} primitive. Let's imagine the
+following type:
+
+{eof@ocaml[
+type my_type = {
+  username: string;
+  age: int;
+  gender : string option;
+  is_activated : bool
+}
+]eof}
+
+We could imagine the following validation function:
+
+{eof@ocaml[
+# let validate_my_type =
+    let open Yocaml.Data.Validation in
+    record (fun fields ->
+      let+ username = field (fetch fields "username") string
+      and+ age = field (fetch fields "age") (int & positive)
+      and+ gender = field (fetch fields "gender") (option string)
+      and+ is_activated =
+            field (fetch fields "activated") (option bool)
+            |? field (fetch fields "active") (option bool)
+            |? field (fetch fields "is_activated") (option bool)
+            $? Ok false
+      in
+      { username; age; gender; is_activated }
+    ) ;;
+val validate_my_type : D.t -> my_type Yocaml.Data.Validation.validated_value =
+  <fun>
+]eof}
+
+We can now validate an arbitrary record:
+
+{eof@ocaml[
+# validate_my_type Yocaml.Data.(record [
+     "username", string "bar"
+    ; "age", int 3
+    ; "active", bool true
+  ]) ;;
+- : my_type Yocaml.Data.Validation.validated_value =
+Ok {username = "bar"; age = 3; gender = None; is_activated = true}
+]eof}
+
+{eof@ocaml[
+# validate_my_type Yocaml.Data.(record [
+     "username", string "bar"
+    ; "age", int 3
+    ; "is_activated", bool true
+  ]) ;;
+- : my_type Yocaml.Data.Validation.validated_value =
+Ok {username = "bar"; age = 3; gender = None; is_activated = true}
+]eof}
+
+{eof@ocaml[
+# validate_my_type Yocaml.Data.(record [
+     "username", string "bar"
+    ; "age", int 3
+    ; "activated", bool true
+  ]) ;;
+- : my_type Yocaml.Data.Validation.validated_value =
+Ok {username = "bar"; age = 3; gender = None; is_activated = true}
+]eof}
+
+There is also an infix notation to simplify writing [fetch]:
+
+{eof@ocaml[
+# let validate_my_type =
+    let open Yocaml.Data.Validation in
+    record (fun fields ->
+      let+ username = field fields.${"username"} string
+      and+ age = field fields.${"age"} (int & positive)
+      and+ gender = field fields.${"gender"} (option string)
+      and+ is_activated =
+            field (fetch fields "activated") (option bool)
+            |? field (fetch fields "active") (option bool)
+            |? field (fetch fields "is_activated") (option bool)
+            $? Ok false
+      in
+      { username; age; gender; is_activated }
+    ) ;;
+val validate_my_type : D.t -> my_type Yocaml.Data.Validation.validated_value =
+  <fun>
+]eof}
+
+{eof@ocaml[
+# validate_my_type Yocaml.Data.(record [
+     "username", string "bar"
+    ; "age", int 3
+    ; "activated", bool true
+  ]) ;;
+- : my_type Yocaml.Data.Validation.validated_value =
+Ok {username = "bar"; age = 3; gender = None; is_activated = true}
+]eof}

@@ -360,6 +360,12 @@ module Validation : sig
     val ( $ ) :
       ('a -> ('b, 'c) Result.t) -> ('b -> 'd) -> 'a -> ('d, 'c) Result.t
     (** [(v1 $ f) x] perform [f] on the result of [v1 x]. *)
+
+    val ( $? ) : ('a option, 'b) result -> ('a, 'b) result -> ('a, 'b) result
+    (** [f $? ]*)
+
+    val ( |? ) :
+      ('a option, 'b) result -> ('a option, 'b) result -> ('a option, 'b) result
   end
 
   include module type of Infix
@@ -397,6 +403,18 @@ module Validation : sig
   (** [optional_or ~default assoc field validator] optional [field] of [assoc],
       validated by [validator]. If the field does not exists, it return default.
       ([default] is not validated) *)
+
+  val field :
+       (unit -> string * t option)
+    -> (t -> 'a validated_value)
+    -> 'a validated_record
+  (** [field f validator] is a more generic validator for record fields. *)
+
+  val fetch : (string * t) list -> string -> unit -> string * t option
+  (** To be used with [field], ie: [field (fetch "foo" fieldset) v]*)
+
+  val ( .${} ) : (string * t) list -> string -> unit -> string * t option
+  (** An indexing version of [fetch]. *)
 
   (** {2 Bindings operators} *)
 

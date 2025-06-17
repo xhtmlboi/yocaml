@@ -331,6 +331,17 @@ module Validation = struct
                Invalid_record { errors; given = li })
     | invalid_value -> invalid_shape "record" invalid_value
 
+  let field fetch validator =
+    let field, value = fetch () in
+    let value = Option.value ~default:Null value in
+    value
+    |> validator
+    |> Result.map_error (fun error ->
+           Nel.singleton @@ Invalid_field { given = value; error; field })
+
+  let fetch fields field () = (field, find_assoc field fields)
+  let ( .${} ) fields field = fetch fields field
+
   let optional assoc field validator =
     match find_assoc field assoc with
     | None | Some Null -> Ok None
@@ -360,6 +371,10 @@ module Validation = struct
     let ( & ) l r x = Result.bind (l x) r
     let ( / ) l r x = Result.fold ~ok:Result.ok ~error:(fun _ -> r x) (l x)
     let ( $ ) l f x = Result.map f (l x)
+    let ( $? ) l f = Result.bind l (function None -> f | Some x -> Ok x)
+
+    let ( |? ) l f =
+      Result.bind l (function None -> f | Some x -> Ok (Some x))
   end
 
   module Syntax = struct
