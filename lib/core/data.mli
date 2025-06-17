@@ -100,8 +100,10 @@ val either : ('a -> t) -> ('b -> t) -> ('a, 'b) Either.t -> t
 (** [either f g x] construct either as a {!type:t}. Either has the structure
     [{"constr": "left | right", "value": e}]. *)
 
-val to_sexp : t -> Sexp.t
-(** [to_sexp] convert to a {!type:Yocaml.Sexp.t}. *)
+(** {2 Specific Data values} *)
+
+val path : Path.t -> t
+(** Normalize a Path. *)
 
 (** {1 Validating Data values} *)
 
@@ -228,6 +230,9 @@ module Validation : sig
     -> t
     -> ('a, 'b) Either.t validated_value
   (** [either left right v] validated a [either] value. *)
+
+  val path : t -> Path.t validated_value
+  (** Validate a Path. *)
 
   (** {2 Validators on parsed data}
 
@@ -440,6 +445,9 @@ val equal : t -> t -> bool
 
 val pp : Format.formatter -> t -> unit
 (** Pretty-printer for {!type:t} (mostly used for debugging issue). *)
+
+val to_sexp : t -> Sexp.t
+(** [to_sexp] convert to a {!type:Yocaml.Sexp.t}. *)
 
 val to_ezjsonm : t -> ezjsonm
 (** [to_ezjsonm v] converts a {!type:t} into a {!type:ezjsonm}. *)

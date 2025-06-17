@@ -40,6 +40,7 @@ let list v = List v
 let list_of f l = list @@ List.map f l
 let record fields = Record fields
 let option some = Option.fold ~none:null ~some
+let path p = string (Path.to_string p)
 
 let sum f value =
   let k, v = f value in
@@ -391,4 +392,6 @@ module Validation = struct
     x
     |> pair f (triple g h i)
     |> Result.map (fun (w, (x, y, z)) -> (w, x, y, z))
+
+  let path = string $ Path.from_string
 end
