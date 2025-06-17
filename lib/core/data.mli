@@ -343,22 +343,22 @@ module Validation : sig
     *)
 
     val ( & ) :
-         ('a -> 'b validated_value)
-      -> ('b -> 'c validated_value)
+         ('a -> ('b, 'e) Result.t)
+      -> ('b -> ('c, 'e) Result.t)
       -> 'a
-      -> 'c validated_value
+      -> ('c, 'e) Result.t
     (** [(v1 & v2) x] sequentially compose [v2 (v1 x)], so [v1] following by
         [v2]. For example : [int &> positive &> c]. *)
 
     val ( / ) :
-         ('a -> 'b validated_value)
-      -> ('a -> 'b validated_value)
+         ('a -> ('b, 'e) Result.t)
+      -> ('a -> ('b, 'e) Result.t)
       -> 'a
-      -> 'b validated_value
+      -> ('b, 'e) Result.t
     (** [(v1 / v2) x] perform [v1 x] and if it fail, performs [v2 x]. *)
 
     val ( $ ) :
-      ('a -> 'b validated_value) -> ('b -> 'c) -> 'a -> 'c validated_value
+      ('a -> ('b, 'c) Result.t) -> ('b -> 'd) -> 'a -> ('d, 'c) Result.t
     (** [(v1 $ f) x] perform [f] on the result of [v1 x]. *)
   end
 

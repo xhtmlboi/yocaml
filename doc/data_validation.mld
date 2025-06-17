@@ -764,7 +764,7 @@ to a string, I can easily use [$]:
 
 {eof@ocaml[
 # V.(int $ string_of_int) (D.int 23) ;;
-- : string V.validated_value = Ok "23"
+- : (string, V.value_error) result = Result.Ok "23"
 ]eof}
 
 We used [$] to transform a validated value and project it into the desired
@@ -791,8 +791,8 @@ Let's try it with an integer that doesn't respect the expectation:
 
 {eof@ocaml[
 # positive_and_even (D.int (-23)) ;;
-- : int Yocaml.Data.Validation.validated_value =
-Error
+- : (int, V.value_error) result =
+Result.Error
  (Yocaml.Data.Validation.With_message
    {Yocaml.Data.Validation.given = "-23"; message = "should be positive"})
 ]eof}
@@ -802,8 +802,8 @@ reason:
 
 {eof@ocaml[
 # positive_and_even (D.int 25) ;;
-- : int Yocaml.Data.Validation.validated_value =
-Error
+- : (int, V.value_error) result =
+Result.Error
  (Yocaml.Data.Validation.With_message
    {Yocaml.Data.Validation.given = "*"; message = "unsatisfied predicate"})
 ]eof}
@@ -812,7 +812,7 @@ And let's finally try it with a valid integer!
 
 {eof@ocaml[
 # positive_and_even (D.int 24) ;;
-- : int Yocaml.Data.Validation.validated_value = Ok 24
+- : (int, V.value_error) result = Result.Ok 24
 ]eof}
 
 The sequential application lets you chain validators to build validation
@@ -836,17 +836,17 @@ And it can be used with const in the event of absolute valis failure :
 
 {eof@ocaml[
 # V.(my_v / const "erf") (D.string "Hello") ;;
-- : string V.validated_value = Ok "Hello"
+- : (string, V.value_error) result = Result.Ok "Hello"
 ]eof}
 
 {eof@ocaml[
 # V.(my_v / const "erf") (D.int 1234) ;;
-- : string V.validated_value = Ok "1234"
+- : (string, V.value_error) result = Result.Ok "1234"
 ]eof}
 
 {eof@ocaml[
 # V.(my_v / const "erf") D.(list_of string ["Hello"]) ;;
-- : string V.validated_value = Ok "erf"
+- : (string, V.value_error) result = Result.Ok "erf"
 ]eof}
 
 With the support of alternatives, we've seen all the ways to build increasingly
