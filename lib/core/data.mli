@@ -362,10 +362,14 @@ module Validation : sig
     (** [(v1 $ f) x] perform [f] on the result of [v1 x]. *)
 
     val ( $? ) : ('a option, 'b) result -> ('a, 'b) result -> ('a, 'b) result
-    (** [f $? ]*)
+    (** [f $? k] is [k] if [f] is [None] or [x] if [f] is [Some x]. *)
+
+    val ( $! ) : ('a option, 'b) result -> 'a -> ('a, 'b) result
+    (** [f $? k] is [Ok k] if [f] is [None] or [x] if [f] is [Some x]. *)
 
     val ( |? ) :
       ('a option, 'b) result -> ('a option, 'b) result -> ('a option, 'b) result
+    (** [f |? k] is [k] if [f] is [None], [f] otherwise. *)
   end
 
   include module type of Infix

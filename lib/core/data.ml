@@ -372,6 +372,7 @@ module Validation = struct
     let ( / ) l r x = Result.fold ~ok:Result.ok ~error:(fun _ -> r x) (l x)
     let ( $ ) l f x = Result.map f (l x)
     let ( $? ) l f = Result.bind l (function None -> f | Some x -> Ok x)
+    let ( $! ) l f = Result.bind l (function None -> Ok f | Some x -> Ok x)
 
     let ( |? ) l f =
       Result.bind l (function None -> f | Some x -> Ok (Some x))

@@ -1075,7 +1075,7 @@ There is also an infix notation to simplify writing [fetch]:
             field (fetch fields "activated") (option bool)
             |? field (fetch fields "active") (option bool)
             |? field (fetch fields "is_activated") (option bool)
-            $? Ok false
+            $! false
       in
       { username; age; gender; is_activated }
     ) ;;
