@@ -301,6 +301,37 @@ let test_provider_normalize_2 =
       in
       check Testable.data "should be equal" expected computed)
 
+let test_from_data_1 =
+  let open Alcotest in
+  test_case "From_data - 1" `Quick (fun () ->
+      let expected = Yocaml.Sexp.(node [])
+      and computed = Yocaml.Data.(record [] |> to_sexp) in
+      check Testable.sexp "should be equal" expected computed)
+
+let test_from_data_2 =
+  let open Alcotest in
+  test_case "From_data - 2" `Quick (fun () ->
+      let expected =
+        Yocaml.Sexp.(
+          node
+            [
+              node [ atom "foo"; atom {|"bar"|} ]
+            ; node
+                [
+                  atom "baz"; node [ node [ atom "foobar"; atom {|"hello"|} ] ]
+                ]
+            ])
+      and computed =
+        Yocaml.Data.(
+          record
+            [
+              ("foo", string "bar")
+            ; ("baz", record [ ("foobar", string "hello") ])
+            ]
+          |> to_sexp)
+      in
+      check Testable.sexp "should be equal" expected computed)
+
 let cases =
   ( "Yocaml.Sexp"
   , [
@@ -330,4 +361,6 @@ let cases =
     ; test_to_string_from_string_roundtrip
     ; test_provider_normalize_1
     ; test_provider_normalize_2
+    ; test_from_data_1
+    ; test_from_data_2
     ] )

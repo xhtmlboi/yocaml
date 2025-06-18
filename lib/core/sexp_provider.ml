@@ -41,9 +41,19 @@ module Data_provider = struct
   let ( <|> ) a b =
     match (a, b) with Some x, _ -> Some x | None, Some y -> Some y | _ -> None
 
+  let literal_string = function
+    | {|""|} | "''" -> Some ""
+    | str
+      when String.starts_with ~prefix:{|"|} str
+           && String.ends_with ~suffix:{|""|} str ->
+        let len = String.length str in
+        Some (String.sub str 1 (len - 2))
+    | _ -> None
+
   let normalize_atom x =
-    bool_of_string_opt x
-    |> Option.map Data.bool
+    literal_string x
+    |> Option.map Data.string
+    <|> (bool_of_string_opt x |> Option.map Data.bool)
     <|> (int_of_string_opt x |> Option.map Data.int)
     <|> (float_of_string_opt x |> Option.map Data.float)
     |> Option.value ~default:(Data.string x)
