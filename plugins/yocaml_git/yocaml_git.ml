@@ -22,22 +22,12 @@ let run (module Source : Required.SOURCE) ~context ?author ?email ?message
   let () = Mirage_crypto_rng_unix.use_default () in
   let* context = match context with `SSH -> Ssh.context () in
   let* store = Git_kv.connect context remote in
-  let module Store = struct
-    include Git_kv
-
-    (* last_modified and change_and_push have a weird interaction;
-       so we show the old last_modified *)
-    let last_modified new_store key =
-      let* r = last_modified store key in
-      match r with
-      | Error (`Not_found _) -> last_modified new_store key
-      | _ -> Lwt.return r
-  end in
-  Store.change_and_push ?author ?author_email:email ?message store (fun store ->
+  Git_kv.change_and_push ?author ?author_email:email ?message store
+    (fun store ->
       let module Config = struct
         let store = store
       end in
-      let module Runtime = Runtime.Make (Source) (Config) (Store) in
+      let module Runtime = Runtime.Make (Source) (Config) (Git_kv) in
       let () = Yocaml_runtime.Log.setup ?level () in
       Runtime.Runner.run ?custom_error_handler program)
 

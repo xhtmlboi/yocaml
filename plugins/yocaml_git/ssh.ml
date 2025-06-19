@@ -101,19 +101,19 @@ let context () =
     | _ -> Lwt.return_none
   in
   let open Lwt.Syntax in
-  let+ context = Git_unix.ctx @@ Happy_eyeballs_lwt.create () in
+  let+ context = Git_net_unix.ctx @@ Happy_eyeballs_lwt.create () in
   context
-  |> Mimic.fold Smart_git.git_transmission
-       Mimic.Fun.[ req Smart_git.git_scheme ]
+  |> Mimic.fold Git_store.Endpoint.git_transmission
+       Mimic.Fun.[ req Git_store.Endpoint.git_scheme ]
        ~k:(function `SSH -> Lwt.return_some `Exec | _ -> Lwt.return_none)
   |> Mimic.fold ssh_edn
        Mimic.Fun.
          [
-           req Smart_git.git_scheme
-         ; req Smart_git.git_ssh_user
-         ; req Smart_git.git_path
-         ; req Smart_git.git_hostname
-         ; dft Smart_git.git_port 22
-         ; req Smart_git.git_capabilities
+           req Git_store.Endpoint.git_scheme
+         ; req Git_store.Endpoint.git_ssh_user
+         ; req Git_store.Endpoint.git_path
+         ; req Git_store.Endpoint.git_hostname
+         ; dft Git_store.Endpoint.git_port 22
+         ; req Git_store.Endpoint.git_capabilities
          ]
        ~k

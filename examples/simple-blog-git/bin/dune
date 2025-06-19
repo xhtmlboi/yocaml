@@ -1,7 +1,6 @@
 (executable
  (name simple_blog_git)
  (libraries
-  git-unix
   yocaml
   simple_blog
   yocaml_unix
