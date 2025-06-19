@@ -26,6 +26,8 @@ let error_to_string = function
   | Premature_end_of_atom (len, x) ->
       Format.asprintf "premature end of atom, expected length [%d] on [%d]" len
         x
+  | Premature_end_of_string (str, x) ->
+      Format.asprintf "premature end of string, expected [%s] on [%d]" str x
 
 module Data_provider = struct
   type t = Sexp.t
@@ -63,7 +65,7 @@ module Data_provider = struct
 
   let rec normalize = function
     | Sexp.Atom "null" -> Data.null
-    | Sexp.Atom x -> normalize_atom x
+    | Sexp.Atom x | Sexp.String x -> normalize_atom x
     | Node [] -> Data.list []
     | Node node when is_record node ->
         Data.record

@@ -59,7 +59,7 @@ let test_to_string_1_canonical =
   test_case "canonical to_string case 1" `Quick (fun () ->
       let open Yocaml.Sexp in
       let expected = "0:" and computed = atom "" |> Canonical.to_string in
-      check string "should be equal" expected computed)
+      check Alcotest.string "should be equal" expected computed)
 
 let test_to_string_2_canonical =
   let open Alcotest in
@@ -67,7 +67,7 @@ let test_to_string_2_canonical =
       let open Yocaml.Sexp in
       let expected = "9:foobarbaz"
       and computed = atom "foobarbaz" |> Canonical.to_string in
-      check string "should be equal" expected computed)
+      check Alcotest.string "should be equal" expected computed)
 
 let test_to_string_3_canonical =
   let open Alcotest in
@@ -84,7 +84,7 @@ let test_to_string_3_canonical =
           ]
         |> Canonical.to_string
       in
-      check string "should be equal" expected computed)
+      check Alcotest.string "should be equal" expected computed)
 
 let test_from_string_1_canonical =
   let open Alcotest in
@@ -332,6 +332,14 @@ let test_from_data_2 =
       in
       check Testable.sexp "should be equal" expected computed)
 
+let test_from_string_str_1 =
+  let open Alcotest in
+  test_case "from_string case 1" `Quick (fun () ->
+      let open Yocaml.Sexp in
+      let expected = Ok (node [ string "foo bar baz"; atom "hello" ])
+      and computed = from_string {|("foo bar baz" hello)|} in
+      check (Testable.csexp_result ()) "should be equal" expected computed)
+
 let cases =
   ( "Yocaml.Sexp"
   , [
@@ -363,4 +371,5 @@ let cases =
     ; test_provider_normalize_2
     ; test_from_data_1
     ; test_from_data_2
+    ; test_from_string_str_1
     ] )
