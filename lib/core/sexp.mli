@@ -31,7 +31,7 @@
     S-Expressions). *)
 
 (** S-Expression AST. *)
-type t = Atom of string | Node of t list
+type t = Atom of string | String of string | Node of t list
 
 (** Errors that can occur when parsing S-expressions. *)
 type parsing_error =
@@ -41,12 +41,16 @@ type parsing_error =
   | Expected_number of char * int
   | Unexepected_character of char * int
   | Premature_end_of_atom of int * int
+  | Premature_end_of_string of string * int
 
 (** Used to describe an invalid S-expression (correctly parsed but does not
     respect a schema). *)
 type invalid = Invalid_sexp of t * string
 
 val atom : string -> t
+(** [atom x] lift a given string, [x], into a {!type:t}. *)
+
+val string : string -> t
 (** [atom x] lift a given string, [x], into a {!type:t}. *)
 
 val node : t list -> t

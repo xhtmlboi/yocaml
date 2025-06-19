@@ -90,7 +90,7 @@ let rec to_sexp = function
   | Bool x -> Sexp.atom (string_of_bool x)
   | Int x -> Sexp.atom (string_of_int x)
   | Float x -> Sexp.atom (string_of_float x)
-  | String x -> Sexp.atom x
+  | String x -> Sexp.atom (Format.asprintf "%S" x)
   | List x ->
       Sexp.node
         (Stdlib.List.concat_map (function Null -> [] | x -> [ to_sexp x ]) x)
