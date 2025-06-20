@@ -67,3 +67,14 @@ val content_to_html_with_toc :
     an HTML representation of the table of contents, and the second one is the
     document. The arrow takes also a [f] that can merge the metadata with the
     computed table of contents. *)
+
+val to_doc : ?strict:bool -> unit -> (string, Cmarkit.Doc.t) Yocaml.Task.t
+(** Intermerdiate arrow that build the document. *)
+
+val table_of_contents :
+  (Cmarkit.Doc.t, string option * Cmarkit.Doc.t) Yocaml.Task.t
+(** Compute the table of contents from a doc. *)
+
+val from_doc_to_html :
+  ?safe:bool -> unit -> (Cmarkit.Doc.t, string) Yocaml.Task.t
+(** Intermerdiate arrow that convert a document to html. *)
