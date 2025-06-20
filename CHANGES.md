@@ -1,9 +1,15 @@
 ### Unreleased
 
+#### Yocaml
+
 - Add `Log.src` for logging (by [xvw](https://xvw.lol))
 - Add template chain (by [xvw](https://xvw.lol))
 - Add Sexp control (by [xvw](https://xvw.lol))
 - Add `field` and some combinators for validating record field (that unify `required`, `optional` and `optional_or`) (by [xvw](https://xvw.lol))
+
+#### Yocaml_cmarkit
+
+- Intermediate Task added to progressively build a document and apply arbitrary arrows. (by [xhtmlboi](https://github.com/xhtmlboi))
 
 ### v2.3.0 2025-05-25 Nantes (France)
 
