@@ -3,11 +3,10 @@
  (public_name yocaml_git)
  (libraries
   ptime
-  mirage-clock
   mirage-crypto-rng.unix
   lwt
   git-kv
-  git-unix
+  git-net.unix
   yocaml
   yocaml_runtime
   cstruct
