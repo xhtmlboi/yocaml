@@ -14,7 +14,7 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-type t = Atom of string | Node of t list
+type t = Atom of string | String of string | Node of t list
 
 type parsing_error =
   | Nonterminated_node of int
@@ -23,24 +23,29 @@ type parsing_error =
   | Expected_number of char * int
   | Unexepected_character of char * int
   | Premature_end_of_atom of int * int
+  | Premature_end_of_string of string * int
 
 type invalid = Invalid_sexp of t * string
 
 let atom x = Atom x
 let node x = Node x
+let string x = String x
 
 let rec equal a b =
   match (a, b) with
   | Atom a, Atom b -> String.equal a b
+  | String a, String b -> String.equal a b
   | Node a, Node b -> List.equal equal a b
   | _ -> false
 
 let rec pp ppf = function
-  | Atom x -> Format.fprintf ppf {|Atom "%s"|} x
+  | Atom x -> Format.fprintf ppf {|Atom "%s";@ |} x
+  | String x -> Format.fprintf ppf {|String "%S"; @x|} x
   | Node x -> Format.fprintf ppf {|Node [@[%a@]]|} (Format.pp_print_list pp) x
 
 let rec pp_pretty ppf = function
   | Atom x -> Format.fprintf ppf "%s" x
+  | String x -> Format.fprintf ppf "%S" x
   | Node x -> Format.fprintf ppf "@[<hov 1>(%a)@]" pp_pretty_list x
 
 and pp_pretty_list ppf = function
@@ -59,7 +64,7 @@ module Canonical = struct
   let length sexp =
     let rec aux acc = function
       | Node x -> 2 + List.fold_left aux acc x
-      | Atom x ->
+      | Atom x | String x ->
           let len = String.length x in
           let ilen = String.length (Int.to_string len) in
           acc + ilen + 1 + len
@@ -68,7 +73,7 @@ module Canonical = struct
 
   let to_buffer buf sexp =
     let rec aux = function
-      | Atom x ->
+      | Atom x | String x ->
           let len = String.length x |> Int.to_string in
           let () = Buffer.add_string buf len in
           let () = Buffer.add_char buf ':' in
@@ -143,12 +148,37 @@ let from_seq seq =
     let rec aux escaped lex_pos seq =
       match Seq.uncons seq with
       | None ->
-          (buf |> Buffer.to_bytes |> Bytes.to_string, lex_pos + 1, Seq.empty)
+          ( escaped
+          , buf |> Buffer.to_bytes |> Bytes.to_string
+          , lex_pos + 1
+          , Seq.empty )
       | Some ('\\', xs) -> aux true (lex_pos + 1) xs
       | Some (((' ' | '\t' | '\n' | ')' | '(') as c), xs) when not escaped ->
-          (buf |> Buffer.to_bytes |> Bytes.to_string, lex_pos, Seq.cons c xs)
+          ( escaped
+          , buf |> Buffer.to_bytes |> Bytes.to_string
+          , lex_pos
+          , Seq.cons c xs )
       | Some (c, xs) ->
           let () = Buffer.add_char buf c in
+          aux false (lex_pos + 1) xs
+    in
+    aux false lex_pos seq
+  in
+
+  let parse_string c lex_pos seq =
+    let buf = Buffer.create 1 in
+    let rec aux escaped lex_pos seq =
+      match Seq.uncons seq with
+      | None when escaped ->
+          Error
+            (Premature_end_of_string
+               (buf |> Buffer.to_bytes |> Bytes.to_string, lex_pos))
+      | None ->
+          Ok (buf |> Buffer.to_bytes |> Bytes.to_string, lex_pos + 1, Seq.empty)
+      | Some (x, xs) when (not escaped) && Char.equal x c ->
+          Ok (buf |> Buffer.to_bytes |> Bytes.to_string, lex_pos + 1, xs)
+      | Some (x, xs) ->
+          let () = Buffer.add_char buf x in
           aux false (lex_pos + 1) xs
     in
     aux false lex_pos seq
@@ -159,6 +189,11 @@ let from_seq seq =
     | None ->
         if level = 0 then Ok (List.rev acc, lex_pos, Seq.empty)
         else Error (Nonterminated_node lex_pos)
+    | Some ((('"' | '\'') as c), xs) ->
+        Result.bind
+          (parse_string c (lex_pos + 1) xs)
+          (fun (str, lex_pos, xs) ->
+            aux level (lex_pos + 1) (string str :: acc) xs)
     | Some (('\t' | ' ' | '\n'), xs) -> aux level (lex_pos + 1) acc xs
     | Some (')', xs) -> Ok (List.rev acc, lex_pos + 1, xs)
     | Some ('(', xs) ->
@@ -166,8 +201,9 @@ let from_seq seq =
           (aux (level + 1) lex_pos [] xs)
           (fun (n, lex_pos, xs) -> aux level (lex_pos + 1) (node n :: acc) xs)
     | Some (c, xs) ->
-        let atm, lex_pos, xs = parse_atom lex_pos (Seq.cons c xs) in
-        aux level lex_pos (atom atm :: acc) xs
+        let escaped, atm, lex_pos, xs = parse_atom lex_pos (Seq.cons c xs) in
+        if escaped then Error (Premature_end_of_string (atm, lex_pos))
+        else aux level lex_pos (atom atm :: acc) xs
   in
   Result.map
     (fun (r, _, _) -> match r with [ e ] -> e | _ -> node r)

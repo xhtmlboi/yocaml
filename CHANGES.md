@@ -6,6 +6,7 @@
 - Add template chain (by [xvw](https://xvw.lol))
 - Add Sexp control (by [xvw](https://xvw.lol))
 - Add `field` and some combinators for validating record field (that unify `required`, `optional` and `optional_or`) (by [xvw](https://xvw.lol))
+- Adds modest support for quotes in S-expressions (by [xhtmlboi](https://github.com/xhtmlboi))
 
 #### Yocaml_cmarkit
 

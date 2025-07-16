@@ -16,7 +16,7 @@
 
 let fs = Fs.testable
 let fs_item = Fs.testable_item
-let sexp = Alcotest.testable Yocaml.Sexp.pp Yocaml.Sexp.equal
+let sexp = Alcotest.testable Yocaml.Sexp.pp_pretty Yocaml.Sexp.equal
 
 let csexp_error_equal a b =
   let open Yocaml.Sexp in
@@ -30,6 +30,8 @@ let csexp_error_equal a b =
       Char.equal ca cb && Int.equal la lb
   | Premature_end_of_atom (la, ia), Premature_end_of_atom (lb, ib) ->
       Int.equal la lb && Int.equal ia ib
+  | Premature_end_of_string (sa, ia), Premature_end_of_string (sb, ib) ->
+      String.equal sa sb && Int.equal ia ib
   | _ -> false
 
 let csexp_error_pp ppf =
@@ -44,6 +46,8 @@ let csexp_error_pp ppf =
       Format.fprintf ppf "Unexepected_character (%c, %d)" c i
   | Premature_end_of_atom (a, b) ->
       Format.fprintf ppf "Premature_end_of_atom (%d, %d)" a b
+  | Premature_end_of_string (a, b) ->
+      Format.fprintf ppf "Premature_end_of_string (%s, %d)" a b
 
 let csexp_error () = Alcotest.testable csexp_error_pp csexp_error_equal
 let csexp_result () = Alcotest.result sexp (csexp_error ())

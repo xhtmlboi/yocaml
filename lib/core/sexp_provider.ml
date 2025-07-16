@@ -26,6 +26,8 @@ let error_to_string = function
   | Premature_end_of_atom (len, x) ->
       Format.asprintf "premature end of atom, expected length [%d] on [%d]" len
         x
+  | Premature_end_of_string (str, x) ->
+      Format.asprintf "premature end of string, expected [%s] on [%d]" str x
 
 module Data_provider = struct
   type t = Sexp.t
@@ -41,9 +43,19 @@ module Data_provider = struct
   let ( <|> ) a b =
     match (a, b) with Some x, _ -> Some x | None, Some y -> Some y | _ -> None
 
+  let literal_string = function
+    | {|""|} | "''" -> Some ""
+    | str
+      when String.starts_with ~prefix:{|"|} str
+           && String.ends_with ~suffix:{|""|} str ->
+        let len = String.length str in
+        Some (String.sub str 1 (len - 2))
+    | _ -> None
+
   let normalize_atom x =
-    bool_of_string_opt x
-    |> Option.map Data.bool
+    literal_string x
+    |> Option.map Data.string
+    <|> (bool_of_string_opt x |> Option.map Data.bool)
     <|> (int_of_string_opt x |> Option.map Data.int)
     <|> (float_of_string_opt x |> Option.map Data.float)
     |> Option.value ~default:(Data.string x)
@@ -53,7 +65,7 @@ module Data_provider = struct
 
   let rec normalize = function
     | Sexp.Atom "null" -> Data.null
-    | Sexp.Atom x -> normalize_atom x
+    | Sexp.Atom x | Sexp.String x -> normalize_atom x
     | Node [] -> Data.list []
     | Node node when is_record node ->
         Data.record
