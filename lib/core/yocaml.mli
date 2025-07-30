@@ -50,11 +50,13 @@ module Datetime = Archetype.Datetime
     - A {!type:Task.t} is the fundamental building block for building
       {!module:Pipeline}
     - {!module:Pipeline} describes concrete, composable sets of steps
-    - {!module:Action} consumes {!module:Pipeline} to build {b artifacts}. *)
+    - {!module:Action} consumes {!module:Pipeline} to build {b artifacts}.
+    - {!module:Batch} perform {!module:Action} on list. *)
 
 module Task = Task
 module Pipeline = Pipeline
 module Action = Action
+module Batch = Batch
 
 (** {1 Effects abstraction}
 
