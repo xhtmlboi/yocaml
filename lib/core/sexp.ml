@@ -35,12 +35,19 @@ let rec equal a b =
   | Node a, Node b -> List.equal equal a b
   | _ -> false
 
+let escape_string s =
+  String.fold_left
+    (fun acc -> function
+      | ('\n' | '\t' | ' ') as c -> acc ^ "\\" ^ String.make 1 c
+      | c -> acc ^ String.make 1 c)
+    "" s
+
 let rec pp ppf = function
   | Atom x -> Format.fprintf ppf {|Atom "%s"|} x
   | Node x -> Format.fprintf ppf {|Node [@[%a@]]|} (Format.pp_print_list pp) x
 
 let rec pp_pretty ppf = function
-  | Atom x -> Format.fprintf ppf "%s" x
+  | Atom x -> Format.fprintf ppf "%s" (escape_string x)
   | Node x -> Format.fprintf ppf "@[<hov 1>(%a)@]" pp_pretty_list x
 
 and pp_pretty_list ppf = function

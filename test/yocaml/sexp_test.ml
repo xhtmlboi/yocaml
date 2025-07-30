@@ -301,6 +301,25 @@ let test_provider_normalize_2 =
       in
       check Testable.data "should be equal" expected computed)
 
+let test_string_atom_1 =
+  Alcotest.test_case "Test string normalization" `Quick (fun () ->
+      let source =
+        Yocaml.Sexp.(
+          node
+            [
+              node [ atom "foo"; atom "12" ]
+            ; node [ atom "bar"; atom "true" ]
+            ; node [ atom "baz"; atom "3.14" ]
+            ; node [ atom "foobar"; atom "Hello World" ]
+            ])
+      in
+      let expected = Ok source
+      and computed =
+        source |> Yocaml.Sexp.to_string |> Yocaml.Sexp.from_string
+      in
+      Alcotest.check (Testable.csexp_result ()) "should be equal" expected
+        computed)
+
 let cases =
   ( "Yocaml.Sexp"
   , [
@@ -330,4 +349,5 @@ let cases =
     ; test_to_string_from_string_roundtrip
     ; test_provider_normalize_1
     ; test_provider_normalize_2
+    ; test_string_atom_1
     ] )
