@@ -14,23 +14,22 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-module Path_set = Set.Make (Path)
+type t = Path.Set.t
 
-type t = Path_set.t
-
-let concat = Path_set.union
-let empty = Path_set.empty
+let concat = Path.Set.union
+let empty = Path.Set.empty
 let reduce = List.fold_left concat empty
-let singleton = Path_set.singleton
-let from_list = Path_set.of_list
-let equal = Path_set.equal
-let is_empty = Path_set.is_empty
+let singleton = Path.Set.singleton
+let from_list = Path.Set.of_list
+let equal = Path.Set.equal
+let is_empty = Path.Set.is_empty
+let add = Path.Set.add
 
 let get_mtimes deps =
-  deps |> Path_set.elements |> Eff.(List.traverse @@ mtime ~on:`Source)
+  deps |> Path.Set.elements |> Eff.(List.traverse @@ mtime ~on:`Source)
 
 let to_sexp deps =
-  deps |> Path_set.to_list |> List.map Path.to_sexp |> Sexp.node
+  deps |> Path.Set.to_list |> List.map Path.to_sexp |> Sexp.node
 
 let all_path_nodes sexp node =
   List.fold_left
@@ -50,4 +49,4 @@ let pp ppf deps =
     (Format.pp_print_list
        ~pp_sep:(fun ppf () -> Format.fprintf ppf ";@ ")
        Path.pp)
-    (Path_set.elements deps)
+    (Path.Set.elements deps)
