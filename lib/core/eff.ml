@@ -105,7 +105,7 @@ type _ Effect.t +=
   | Yocaml_failwith : exn -> 'a Effect.t
   | Yocaml_get_time : unit -> int Effect.t
   | Yocaml_file_exists : filesystem * Path.t -> bool Effect.t
-  | Yocaml_read_file : filesystem * Path.t -> string Effect.t
+  | Yocaml_read_file : filesystem * bool * Path.t -> string Effect.t
   | Yocaml_get_mtime : filesystem * Path.t -> int Effect.t
   | Yocaml_hash_content : string -> string Effect.t
   | Yocaml_write_file : filesystem * Path.t * string -> unit Effect.t
@@ -161,15 +161,15 @@ let ensure_file_exists ~on f path =
   let* exists = file_exists ~on path in
   if exists then f path else raise (File_not_exists (on, path))
 
-let read_file ~on =
+let read_file ?(snapshot = false) ~on =
   ensure_file_exists ~on (fun path ->
       let* is_file = is_file ~on path in
-      if is_file then perform @@ Yocaml_read_file (on, path)
+      if is_file then perform @@ Yocaml_read_file (on, snapshot, path)
       else raise @@ File_is_a_directory (on, path))
 
 let read_file_as_metadata (type a) (module P : Required.DATA_PROVIDER)
-    (module R : Required.DATA_READABLE with type t = a) ~on path =
-  let* file = read_file ~on path in
+    (module R : Required.DATA_READABLE with type t = a) ?snapshot ~on path =
+  let* file = read_file ?snapshot ~on path in
   file
   |> Option.some
   |> Metadata.validate (module P) (module R)
@@ -179,8 +179,8 @@ let read_file_as_metadata (type a) (module P : Required.DATA_PROVIDER)
 
 let read_file_with_metadata (type a) (module P : Required.DATA_PROVIDER)
     (module R : Required.DATA_READABLE with type t = a)
-    ?(extraction_strategy = Metadata.jekyll) ~on path =
-  let* file = read_file ~on path in
+    ?(extraction_strategy = Metadata.jekyll) ?snapshot ~on path =
+  let* file = read_file ?snapshot ~on path in
   let raw_metadata, content =
     Metadata.extract_from_content ~strategy:extraction_strategy file
   in

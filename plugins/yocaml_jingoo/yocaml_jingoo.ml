@@ -34,9 +34,12 @@ end
 
 module Pipeline = struct
   let as_template (type a)
-      (module I : Yocaml.Required.DATA_INJECTABLE with type t = a) ?strict
-      template =
-    Yocaml.Pipeline.as_template (module Tpl) (module I) ?strict template
+      (module I : Yocaml.Required.DATA_INJECTABLE with type t = a) ?snapshot
+      ?strict template =
+    Yocaml.Pipeline.as_template
+      (module Tpl)
+      (module I)
+      ?snapshot ?strict template
 end
 
 include Tpl

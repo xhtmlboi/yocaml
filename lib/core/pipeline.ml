@@ -17,8 +17,9 @@
 let track_files list = Task.make (Deps.from_list list) Eff.return
 let track_file file = track_files [ file ]
 
-let read_file file =
-  Task.make (Deps.singleton file) (fun () -> Eff.read_file ~on:`Source file)
+let read_file ?snapshot file =
+  Task.make (Deps.singleton file) (fun () ->
+      Eff.read_file ?snapshot ~on:`Source file)
 
 let directory_exists path =
   Task.from_effect ~has_dynamic_dependencies:false (fun () ->
@@ -30,21 +31,21 @@ let file_exists path =
 
 let read_file_with_metadata (type a) (module P : Required.DATA_PROVIDER)
     (module R : Required.DATA_READABLE with type t = a) ?extraction_strategy
-    path =
+    ?snapshot path =
   Task.make (Deps.singleton path) (fun () ->
       Eff.read_file_with_metadata
         (module P)
         (module R)
-        ?extraction_strategy ~on:`Source path)
+        ?extraction_strategy ?snapshot ~on:`Source path)
 
 let read_file_as_metadata (type a) (module P : Required.DATA_PROVIDER)
-    (module R : Required.DATA_READABLE with type t = a) path =
+    (module R : Required.DATA_READABLE with type t = a) ?snapshot path =
   Task.make (Deps.singleton path) (fun () ->
-      Eff.read_file_as_metadata (module P) (module R) ~on:`Source path)
+      Eff.read_file_as_metadata (module P) (module R) ?snapshot ~on:`Source path)
 
 let as_template (type a) (module T : Required.DATA_TEMPLATE)
-    (module I : Required.DATA_INJECTABLE with type t = a) ?(strict = true)
-    template =
+    (module I : Required.DATA_INJECTABLE with type t = a) ?(snapshot = true)
+    ?(strict = true) template =
   let action ((meta, content), tpl_content) =
     let parameters = ("yocaml_body", Data.string content) :: I.normalize meta in
     let parameters = List.map (fun (k, v) -> (k, T.from v)) parameters in
@@ -54,15 +55,15 @@ let as_template (type a) (module T : Required.DATA_TEMPLATE)
     with exn -> Eff.raise exn
   in
   let open Task in
-  (fun x -> (x, ())) |>> second (read_file template) >>* action
+  (fun x -> (x, ())) |>> second (read_file ~snapshot template) >>* action
 
 let chain_templates (type a) (module T : Required.DATA_TEMPLATE)
-    (module I : Required.DATA_INJECTABLE with type t = a) ?(strict = true)
-    templates =
+    (module I : Required.DATA_INJECTABLE with type t = a) ?(snapshot = true)
+    ?(strict = true) templates =
   List.fold_left
     (fun task template ->
       let open Task in
-      task >>> as_template ~strict (module T) (module I) template)
+      task >>> as_template ~snapshot ~strict (module T) (module I) template)
     Task.id templates
 
 let exec_cmd_with_result ?is_success cmd =

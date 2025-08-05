@@ -31,8 +31,28 @@ module Make (Runtime : Required.RUNTIME) = struct
     in
     Runtime.log `Error msg
 
+  let map f x = Runtime.bind (fun x -> Runtime.return @@ f x) x
+  let map_ok f x = map (Result.map f) x
+
+  let read_file ~on snapshots path = function
+    | false -> Runtime.read_file ~on path
+    | true -> (
+        match Path.Map.find_opt path !snapshots with
+        | Some content ->
+            Runtime.bind
+              (fun () -> Runtime.return (Ok content))
+              (Runtime.log `Debug
+              @@ Format.asprintf "%a already stored" Path.pp path)
+        | None ->
+            path
+            |> Runtime.read_file ~on
+            |> map_ok (fun content ->
+                   let () = snapshots := Path.Map.add path content !snapshots in
+                   content))
+
   let run ?custom_error_handler program =
     let exnc = exnc ?custom_error_handler in
+    let snapshots : string Path.Map.t ref = ref Path.Map.empty in
     let handler =
       Effect.Deep.
         {
@@ -55,13 +75,13 @@ module Make (Runtime : Required.RUNTIME) = struct
                     (fun (k : (a, _) continuation) ->
                       Runtime.bind (continue k)
                         (Runtime.file_exists ~on:filesystem path))
-              | Eff.Yocaml_read_file (filesystem, path) ->
+              | Eff.Yocaml_read_file (filesystem, as_snapshot, path) ->
                   Some
                     (fun (k : (a, _) continuation) ->
                       Runtime.bind
                         (function
                           | Ok x -> continue k x | Error err -> runtimec err)
-                        (Runtime.read_file ~on:filesystem path))
+                        (read_file ~on:filesystem snapshots path as_snapshot))
               | Eff.Yocaml_get_mtime (filesystem, path) ->
                   Some
                     (fun (k : (a, _) continuation) ->

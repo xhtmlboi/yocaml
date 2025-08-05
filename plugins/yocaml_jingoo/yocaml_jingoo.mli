@@ -28,6 +28,7 @@ module Pipeline : sig
 
   val as_template :
        (module Yocaml.Required.DATA_INJECTABLE with type t = 'a)
+    -> snapshot:bool
     -> ?strict:bool
     -> Yocaml.Path.t
     -> ('a * string, 'a * string) Yocaml.Task.t
