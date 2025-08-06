@@ -193,8 +193,11 @@ end
 
 include Infix
 
-module Map = Map.Make (struct
+module Orderable = struct
   type nonrec t = t
 
   let compare = compare
-end)
+end
+
+module Map = Map.Make (Orderable)
+module Set = Set.Make (Orderable)

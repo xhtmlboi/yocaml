@@ -29,7 +29,7 @@ val track_files : Path.t list -> (unit, unit) Task.t
 (** [track_files list_of_filepath] is like {!val:track_file} but for multiple
     files. *)
 
-val read_file : Path.t -> (unit, string) Task.t
+val read_file : ?snapshot:bool -> Path.t -> (unit, string) Task.t
 (** [read_file path] is a task that read the content of a file. *)
 
 val directory_exists : Path.t -> (unit, bool) Task.t
@@ -50,6 +50,7 @@ val pipe : ('a -> 'b -> 'c) -> (unit, 'b) Task.t -> ('a, 'c) Task.t
 val read_file_as_metadata :
      (module Required.DATA_PROVIDER)
   -> (module Required.DATA_READABLE with type t = 'a)
+  -> ?snapshot:bool
   -> Path.t
   -> (unit, 'a) Task.t
 (** [read_file_as_metadata (module P) (module R) ?extraction_strategy path] is a
@@ -62,6 +63,7 @@ val read_file_with_metadata :
      (module Required.DATA_PROVIDER)
   -> (module Required.DATA_READABLE with type t = 'a)
   -> ?extraction_strategy:Metadata.extraction_strategy
+  -> ?snapshot:bool
   -> Path.t
   -> (unit, 'a * string) Task.t
 (** [read_file_with_metadata (module P) (module R) ?extraction_strategy path] is
@@ -90,6 +92,7 @@ val exec_cmd_with_result :
 val as_template :
      (module Required.DATA_TEMPLATE)
   -> (module Required.DATA_INJECTABLE with type t = 'a)
+  -> ?snapshot:bool
   -> ?strict:bool
   -> Path.t
   -> ('a * string, 'a * string) Task.t
@@ -99,6 +102,7 @@ val as_template :
 val chain_templates :
      (module Required.DATA_TEMPLATE)
   -> (module Required.DATA_INJECTABLE with type t = 'a)
+  -> ?snapshot:bool
   -> ?strict:bool
   -> Path.t list
   -> ('a * string, 'a * string) Task.t

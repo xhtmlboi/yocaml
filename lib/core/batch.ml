@@ -1,5 +1,5 @@
 (* YOCaml a static blog generator.
-   Copyright (C) 2024 The Funkyworkers and The YOCaml's developers
+   Copyright (C) 2025 The Funkyworkers and The YOCaml's developers
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -14,31 +14,13 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-module Data = Data
-module Nel = Nel
-module Path = Path
-module Cache = Cache
-module Eff = Eff
-module Deps = Deps
-module Task = Task
-module Pipeline = Pipeline
-module Action = Action
-module Batch = Batch
-module Required = Required
-module Metadata = Metadata
-module Archetype = Archetype
-module Diagnostic = Diagnostic
-module Cmd = Cmd
-module Slug = Slug
-module Reader = Reader
-module Make = Make
-module Markup = Markup
-module Toc = Markup.Toc
-module Datetime = Archetype.Datetime
+let iter = Action.batch_list
+let fold = Action.fold_list
+let iter_children = Action.batch
+let fold_children = Action.fold
+let iter_files = iter_children ~only:`Files
+let iter_directories = iter_children ~only:`Directories
+let fold_files ?where ~state = fold_children ~only:`Files ?where ~state
 
-module Sexp = struct
-  include Sexp
-  module Provider = Sexp_provider
-end
-
-module Runtime = Runtime
+let fold_directories ?where ~state =
+  fold_children ~only:`Directories ?where ~state

@@ -46,6 +46,11 @@ val singleton : Path.t -> t
 val from_list : Path.t list -> t
 (** [from_list list] build a set from a given list of path. *)
 
+(** {1 Manipulating} *)
+
+val add : Path.t -> t -> t
+(** [add p deps] add the path [p] in the given set of [deps]. *)
+
 (** {1 Compute deps}
 
     Retrieves information about sets of dependencies. *)

@@ -247,8 +247,10 @@ type _ Effect.t +=
         (** Effect that get the current time. *)
   | Yocaml_file_exists : filesystem * Path.t -> bool Effect.t
         (** Effect that check if a file exists. *)
-  | Yocaml_read_file : filesystem * Path.t -> string Effect.t
-        (** Effect that read a file from a given filepath. *)
+  | Yocaml_read_file : filesystem * bool * Path.t -> string Effect.t
+        (** Effect that read a file from a given filepath (the second argument
+            is used to notice if we need to perform a snapshot or not of the
+            given file). *)
   | Yocaml_get_mtime : filesystem * Path.t -> int Effect.t
         (** Effect that get the modification time of a filepath. *)
   | Yocaml_hash_content : string -> string Effect.t
@@ -349,14 +351,16 @@ val file_exists : on:filesystem -> Path.t -> bool t
 (** [file_exists ~on path] perform the effect [Yocaml_file_exists] with a given
     [path] return [true] if the file exists, [false] if not. *)
 
-val read_file : on:filesystem -> Path.t -> string t
-(** [read_file ~on path] perform the effect [Yocaml_read_file] with a given
-    [path] and try to read it. Perform [Yocaml_failwith] with
-    {!exception:File_not_exists} if the file does not exists. *)
+val read_file : ?snapshot:bool -> on:filesystem -> Path.t -> string t
+(** [read_file ?snapshot ~on path] perform the effect [Yocaml_read_file] with a
+    given [path] and try to read it. Perform [Yocaml_failwith] with
+    {!exception:File_not_exists} if the file does not exists. [snapshot] is used
+    to perform a snapshot of the file. *)
 
 val read_file_as_metadata :
      (module Required.DATA_PROVIDER)
   -> (module Required.DATA_READABLE with type t = 'a)
+  -> ?snapshot:bool
   -> on:filesystem
   -> Path.t
   -> 'a t
@@ -370,6 +374,7 @@ val read_file_with_metadata :
      (module Required.DATA_PROVIDER)
   -> (module Required.DATA_READABLE with type t = 'a)
   -> ?extraction_strategy:Metadata.extraction_strategy
+  -> ?snapshot:bool
   -> on:filesystem
   -> Path.t
   -> ('a * string) t

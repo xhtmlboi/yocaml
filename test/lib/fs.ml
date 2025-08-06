@@ -301,7 +301,7 @@ let run ~trace program input =
                     let ex = Option.is_some @@ get !trace.system path in
                     let () = trace := push_file_exists !trace on p ex in
                     continue k ex)
-            | Yocaml_read_file (on, gpath) ->
+            | Yocaml_read_file (on, _, gpath) ->
                 Some
                   (fun (k : (a, _) continuation) ->
                     let () = trace := push_read_file !trace on gpath in
