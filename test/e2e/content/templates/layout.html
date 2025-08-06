@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Test.com - {{ title }}</title>
+  </head>
+  <body>
+    <header>
+      <h1>Test.com</h1>
+    </header>
+    <main>
+      {%- autoescape false -%}{{ yocaml_body }}{%- endautoescape -%}
+    </main>
+    <footer>
+      Copyright YOCaml
+    </footer>
+  </body>
+</html>
