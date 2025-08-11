@@ -69,6 +69,27 @@ let default_mapping =
 
 let s x = x |> String.to_seq |> List.of_seq
 
+let handle_uchar s i =
+  let decode = String.get_utf_8_uchar s i in
+  match Uchar.(decode |> utf_decode_uchar |> to_int) with
+  | 192 | 193 | 194 | 195 | 196 | 197 | 224 | 225 | 226 | 227 | 228 | 229 ->
+      Some (Some [ 'a' ])
+  | 200 | 201 | 202 | 203 | 232 | 233 | 234 | 235 -> Some (Some [ 'e' ])
+  | 204 | 205 | 206 | 207 | 236 | 237 | 238 | 239 -> Some (Some [ 'i' ])
+  | 210 | 211 | 212 | 213 | 214 | 216 | 240 | 248 | 242 | 243 | 244 | 245 | 246
+    ->
+      Some (Some [ 'o' ])
+  | 217 | 218 | 219 | 220 | 249 | 250 | 251 | 252 -> Some (Some [ 'u' ])
+  | 198 | 230 -> Some (Some [ 'a'; 'e' ])
+  | 223 -> Some (Some [ 'b' ])
+  | 199 | 231 -> Some (Some [ 'c' ])
+  | 208 -> Some (Some [ 'd' ])
+  | 209 | 241 -> Some (Some [ 'n' ])
+  | 215 -> Some (Some [ 'x' ])
+  | 221 | 253 | 255 -> Some (Some [ 'y' ])
+  | 65533 -> Some None
+  | _ -> None
+
 let from ?(mapping = default_mapping) ?(separator = '-') ?(unknown_char = '-')
     fragment =
   let mapping = M.of_list mapping in
@@ -82,15 +103,21 @@ let from ?(mapping = default_mapping) ?(separator = '-') ?(unknown_char = '-')
   let _ =
     fragment
     |> String.fold_left
-         (fun state -> function
-           | ('0' .. '9' | 'a' .. 'z') as l -> reg buf [ l ] state
-           | ' ' | '\t' | '\n' | '-' | '_' | '.' | ',' | ';' -> space buf state
+         (fun (state, i) -> function
+           | ('0' .. '9' | 'a' .. 'z') as l -> (reg buf [ l ] state, succ i)
+           | ' ' | '\t' | '\n' | '-' | '_' | '.' | ',' | ';' ->
+               (space buf state, succ i)
            | c -> (
                match M.find_opt c mapping with
-               | None -> unkn buf state
-               | Some "" -> state
-               | Some r -> state |> space buf |> reg buf (s r) |> space buf))
-         (false, Fresh)
+               | None -> (
+                   match handle_uchar fragment i with
+                   | Some (Some x) -> (reg buf x state, succ i)
+                   | Some None -> (state, succ i)
+                   | None -> (unkn buf state, succ i))
+               | Some "" -> (state, succ i)
+               | Some r ->
+                   (state |> space buf |> reg buf (s r) |> space buf, succ i)))
+         ((false, Fresh), 0)
   in
   buf |> Buffer.contents
 
