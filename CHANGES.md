@@ -7,6 +7,7 @@
 - Add Sexp control (by [xvw](https://xvw.lol))
 - Add `field` and some combinators for validating record field (that unify `required`, `optional` and `optional_or`) (by [xvw](https://xvw.lol))
 - Support snapshots (by [xhtmlboi](https://github.com/xhtmlboi))
+- Small improvement of unicode special char for slug (by [xvw](https://xvw.lol))
 
 #### Yocaml_cmarkit
 
