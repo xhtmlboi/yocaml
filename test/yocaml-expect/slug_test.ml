@@ -87,3 +87,8 @@ let%expect_test "slug validation - 3" =
   |> Result.fold ~ok:(fun x -> x) ~error:(fun _ -> "<error>")
   |> print_endline;
   [%expect {| <error> |}]
+
+let%expect_test "slugify - with accent" =
+  let title = "fooçÇ   ba Æ  r  ÂÀ  baz é clÉmÔ ê ô Ÿ hello World" in
+  print_endline @@ Slug.from title;
+  [%expect {| foocc-ba-ae-r-aa-baz-e-clemo-e-o-hello-world |}]

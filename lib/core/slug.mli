@@ -51,3 +51,7 @@ val validate_string :
   -> string
   -> t Data.Validation.validated_value
 (** Validate a slug from a string. *)
+
+(** {1 Utils} *)
+
+val default_mapping : (char * string) list
