@@ -1,5 +1,12 @@
 (cram
+ ;; In order to not make the OPAM CI
+ (enabled_if (<> %{profile} release))
  (applies_to :whole_subtree)
  (deps
+  (package yocaml)
+  (package yocaml_unix)
+  (package yocaml_yaml)
+  (package yocaml_jingoo)
+  (package yocaml_cmarkit)
   %{exe:bin/gen.exe}
   (source_tree content)))
