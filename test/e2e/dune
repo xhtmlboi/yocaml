@@ -1,6 +1,7 @@
 (cram
  ;; In order to not make the OPAM CI
- (enabled_if (<> %{profile} release))
+ (enabled_if
+  (<> %{profile} release))
  (applies_to :whole_subtree)
  (deps
   (package yocaml)
