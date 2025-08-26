@@ -1,3 +1,9 @@
+### unreleased
+
+#### Yocaml_cmarkit
+
+- Add a regular function to compute TOC [gr-im](https://github.com/gr-im)
+
 ### v2.4.0 2025-08-11 Nantes (France)
 
 #### Yocaml

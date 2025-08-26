@@ -34,17 +34,17 @@ let fold_headers doc =
   let headers = Folder.fold_doc folder [] doc in
   List.rev headers
 
+let extract_toc doc =
+  doc
+  |> fold_headers
+  |> Yocaml.Markup.Toc.from_list
+  |> Yocaml.Markup.Toc.to_html (fun x -> x)
+
 let to_doc ?(strict = true) () =
   Yocaml.Task.lift (fun content ->
       content |> Cmarkit.Doc.of_string ~heading_auto_ids:true ~strict)
 
-let table_of_contents =
-  Yocaml.Task.lift (fun doc ->
-      let headers = fold_headers doc in
-      ( headers
-        |> Yocaml.Markup.Toc.from_list
-        |> Yocaml.Markup.Toc.to_html (fun x -> x)
-      , doc ))
+let table_of_contents = Yocaml.Task.lift (fun doc -> (extract_toc doc, doc))
 
 let from_doc_to_html ?(safe = false) () =
   Yocaml.Task.lift (fun content -> content |> Cmarkit_html.of_doc ~safe)
