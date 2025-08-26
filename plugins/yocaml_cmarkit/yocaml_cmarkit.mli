@@ -78,3 +78,6 @@ val table_of_contents :
 val from_doc_to_html :
   ?safe:bool -> unit -> (Cmarkit.Doc.t, string) Yocaml.Task.t
 (** Intermerdiate arrow that convert a document to html. *)
+
+val extract_toc : Cmarkit.Doc.t -> string option
+(** Compute a table of content from a given document. *)
