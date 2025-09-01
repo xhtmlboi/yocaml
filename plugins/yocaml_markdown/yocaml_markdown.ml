@@ -33,7 +33,8 @@ module Doc = struct
     in
     t
 
-  let table_of_contents doc =
+  let table_of_contents
+      ?(traverse_table = Yocaml.Markup.Toc.to_html ~ol:false Fun.id) doc =
     let open Cmarkit in
     let block _ acc = function
       | Block.Heading (heading, _) ->
@@ -51,7 +52,7 @@ module Doc = struct
     in
     let folder = Folder.make ~block () in
     let headers = Folder.fold_doc folder [] doc in
-    headers |> List.rev |> Yocaml.Markup.Toc.from_list
+    headers |> List.rev |> Yocaml.Markup.Toc.from_list |> traverse_table
 
   let syntax_highlighting ?(skip_unknown_languages = true)
       ?(tm = default_grammars_set) ?lookup_method () document =
@@ -76,26 +77,20 @@ module Pipeline = struct
   let to_doc ?strict ?heading_auto_ids ?highlight () =
     mk (Doc.make ?strict ?heading_auto_ids ?highlight)
 
-  let table_of_contents = mk (fun document -> Doc.table_of_contents document)
+  let table_of_contents ?traverse_table () =
+    mk (fun document -> Doc.table_of_contents ?traverse_table document)
 
-  let with_table_of_contents =
+  let with_table_of_contents ?traverse_table () =
     let open Yocaml.Task in
-    id &&& table_of_contents >>| fun (a, b) -> (b, a)
+    id &&& table_of_contents ?traverse_table () >>| fun (a, b) -> (b, a)
 
-  let table_of_contents_metadata () =
+  let table_of_contents_metadata ?traverse_table () =
     let open Yocaml.Task in
     id
-    >>> second with_table_of_contents
+    >>> second (with_table_of_contents ?traverse_table ())
     >>> mk (fun (meta, (toc, content)) -> ((meta, toc), content))
 
   let to_html ?safe () = mk (Doc.to_html ?safe)
-
-  let on_table_of_contents task =
-    let open Yocaml.Task in
-    first (second task)
-
-  let table_of_contents_to_html ?ol () =
-    on_table_of_contents (mk (Yocaml.Markup.Toc.to_html ?ol Fun.id))
 
   let make ?strict ?heading_auto_ids ?highlight ?safe () =
     let open Yocaml.Task in
@@ -106,23 +101,23 @@ module Pipeline = struct
       Yocaml.Task.second (make ?strict ?heading_auto_ids ?highlight ?safe ())
 
     let table_of_contents = table_of_contents_metadata
-    let table_of_contents_to_html ?ol () = table_of_contents_to_html ?ol ()
 
     let to_doc ?strict ?heading_auto_ids ?highlight () =
       Yocaml.Task.second (to_doc ?strict ?heading_auto_ids ?highlight ())
 
-    let with_table_of_contents ?strict ?heading_auto_ids ?highlight ?ol () =
+    let with_table_of_contents ?strict ?heading_auto_ids ?highlight
+        ?traverse_table () =
       let open Yocaml.Task in
       to_doc ?strict ?heading_auto_ids ?highlight ()
-      >>> table_of_contents_metadata ()
-      >>> table_of_contents_to_html ?ol ()
+      >>> table_of_contents_metadata ?traverse_table ()
 
     let to_html ?safe () = Yocaml.Task.second (to_html ?safe ())
 
-    let make_with_table_of_contents ?strict ?heading_auto_ids ?highlight ?ol
-        ?safe () =
+    let make_with_table_of_contents ?strict ?heading_auto_ids ?highlight
+        ?traverse_table ?safe () =
       let open Yocaml.Task in
-      with_table_of_contents ?strict ?heading_auto_ids ?highlight ?ol ()
+      with_table_of_contents ?strict ?heading_auto_ids ?highlight
+        ?traverse_table ()
       >>> to_html ?safe ()
   end
 end

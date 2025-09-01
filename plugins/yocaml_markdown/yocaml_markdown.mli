@@ -53,7 +53,10 @@ module Doc : sig
   val default_grammars_set : TmLanguage.t
   (** Returns a set of default supported grammars set. *)
 
-  val table_of_contents : Cmarkit.Doc.t -> (string * string) Yocaml.Toc.t
+  val table_of_contents :
+       ?traverse_table:((string * string) Yocaml.Markup.Toc.t -> string option)
+    -> Cmarkit.Doc.t
+    -> string option
   (** Compute the table of contents of a Markdown document (Where the first
       element of the couple is the ID of the section and the second is the
       VALUE). *)
@@ -99,33 +102,26 @@ module Pipeline : sig
   (** A Task for converting a string into a Cmarkit document. *)
 
   val table_of_contents :
-    (Cmarkit.Doc.t, (string * string) Yocaml.Toc.t) Yocaml.Task.t
+       ?traverse_table:((string * string) Yocaml.Markup.Toc.t -> string option)
+    -> unit
+    -> (Cmarkit.Doc.t, string option) Yocaml.Task.t
   (** Compute the table of content of a given document. *)
 
   val with_table_of_contents :
-    ( Cmarkit.Doc.t
-    , (string * string) Yocaml.Toc.t * Cmarkit.Doc.t )
-    Yocaml.Task.t
+       ?traverse_table:((string * string) Yocaml.Markup.Toc.t -> string option)
+    -> unit
+    -> (Cmarkit.Doc.t, string option * Cmarkit.Doc.t) Yocaml.Task.t
   (** Compute the table of contents of a given document and collapse the result.
   *)
 
   val table_of_contents_metadata :
-       unit
-    -> ( 'a * Cmarkit.Doc.t
-       , ('a * (string * string) Yocaml.Toc.t) * Cmarkit.Doc.t )
-       Yocaml.Task.t
+       ?traverse_table:((string * string) Yocaml.Markup.Toc.t -> string option)
+    -> unit
+    -> ('a * Cmarkit.Doc.t, ('a * string option) * Cmarkit.Doc.t) Yocaml.Task.t
   (** Deal with table of contents at the metadata level. *)
 
   val to_html : ?safe:bool -> unit -> (Cmarkit.Doc.t, string) Yocaml.Task.t
   (** A Task to convert a document to HTML. *)
-
-  val table_of_contents_to_html :
-       ?ol:bool
-    -> unit
-    -> ( ('a * (string * string) Yocaml.Toc.t) * 'b
-       , ('a * string option) * 'b )
-       Yocaml.Task.t
-  (** Convert the table of content into an HTML representation. *)
 
   module With_metadata : sig
     val make :
@@ -142,7 +138,8 @@ module Pipeline : sig
          ?strict:bool
       -> ?heading_auto_ids:bool
       -> ?highlight:(Cmarkit.Doc.t -> Cmarkit.Doc.t)
-      -> ?ol:bool
+      -> ?traverse_table:
+           ((string * string) Yocaml.Markup.Toc.t -> string option)
       -> ?safe:bool
       -> unit
       -> ('a * string, ('a * string option) * string) Yocaml.Task.t
@@ -157,24 +154,18 @@ module Pipeline : sig
     (** A Task for converting a string into a Cmarkit document. *)
 
     val table_of_contents :
-         unit
-      -> ( 'a * Cmarkit.Doc.t
-         , ('a * (string * string) Yocaml.Toc.t) * Cmarkit.Doc.t )
-         Yocaml.Task.t
-
-    val table_of_contents_to_html :
-         ?ol:bool
+         ?traverse_table:((string * string) Yocaml.Markup.Toc.t -> string option)
       -> unit
-      -> ( ('a * (string * string) Yocaml.Toc.t) * 'b
-         , ('a * string option) * 'b )
+      -> ( 'a * Cmarkit.Doc.t
+         , ('a * string option) * Cmarkit.Doc.t )
          Yocaml.Task.t
-    (** Convert the table of content into an HTML representation. *)
 
     val with_table_of_contents :
          ?strict:bool
       -> ?heading_auto_ids:bool
       -> ?highlight:(Cmarkit.Doc.t -> Cmarkit.Doc.t)
-      -> ?ol:bool
+      -> ?traverse_table:
+           ((string * string) Yocaml.Markup.Toc.t -> string option)
       -> unit
       -> ('a * string, ('a * string option) * Cmarkit.Doc.t) Yocaml.Task.t
     (** Convert a document and collapse the table of content into the metadata
