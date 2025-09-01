@@ -33,6 +33,15 @@ module Toc : sig
       node is paired with an index represented as a list of integers, which
       indicates the node’s position in the hierarchical tree structure. *)
 
+  val traverse :
+       on_list:('a list -> string)
+    -> on_item:(string -> 'a)
+    -> on_link:(id:'b -> title:'c -> string)
+    -> ('b * 'c) t
+    -> string option
+  (** Walk recursively on a [toc] applying function on every element to produce
+      a string.*)
+
   val to_html : ?ol:bool -> ('a -> string) -> (string * 'a) t -> string option
   (** [to_html ?ol label_to_string toc_of_id_and_label] from a table of contents
       build on top of a list of [id * label], generate the corresponding HTML.

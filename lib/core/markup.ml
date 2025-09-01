@@ -50,23 +50,30 @@ module Toc = struct
     in
     aux [] toc
 
-  let to_html ?(ol = false) f toc =
-    let ul children =
-      let r = String.concat "" children in
-      if ol then "<ol>" ^ r ^ "</ol>" else "<ul>" ^ r ^ "</ul>"
-    in
-
-    let li children = "<li>" ^ children ^ "</li>" in
-    let a = Format.asprintf "<a href=\"#%s\">%s</a>" in
+  let traverse ~on_list ~on_item:li ~on_link toc =
     let rec aux = function
       | [] -> None
       | xs ->
           xs
           |> List.map (fun { content = id, title; children } ->
-                 let content = a id (f title) in
-                 let children = Option.fold ~none:"" ~some:ul (aux children) in
+                 let content = on_link ~id ~title in
+                 let children =
+                   Option.fold ~none:"" ~some:on_list (aux children)
+                 in
                  li @@ content ^ children)
           |> Option.some
     in
-    aux toc |> Option.map ul
+    aux toc |> Option.map on_list
+
+  let to_html ?(ol = false) f toc =
+    let ul x = if ol then "<ol>" ^ x ^ "</ol>" else "<ul>" ^ x ^ "</ul>" in
+    traverse
+      ~on_list:(fun x ->
+        let r = String.concat "" x in
+        ul r)
+      ~on_item:(fun x -> "<li>" ^ x ^ "</li>")
+      ~on_link:(fun ~id ~title ->
+        Format.asprintf {|<a href="#%s" data-toc-target="%s">%s</a>|} id id
+          (f title))
+      toc
 end
