@@ -1,5 +1,9 @@
 ### unreleased
 
+#### Yocaml
+
+- Add `Toc.traverse` for building your own TOC string [gr-im](https://github.com/gr-im)
+
 #### Yocaml_cmarkit
 
 - Add a regular function to compute TOC [gr-im](https://github.com/gr-im)
