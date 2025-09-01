@@ -111,6 +111,18 @@
     cmarkit))
 
 (package
+ (name yocaml_markdown)
+ (synopsis "The recommended plugin for processing Markdown documents (based on Cmarkit)")
+ (depends
+  (ocaml (>= 5.1.1))
+   ppx_expect
+  (mdx (and :with-test (>= 2.5.0)))
+  (yocaml (= :version))
+   cmarkit
+  (hilite (>= 0.5.0))
+   textmate-language))
+
+(package
   (name yocaml_jingoo)
   (synopsis "Yocaml plugin for using Jingoo as a template language")
   (depends

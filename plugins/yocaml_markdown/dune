@@ -1,0 +1,4 @@
+(library
+ (name yocaml_markdown)
+ (public_name yocaml_markdown)
+ (libraries yocaml cmarkit textmate-language hilite hilite.markdown))

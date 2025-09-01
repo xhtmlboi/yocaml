@@ -4,6 +4,10 @@
 
 - Add `Toc.traverse` for building your own TOC string [gr-im](https://github.com/gr-im)
 
+#### Yocaml_markdown
+
+- Reintroduce the package to have a strong way to deal with Markdown and Syntax Highlighting (It probably made `yocaml_omd` and `yocaml_cmarkit` obsolete) [gr-im](https://github.com/gr-im)
+
 #### Yocaml_cmarkit
 
 - Add a regular function to compute TOC [gr-im](https://github.com/gr-im)
