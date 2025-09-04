@@ -8,10 +8,16 @@ class resolver ~source ~target =
     method content = Yocaml.Path.(self#source / "content")
     method templates = Yocaml.Path.(self#content / "templates")
     method articles = Yocaml.Path.(self#target / "articles")
+    method pages = Yocaml.Path.(self#target / "articles-with-applicative-read")
 
     method as_article path =
       path
       |> Yocaml.Path.move ~into:self#articles
+      |> Yocaml.Path.change_extension "html"
+
+    method as_page path =
+      path
+      |> Yocaml.Path.move ~into:self#pages
       |> Yocaml.Path.change_extension "html"
 
     method as_template path = Yocaml.Path.(self#templates / path)
@@ -23,6 +29,30 @@ let css (resolver : resolver) =
     (Yocaml.Pipeline.pipe_files ~separator:"\n"
        Yocaml.Path.
          [ resolver#content / "global.css"; resolver#content / "specific.css" ])
+
+let page (resolver : resolver) file =
+  let pipeline =
+    let open Yocaml.Task in
+    let+ metadata, content =
+      Yocaml_yaml.Pipeline.read_file_with_metadata
+        (module Yocaml.Archetype.Article)
+        file
+    and+ tpl_article =
+      Yocaml_jingoo.read_template (resolver#as_template "article.html")
+    and+ tpl_layout =
+      Yocaml_jingoo.read_template (resolver#as_template "layout.html")
+    in
+    content
+    |> Yocaml_markdown.from_string_to_html
+    |> tpl_article ~metadata (module Yocaml.Archetype.Article)
+    |> tpl_layout ~metadata (module Yocaml.Archetype.Article)
+  in
+  Yocaml.Action.Static.write_file (resolver#as_page file) pipeline
+
+let pages resolver =
+  Yocaml.Batch.iter_files
+    ~where:(Yocaml.Path.has_extension "md")
+    resolver#content (page resolver)
 
 let article (resolver : resolver) file =
   Yocaml.Action.Static.write_file_with_metadata (resolver#as_article file)
@@ -49,6 +79,7 @@ let program (resolver : resolver) () =
   Yocaml.Action.restore_cache ~on:`Target resolver#cache
   >>= css resolver
   >>= articles resolver
+  >>= pages resolver
   >>= Yocaml.Action.store_cache ~on:`Target resolver#cache
 
 let () =

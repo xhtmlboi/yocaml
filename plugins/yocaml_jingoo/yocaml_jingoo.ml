@@ -32,6 +32,9 @@ module Tpl = struct
     Jingoo.Jg_template.from_string ~env ~models:parameters content
 end
 
+let read_template ?snapshot ?strict template =
+  Yocaml.Pipeline.read_template (module Tpl) ?snapshot ?strict template
+
 module Pipeline = struct
   let as_template (type a)
       (module I : Yocaml.Required.DATA_INJECTABLE with type t = a) ?snapshot

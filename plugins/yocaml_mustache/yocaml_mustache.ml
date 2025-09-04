@@ -31,6 +31,9 @@ module Tpl = struct
     Mustache.render ~strict layout (`O parameters)
 end
 
+let read_template ?snapshot ?strict template =
+  Yocaml.Pipeline.read_template (module Tpl) ?snapshot ?strict template
+
 module Pipeline = struct
   let as_template (type a)
       (module I : Yocaml.Required.DATA_INJECTABLE with type t = a) ?snapshot

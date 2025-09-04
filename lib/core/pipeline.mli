@@ -89,6 +89,20 @@ val exec_cmd_with_result :
 (** [exec_cmd_with_result ?is_success cmd] is like {!val:exec_cmd} but the
     output of the shell command is returned. *)
 
+val read_template :
+     (module Required.DATA_TEMPLATE)
+  -> ?snapshot:bool
+  -> ?strict:bool
+  -> Path.t
+  -> ( unit
+     ,    (module Required.DATA_INJECTABLE with type t = 'a)
+       -> metadata:'a
+       -> string
+       -> string )
+     Task.t
+(** Return a function that apply [~metadata] and [~content] to a given template.
+    Made the usage with applicative easier. *)
+
 val as_template :
      (module Required.DATA_TEMPLATE)
   -> (module Required.DATA_INJECTABLE with type t = 'a)
