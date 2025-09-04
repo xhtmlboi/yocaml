@@ -1,3 +1,9 @@
 (executable
  (name gen)
- (libraries yocaml yocaml_unix yocaml_yaml yocaml_jingoo yocaml_cmarkit))
+ (libraries
+  yocaml
+  yocaml_unix
+  yocaml_yaml
+  yocaml_jingoo
+  yocaml_cmarkit
+  yocaml_markdown))
