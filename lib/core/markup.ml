@@ -18,26 +18,25 @@ module Toc = struct
   type 'a element = { content : 'a; children : 'a t }
   and 'a t = 'a element list
 
-  let rec from_list labels =
-    let rec aux depth acc = function
-      | [] -> (List.rev acc, [])
-      | (level, _) :: _ as labels when level < depth -> (List.rev acc, labels)
+  let from_list labels =
+    let rec aux depth = function
+      | [] -> ([], [])
+      | (level, content) :: xs when level < depth -> ([], (level, content) :: xs)
       | (level, content) :: xs when level = depth ->
-          let children, xs = aux (succ depth) [] xs in
-          let entry = { content; children } in
-          let remaining, xs = aux depth (entry :: acc) xs in
-          (remaining, xs)
-      | labels ->
-          let children, xs = aux (succ depth) acc labels in
-          let remaining, xs = aux depth children xs in
-          (remaining, xs)
+          let children, rest = aux (depth + 1) xs in
+          let node = { content; children } in
+          let siblings, rest = aux depth rest in
+          (node :: siblings, rest)
+      | (_level, _) :: _ as xs -> aux (depth + 1) xs
     in
-    match labels with
-    | [] -> []
-    | (level, _) :: _ -> (
-        match labels |> aux level [] with
-        | labels, [] -> labels
-        | labels, xs -> labels @ from_list xs)
+    let rec loop labels =
+      match labels with
+      | [] -> []
+      | (level, _) :: _ ->
+          let block, rest = aux level labels in
+          block @ loop rest
+    in
+    loop labels
 
   let to_labelled_list toc =
     let rec aux current_index elements =

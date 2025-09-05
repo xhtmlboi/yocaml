@@ -103,6 +103,20 @@ val read_template :
 (** Return a function that apply [~metadata] and [~content] to a given template.
     Made the usage with applicative easier. *)
 
+val read_templates :
+     (module Required.DATA_TEMPLATE)
+  -> ?snapshot:bool
+  -> ?strict:bool
+  -> Path.t list
+  -> ( unit
+     ,    (module Required.DATA_INJECTABLE with type t = 'a)
+       -> metadata:'a
+       -> string
+       -> string )
+     Task.t
+(** Return a function that apply [~metadata] and [~content] to a given template.
+    Made the usage with applicative easier. *)
+
 val as_template :
      (module Required.DATA_TEMPLATE)
   -> (module Required.DATA_INJECTABLE with type t = 'a)

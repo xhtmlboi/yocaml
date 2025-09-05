@@ -3,15 +3,17 @@
 #### Yocaml
 
 - Add `Pipeline.read_template` to have a better fit with Applicative API [gr-im](https://github.com/gr-im)
+- Fix table of content order for deeply nested elements
 
 #### Yocaml_jingoo
 
 - Add `read_template` to have a better fit with Applicative API [gr-im](https://github.com/gr-im)
+- Add `read_templates` to have a better fit with Applicative API when chaining templates [gr-im](https://github.com/gr-im)
 
 #### Yocaml_mustache
 
 - Add `read_template` to have a better fit with Applicative API [gr-im](https://github.com/gr-im)
-
+- Add `read_templates` to have a better fit with Applicative API when chaining templates [gr-im](https://github.com/gr-im)
 
 ### v2.4.1 2025-09-01 Nantes (France)
 
