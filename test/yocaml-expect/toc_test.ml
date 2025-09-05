@@ -431,3 +431,35 @@ let%expect_test "from toc to html with ol" =
     ];
   [%expect
     {| <ol><li><a href="#avant-propos" data-toc-target="avant-propos">Avant propos</a><ol><li><a href="#ressources" data-toc-target="ressources">Ressources</a></li></ol></li><li><a href="#ocaml-en-tant-que-langage" data-toc-target="ocaml-en-tant-que-langage">OCaml en tant que langage</a><ol><li><a href="#sur-la-verification-statique-des-types" data-toc-target="sur-la-verification-statique-des-types">Sur la vérification statique des types</a></li><li><a href="#fonctionnalites-du-langage" data-toc-target="fonctionnalites-du-langage">Fonctionnalités du _langage_</a><ol><li><a href="#un-langage-multi-paradigmes" data-toc-target="un-langage-multi-paradigmes">Un langage _multi-paradigmes_</a><ol><li><a href="#syntaxe-a-la-ml" data-toc-target="syntaxe-a-la-ml">Syntaxe _à la ML_</a></li><li><a href="#etroitement-lie-a-la-recherche" data-toc-target="etroitement-lie-a-la-recherche">Étroitement lié à la recherche</a></li></ol></li><li><a href="#types-algebriques" data-toc-target="types-algebriques">Types algébriques</a></li><li><a href="#programmation-modulaires-et-langage-de-modules" data-toc-target="programmation-modulaires-et-langage-de-modules">Programmation modulaires et langage de modules</a></li><li><a href="#injection-et-inversion-de-dependances" data-toc-target="injection-et-inversion-de-dependances">Injection et inversion de dépendances</a></li></ol></li><li><a href="#concernant-le-futur" data-toc-target="concernant-le-futur">Concernant le futur</a></li><li><a href="#points-faibles" data-toc-target="points-faibles">Points faibles</a></li><li><a href="#pour-conclure-sur-le-langage" data-toc-target="pour-conclure-sur-le-langage">Pour conclure sur le langage</a></li></ol></li><li><a href="#ocaml-en-tant-qu-ecosysteme" data-toc-target="ocaml-en-tant-qu-ecosysteme">OCaml en tant qu'écosystème</a><ol><li><a href="#compilation-runtimes-et-cibles-additionnelles" data-toc-target="compilation-runtimes-et-cibles-additionnelles">Compilation, _runtimes_, et cibles additionnelles</a><ol><li><a href="#un-petit-detour-par-mirageos" data-toc-target="un-petit-detour-par-mirageos">Un petit détour par MirageOS</a></li></ol></li><li><a href="#la-plateforme-ocaml" data-toc-target="la-plateforme-ocaml">La plateforme OCaml</a><ol><li><a href="#opam-le-gestionnaire-de-paquets" data-toc-target="opam-le-gestionnaire-de-paquets">OPAM, le gestionnaire de paquets</a></li><li><a href="#dune-le-build-system" data-toc-target="dune-le-build-system">Dune, le _build-system_</a><ol><li><a href="#sur-le-choix-des-s-expression" data-toc-target="sur-le-choix-des-s-expression">Sur le choix des S-expression</a></li><li><a href="#contribution-a-l-etat-de-l-art-selective-applicative-functor" data-toc-target="contribution-a-l-etat-de-l-art-selective-applicative-functor">Contribution à l'état de l'art: Selective Applicative Functor</a></li><li><a href="#alternatives" data-toc-target="alternatives">Alternatives</a></li></ol></li><li><a href="#lsp-et-merlin-pour-les-editeurs" data-toc-target="lsp-et-merlin-pour-les-editeurs">LSP et Merlin pour les éditeurs</a><ol><li><a href="#avenement-de-vscode-lsp-comme-standard" data-toc-target="avenement-de-vscode-lsp-comme-standard">Avènement de VSCode, LSP comme standard</a></li></ol></li><li><a href="#odoc-le-generateur-de-documentation" data-toc-target="odoc-le-generateur-de-documentation">Odoc, le générateur de documentation</a></li></ol></li><li><a href="#bibliotheques-disponibles" data-toc-target="bibliotheques-disponibles">Bibliothèques disponibles</a><ol><li><a href="#aparte-sur-la-bibliotheque-standard" data-toc-target="aparte-sur-la-bibliotheque-standard">Aparté sur la bibliothèque standard</a></li></ol></li><li><a href="#conclusion-de-l-ecosysteme" data-toc-target="conclusion-de-l-ecosysteme">Conclusion de l'écosystème</a></li></ol></li><li><a href="#sur-la-communaute" data-toc-target="sur-la-communaute">Sur la communauté</a></li><li><a href="#quelques-mythes-lies-a-ocaml" data-toc-target="quelques-mythes-lies-a-ocaml">Quelques mythes liés à OCaml</a><ol><li><a href="#ocaml-et-fsharp" data-toc-target="ocaml-et-fsharp">OCaml et FSharp</a></li><li><a href="#les-operateurs-doubles-pour-les-flottants" data-toc-target="les-operateurs-doubles-pour-les-flottants">Les opérateurs doublés pour les flottants</a></li><li><a href="#sur-la-separation-entre-ml-et-mli" data-toc-target="sur-la-separation-entre-ml-et-mli">Sur la séparation entre `ml` et `mli`</a><ol><li><a href="#gerer-l-encapsulation-sans-mli" data-toc-target="gerer-l-encapsulation-sans-mli">Gérer l'encapsulation sans `mli`</a></li><li><a href="#exprimer-l-interface-depuis-le-ml" data-toc-target="exprimer-l-interface-depuis-le-ml">Exprimer l'interface depuis le `ml`</a></li><li><a href="#pour-conclure-sur-la-separation" data-toc-target="pour-conclure-sur-la-separation">Pour conclure sur la séparation</a></li></ol></li></ol></li><li><a href="#pour-conclure" data-toc-target="pour-conclure">Pour conclure</a></li></ol> |}]
+
+let%expect_test "generate toc - from tutorials - 1" =
+  print_toc_str ~check_label:false
+  @@ from_markdown_title
+       [
+         "### Preparing the files"
+       ; "## Merging our stylesheets"
+       ; "### Creating a file"
+       ; "#### Creating a static file"
+       ; "#### Creating a dynamic file"
+       ; "### Creating our `style.css`"
+       ; "## Tracking the generator"
+       ; "#### Avec la notation applicative"
+       ; "#### Notation des Arrows"
+       ; "#### Note sur le cache"
+       ; "## Conclusion"
+       ];
+  [%expect
+    {|
+    TOC:
+    1-Preparing the files
+    2-Merging our stylesheets
+    2.1-Creating a file
+    2.1.1-Creating a static file
+    2.1.2-Creating a dynamic file
+    2.2-Creating our `style.css`
+    3-Tracking the generator
+    3.1-Avec la notation applicative
+    3.2-Notation des Arrows
+    3.3-Note sur le cache
+    4-Conclusion
+    |}]
