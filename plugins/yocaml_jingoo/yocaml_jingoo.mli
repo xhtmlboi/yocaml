@@ -35,6 +35,19 @@ val read_template :
 (** Return a function that apply [~metadata] and [~content] to a given template.
     Made the usage with applicative easier. *)
 
+val read_templates :
+     ?snapshot:bool
+  -> ?strict:bool
+  -> Yocaml.Path.t list
+  -> ( unit
+     ,    (module Yocaml.Required.DATA_INJECTABLE with type t = 'a)
+       -> metadata:'a
+       -> string
+       -> string )
+     Yocaml.Task.t
+(** Return a function that apply [~metadata] and [~content] to a list of
+    templates (in sequential order). Made the usage with applicative easier. *)
+
 module Pipeline : sig
   (** Describes the {i arrowized} interface for reading a file as a template and
       injecting content and variables. *)

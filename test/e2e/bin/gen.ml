@@ -8,16 +8,26 @@ class resolver ~source ~target =
     method content = Yocaml.Path.(self#source / "content")
     method templates = Yocaml.Path.(self#content / "templates")
     method articles = Yocaml.Path.(self#target / "articles")
-    method pages = Yocaml.Path.(self#target / "articles-with-applicative-read")
+
+    method articles_aux_1 =
+      Yocaml.Path.(self#target / "articles-with-applicative-read")
+
+    method articles_aux_2 =
+      Yocaml.Path.(self#target / "articles-with-applicative-read-2")
 
     method as_article path =
       path
       |> Yocaml.Path.move ~into:self#articles
       |> Yocaml.Path.change_extension "html"
 
-    method as_page path =
+    method as_articles_aux_1 path =
       path
-      |> Yocaml.Path.move ~into:self#pages
+      |> Yocaml.Path.move ~into:self#articles_aux_1
+      |> Yocaml.Path.change_extension "html"
+
+    method as_articles_aux_2 path =
+      path
+      |> Yocaml.Path.move ~into:self#articles_aux_2
       |> Yocaml.Path.change_extension "html"
 
     method as_template path = Yocaml.Path.(self#templates / path)
@@ -30,7 +40,7 @@ let css (resolver : resolver) =
        Yocaml.Path.
          [ resolver#content / "global.css"; resolver#content / "specific.css" ])
 
-let page (resolver : resolver) file =
+let article_aux_1 (resolver : resolver) file =
   let pipeline =
     let open Yocaml.Task in
     let+ metadata, content =
@@ -47,12 +57,37 @@ let page (resolver : resolver) file =
     |> tpl_article ~metadata (module Yocaml.Archetype.Article)
     |> tpl_layout ~metadata (module Yocaml.Archetype.Article)
   in
-  Yocaml.Action.Static.write_file (resolver#as_page file) pipeline
+  Yocaml.Action.Static.write_file (resolver#as_articles_aux_1 file) pipeline
 
-let pages resolver =
+let article_aux_2 (resolver : resolver) file =
+  let pipeline =
+    let open Yocaml.Task in
+    let+ metadata, content =
+      Yocaml_yaml.Pipeline.read_file_with_metadata
+        (module Yocaml.Archetype.Article)
+        file
+    and+ templates =
+      Yocaml_jingoo.read_templates
+        [
+          resolver#as_template "article.html"
+        ; resolver#as_template "layout.html"
+        ]
+    in
+    content
+    |> Yocaml_markdown.from_string_to_html
+    |> templates ~metadata (module Yocaml.Archetype.Article)
+  in
+  Yocaml.Action.Static.write_file (resolver#as_articles_aux_2 file) pipeline
+
+let articles_aux_2 resolver =
   Yocaml.Batch.iter_files
     ~where:(Yocaml.Path.has_extension "md")
-    resolver#content (page resolver)
+    resolver#content (article_aux_2 resolver)
+
+let articles_aux_1 resolver =
+  Yocaml.Batch.iter_files
+    ~where:(Yocaml.Path.has_extension "md")
+    resolver#content (article_aux_1 resolver)
 
 let article (resolver : resolver) file =
   Yocaml.Action.Static.write_file_with_metadata (resolver#as_article file)
@@ -79,7 +114,8 @@ let program (resolver : resolver) () =
   Yocaml.Action.restore_cache ~on:`Target resolver#cache
   >>= css resolver
   >>= articles resolver
-  >>= pages resolver
+  >>= articles_aux_1 resolver
+  >>= articles_aux_2 resolver
   >>= Yocaml.Action.store_cache ~on:`Target resolver#cache
 
 let () =

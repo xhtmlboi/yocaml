@@ -59,6 +59,27 @@ let read_template (module T : Required.DATA_TEMPLATE) ?(snapshot = true)
           in
           callback)
 
+module type S = Required.DATA_INJECTABLE
+
+let read_templates (type a) (module T : Required.DATA_TEMPLATE)
+    ?(snapshot = true) ?(strict = true) (templates : Path.t list) =
+  match List.map (read_template (module T) ~snapshot ~strict) templates with
+  | [] ->
+      Task.pure
+        (fun (module I : S with type t = a) ~metadata:_ (content : string) ->
+          content)
+  | x :: xs ->
+      List.fold_left
+        (fun acc t ->
+          let af f g (module I : S with type t = a) ~metadata content =
+            g
+              (module I : S with type t = a)
+              ~metadata
+              (f (module I : S with type t = a) ~metadata content)
+          in
+          Task.map2 af acc t)
+        x xs
+
 let as_template (type a) (module T : Required.DATA_TEMPLATE)
     (module I : Required.DATA_INJECTABLE with type t = a) ?(snapshot = true)
     ?(strict = true) template =

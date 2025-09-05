@@ -35,6 +35,9 @@ end
 let read_template ?snapshot ?strict template =
   Yocaml.Pipeline.read_template (module Tpl) ?snapshot ?strict template
 
+let read_templates ?snapshot ?strict templates =
+  Yocaml.Pipeline.read_templates (module Tpl) ?snapshot ?strict templates
+
 module Pipeline = struct
   let as_template (type a)
       (module I : Yocaml.Required.DATA_INJECTABLE with type t = a) ?snapshot

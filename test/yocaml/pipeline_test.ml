@@ -111,6 +111,66 @@ let test_dependencies_with_multiple_files_and_duplicate_file =
       in
       check Testable.deps "should be equal" expected computed)
 
+module Dummy_tpl : Yocaml.Required.DATA_TEMPLATE = struct
+  type t = Yocaml.Sexp.t
+
+  let from = Yocaml.Data.to_sexp
+  let render ?strict:_ _ x = x
+end
+
+let test_dependencies_with_applicative_templates =
+  let open Alcotest in
+  test_case
+    "when there is dependencies it should returns an non-empty set with only \
+     unique file identifier"
+    `Quick (fun () ->
+      let open Path.Infix in
+      let open Task in
+      let expected =
+        Deps.from_list
+          [
+            ~/[ "foo"; "index.html" ]
+          ; ~/[ "foo"; "index.php" ]
+          ; ~/[ "index.html" ]
+          ; ~/[ "test.txt" ]
+          ; ~/[ "foo"; "module.ml" ]
+          ; ~/[ "foo"; "index.svg" ]
+          ; ~/[ "a_tpl.ml.tpl" ]
+          ; ~/[ "b_tpl.ml.tpl" ]
+          ; ~/[ "c_tpl.ml.tpl" ]
+          ; ~/[ "d_tpl.ml.tpl" ]
+          ]
+      and computed =
+        let task =
+          let+ () = Pipeline.track_file ~/[ "foo"; "index.html" ]
+          and+ () = Pipeline.track_file ~/[ "foo"; "index.svg" ]
+          and+ () =
+            Pipeline.track_files
+              [
+                ~/[ "foo"; "index.php" ]
+              ; ~/[ "index.html" ]
+              ; ~/[ "foo"; "module.ml" ]
+              ; ~/[ "foo"; "index.svg" ]
+              ]
+          and+ _ =
+            Pipeline.read_template (module Dummy_tpl) ~/[ "a_tpl.ml.tpl" ]
+          and+ _ =
+            Pipeline.read_templates
+              (module Dummy_tpl)
+              [
+                ~/[ "a_tpl.ml.tpl" ]
+              ; ~/[ "b_tpl.ml.tpl" ]
+              ; ~/[ "c_tpl.ml.tpl" ]
+              ; ~/[ "d_tpl.ml.tpl" ]
+              ]
+          and+ _ = Pipeline.read_file ~/[ "test.txt" ]
+          and+ _ = Pipeline.read_file ~/[ "index.html" ] in
+          ()
+        in
+        dependencies_of task
+      in
+      check Testable.deps "should be equal" expected computed)
+
 let cases =
   ( "Yocaml.Pipeline"
   , [
@@ -118,4 +178,5 @@ let cases =
     ; test_dependencies_with_one_file
     ; test_dependencies_with_multiple_files
     ; test_dependencies_with_multiple_files_and_duplicate_file
+    ; test_dependencies_with_applicative_templates
     ] )

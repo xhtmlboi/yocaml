@@ -19,6 +19,14 @@ Run the generator
   [DEBUG]./content/templates/layout.html already stored
   [DEBUG]`./_www/articles-with-applicative-read/first_article.html` will be written
   [INFO]`./_www/articles-with-applicative-read/first_article.html` has been written
+  [DEBUG]./content/templates/article.html already stored
+  [DEBUG]./content/templates/layout.html already stored
+  [DEBUG]`./_www/articles-with-applicative-read-2/second_article.html` will be written
+  [INFO]`./_www/articles-with-applicative-read-2/second_article.html` has been written
+  [DEBUG]./content/templates/article.html already stored
+  [DEBUG]./content/templates/layout.html already stored
+  [DEBUG]`./_www/articles-with-applicative-read-2/first_article.html` will be written
+  [INFO]`./_www/articles-with-applicative-read-2/first_article.html` has been written
   [DEBUG]Cache stored in `./_www/.cache`
 
 Inspect tree
@@ -30,9 +38,12 @@ Inspect tree
   |-- articles-with-applicative-read
   |   |-- first_article.html
   |   `-- second_article.html
+  |-- articles-with-applicative-read-2
+  |   |-- first_article.html
+  |   `-- second_article.html
   `-- style.css
   
-  3 directories, 5 files
+  4 directories, 7 files
 
 Inspect CSS files
   $ cat _www/style.css
@@ -118,6 +129,55 @@ Inspect First Applicative read (same content of article)
 
 Inspect Second Applicative read (same content of article)
   $ cat _www/articles-with-applicative-read/second_article.html
+  <!doctype html>
+  <html lang="en-US">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width" />
+      <title>Test.com - A second article</title>
+    </head>
+    <body>
+      <header>
+        <h1>Test.com</h1>
+      </header>
+      <main><h2>A second article</h2>
+  <section><blockquote>
+  <p>A <em>new</em> <strong>article</strong>!</p>
+  </blockquote>
+  </section>
+  </main>
+      <footer>
+        Copyright YOCaml
+      </footer>
+    </body>
+  </html>
+
+
+Inspect First Applicative read (same content of article)
+  $ cat _www/articles-with-applicative-read-2/first_article.html
+  <!doctype html>
+  <html lang="en-US">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width" />
+      <title>Test.com - A first article</title>
+    </head>
+    <body>
+      <header>
+        <h1>Test.com</h1>
+      </header>
+      <main><h2>A first article</h2>
+  <section><p>Test <em>Test of an article</em></p>
+  </section>
+  </main>
+      <footer>
+        Copyright YOCaml
+      </footer>
+    </body>
+  </html>
+
+Inspect Second Applicative read (same content of article)
+  $ cat _www/articles-with-applicative-read-2/second_article.html
   <!doctype html>
   <html lang="en-US">
     <head>
