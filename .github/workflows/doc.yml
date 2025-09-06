@@ -33,7 +33,7 @@ jobs:
       - run: opam exec -- dune build
       - run: opam exec -- dune build @install
       - run: opam install odoc-driver
-      - run: opam exec -- dune exec -- odoc_driver yocaml yocaml_eio yocaml_unix yocaml_git yocaml_cmarkit yocaml_jingoo yocaml_mustache yocaml_omd yocaml_otoml yocaml_runtime yocaml_syndication yocaml_yaml --remap
+      - run: opam exec -- dune exec -- odoc_driver yocaml yocaml_eio yocaml_unix yocaml_git yocaml_cmarkit yocaml_markdown yocaml_jingoo yocaml_mustache yocaml_omd yocaml_otoml yocaml_runtime yocaml_syndication yocaml_yaml --remap
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4
