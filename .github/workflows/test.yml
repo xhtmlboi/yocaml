@@ -15,8 +15,6 @@ jobs:
           - ubuntu-latest
         ocaml-compiler:
           - ocaml-base-compiler.5.3.0
-          - 5.2.x
-          - 5.1.x
     runs-on: ${{ matrix.os }}
 
     steps:
