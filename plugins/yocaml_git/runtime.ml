@@ -103,7 +103,10 @@ struct
     let is_directory ~on path =
       match on with
       | `Source -> Source.lift @@ Source.is_directory ~on path
-      | `Target -> Lwt.return true
+      | `Target -> (
+          let open Lwt.Syntax in
+          let+ file_content = read_file ~on:`Target path in
+          match file_content with Error _ | Ok "" -> true | Ok _ -> false)
 
     let exec ?is_success prog args =
       lift_result @@ Source.exec ?is_success prog args
