@@ -2,32 +2,33 @@
 
 #### Yocaml
 
-- Add `Pipeline.read_template` to have a better fit with Applicative API [gr-im](https://github.com/gr-im)
-- Fix table of content order for deeply nested elements
+- Add `Pipeline.read_template` to have a better fit with Applicative API (by [gr-im](https://github.com/gr-im)
+- Fix table of content order for deeply nested elements (by [gr-im](https://github.com/gr-im)
+- Add a Applicative Helpers for Archetypes (by [gr-im](https://github.com/gr-im)
 
 #### Yocaml_jingoo
 
-- Add `read_template` to have a better fit with Applicative API [gr-im](https://github.com/gr-im)
-- Add `read_templates` to have a better fit with Applicative API when chaining templates [gr-im](https://github.com/gr-im)
+- Add `read_template` to have a better fit with Applicative API (by [gr-im](https://github.com/gr-im)
+- Add `read_templates` to have a better fit with Applicative API when chaining templates (by [gr-im](https://github.com/gr-im)
 
 #### Yocaml_mustache
 
-- Add `read_template` to have a better fit with Applicative API [gr-im](https://github.com/gr-im)
-- Add `read_templates` to have a better fit with Applicative API when chaining templates [gr-im](https://github.com/gr-im)
+- Add `read_template` to have a better fit with Applicative API (by [gr-im](https://github.com/gr-im)
+- Add `read_templates` to have a better fit with Applicative API when chaining templates (by [gr-im](https://github.com/gr-im)
 
 ### v2.4.1 2025-09-01 Nantes (France)
 
 #### Yocaml
 
-- Add `Toc.traverse` for building your own TOC string [gr-im](https://github.com/gr-im)
+- Add `Toc.traverse` for building your own TOC string (by [gr-im](https://github.com/gr-im)
 
 #### Yocaml_markdown
 
-- Reintroduce the package to have a strong way to deal with Markdown and Syntax Highlighting (It probably made `yocaml_omd` and `yocaml_cmarkit` obsolete) [gr-im](https://github.com/gr-im)
+- Reintroduce the package to have a strong way to deal with Markdown and Syntax Highlighting (It probably made `yocaml_omd` and `yocaml_cmarkit` obsolete) (by [gr-im](https://github.com/gr-im)
 
 #### Yocaml_cmarkit
 
-- Add a regular function to compute TOC [gr-im](https://github.com/gr-im)
+- Add a regular function to compute TOC (by [gr-im](https://github.com/gr-im)
 
 ### v2.4.0 2025-08-11 Nantes (France)
 
