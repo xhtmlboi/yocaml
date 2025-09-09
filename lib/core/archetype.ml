@@ -479,6 +479,6 @@ module Articles = struct
   let normalize obj =
     let open Data in
     ("articles", list_of normalize_article obj#articles)
-    :: ("has_articles", bool @@ is_empty_list obj#articles)
+    :: ("has_articles", bool @@ not (is_empty_list obj#articles))
     :: Page.normalize obj
 end
