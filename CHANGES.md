@@ -5,6 +5,7 @@
 - Add `Pipeline.read_template` to have a better fit with Applicative API (by [gr-im](https://github.com/gr-im)
 - Fix table of content order for deeply nested elements (by [gr-im](https://github.com/gr-im)
 - Add a Applicative Helpers for Archetypes (by [gr-im](https://github.com/gr-im)
+- Improve `Archetype.Articles.fetch` (by [xhtmlboi](https://github.com/xhtmlboi))
 
 #### Yocaml_jingoo
 
