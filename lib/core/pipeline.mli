@@ -140,3 +140,24 @@ val chain_templates :
     ie: [chain_templates (module T) (module M) [a; b]] is
     [as_template (module T) (module M) ?strict a >>> as_template (module T)
      (module M) ?strict b]. *)
+
+val fetch_some :
+     ?only:[ `Both | `Directories | `Files ]
+  -> ?where:(Path.t -> bool)
+  -> ?on:Eff.filesystem
+  -> (Path.t -> 'a option Eff.t)
+  -> Path.t
+  -> (unit, 'a list) Task.t
+(** [fetch_some ?only ?where ?on callback path] performs the [callback] on every
+    files inside [path] that satisfy [where].*)
+
+val fetch :
+     ?only:[ `Both | `Directories | `Files ]
+  -> ?where:(Path.t -> bool)
+  -> ?on:Eff.filesystem
+  -> (Path.t -> 'a Eff.t)
+  -> Path.t
+  -> (unit, 'a list) Task.t
+(** [fetch ?only ?where ?on callback path] performs the [callback] on every
+    files inside [path] that satisfy [where]. Like {!val:fetch_some} but always
+    keep results.*)

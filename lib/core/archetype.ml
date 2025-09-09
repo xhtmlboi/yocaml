@@ -450,24 +450,16 @@ module Articles = struct
   let fetch (module P : Required.DATA_PROVIDER) ?increasing
       ?(filter = fun x -> x) ?(on = `Source) ~where ~compute_link path =
     let open Task in
-    Pipeline.track_file path
-    >>> from_effect (fun () ->
-            let open Eff in
-            let* files = read_directory ~on ~only:`Files ~where path in
-            let+ articles =
-              List.traverse
-                (fun file ->
-                  let url = compute_link file in
-                  let+ metadata, _content =
-                    Eff.read_file_with_metadata
-                      (module P)
-                      (module Article)
-                      ~on file
-                  in
-                  (url, metadata))
-                files
-            in
-            articles |> sort_by_date ?increasing |> filter)
+    Pipeline.fetch ~only:`Files ~where ~on
+      (fun file ->
+        let open Eff in
+        let url = compute_link file in
+        let+ metadata, _content =
+          Eff.read_file_with_metadata (module P) (module Article) ~on file
+        in
+        (url, metadata))
+      path
+    >>| fun articles -> articles |> sort_by_date ?increasing |> filter
 
   let compute_index (module P : Required.DATA_PROVIDER) ?increasing
       ?(filter = fun x -> x) ?(on = `Source) ~where ~compute_link path =

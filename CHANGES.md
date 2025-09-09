@@ -6,6 +6,7 @@
 - Fix table of content order for deeply nested elements (by [gr-im](https://github.com/gr-im)
 - Add a Applicative Helpers for Archetypes (by [gr-im](https://github.com/gr-im)
 - Improve `Archetype.Articles.fetch` (by [xhtmlboi](https://github.com/xhtmlboi))
+- Add `Pipeline.fetch` and `Pipeline.fetch_some` (by [gr-im](https://github.com/gr-im)
 
 #### Yocaml_jingoo
 

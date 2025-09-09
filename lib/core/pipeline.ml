@@ -123,3 +123,17 @@ let pipe_files ?(separator = "") files =
   List.fold_left
     (fun arr file -> Task.(arr >>> pipe f (read_file file)))
     (Task.const "") files
+
+let fetch_some ?(only = `Files) ?(where = fun _ -> true) ?(on = `Source)
+    callback path =
+  Task.rcompose (track_file path)
+    (Task.from_effect (fun () ->
+         let open Eff in
+         let* files = read_directory ~on ~only ~where path in
+         List.filter_map callback files))
+
+let fetch ?only ?where ?on callback =
+  fetch_some ?only ?where ?on (fun p ->
+      let open Eff in
+      let+ result = callback p in
+      Some result)
