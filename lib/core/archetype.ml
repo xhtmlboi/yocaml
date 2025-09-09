@@ -437,7 +437,8 @@ module Articles = struct
     end
 
   let with_toc a = a#with_toc
-  let from_page = Task.lift (fun (page, articles) -> new articles page articles)
+  let with_page ~articles ~page = new articles page articles
+  let from_page = Task.lift (fun (page, articles) -> with_page ~articles ~page)
 
   let sort_by_date ?(increasing = false) articles =
     List.sort

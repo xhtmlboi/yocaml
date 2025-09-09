@@ -294,6 +294,10 @@ module Articles : sig
   type t
   (** A type describing a list of articles. *)
 
+  val with_page : articles:(Path.t * Article.t) list -> page:Page.t -> t
+  (** [with_page ~articles ~pages] builds the Article archetype with a page and
+      a list of articles associated with their URLs. *)
+
   (** Unlike the previous archetypes, reading an index consists of reading a
       regular page, so this module does not implement the [DATA_READABLE]
       interface. However, it is possible to inject it. The classic workflow
