@@ -18,6 +18,10 @@
 - Add `read_template` to have a better fit with Applicative API (by [gr-im](https://github.com/gr-im)
 - Add `read_templates` to have a better fit with Applicative API when chaining templates (by [gr-im](https://github.com/gr-im)
 
+#### Yocaml_git
+
+- A less open-bar `is_directory` for `yocaml_git` (by [xhtmlboi](https://github.com/xhtmlboi))
+
 ### v2.4.1 2025-09-01 Nantes (France)
 
 #### Yocaml
