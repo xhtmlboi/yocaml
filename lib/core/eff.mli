@@ -259,7 +259,9 @@ type _ Effect.t +=
   | Yocaml_write_file : filesystem * Path.t * string -> unit Effect.t
         (** Effect which describes the writing of a file *)
   | Yocaml_is_directory : filesystem * Path.t -> bool Effect.t
-        (** Effect that returns check if a file is a directory or not. *)
+        (** Effect that returns check if a path is a directory or not. *)
+  | Yocaml_is_file : filesystem * Path.t -> bool Effect.t
+        (** Effect that returns check if a path is a file. *)
   | Yocaml_read_dir : filesystem * Path.t -> Path.fragment list Effect.t
         (** Effect that returns a list of names of files (and directory) present
             in the given directory. (Names should be not prefixed by the given

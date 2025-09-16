@@ -110,6 +110,7 @@ type _ Effect.t +=
   | Yocaml_hash_content : string -> string Effect.t
   | Yocaml_write_file : filesystem * Path.t * string -> unit Effect.t
   | Yocaml_is_directory : filesystem * Path.t -> bool Effect.t
+  | Yocaml_is_file : filesystem * Path.t -> bool Effect.t
   | Yocaml_read_dir : filesystem * Path.t -> Path.fragment list Effect.t
   | Yocaml_create_dir : filesystem * Path.t -> unit Effect.t
   | Yocaml_exec_command :
@@ -142,6 +143,7 @@ let logf ?src ?(level = `Debug) =
   Format.kasprintf (fun result -> log ?src ~level result)
 
 let is_directory ~on path = perform @@ Yocaml_is_directory (on, path)
+let is_file ~on path = perform @@ Yocaml_is_file (on, path)
 
 let exec ?(is_success = Int.equal 0) exec_name ?(args = []) =
   perform @@ Yocaml_exec_command (exec_name, args, is_success)
@@ -149,13 +151,6 @@ let exec ?(is_success = Int.equal 0) exec_name ?(args = []) =
 let exec_cmd ?is_success cmd =
   let command, args = Cmd.normalize cmd in
   exec ?is_success ~args command
-
-let is_file ~on path =
-  let* file_exists = file_exists ~on path in
-  if file_exists then
-    let+ is_dir = is_directory ~on path in
-    not is_dir
-  else return false
 
 let ensure_file_exists ~on f path =
   let* exists = file_exists ~on path in
