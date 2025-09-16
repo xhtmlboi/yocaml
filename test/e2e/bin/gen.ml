@@ -118,8 +118,11 @@ let program (resolver : resolver) () =
   >>= articles_aux_2 resolver
   >>= Yocaml.Action.store_cache ~on:`Target resolver#cache
 
+module R = Yocaml.Runtime.Make (Runtime)
+
 let () =
   let () = Array.iter print_endline Sys.argv in
   let cwd = Yocaml.Path.rel [] in
   let resolver = new resolver ~source:cwd ~target:cwd in
-  Yocaml_unix.run ~level:`Debug (program resolver)
+  let () = Yocaml_runtime.Log.setup ~level:`Debug () in
+  R.run (program resolver)
