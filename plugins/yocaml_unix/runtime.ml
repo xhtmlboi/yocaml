@@ -34,6 +34,8 @@ let is_directory ~on:_ path =
   let path = Yocaml.Path.to_string path in
   try Sys.is_directory path with _ -> false
 
+let is_file ~on path = file_exists ~on path && not (is_directory ~on path)
+
 let create_directory ~on:_ path =
   try
     let path = Yocaml.Path.to_string path in

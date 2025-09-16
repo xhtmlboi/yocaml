@@ -50,6 +50,10 @@ let is_directory ~on:_ path env =
   let path = to_eio_path env path in
   Eio.Path.is_directory path
 
+let is_file ~on:_ path env =
+  let path = to_eio_path env path in
+  Eio.Path.is_file path
+
 let create_directory ~on:_ path env =
   try
     let path = to_eio_path env path in
