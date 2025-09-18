@@ -225,6 +225,10 @@ module type RUNTIME = sig
   (** [is_directory ~on:source path] returns [true] if the given path is a
       directory, [false] otherwise. *)
 
+  val is_file : on:[ `Source | `Target ] -> Path.t -> bool t
+  (** [is_file ~on:source path] returns [true] if the given path is a file,
+      [false] otherwise. *)
+
   val read_dir :
        on:[ `Source | `Target ]
     -> Path.t

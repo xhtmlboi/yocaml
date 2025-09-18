@@ -5,28 +5,28 @@ Run the generator
   [DEBUG]Cache initiated in `./_www/.cache`
   [DEBUG]`./_www/style.css` will be written
   [INFO]`./_www/style.css` has been written
-  [DEBUG]`./_www/articles/second_article.html` will be written
-  [INFO]`./_www/articles/second_article.html` has been written
-  [DEBUG]./content/templates/article.html already stored
-  [DEBUG]./content/templates/layout.html already stored
   [DEBUG]`./_www/articles/first_article.html` will be written
   [INFO]`./_www/articles/first_article.html` has been written
   [DEBUG]./content/templates/article.html already stored
   [DEBUG]./content/templates/layout.html already stored
-  [DEBUG]`./_www/articles-with-applicative-read/second_article.html` will be written
-  [INFO]`./_www/articles-with-applicative-read/second_article.html` has been written
+  [DEBUG]`./_www/articles/second_article.html` will be written
+  [INFO]`./_www/articles/second_article.html` has been written
   [DEBUG]./content/templates/article.html already stored
   [DEBUG]./content/templates/layout.html already stored
   [DEBUG]`./_www/articles-with-applicative-read/first_article.html` will be written
   [INFO]`./_www/articles-with-applicative-read/first_article.html` has been written
   [DEBUG]./content/templates/article.html already stored
   [DEBUG]./content/templates/layout.html already stored
-  [DEBUG]`./_www/articles-with-applicative-read-2/second_article.html` will be written
-  [INFO]`./_www/articles-with-applicative-read-2/second_article.html` has been written
+  [DEBUG]`./_www/articles-with-applicative-read/second_article.html` will be written
+  [INFO]`./_www/articles-with-applicative-read/second_article.html` has been written
   [DEBUG]./content/templates/article.html already stored
   [DEBUG]./content/templates/layout.html already stored
   [DEBUG]`./_www/articles-with-applicative-read-2/first_article.html` will be written
   [INFO]`./_www/articles-with-applicative-read-2/first_article.html` has been written
+  [DEBUG]./content/templates/article.html already stored
+  [DEBUG]./content/templates/layout.html already stored
+  [DEBUG]`./_www/articles-with-applicative-read-2/second_article.html` will be written
+  [INFO]`./_www/articles-with-applicative-read-2/second_article.html` has been written
   [DEBUG]Cache stored in `./_www/.cache`
 
 Inspect tree

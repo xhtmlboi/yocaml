@@ -105,6 +105,11 @@ struct
       | `Source -> Source.lift @@ Source.is_directory ~on path
       | `Target -> Lwt.return true
 
+    let is_file ~on path =
+      match on with
+      | `Source -> Source.lift @@ Source.is_file ~on path
+      | `Target -> Lwt.return true
+
     let exec ?is_success prog args =
       lift_result @@ Source.exec ?is_success prog args
 

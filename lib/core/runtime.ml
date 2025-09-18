@@ -112,6 +112,11 @@ module Make (Runtime : Required.RUNTIME) = struct
                     (fun (k : (a, _) continuation) ->
                       Runtime.bind (continue k)
                         (Runtime.is_directory ~on:filesystem path))
+              | Eff.Yocaml_is_file (filesystem, path) ->
+                  Some
+                    (fun (k : (a, _) continuation) ->
+                      Runtime.bind (continue k)
+                        (Runtime.is_file ~on:filesystem path))
               | Eff.Yocaml_read_dir (filesystem, path) ->
                   Some
                     (fun (k : (a, _) continuation) ->

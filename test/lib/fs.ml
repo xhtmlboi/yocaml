@@ -198,6 +198,10 @@ let push_is_directory trace on path =
   push_trace trace
   @@ Format.asprintf "[IS_DIRECTORY][%a]%a" on_pp on Yocaml.Path.pp path
 
+let push_is_file trace on path =
+  push_trace trace
+  @@ Format.asprintf "[IS_FILE][%a]%a" on_pp on Yocaml.Path.pp path
+
 let push_read_directory trace on path =
   push_trace trace
   @@ Format.asprintf "[READ_DIRECTORY][%a]%a" on_pp on Yocaml.Path.pp path
@@ -364,6 +368,19 @@ let run ~trace program input =
                       | _ -> false
                       (* We suppose that if a file does not exists,
                          it is not a directory... *)
+                    in
+                    continue k res)
+            | Yocaml_is_file (on, gpath) ->
+                Some
+                  (fun (k : (a, _) continuation) ->
+                    let () = trace := push_is_file !trace on gpath in
+                    let path = Yocaml.Path.to_list gpath in
+                    let res =
+                      match get !trace.system path with
+                      | Some (File _) -> true
+                      | _ -> false
+                      (* We suppose that if a file does not exists,
+                         it is not a file... *)
                     in
                     continue k res)
             | Yocaml_read_dir (on, gpath) ->
