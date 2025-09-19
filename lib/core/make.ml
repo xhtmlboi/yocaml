@@ -18,29 +18,29 @@ module Data_reader (DP : Required.DATA_PROVIDER) = struct
   module Eff = struct
     let read_file_with_metadata (type a)
         (module R : Required.DATA_READABLE with type t = a) ?extraction_strategy
-        ~on path =
+        ?snapshot ~on path =
       Eff.read_file_with_metadata
         (module DP)
         (module R)
-        ?extraction_strategy ~on path
+        ?extraction_strategy ?snapshot ~on path
 
     let read_file_as_metadata (type a)
-        (module R : Required.DATA_READABLE with type t = a) ~on path =
-      Eff.read_file_as_metadata (module DP) (module R) ~on path
+        (module R : Required.DATA_READABLE with type t = a) ?snapshot ~on path =
+      Eff.read_file_as_metadata (module DP) (module R) ?snapshot ~on path
   end
 
   module Pipeline = struct
     let read_file_with_metadata (type a)
         (module R : Required.DATA_READABLE with type t = a) ?extraction_strategy
-        path =
+        ?snapshot path =
       Pipeline.read_file_with_metadata
         (module DP)
         (module R)
-        ?extraction_strategy path
+        ?extraction_strategy ?snapshot path
 
     let read_file_as_metadata (type a)
-        (module R : Required.DATA_READABLE with type t = a) path =
-      Pipeline.read_file_as_metadata (module DP) (module R) path
+        (module R : Required.DATA_READABLE with type t = a) ?snapshot path =
+      Pipeline.read_file_as_metadata (module DP) (module R) ?snapshot path
   end
 
   include DP

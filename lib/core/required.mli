@@ -119,6 +119,7 @@ module type DATA_READER = sig
     val read_file_with_metadata :
          (module DATA_READABLE with type t = 'a)
       -> ?extraction_strategy:extraction_strategy
+      -> ?snapshot:bool
       -> on:[ `Source | `Target ]
       -> Path.t
       -> ('a * string) eff
@@ -127,6 +128,7 @@ module type DATA_READER = sig
 
     val read_file_as_metadata :
          (module DATA_READABLE with type t = 'a)
+      -> ?snapshot:bool
       -> on:[ `Source | `Target ]
       -> Path.t
       -> 'a eff
@@ -141,6 +143,7 @@ module type DATA_READER = sig
     val read_file_with_metadata :
          (module DATA_READABLE with type t = 'a)
       -> ?extraction_strategy:extraction_strategy
+      -> ?snapshot:bool
       -> Path.t
       -> (unit, 'a * string) arr
     (** The analogous function of
@@ -148,7 +151,10 @@ module type DATA_READER = sig
         [DATA_PROVIDER]. *)
 
     val read_file_as_metadata :
-      (module DATA_READABLE with type t = 'a) -> Path.t -> (unit, 'a) arr
+         (module DATA_READABLE with type t = 'a)
+      -> ?snapshot:bool
+      -> Path.t
+      -> (unit, 'a) arr
     (** The analogous function of {!val:Yocaml.Pipeline.read_file_as_metadata},
         not requiring a [DATA_PROVIDER]. *)
   end

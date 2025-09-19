@@ -1,23 +1,29 @@
+### unreleased
+
+#### Yocaml
+
+- Add missing `snapshot` flag for reading files (by [gr-im](https://github.com/gr-im))
+
 ### v2.5.0 2025-09-18 Nantes (France)
 
 #### Yocaml
 
-- Add `Pipeline.read_template` to have a better fit with Applicative API (by [gr-im](https://github.com/gr-im)
-- Fix table of content order for deeply nested elements (by [gr-im](https://github.com/gr-im)
-- Add a Applicative Helpers for Archetypes (by [gr-im](https://github.com/gr-im)
+- Add `Pipeline.read_template` to have a better fit with Applicative API (by [gr-im](https://github.com/gr-im))
+- Fix table of content order for deeply nested elements (by [gr-im](https://github.com/gr-im))
+- Add a Applicative Helpers for Archetypes (by [gr-im](https://github.com/gr-im))
 - Improve `Archetype.Articles.fetch` (by [xhtmlboi](https://github.com/xhtmlboi))
-- Add `Pipeline.fetch` and `Pipeline.fetch_some` (by [gr-im](https://github.com/gr-im)
+- Add `Pipeline.fetch` and `Pipeline.fetch_some` (by [gr-im](https://github.com/gr-im))
 - Add a new effect to define if a Path is a file (in order to disambiguate file and path for `Yocaml_git`) (by [xvw](https://xvw.lol))
 
 #### Yocaml_jingoo
 
-- Add `read_template` to have a better fit with Applicative API (by [gr-im](https://github.com/gr-im)
-- Add `read_templates` to have a better fit with Applicative API when chaining templates (by [gr-im](https://github.com/gr-im)
+- Add `read_template` to have a better fit with Applicative API (by [gr-im](https://github.com/gr-im))
+- Add `read_templates` to have a better fit with Applicative API when chaining templates (by [gr-im](https://github.com/gr-im))
 
 #### Yocaml_mustache
 
-- Add `read_template` to have a better fit with Applicative API (by [gr-im](https://github.com/gr-im)
-- Add `read_templates` to have a better fit with Applicative API when chaining templates (by [gr-im](https://github.com/gr-im)
+- Add `read_template` to have a better fit with Applicative API (by [gr-im](https://github.com/gr-im))
+- Add `read_templates` to have a better fit with Applicative API when chaining templates (by [gr-im](https://github.com/gr-im))
 
 #### Yocaml_unix
 
