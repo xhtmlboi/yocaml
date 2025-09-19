@@ -9,7 +9,7 @@ license: "GPL-3.0-or-later"
 homepage: "https://github.com/xhtmlboi/yocaml"
 bug-reports: "https://github.com/xhtmlboi/yocaml/issues"
 depends: [
-  "dune" {>= "3.14"}
+  "dune" {>= "3.18"}
   "ocaml" {>= "5.1.1"}
   "ppx_expect"
   "mdx" {with-test & >= "2.5.0"}
@@ -32,3 +32,4 @@ build: [
   ]
 ]
 dev-repo: "git+https://github.com/xhtmlboi/yocaml.git"
+x-maintenance-intent: ["(latest)"]

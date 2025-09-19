@@ -1,10 +1,11 @@
-(lang dune 3.14)
+(lang dune 3.18)
 
 (name yocaml)
 (version dev)
 (generate_opam_files true)
 (executables_implicit_empty_intf)
 (using mdx 0.4)
+(maintenance_intent "(latest)")
 
 (source (github xhtmlboi/yocaml))
 (license GPL-3.0-or-later)
