@@ -1,4 +1,4 @@
-### unreleased
+### v2.6.0 2025-09-23 Nantes (France)
 
 #### Yocaml
 
