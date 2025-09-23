@@ -59,10 +59,10 @@ let test_to_string_root =
       let expected = "/" and computed = Yocaml.Path.(root |> to_string) in
       check string "should be equal" expected computed)
 
-let test_to_string_pwd =
+let test_to_string_cwd =
   let open Alcotest in
-  test_case "to_string for pwd should returns an empty path" `Quick (fun () ->
-      let expected = "./" and computed = Yocaml.Path.(pwd |> to_string) in
+  test_case "to_string for cwd should returns an empty path" `Quick (fun () ->
+      let expected = "./" and computed = Yocaml.Path.(cwd |> to_string) in
       check string "should be equal" expected computed)
 
 let test_extension_with_extension =
@@ -99,14 +99,14 @@ let test_extension_opt_without_extension =
       in
       check (option string) "should be equal" expected computed)
 
-let test_extension_and_opt_on_root_and_pwd =
+let test_extension_and_opt_on_root_and_cwd =
   let open Alcotest in
-  test_case "extension and extension_opt on root and pwd" `Quick (fun () ->
+  test_case "extension and extension_opt on root and cwd" `Quick (fun () ->
       let () =
         check string "should be equal" "" Yocaml.Path.(root |> extension)
       in
       let () =
-        check string "should be equal" "" Yocaml.Path.(pwd |> extension)
+        check string "should be equal" "" Yocaml.Path.(cwd |> extension)
       in
       let () =
         check (option string) "should be equal" None
@@ -114,7 +114,7 @@ let test_extension_and_opt_on_root_and_pwd =
       in
       let () =
         check (option string) "should be equal" None
-          Yocaml.Path.(pwd |> extension_opt)
+          Yocaml.Path.(cwd |> extension_opt)
       in
       ())
 
@@ -184,12 +184,12 @@ let test_add_extension_with_dot_extension =
       and computed = rel [ "foo"; "bar"; "baz" ] |> add_extension "." in
       check Testable.path "should be equal" expected computed)
 
-let test_add_extension_on_root_or_pwd =
+let test_add_extension_on_root_or_cwd =
   let open Alcotest in
-  test_case "add_extension on root or pwd should do nothing" `Quick (fun () ->
+  test_case "add_extension on root or cwd should do nothing" `Quick (fun () ->
       let open Yocaml.Path in
       let () =
-        check Testable.path "should be equal" pwd (pwd |> add_extension ".ml")
+        check Testable.path "should be equal" cwd (cwd |> add_extension ".ml")
       in
       let () =
         check Testable.path "should be equal" root (root |> add_extension ".ml")
@@ -406,19 +406,19 @@ let cases =
     ; test_to_string_rel_slash
     ; test_to_string_abs_plus
     ; test_to_string_root
-    ; test_to_string_pwd
+    ; test_to_string_cwd
     ; test_extension_with_extension
     ; test_extension_opt_with_extension
     ; test_extension_without_extension
     ; test_extension_opt_without_extension
-    ; test_extension_and_opt_on_root_and_pwd
+    ; test_extension_and_opt_on_root_and_cwd
     ; test_remove_extension_on_path_with_extension
     ; test_remove_extension_on_path_without_extension
     ; test_add_extension_without_dot
     ; test_add_extension_with_dot
     ; test_add_extension_with_empty_extension
     ; test_add_extension_with_dot_extension
-    ; test_add_extension_on_root_or_pwd
+    ; test_add_extension_on_root_or_cwd
     ; test_change_extension_valid_case_no_dot
     ; test_change_extension_valid_case_dot
     ; test_basename1

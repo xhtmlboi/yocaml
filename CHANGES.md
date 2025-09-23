@@ -3,6 +3,7 @@
 #### Yocaml
 
 - Add missing `snapshot` flag for reading files (by [gr-im](https://github.com/gr-im))
+- Some small `Path` improvement  (by [gr-im](https://github.com/gr-im))
 
 ### v2.5.0 2025-09-18 Nantes (France)
 

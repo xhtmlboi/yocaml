@@ -20,7 +20,8 @@ type t = Relative of fragment list | Absolute of fragment list
 let rel x = Relative x
 let abs x = Absolute x
 let root = abs []
-let pwd = rel []
+let cwd = rel []
+let pwd = cwd
 let equal_fragment = String.equal
 let pp_fragment ppf = Format.fprintf ppf "%s"
 let get_fragments = function Relative f | Absolute f -> f
@@ -28,6 +29,11 @@ let get_fragments = function Relative f | Absolute f -> f
 let get_ctor_and_fragments = function
   | Relative f -> (rel, f)
   | Absolute f -> (abs, f)
+
+let to_abs = function Relative x -> Absolute x | x -> x
+let to_rel = function Absolute x -> Relative x | x -> x
+let is_abs = function Absolute _ -> true | _ -> false
+let is_rel = function Relative _ -> true | _ -> false
 
 let equal a b =
   match (a, b) with
@@ -102,6 +108,9 @@ let has_extension ext path =
   let fex = extension path in
   String.equal ext fex
 
+let one_of_extensions exts path =
+  List.exists (fun ext -> has_extension ext path) exts
+
 let update_last_fragment callback path =
   let f, fragments = get_ctor_and_fragments path in
   let rec aux acc = function
@@ -153,6 +162,23 @@ let relocate ~into source =
   | Absolute x, Relative y -> Absolute (x @ y)
   | Relative x, Relative y -> Relative (remove_common_prefix x y)
   | Absolute x, Absolute y -> Absolute (remove_common_prefix x y)
+
+let trim ~prefix path =
+  let kind_a, a = to_pair prefix and kind_b, b = to_pair path in
+  let rec aux x y =
+    match (x, y) with
+    | [], ys -> ys
+    | _, [] -> b
+    | prefix_a :: xs, prefix_b :: ys when String.equal prefix_a prefix_b ->
+        aux xs ys
+    | _ -> b
+  in
+  match (kind_a, kind_b) with
+  | `Rel, `Rel -> rel (aux a b)
+  | `Root, `Root -> abs (aux a b)
+  | `Root, `Rel | `Rel, `Root ->
+      (* No common prefix *)
+      path
 
 let compare a b =
   match (a, b) with
