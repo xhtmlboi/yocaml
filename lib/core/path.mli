@@ -32,6 +32,7 @@
 
 (** {eof@ocaml[
       # #install_printer Yocaml.Path.pp
+      # open Yocaml.Path ;;
     ]eof} *)
 
 (**/**)
@@ -62,8 +63,24 @@ val abs : fragment list -> t
 val root : t
 (** Returns the root of the file system. [root = abs []]. *)
 
+val cwd : t
+(** Returns the current dir of the file system. [cwd = rel []]. *)
+
 val pwd : t
+[@@ocaml.deprecated "Please use [cwd]"]
 (** Returns the current dir of the file system. [pwd = rel []]. *)
+
+val to_rel : t -> t
+(** [to_rel p] relativize [p] (if necessary). *)
+
+val to_abs : t -> t
+(** [to_abs p] absolutize [p] (if necessary). *)
+
+val is_abs : t -> bool
+(** [is_abs p] returns [true] if [p] is absolute. *)
+
+val is_rel : t -> bool
+(** [is_rel p] returns [true] if [p] is relative. *)
 
 val append : t -> fragment list -> t
 (** [append path fragments] Produces a new path which adds the list of given
@@ -79,6 +96,15 @@ val extension_opt : t -> string option
 val has_extension : string -> t -> bool
 (** [has_extension ext path] returns [true] if the given [path] has the
     extension, [ext], [false] otherwise. *)
+
+val one_of_extensions : string list -> t -> bool
+(** [one_of_extensions exts path] returns [true] if the given [path] has one of
+    the extensions in the list [ext], [false] otherwise.
+
+    {eof@ocaml[
+      # one_of_extensions ["html"; "htm"] (rel ["baz"; "index.html"]) ;;
+      - : bool = true
+    ]eof} *)
 
 val remove_extension : t -> t
 (** Remove the extension of the last fragment. If the last fragment has no
@@ -105,7 +131,6 @@ val move : into:t -> t -> t
     last fragment of the given path) to the [target]. For exemple:
 
     {eof@ocaml[
-      # open Yocaml.Path ;;
       # move ~into:(rel ["target" ; "html"]) (rel ["source"; "index.html"]) ;;
       - : t = ./target/html/index.html
     ]eof}
@@ -113,8 +138,8 @@ val move : into:t -> t -> t
     Only [index.html] is moved to [into]. *)
 
 val relocate : into:t -> t -> t
-(** [locate source ~into:target] is similar to [move] except that it (virtually)
-    moves the entire path.
+(** [relocate source ~into:target] is similar to [move] except that it
+    (virtually) moves the entire path.
 
     If two paths are of the same type (absolute or relative) and have no prefix,
     the source is concatenated with the target.
@@ -151,6 +176,17 @@ val relocate : into:t -> t -> t
     {eof@ocaml[
       # relocate ~into:(rel ["foo"; "bar"]) (rel ["bar"; "index.html"]) ;;
       - : t = ./foo/bar/bar/index.html
+    ]eof} *)
+
+val trim : prefix:t -> t -> t
+(** [trim ~prefix path] trim the [prefix] of [path] (if it exists).
+
+    {eof@ocaml[
+      # trim ~prefix:(rel ["foo"; "bar"]) (rel ["foo"; "bar"; "index.html"]) ;;
+      - : t = ./index.html
+
+      # trim ~prefix:(rel ["foo"; "bar"]) (rel ["bar"; "index.html"]) ;;
+      - : t = ./bar/index.html
     ]eof} *)
 
 (** {1 Utils} *)
