@@ -26,7 +26,7 @@
    (qcheck :with-test)
    (qcheck-alcotest :with-test)
    ppx_expect
-   (mdx (and :with-test (= 2.5.0)))
+   (mdx (and :with-test (>= 2.5.0)))
    (ocamlformat :with-dev-setup)
    (ocp-indent :with-dev-setup)
    (merlin :with-dev-setup)
@@ -38,7 +38,7 @@
   (depends
    (ocaml (>= 5.1.1))
    ppx_expect
-   (mdx (and :with-test (= 2.5.0)))
+   (mdx (and :with-test (>= 2.5.0)))
    (yocaml (= :version))
    (cohttp (>= 5.3.11))
    (magic-mime (>= 1.3.1))
@@ -52,7 +52,7 @@
    (depends
     (ocaml (>= 5.1.1))
     ppx_expect
-    (mdx (and :with-test (= 2.5.0)))
+    (mdx (and :with-test (>= 2.5.0)))
     (yocaml (= :version))
     (yocaml_runtime (= :version))
     (eio (>= 1.1))
@@ -141,7 +141,7 @@
    ppx_expect
    (mdx (and :with-test (>= 2.5.0)))
    (yocaml (= :version))
-   (mustache (= 3.3.0))))
+   (mustache (>= 3.3.0))))
 
 (package
   (name yocaml_syndication)
