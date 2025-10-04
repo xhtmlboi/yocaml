@@ -3,7 +3,6 @@
 (name yocaml)
 (version dev)
 (generate_opam_files true)
-(executables_implicit_empty_intf)
 (using mdx 0.4)
 (maintenance_intent "(latest)")
 
