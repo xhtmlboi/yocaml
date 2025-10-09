@@ -460,6 +460,18 @@ module Validation : sig
   (** @inline *)
 end
 
+(** {1 Validation helper types} *)
+
+type 'a converter = 'a -> t
+(** ['a converter] converts a value of type ['a] into a {!type:t}. *)
+
+type ('a, 'b) validator = 'a -> 'b Validation.validated_value
+(** [('a, 'b) validator] validates a value of type ['a] and returns a
+    {!Yocaml.Data.Validation.validated_value} of type ['b]. *)
+
+type 'a validatable = (t, 'a) validator
+(** ['a validatable] is a value of type [t] that can be validated into ['a]. *)
+
 (** {1 Utils} *)
 
 val equal : t -> t -> bool
