@@ -228,9 +228,7 @@ let store_cache ?(on = `Target) path cache =
 
 let with_cache ?on path f =
   let open Eff in
-  restore_cache ?on path >>= fun cache ->
-  f cache >>= fun updated_cache ->
-  store_cache ?on path updated_cache
+  restore_cache ?on path >>= f >>= store_cache ?on path
 
 let exec_cmd ?is_success cmd target =
   let action _ _ eff cache =

@@ -1,3 +1,10 @@
+### Unreleased Nantes (France)
+
+#### Yocaml
+
+- Add `Action.with_cache` helper to simplify working with cached actions (by [Abiola-Zeenat](https://github.com/Abiola-Zeenat))
+
+
 ### v2.6.0 2025-09-23 Nantes (France)
 
 #### Yocaml
@@ -43,15 +50,15 @@
 
 #### Yocaml
 
-- Add `Toc.traverse` for building your own TOC string (by [gr-im](https://github.com/gr-im)
+- Add `Toc.traverse` for building your own TOC string (by [gr-im](https://github.com/gr-im))
 
 #### Yocaml_markdown
 
-- Reintroduce the package to have a strong way to deal with Markdown and Syntax Highlighting (It probably made `yocaml_omd` and `yocaml_cmarkit` obsolete) (by [gr-im](https://github.com/gr-im)
+- Reintroduce the package to have a strong way to deal with Markdown and Syntax Highlighting (It probably made `yocaml_omd` and `yocaml_cmarkit` obsolete) (by [gr-im](https://github.com/gr-im))
 
 #### Yocaml_cmarkit
 
-- Add a regular function to compute TOC (by [gr-im](https://github.com/gr-im)
+- Add a regular function to compute TOC (by [gr-im](https://github.com/gr-im))
 
 ### v2.4.0 2025-08-11 Nantes (France)
 
