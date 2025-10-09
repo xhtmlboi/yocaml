@@ -411,3 +411,7 @@ module Validation = struct
 
   let path = string $ Path.from_string
 end
+
+type 'a converter = 'a -> t
+type ('a, 'b) validator = 'a -> 'b Validation.validated_value
+type 'a validatable = (t, 'a) validator
