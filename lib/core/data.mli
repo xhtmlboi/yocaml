@@ -458,6 +458,69 @@ module Validation : sig
 
   include module type of Syntax
   (** @inline *)
+
+  (** {2 String validators}
+      
+      Validators specifically for string values. *)
+
+  module String : sig
+    val equal : string -> string -> string validated_value
+    (** [equal expected actual] ensures that [actual] is equal to [expected]. *)
+
+    val not_equal : string -> string -> string validated_value
+    (** [not_equal not_expected actual] ensures that [actual] is not equal to [not_expected]. *)
+
+    val not_empty : string -> string validated_value
+    (** [not_empty actual] ensures that [actual] is not empty. *)
+
+    val not_blank : string -> string validated_value
+    (** [not_blank actual] ensures that [actual] is not blank (after trimming whitespace). *)
+
+    val has_prefix : prefix:string -> string -> string validated_value
+    (** [has_prefix ~prefix actual] ensures that [actual] starts with [prefix]. *)
+
+    val has_suffix : suffix:string -> string -> string validated_value
+    (** [has_suffix ~suffix actual] ensures that [actual] ends with [suffix]. *)
+
+    val has_length : int -> string -> string validated_value
+    (** [has_length expected_length actual] ensures that [actual] has exactly [expected_length] characters. *)
+
+    val length_gt : int -> string -> string validated_value
+    (** [length_gt min_length actual] ensures that [actual] has more than [min_length] characters. *)
+
+    val length_ge : int -> string -> string validated_value
+    (** [length_ge min_length actual] ensures that [actual] has at least [min_length] characters. *)
+
+    val length_eq : int -> string -> string validated_value
+    (** [length_eq expected_length actual] is an alias for [has_length]. *)
+
+    val length_lt : int -> string -> string validated_value
+    (** [length_lt max_length actual] ensures that [actual] has fewer than [max_length] characters. *)
+
+    val length_le : int -> string -> string validated_value
+    (** [length_le max_length actual] ensures that [actual] has at most [max_length] characters. *)
+
+    val contains_only : chars:char list -> string -> string validated_value
+    (** [contains_only ~chars actual] ensures that [actual] contains only characters from [chars]. *)
+
+    val exclude_chars : chars:char list -> string -> string validated_value
+    (** [exclude_chars ~chars actual] ensures that [actual] does not contain any characters from [chars]. *)
+
+    val one_of : ?case_sensitive:bool -> string list -> string -> string validated_value
+    (** [one_of ?case_sensitive valid_strings actual] ensures that [actual] is one of [valid_strings].
+        If [case_sensitive] is [false], comparison is case-insensitive. *)
+
+    val where : ?message:(string -> string) -> (string -> bool) -> string -> string validated_value
+    (** [where ?message predicate actual] ensures that [actual] satisfies [predicate].
+        [message] is used for custom error messages. *)
+  end
+
+  (** {2 Validator combinators} *)
+
+  val negate : ('a -> 'a validated_value) -> 'a -> 'a validated_value
+  (** [negate validator x] inverts the result of [validator x]. If [validator x] 
+      returns [Ok x], then [negate validator x] returns [Error _]. If [validator x] 
+      returns [Error _], then [negate validator x] returns [Ok x]. *)
 end
 
 (** {1 Utils} *)

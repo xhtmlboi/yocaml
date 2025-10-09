@@ -1093,6 +1093,183 @@ let test_where_or_const =
       in
       ())
 
+(* String validators tests *)
+
+let test_string_equal =
+  let open Alcotest in
+  test_case "String.equal" `Quick (fun () ->
+      let check = check (Testable.validated_value string) "should be equal" in
+      let () = check (Ok "hello") (V.String.equal "hello" "hello") in
+      let () = check (Error (V.With_message { given = "world"; message = "should be equal to \"hello\"" })) 
+          (V.String.equal "hello" "world") in
+      ())
+
+let test_string_not_equal =
+  let open Alcotest in
+  test_case "String.not_equal" `Quick (fun () ->
+      let check = check (Testable.validated_value string) "should be equal" in
+      let () = check (Ok "world") (V.String.not_equal "hello" "world") in
+      let () = check (Error (V.With_message { given = "hello"; message = "should not be equal to \"hello\"" })) 
+          (V.String.not_equal "hello" "hello") in
+      ())
+
+let test_string_not_empty =
+  let open Alcotest in
+  test_case "String.not_empty" `Quick (fun () ->
+      let check = check (Testable.validated_value string) "should be equal" in
+      let () = check (Ok "hello") (V.String.not_empty "hello") in
+      let () = check (Error (V.With_message { given = ""; message = "should not be empty" })) 
+          (V.String.not_empty "") in
+      ())
+
+let test_string_not_blank =
+  let open Alcotest in
+  test_case "String.not_blank" `Quick (fun () ->
+      let check = check (Testable.validated_value string) "should be equal" in
+      let () = check (Ok "hello") (V.String.not_blank "hello") in
+      let () = check (Ok "  hello  ") (V.String.not_blank "  hello  ") in
+      let () = check (Error (V.With_message { given = "   "; message = "should not be blank" })) 
+          (V.String.not_blank "   ") in
+      let () = check (Error (V.With_message { given = ""; message = "should not be blank" })) 
+          (V.String.not_blank "") in
+      ())
+
+let test_string_has_prefix =
+  let open Alcotest in
+  test_case "String.has_prefix" `Quick (fun () ->
+      let check = check (Testable.validated_value string) "should be equal" in
+      let () = check (Ok "hello world") (V.String.has_prefix ~prefix:"hello" "hello world") in
+      let () = check (Ok "hello") (V.String.has_prefix ~prefix:"hello" "hello") in
+      let () = check (Error (V.With_message { given = "world"; message = "should have prefix \"hello\"" })) 
+          (V.String.has_prefix ~prefix:"hello" "world") in
+      ())
+
+let test_string_has_suffix =
+  let open Alcotest in
+  test_case "String.has_suffix" `Quick (fun () ->
+      let check = check (Testable.validated_value string) "should be equal" in
+      let () = check (Ok "hello world") (V.String.has_suffix ~suffix:"world" "hello world") in
+      let () = check (Ok "world") (V.String.has_suffix ~suffix:"world" "world") in
+      let () = check (Error (V.With_message { given = "hello"; message = "should have suffix \"world\"" })) 
+          (V.String.has_suffix ~suffix:"world" "hello") in
+      ())
+
+let test_string_has_length =
+  let open Alcotest in
+  test_case "String.has_length" `Quick (fun () ->
+      let check = check (Testable.validated_value string) "should be equal" in
+      let () = check (Ok "hello") (V.String.has_length 5 "hello") in
+      let () = check (Ok "") (V.String.has_length 0 "") in
+      let () = check (Error (V.With_message { given = "hi"; message = "should have length 5, but has length 2" })) 
+          (V.String.has_length 5 "hi") in
+      ())
+
+let test_string_length_gt =
+  let open Alcotest in
+  test_case "String.length_gt" `Quick (fun () ->
+      let check = check (Testable.validated_value string) "should be equal" in
+      let () = check (Ok "hello") (V.String.length_gt 3 "hello") in
+      let () = check (Error (V.With_message { given = "hi"; message = "should have length greater than 3, but has length 2" })) 
+          (V.String.length_gt 3 "hi") in
+      let () = check (Error (V.With_message { given = "abc"; message = "should have length greater than 3, but has length 3" })) 
+          (V.String.length_gt 3 "abc") in
+      ())
+
+let test_string_length_ge =
+  let open Alcotest in
+  test_case "String.length_ge" `Quick (fun () ->
+      let check = check (Testable.validated_value string) "should be equal" in
+      let () = check (Ok "hello") (V.String.length_ge 5 "hello") in
+      let () = check (Ok "hello") (V.String.length_ge 3 "hello") in
+      let () = check (Error (V.With_message { given = "hi"; message = "should have length greater than or equal to 3, but has length 2" })) 
+          (V.String.length_ge 3 "hi") in
+      ())
+
+let test_string_length_lt =
+  let open Alcotest in
+  test_case "String.length_lt" `Quick (fun () ->
+      let check = check (Testable.validated_value string) "should be equal" in
+      let () = check (Ok "hi") (V.String.length_lt 5 "hi") in
+      let () = check (Error (V.With_message { given = "hello"; message = "should have length less than 5, but has length 5" })) 
+          (V.String.length_lt 5 "hello") in
+      let () = check (Error (V.With_message { given = "world"; message = "should have length less than 5, but has length 5" })) 
+          (V.String.length_lt 5 "world") in
+      ())
+
+let test_string_length_le =
+  let open Alcotest in
+  test_case "String.length_le" `Quick (fun () ->
+      let check = check (Testable.validated_value string) "should be equal" in
+      let () = check (Ok "hi") (V.String.length_le 5 "hi") in
+      let () = check (Ok "hello") (V.String.length_le 5 "hello") in
+      let () = check (Error (V.With_message { given = "world"; message = "should have length less than or equal to 4, but has length 5" })) 
+          (V.String.length_le 4 "world") in
+      ())
+
+let test_string_contains_only =
+  let open Alcotest in
+  test_case "String.contains_only" `Quick (fun () ->
+      let check = check (Testable.validated_value string) "should be equal" in
+      let () = check (Ok "abc") (V.String.contains_only ~chars:['a'; 'b'; 'c'] "abc") in
+      let () = check (Ok "a") (V.String.contains_only ~chars:['a'; 'b'; 'c'] "a") in
+      let () = check (Ok "") (V.String.contains_only ~chars:['a'; 'b'; 'c'] "") in
+      let () = check (Error (V.With_message { given = "abcd"; message = "should contain only characters from a, b, c" })) 
+          (V.String.contains_only ~chars:['a'; 'b'; 'c'] "abcd") in
+      ())
+
+let test_string_exclude_chars =
+  let open Alcotest in
+  test_case "String.exclude_chars" `Quick (fun () ->
+      let check = check (Testable.validated_value string) "should be equal" in
+      let () = check (Ok "abc") (V.String.exclude_chars ~chars:['x'; 'y'; 'z'] "abc") in
+      let () = check (Ok "") (V.String.exclude_chars ~chars:['x'; 'y'; 'z'] "") in
+      let () = check (Error (V.With_message { given = "abcx"; message = "should not contain characters x, y, z" })) 
+          (V.String.exclude_chars ~chars:['x'; 'y'; 'z'] "abcx") in
+      ())
+
+let test_string_one_of =
+  let open Alcotest in
+  test_case "String.one_of" `Quick (fun () ->
+      let check = check (Testable.validated_value string) "should be equal" in
+      let valid_strings = ["hello"; "world"; "test"] in
+      let () = check (Ok "hello") (V.String.one_of valid_strings "hello") in
+      let () = check (Ok "world") (V.String.one_of valid_strings "world") in
+      let () = check (Error (V.With_message { given = "invalid"; message = "should be one of [hello; world; test]" })) 
+          (V.String.one_of valid_strings "invalid") in
+      let () = check (Ok "hello") (V.String.one_of ~case_sensitive:false valid_strings "HELLO") in
+      let () = check (Error (V.With_message { given = "HELLO"; message = "should be one of [hello; world; test]" })) 
+          (V.String.one_of ~case_sensitive:true valid_strings "HELLO") in
+      ())
+
+let test_string_where =
+  let open Alcotest in
+  test_case "String.where" `Quick (fun () ->
+      let check = check (Testable.validated_value string) "should be equal" in
+      let is_uppercase s = s = String.uppercase_ascii s in
+      let () = check (Ok "HELLO") (V.String.where is_uppercase "HELLO") in
+      let () = check (Error (V.With_message { given = "hello"; message = "unsatisfied predicate" })) 
+          (V.String.where is_uppercase "hello") in
+      let custom_message s = Printf.sprintf "string '%s' is not uppercase" s in
+      let () = check (Error (V.With_message { given = "hello"; message = "string 'hello' is not uppercase" })) 
+          (V.String.where ~message:custom_message is_uppercase "hello") in
+      ())
+
+(* Negate function tests *)
+
+let test_negate =
+  let open Alcotest in
+  test_case "negate" `Quick (fun () ->
+      let check = check (Testable.validated_value int) "should be equal" in
+      let is_positive x = if x > 0 then Ok x else Error (V.With_message { given = string_of_int x; message = "should be positive" }) in
+      let is_not_positive = V.negate is_positive in
+      let () = check (Ok 0) (is_not_positive 0) in
+      let () = check (Ok (-5)) (is_not_positive (-5)) in
+      let () = check (Error (V.With_message { given = "<value>"; message = "should not satisfy the validator" })) 
+          (is_not_positive 5) in
+      let () = check (Error (V.With_message { given = "<value>"; message = "should not satisfy the validator" })) 
+          (is_not_positive 10) in
+      ())
+
 let cases =
   ( "Yocaml.Data"
   , [
@@ -1148,4 +1325,20 @@ let cases =
     ; test_le
     ; test_one_of
     ; test_where_or_const
+    ; test_string_equal
+    ; test_string_not_equal
+    ; test_string_not_empty
+    ; test_string_not_blank
+    ; test_string_has_prefix
+    ; test_string_has_suffix
+    ; test_string_has_length
+    ; test_string_length_gt
+    ; test_string_length_ge
+    ; test_string_length_lt
+    ; test_string_length_le
+    ; test_string_contains_only
+    ; test_string_exclude_chars
+    ; test_string_one_of
+    ; test_string_where
+    ; test_negate
     ] )
