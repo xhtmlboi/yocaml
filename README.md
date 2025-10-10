@@ -35,7 +35,7 @@ repositories. In addition, you will find some basic examples in the
 
 | Website | Source |
 | -- | -- |
-| [https://yocaml.github.io/tutorial/](YOCaml tutorial) | [Repository](https://github.com/yocaml/yocaml-www) |
+| [YOCaml Tutorial](https://yocaml.github.io/tutorial/) | [Repository](https://github.com/yocaml/yocaml-www) |
 | [Ring.muhokama](https://ring.muhokama.fun/) | [Repository](https://github.com/muhokama/ring) |
 | [Gr-im](https://gr-im.github.io/) | [Repository](https://github.com/gr-im/site) |
 | [Xvw](https://xvw.lol) | [Repository](https://github.com/xvw/capsule) |
