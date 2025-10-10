@@ -111,9 +111,11 @@ let articles (resolver : resolver) =
 let program (resolver : resolver) () =
   let open Yocaml.Eff in
   let* () = logf ~level:`Debug "Trigger in %a" Yocaml.Path.pp resolver#source in
-  Yocaml.Action.with_cache ~on:`Target resolver#cache 
-  (css resolver >=> articles resolver >=> articles_aux_1 resolver >=> articles_aux_2 resolver)
-
+  Yocaml.Action.with_cache ~on:`Target resolver#cache
+    (css resolver
+    >=> articles resolver
+    >=> articles_aux_1 resolver
+    >=> articles_aux_2 resolver)
 
 module R = Yocaml.Runtime.Make (Runtime)
 

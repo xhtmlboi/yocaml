@@ -1,4 +1,4 @@
-### Unreleased Nantes (France)
+### Unreleased
 
 #### Yocaml
 

@@ -41,8 +41,8 @@ val store_cache : ?on:Eff.filesystem -> Path.t -> Cache.t -> unit Eff.t
 val with_cache : ?on:Eff.filesystem -> Path.t -> t -> unit Eff.t
 (** [with_cache ?on path f] restores the cache from the given [path], executes
     the action [f] using the cache, and then stores the updated cache back to
-    the same [path]. 
-    
+    the same [path].
+
     This helps avoid repeating [restore_cache] and [store_cache] calls manually
     when chaining multiple cache-aware actions. *)
 
