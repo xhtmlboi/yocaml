@@ -458,7 +458,43 @@ module Validation : sig
 
   include module type of Syntax
   (** @inline *)
+
+  (** {2 Validation signature} *)
+
+  (** Modules that validate YOCaml [Data.t] values into OCaml values. *)
+  module type S = sig
+    (** The OCaml type produced by this validator. *)
+    type a
+
+    val from_data : t -> a validated_value
+    (** [from_data data] converts a YOCaml [Data.t] into an OCaml value of type [a].
+      Returns [Ok v] on success or [Error e] on failure. *)
+  end
+
+  (** {2 Using validator modules} *)
+
+  val from : (module S with type a = 'a) -> t -> 'a validated_value
+  (** [from (module M) data] applies [M.from_data] from the given validator module [M]
+    to the provided [data]. *)
 end
+
+(** {1 Conversion signature} *)
+
+(** Modules that convert OCaml values into YOCaml [Data.t] values. *)
+module type S = sig
+  (** The OCaml type that can be converted. *)
+  type a
+
+  val to_data : a -> t
+  (** [to_data v] converts an OCaml value [v] of type [a] into a YOCaml [Data.t] value. *)
+end
+
+(** {2 Using conversion modules} *)
+
+val into : (module S with type a = 'a) -> 'a -> t
+(** [into (module M) v] applies [M.to_data] from the given conversion module [M]
+    to the OCaml value [v], producing a YOCaml [Data.t]. *)
+
 
 (** {1 Validation helper types} *)
 
