@@ -65,3 +65,38 @@ val extract_from_content :
   strategy:extraction_strategy -> string -> string option * string
 (** [extract_from_content ~strategy content] Attempts to extract metadata from a
     document using a defined strategy.*)
+
+(** {1 Injectable functor}
+
+    Lifts a module exposing [Required.DATA_INJECTABLE] into a
+    module that can convert values of type [D.t] into [Yocaml.Data.t],
+    allowing them to be injected as metadata. *)
+
+module Injectable (D: Required.DATA_INJECTABLE) : sig 
+  include Data.S with type a = D.t
+  (** [a] = D.t, provides [to_data] to convert values into [Data.t]. *)
+
+  include Required.DATA_INJECTABLE with type t := D.t
+  (** Re-exports [normalize] from [D] to produce metadata records. *)
+end
+
+(** {1 Readable functor}
+
+    Lifts a module exposing [Data.Validation.S] into a module that can
+    validate values as metadata, providing a named entity and optional
+    neutral fallback. *)
+
+module Readable 
+  (D: Data.Validation.S) 
+  ( _ : sig 
+     val name : string
+     val neutral : [`Optional of D.a | `Required]
+   end) : sig 
+
+  include Data.Validation.S
+  (** [a] = D.a, provides [from_data] to convert [Data.t] into typed values. *)
+
+  include Required.DATA_READABLE with type t = D.a
+  (** Provides [entity_name], [neutral], and [validate] for metadata
+      validation using the given module [D] and default fallback [V.neutral]. *)
+end
