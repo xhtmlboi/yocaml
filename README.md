@@ -39,5 +39,6 @@ repositories. In addition, you will find some basic examples in the
 | [Ring.muhokama](https://ring.muhokama.fun/) | [Repository](https://github.com/muhokama/ring) |
 | [Gr-im](https://gr-im.github.io/) | [Repository](https://github.com/gr-im/site) |
 | [Xvw](https://xvw.lol) | [Repository](https://github.com/xvw/capsule) |
+| [Condor du plateau](https://site.condor-du-plateau.fr/) | [Repository](https://git.sr.ht/~tim-ats-d/site/) |
 
 Please **feel free** to add your website to this list!
