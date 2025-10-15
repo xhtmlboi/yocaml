@@ -416,14 +416,43 @@ module Validation = struct
       Validators specifically for string values. *)
 
   module String = struct
-    let equal expected actual =
-      if Stdlib.String.equal expected actual then Ok actual
-      else fail_with ~given:actual @@ Format.asprintf "should be equal to %S" expected
+    (* String-specific parameters for generic validators *)
+    let string_pp = Format.pp_print_string
+    let string_equal = Stdlib.String.equal
 
-    let not_equal not_expected actual =
-      if not (Stdlib.String.equal not_expected actual) then Ok actual
-      else fail_with ~given:actual @@ Format.asprintf "should not be equal to %S" not_expected
+    (* Use generic validators with string-specific parameters *)
+    let equal expected actual = equal ~pp:string_pp ~equal:string_equal expected actual
+    let not_equal not_expected actual = not_equal ~pp:string_pp ~equal:string_equal not_expected actual
 
+    (* Length-based validators - implemented directly to avoid naming conflicts *)
+    let has_length expected_length actual =
+      let actual_length = Stdlib.String.length actual in
+      if actual_length = expected_length then Ok actual
+      else fail_with ~given:actual @@ Format.asprintf "should have length %d, but has length %d" expected_length actual_length
+
+    let length_gt min_length actual =
+      let actual_length = Stdlib.String.length actual in
+      if actual_length > min_length then Ok actual
+      else fail_with ~given:actual @@ Format.asprintf "should have length greater than %d, but has length %d" min_length actual_length
+
+    let length_ge min_length actual =
+      let actual_length = Stdlib.String.length actual in
+      if actual_length >= min_length then Ok actual
+      else fail_with ~given:actual @@ Format.asprintf "should have length greater than or equal to %d, but has length %d" min_length actual_length
+
+    let length_lt max_length actual =
+      let actual_length = Stdlib.String.length actual in
+      if actual_length < max_length then Ok actual
+      else fail_with ~given:actual @@ Format.asprintf "should have length less than %d, but has length %d" max_length actual_length
+
+    let length_le max_length actual =
+      let actual_length = Stdlib.String.length actual in
+      if actual_length <= max_length then Ok actual
+      else fail_with ~given:actual @@ Format.asprintf "should have length less than or equal to %d, but has length %d" max_length actual_length
+
+    let length_eq = has_length
+
+    (* String-specific validators that don't have generic equivalents *)
     let not_empty actual =
       if Stdlib.String.length actual > 0 then Ok actual
       else fail_with ~given:actual "should not be empty"
@@ -444,34 +473,6 @@ module Validation = struct
       let actual_len = Stdlib.String.length actual in
       if actual_len >= suffix_len && Stdlib.String.sub actual (actual_len - suffix_len) suffix_len = suffix then Ok actual
       else fail_with ~given:actual @@ Format.asprintf "should have suffix %S" suffix
-
-    let has_length expected_length actual =
-      let actual_length = Stdlib.String.length actual in
-      if actual_length = expected_length then Ok actual
-      else fail_with ~given:actual @@ Format.asprintf "should have length %d, but has length %d" expected_length actual_length
-
-    let length_gt min_length actual =
-      let actual_length = Stdlib.String.length actual in
-      if actual_length > min_length then Ok actual
-      else fail_with ~given:actual @@ Format.asprintf "should have length greater than %d, but has length %d" min_length actual_length
-
-    let length_ge min_length actual =
-      let actual_length = Stdlib.String.length actual in
-      if actual_length >= min_length then Ok actual
-      else fail_with ~given:actual @@ Format.asprintf "should have length greater than or equal to %d, but has length %d" min_length actual_length
-
-    let length_eq expected_length actual =
-      has_length expected_length actual
-
-    let length_lt max_length actual =
-      let actual_length = Stdlib.String.length actual in
-      if actual_length < max_length then Ok actual
-      else fail_with ~given:actual @@ Format.asprintf "should have length less than %d, but has length %d" max_length actual_length
-
-    let length_le max_length actual =
-      let actual_length = Stdlib.String.length actual in
-      if actual_length <= max_length then Ok actual
-      else fail_with ~given:actual @@ Format.asprintf "should have length less than or equal to %d, but has length %d" max_length actual_length
 
     let contains_only ~chars actual =
       let is_valid_char c = List.mem c chars in

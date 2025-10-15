@@ -1100,8 +1100,8 @@ let test_string_equal =
   test_case "String.equal" `Quick (fun () ->
       let check = check (Testable.validated_value string) "should be equal" in
       let () = check (Ok "hello") (V.String.equal "hello" "hello") in
-      let () = check (Error (V.With_message { given = "world"; message = "should be equal to \"hello\"" })) 
-          (V.String.equal "hello" "world") in
+      let () = check (Error (V.With_message { given = "world"; message = "should be equal to hello" })) 
+        (V.String.equal "hello" "world") in
       ())
 
 let test_string_not_equal =
@@ -1109,8 +1109,8 @@ let test_string_not_equal =
   test_case "String.not_equal" `Quick (fun () ->
       let check = check (Testable.validated_value string) "should be equal" in
       let () = check (Ok "world") (V.String.not_equal "hello" "world") in
-      let () = check (Error (V.With_message { given = "hello"; message = "should not be equal to \"hello\"" })) 
-          (V.String.not_equal "hello" "hello") in
+      let () = check (Error (V.With_message { given = "hello"; message = "should not be equal to hello" })) 
+        (V.String.not_equal "hello" "hello") in
       ())
 
 let test_string_not_empty =
