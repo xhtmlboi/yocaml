@@ -226,6 +226,10 @@ let store_cache ?(on = `Target) path cache =
   let* () = Eff.write_file ~on path sexp_str in
   Eff.log ~src:Eff.yocaml_log_src ~level:`Debug @@ Lexicon.cache_stored path
 
+let with_cache ?on path f =
+  let open Eff in
+  restore_cache ?on path >>= f >>= store_cache ?on path
+
 let exec_cmd ?is_success cmd target =
   let action _ _ eff cache =
     let open Eff in
