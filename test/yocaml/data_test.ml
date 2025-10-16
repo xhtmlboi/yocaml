@@ -1234,10 +1234,10 @@ let test_string_one_of =
       let valid_strings = ["hello"; "world"; "test"] in
       let () = check (Ok "hello") (V.String.one_of valid_strings "hello") in
       let () = check (Ok "world") (V.String.one_of valid_strings "world") in
-      let () = check (Error (V.With_message { given = "invalid"; message = "should be one of [hello; world; test]" })) 
+      let () = check (Error (V.With_message { given = "invalid"; message = "not included in [hello; world; test]" })) 
           (V.String.one_of valid_strings "invalid") in
       let () = check (Ok "hello") (V.String.one_of ~case_sensitive:false valid_strings "HELLO") in
-      let () = check (Error (V.With_message { given = "HELLO"; message = "should be one of [hello; world; test]" })) 
+      let () = check (Error (V.With_message { given = "HELLO"; message = "not included in [hello; world; test]" })) 
           (V.String.one_of ~case_sensitive:true valid_strings "HELLO") in
       ())
 
