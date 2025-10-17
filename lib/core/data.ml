@@ -430,4 +430,4 @@ let into (type a) (module M : S with type a = a) (x : a) : t =
 
 type 'a converter = 'a -> t
 type ('a, 'b) validator = 'a -> 'b Validation.validated_value
-type 'a validatable = (t, 'a) validator
+type 'a validable = (t, 'a) validator

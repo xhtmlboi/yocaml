@@ -505,8 +505,9 @@ type ('a, 'b) validator = 'a -> 'b Validation.validated_value
 (** [('a, 'b) validator] validates a value of type ['a] and returns a
     {!Yocaml.Data.Validation.validated_value} of type ['b]. *)
 
-type 'a validatable = (t, 'a) validator
-(** ['a validatable] is a value of type [t] that can be validated into ['a]. *)
+type 'a validable = (t, 'a) validator
+(** ['a validable] is a validator that takes a value of type [t] and returns a
+    validated value of type ['a]. *)
 
 (** {1 Utils} *)
 
