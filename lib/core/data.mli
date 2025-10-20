@@ -461,40 +461,50 @@ module Validation : sig
 
   (** {2 Validation signature} *)
 
-  (** Modules that validate YOCaml [Data.t] values into OCaml values. *)
   module type S = sig
-    (** The OCaml type produced by this validator. *)
-    type a
+    (** Modules that validate [Yocaml.Data.t] values into OCaml values of type
+        [t]. *)
 
-    val from_data : t -> a validated_value
-    (** [from_data data] converts a YOCaml [Data.t] into an OCaml value of type [a].
-      Returns [Ok v] on success or [Error e] on failure. *)
+    type data := t
+    (** Local alias for {!type:Yocaml.Data.t}. *)
+
+    type t
+    (** The OCaml type produced by this validator. *)
+
+    val from_data : data -> t validated_value
+    (** [from_data data] converts a {!type:Yocaml.Data.t} into an OCaml value of
+        type [t]. Returns [Ok v] on success or [Error e] on failure. *)
   end
 
   (** {2 Using validator modules} *)
 
-  val from : (module S with type a = 'a) -> t -> 'a validated_value
-  (** [from (module M) data] applies [M.from_data] from the given validator module [M]
-    to the provided [data]. *)
+  val from : (module S with type t = 'a) -> t -> 'a validated_value
+  (** [from (module M) data] applies [M.from_data] from the given validator
+      module [M] to the provided {!type:Yocaml.Data.t}, producing a validated
+      OCaml value of type ['a]. *)
 end
 
 (** {1 Conversion signature} *)
 
-(** Modules that convert OCaml values into YOCaml [Data.t] values. *)
 module type S = sig
-  (** The OCaml type that can be converted. *)
-  type a
+  (** Modules that convert OCaml values into {!type:Yocaml.Data.t} values. *)
 
-  val to_data : a -> t
-  (** [to_data v] converts an OCaml value [v] of type [a] into a YOCaml [Data.t] value. *)
+  type data := t
+  (** Local alias for {!type:Yocaml.Data.t}. *)
+
+  type t
+  (** The OCaml type that can be converted. *)
+
+  val to_data : t -> data
+  (** [to_data v] converts an OCaml value [v] of type [t] into a
+      {!type:Yocaml.Data.t}. *)
 end
 
 (** {2 Using conversion modules} *)
 
-val into : (module S with type a = 'a) -> 'a -> t
+val into : (module S with type t = 'a) -> 'a -> t
 (** [into (module M) v] applies [M.to_data] from the given conversion module [M]
-    to the OCaml value [v], producing a YOCaml [Data.t]. *)
-
+    to the OCaml value [v], producing a {!type:Yocaml.Data.t}. *)
 
 (** {1 Validation helper types} *)
 

@@ -410,23 +410,27 @@ module Validation = struct
     |> Result.map (fun (w, (x, y, z)) -> (w, x, y, z))
 
   let path = string $ Path.from_string
-  
+
   module type S = sig
-    type a
-    val from_data : t -> a validated_value
+    type data := t
+    type t
+
+    val from_data : data -> t validated_value
   end
 
-  let from (type a) (module M : S with type a = a) (data : t) : a validated_value =
+  let from (type a) (module M : S with type t = a) (data : t) :
+      a validated_value =
     M.from_data data
 end
 
 module type S = sig
-  type a
-  val to_data : a -> t
+  type data := t
+  type t
+
+  val to_data : t -> data
 end
 
-let into (type a) (module M : S with type a = a) (x : a) : t =
-  M.to_data x
+let into (type a) (module M : S with type t = a) (x : a) : t = M.to_data x
 
 type 'a converter = 'a -> t
 type ('a, 'b) validator = 'a -> 'b Validation.validated_value
