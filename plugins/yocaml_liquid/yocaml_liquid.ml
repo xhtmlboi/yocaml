@@ -1,5 +1,5 @@
 (* YOCaml a static blog generator.
-   Copyright (C) 2024 The Funkyworkers and The YOCaml's developers
+   Copyright (C) 2025 The Funkyworkers and The YOCaml's developers
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
