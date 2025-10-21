@@ -1,5 +1,5 @@
 (* YOCaml a static blog generator.
-   Copyright (C) 2024 The Funkyworkers and The YOCaml's developers
+   Copyright (C) 2025 The Funkyworkers and The YOCaml's developers
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -15,8 +15,9 @@
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
 (** Plugin for describing templates using
-    {{:https://github.com/benfaerber/liquid-ml} liquid-ml}, an OCaml implementation
-    of {{:https://shopify.github.io/liquid/} Shopify's Liquid} templating language. *)
+    {{:https://github.com/benfaerber/liquid-ml} liquid-ml}, an OCaml
+    implementation of {{:https://shopify.github.io/liquid/} Shopify's Liquid}
+    templating language. *)
 
 (** {1 Injection}
 
@@ -65,8 +66,8 @@ end
 
 (** {1 Data template}
 
-    Describes the [Yocaml_liquid] module as a template engine. Allows the
-    latter to be passed to any function requiring it. *)
+    Describes the [Yocaml_liquid] module as a template engine. Allows the latter
+    to be passed to any function requiring it. *)
 
 include Yocaml.Required.DATA_TEMPLATE with type t = Liquid_ml.Exports.value
 (** @inline *)

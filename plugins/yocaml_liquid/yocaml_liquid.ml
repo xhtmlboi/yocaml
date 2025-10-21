@@ -27,15 +27,17 @@ module Tpl = struct
     | Yocaml.Data.String s -> String s
     | Yocaml.Data.List l -> List (List.map from l)
     | Yocaml.Data.Record r ->
-        let obj = List.fold_left (fun acc (k, v) ->
-          Object.add k (from v) acc
-        ) Object.empty r in
+        let obj =
+          List.fold_left
+            (fun acc (k, v) -> Object.add k (from v) acc)
+            Object.empty r
+        in
         Object obj
 
   let render ?(strict = true) parameters content =
-    let context = List.fold_left (fun acc (k, v) ->
-      Ctx.add k v acc
-    ) Ctx.empty parameters in
+    let context =
+      List.fold_left (fun acc (k, v) -> Ctx.add k v acc) Ctx.empty parameters
+    in
     let error_policy = if strict then Settings.Strict else Settings.Warn in
     let settings = Settings.make ~context ~error_policy () in
     Liquid_ml.Liquid.render_text ~settings content
