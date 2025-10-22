@@ -85,3 +85,34 @@ let validate (type a) (module P : Required.DATA_PROVIDER)
                     Required.Validation_error { entity = R.entity_name; error })))
 
 let required entity = Error (Required.Required_metadata { entity })
+
+module Injectable (D : Required.DATA_INJECTABLE) : sig
+  include Data.S with type t = D.t
+  include Required.DATA_INJECTABLE with type t := t
+end = struct
+  type t = D.t
+
+  let to_data x = Data.record (D.normalize x)
+  let normalize = D.normalize
+end
+
+module Readable
+    (D : Data.Validation.S)
+    (V : sig
+      val name : string
+      val neutral : [ `Optional of D.t | `Required ]
+    end) : sig
+  include Data.Validation.S
+  include Required.DATA_READABLE with type t := t
+end = struct
+  include D
+
+  let entity_name = V.name
+
+  let neutral =
+    match V.neutral with
+    | `Optional x -> Ok x
+    | `Required -> Error (Required.Required_metadata { entity = entity_name })
+
+  let validate = D.from_data
+end
