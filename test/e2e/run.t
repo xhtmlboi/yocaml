@@ -201,5 +201,78 @@ Inspect Second Applicative read (same content of article)
     </body>
   </html>
 
+Run the Liquid generator
+  $ ./bin/gen_liquid.exe
+  ./bin/gen_liquid.exe
+  [DEBUG]Trigger in ./
+  [DEBUG]Cache restored from `./_www/.cache`
+  [DEBUG]`./_www/liquid-articles/first_article.html` will be written
+  [INFO]`./_www/liquid-articles/first_article.html` has been written
+  [DEBUG]./content/templates/article.liquid already stored
+  [DEBUG]./content/templates/layout.liquid already stored
+  [DEBUG]`./_www/liquid-articles/second_article.html` will be written
+  [INFO]`./_www/liquid-articles/second_article.html` has been written
+  [DEBUG]Cache stored in `./_www/.cache`
+Inspect tree after Liquid generation
+  $ tree _www
+  _www
+  |-- articles
+  |   |-- first_article.html
+  |   `-- second_article.html
+  |-- articles-with-applicative-read
+  |   |-- first_article.html
+  |   `-- second_article.html
+  |-- articles-with-applicative-read-2
+  |   |-- first_article.html
+  |   `-- second_article.html
+  |-- liquid-articles
+  |   |-- first_article.html
+  |   `-- second_article.html
+  `-- style.css
+  
+  5 directories, 9 files
+
+Inspect Liquid First Article
+  $ cat _www/liquid-articles/first_article.html | head -15
+  <!doctype html>
+  <html lang="en-US">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width" />
+      <title>Test.com - A first article</title>
+    </head>
+    <body>
+      <header>
+        <h1>Test.com</h1>
+      </header>
+      <main><h2>A first article</h2>
+  <section><p>Test <em>Test of an article</em></p>
+  </section>
+  </main>
+
+Inspect Liquid Second Article
+  $ cat _www/liquid-articles/second_article.html
+  <!doctype html>
+  <html lang="en-US">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width" />
+      <title>Test.com - A second article</title>
+    </head>
+    <body>
+      <header>
+        <h1>Test.com</h1>
+      </header>
+      <main><h2>A second article</h2>
+  <section><blockquote>
+  <p>A <em>new</em> <strong>article</strong>!</p>
+  </blockquote>
+  </section>
+  </main>
+      <footer>
+        Copyright YOCaml with Liquid
+      </footer>
+    </body>
+  </html>
 Clean the sandbox
   $ rm -r _www

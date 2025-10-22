@@ -1,5 +1,6 @@
 (executable
  (name gen)
+ (modules gen runtime)
  (libraries
   yocaml
   yocaml_unix
@@ -7,3 +8,8 @@
   yocaml_jingoo
   yocaml_cmarkit
   yocaml_markdown))
+
+(executable
+ (name gen_liquid)
+ (modules gen_liquid runtime)
+ (libraries yocaml yocaml_unix yocaml_yaml yocaml_cmarkit yocaml_liquid))
