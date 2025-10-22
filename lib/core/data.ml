@@ -418,9 +418,7 @@ module Validation = struct
     val from_data : data -> t validated_value
   end
 
-  let from (type a) (module M : S with type t = a) (data : t) :
-      a validated_value =
-    M.from_data data
+  let from (type a) (module M : S with type t = a) data = M.from_data data
 end
 
 module type S = sig
@@ -430,7 +428,7 @@ module type S = sig
   val to_data : t -> data
 end
 
-let into (type a) (module M : S with type t = a) (x : a) : t = M.to_data x
+let into (type a) (module M : S with type t = a) x = M.to_data x
 
 type 'a converter = 'a -> t
 type ('a, 'b) validator = 'a -> 'b Validation.validated_value
