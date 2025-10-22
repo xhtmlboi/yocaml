@@ -776,7 +776,7 @@ Sequential application, using the [&] operator, can be summarized as executing a
 first validator, and then executing a second one, passing it the result of the
 first. For example, in the {!Yocaml.Data.Validation} module, there are a number
 of utility functions that validate data fragments, here are just a few of them:
-{!val:Yocaml.Data.Validation.positive}, {!val:Yocaml.Data.Validation.equal},
+{!val:Yocaml.Data.Int.positive}, {!val:Yocaml.Data.Validation.equal},
 {!val:Yocaml.Data.Validation.where}.
 
 Let's build a validator that validates only even positive integers :

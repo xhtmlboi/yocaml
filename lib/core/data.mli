@@ -238,19 +238,38 @@ module Validation : sig
 
       Validators to use when data is already parsed. *)
 
-  val positive : int -> int validated_value
-  (** [positive x] ensure that [x] is positive. *)
+  module Int : sig
+    val positive : int -> int validated_value
+    val bounded : min:int -> max:int -> int -> int validated_value
+    val equal : int -> int -> int validated_value
+    val not_equal : int -> int -> int validated_value
+    val gt : int -> int -> int validated_value
+    val ge : int -> int -> int validated_value
+    val lt : int -> int -> int validated_value
+    val le : int -> int -> int validated_value
+    val one_of : int list -> int -> int validated_value
 
-  val positive' : float -> float validated_value
-  (** [positive x] ensure that [x] is positive. *)
+    val where :
+      ?message:(int -> string) -> (int -> bool) -> int -> int validated_value
+  end
 
-  val bounded : min:int -> max:int -> int -> int validated_value
-  (** [bounded ~min ~max x] ensure that [x] is included in the range [[min;max]]
-      (both included). *)
+  module Float : sig
+    val positive : float -> float validated_value
+    val bounded : min:float -> max:float -> float -> float validated_value
+    val equal : float -> float -> float validated_value
+    val not_equal : float -> float -> float validated_value
+    val gt : float -> float -> float validated_value
+    val ge : float -> float -> float validated_value
+    val lt : float -> float -> float validated_value
+    val le : float -> float -> float validated_value
+    val one_of : float list -> float -> float validated_value
 
-  val bounded' : min:float -> max:float -> float -> float validated_value
-  (** [bounded ~min ~max x] ensure that [x] is included in the range [[min;max]]
-      (both included). *)
+    val where :
+         ?message:(float -> string)
+      -> (float -> bool)
+      -> float
+      -> float validated_value
+  end
 
   val non_empty : 'a list -> 'a list validated_value
   (** [non_empty l] ensure that [l] is non-empty. *)

@@ -410,4 +410,30 @@ module Validation = struct
     |> Result.map (fun (w, (x, y, z)) -> (w, x, y, z))
 
   let path = string $ Path.from_string
+
+  module Int = struct
+    let positive = positive
+    let bounded = bounded
+    let equal x y = equal x y
+    let not_equal x y = not_equal x y
+    let gt x y = gt x y
+    let ge x y = ge x y
+    let lt x y = lt x y
+    let le x y = le x y
+    let one_of = one_of
+    let where = where
+  end
+
+  module Float = struct
+    let positive = positive'
+    let bounded = bounded'
+    let equal x y = equal x y
+    let not_equal x y = not_equal x y
+    let gt x y = gt x y
+    let ge x y = ge x y
+    let lt x y = lt x y
+    let le x y = le x y
+    let one_of = one_of
+    let where = where
+  end
 end
