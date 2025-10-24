@@ -501,4 +501,13 @@ module Validation = struct
     match validator x with
     | Ok _ -> fail_with ~given:"<value>" "should not satisfy the validator"
     | Error _ -> Ok x
+
+  module type S = sig
+    type data := t
+    type t
+
+    val from_data : data -> t validated_value
+  end
+
+  let from (type a) (module M : S with type t = a) data = M.from_data data
 end

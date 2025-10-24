@@ -521,6 +521,16 @@ module Validation : sig
   (** [negate validator x] inverts the result of [validator x]. If [validator x] 
       returns [Ok x], then [negate validator x] returns [Error _]. If [validator x] 
       returns [Error _], then [negate validator x] returns [Ok x]. *)
+
+  module type S = sig
+    type data := t
+    type t
+
+    val from_data : data -> t validated_value
+  end
+
+  val from : (module S with type t = 'a) -> t -> 'a validated_value
+  (** [from module data] converts [data] to the type defined by [module] using its [from_data] function. *)
 end
 
 (** {1 Utils} *)
