@@ -412,7 +412,7 @@ module Validation = struct
   let path = string $ Path.from_string
 
   (** {2 String validators}
-      
+
       Validators specifically for string values. *)
 
   module String = struct
@@ -421,41 +421,62 @@ module Validation = struct
     let string_equal = Stdlib.String.equal
 
     (* Use generic validators with string-specific parameters *)
-    let equal expected actual = equal ~pp:string_pp ~equal:string_equal expected actual
-    let not_equal not_expected actual = not_equal ~pp:string_pp ~equal:string_equal not_expected actual
+    let equal expected actual =
+      equal ~pp:string_pp ~equal:string_equal expected actual
+
+    let not_equal not_expected actual =
+      not_equal ~pp:string_pp ~equal:string_equal not_expected actual
 
     (* Length-based validators - using Int.equal and Int.compare as suggested *)
     let has_length expected_length actual =
       let actual_length = Stdlib.String.length actual in
       if Int.equal actual_length expected_length then Ok actual
-      else fail_with ~given:actual @@ Format.asprintf "should have length %d, but has length %d" expected_length actual_length
+      else
+        fail_with ~given:actual
+        @@ Format.asprintf "should have length %d, but has length %d"
+             expected_length actual_length
 
     let length_gt min_length actual =
       let actual_length = Stdlib.String.length actual in
-      if (Int.compare actual_length min_length) > 0 then Ok actual
-      else fail_with ~given:actual @@ Format.asprintf "should have length greater than %d, but has length %d" min_length actual_length
+      if Int.compare actual_length min_length > 0 then Ok actual
+      else
+        fail_with ~given:actual
+        @@ Format.asprintf
+             "should have length greater than %d, but has length %d" min_length
+             actual_length
 
     let length_ge min_length actual =
       let actual_length = Stdlib.String.length actual in
-      if (Int.compare actual_length min_length) >= 0 then Ok actual
-      else fail_with ~given:actual @@ Format.asprintf "should have length greater than or equal to %d, but has length %d" min_length actual_length
+      if Int.compare actual_length min_length >= 0 then Ok actual
+      else
+        fail_with ~given:actual
+        @@ Format.asprintf
+             "should have length greater than or equal to %d, but has length %d"
+             min_length actual_length
 
     let length_lt max_length actual =
       let actual_length = Stdlib.String.length actual in
-      if (Int.compare actual_length max_length) < 0 then Ok actual
-      else fail_with ~given:actual @@ Format.asprintf "should have length less than %d, but has length %d" max_length actual_length
+      if Int.compare actual_length max_length < 0 then Ok actual
+      else
+        fail_with ~given:actual
+        @@ Format.asprintf "should have length less than %d, but has length %d"
+             max_length actual_length
 
     let length_le max_length actual =
       let actual_length = Stdlib.String.length actual in
-      if (Int.compare actual_length max_length) <= 0 then Ok actual
-      else fail_with ~given:actual @@ Format.asprintf "should have length less than or equal to %d, but has length %d" max_length actual_length
+      if Int.compare actual_length max_length <= 0 then Ok actual
+      else
+        fail_with ~given:actual
+        @@ Format.asprintf
+             "should have length less than or equal to %d, but has length %d"
+             max_length actual_length
 
     let length_eq = has_length
 
     (* String-specific validators that don't have generic equivalents *)
     let not_empty actual =
       let actual_length = Stdlib.String.length actual in
-      if (Int.compare actual_length 0) > 0 then Ok actual
+      if Int.compare actual_length 0 > 0 then Ok actual
       else fail_with ~given:actual "should not be empty"
 
     let not_blank actual =
@@ -466,29 +487,57 @@ module Validation = struct
     let has_prefix ~prefix actual =
       let prefix_len = Stdlib.String.length prefix in
       let actual_len = Stdlib.String.length actual in
-      if (Int.compare actual_len prefix_len) >= 0 && Stdlib.String.equal (Stdlib.String.sub actual 0 prefix_len) prefix then Ok actual
-      else fail_with ~given:actual @@ Format.asprintf "should have prefix %S" prefix
+      if
+        Int.compare actual_len prefix_len >= 0
+        && Stdlib.String.equal (Stdlib.String.sub actual 0 prefix_len) prefix
+      then Ok actual
+      else
+        fail_with ~given:actual
+        @@ Format.asprintf "should have prefix %S" prefix
 
     let has_suffix ~suffix actual =
       let suffix_len = Stdlib.String.length suffix in
       let actual_len = Stdlib.String.length actual in
-      if (Int.compare actual_len suffix_len) >= 0 && Stdlib.String.equal (Stdlib.String.sub actual (actual_len - suffix_len) suffix_len) suffix then Ok actual
-      else fail_with ~given:actual @@ Format.asprintf "should have suffix %S" suffix
+      if
+        Int.compare actual_len suffix_len >= 0
+        && Stdlib.String.equal
+             (Stdlib.String.sub actual (actual_len - suffix_len) suffix_len)
+             suffix
+      then Ok actual
+      else
+        fail_with ~given:actual
+        @@ Format.asprintf "should have suffix %S" suffix
 
     let contains_only ~chars actual =
       let is_valid_char c = List.mem c chars in
       if Stdlib.String.for_all is_valid_char actual then Ok actual
-      else fail_with ~given:actual @@ Format.asprintf "should contain only characters from %a" 
-        (Format.pp_print_list ~pp_sep:(fun ppf () -> Format.fprintf ppf ", ") Format.pp_print_char) chars
+      else
+        fail_with ~given:actual
+        @@ Format.asprintf "should contain only characters from %a"
+             (Format.pp_print_list
+                ~pp_sep:(fun ppf () -> Format.fprintf ppf ", ")
+                Format.pp_print_char)
+             chars
 
     let exclude_chars ~chars actual =
       let is_invalid_char c = List.mem c chars in
       if not (Stdlib.String.exists is_invalid_char actual) then Ok actual
-      else fail_with ~given:actual @@ Format.asprintf "should not contain characters %a" 
-        (Format.pp_print_list ~pp_sep:(fun ppf () -> Format.fprintf ppf ", ") Format.pp_print_char) chars
+      else
+        fail_with ~given:actual
+        @@ Format.asprintf "should not contain characters %a"
+             (Format.pp_print_list
+                ~pp_sep:(fun ppf () -> Format.fprintf ppf ", ")
+                Format.pp_print_char)
+             chars
 
     let one_of ?(case_sensitive = true) valid_strings actual =
-      let equal = if case_sensitive then Stdlib.String.equal else (fun a b -> Stdlib.String.equal (Stdlib.String.lowercase_ascii a) (Stdlib.String.lowercase_ascii b)) in
+      let equal =
+        if case_sensitive then Stdlib.String.equal
+        else fun a b ->
+          Stdlib.String.equal
+            (Stdlib.String.lowercase_ascii a)
+            (Stdlib.String.lowercase_ascii b)
+      in
       one_of ~pp:string_pp ~equal valid_strings actual
 
     let where ?message predicate actual =
