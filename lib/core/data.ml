@@ -511,3 +511,16 @@ module Validation = struct
 
   let from (type a) (module M : S with type t = a) data = M.from_data data
 end
+
+module type S = sig
+  type data := t
+  type t
+
+  val to_data : t -> data
+end
+
+let into (type a) (module M : S with type t = a) x = M.to_data x
+
+type 'a converter = 'a -> t
+type ('a, 'b) validator = 'a -> 'b Validation.validated_value
+type 'a validable = (t, 'a) validator

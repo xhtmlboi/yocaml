@@ -3,7 +3,10 @@
 #### Yocaml
 
 - Add `Action.with_cache` helper to simplify working with cached actions (by [Abiola-Zeenat](https://github.com/Abiola-Zeenat))
-
+- Introduce type aliases `converter`, `validator`, and `validable` to simplify the Validation API (by [Linda-Njau](https://github.com/Linda-Njau))
+- Add module signatures `S` in `Yocaml.Data` and `Yocaml.Data.Validation` to standardize conversion and validation (by [Linda-Njau](https://github.com/Linda-Njau))
+- Add `Yocaml.Data.into` and `Yocaml.Data.Validation.from` helpers for easier module use (by [Linda-Njau](https://github.com/Linda-Njau))
+- Add `Yocaml.Metadata.Injectable` and `Yocaml.Metadata.Readable` functors to simplify creation of injectable and readable modules (by [Linda-Njau](https://github.com/Linda-Njau))
 
 ### v2.6.0 2025-09-23 Nantes (France)
 
@@ -44,7 +47,6 @@
 #### Yocaml_git
 
 - Adapt runtime to `is_file` (by [xvw](https://xvw.lol))
-
 
 ### v2.4.1 2025-09-01 Nantes (France)
 
@@ -106,11 +108,9 @@
 - Update to git-kv 1.0.2 and work around last modified behavior inside a `Git_kv.change_and_push` call (by [reynir](https://reyn.ir))
 - Update `git` dependencies (by [xvw](https://xvw.lol))
 
-
 ### v2.1.0 2024-12-14 Nantes (France)
 
 - Support for OCaml `5.3.0` (by [kit-ty-kate](https://github.com/kit-ty-kate))
-
 
 ### v2.0.1 2024-10-20 Nantes (France)
 
@@ -119,7 +119,6 @@
 - Fix Table of contents computation when the first index is lower than followers by [xvw](https://github.com/xvw)
 - Remove `charset` of the computed `meta` (since it does not follow the form `name => content`) by [xvw](https://github.com/xvw)
 - Move some modules (`Datetime` and `Toc`) at the Toplevel of `Yocaml` by [xvw](https://github.com/xvw)
-
 
 ### v2.0.0 2024-10-04 Nantes (France)
 
@@ -138,7 +137,6 @@
 #### yocaml_git
 
 - First release (by [dinosaure](https://github.com/dinosaure) and [xhtmlboi](https://github.com/xhtmlboi))
-
 
 #### yocaml_jingoo
 
