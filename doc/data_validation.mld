@@ -931,9 +931,7 @@ let user_validation registration_open user =
       let+ _ =
         required fields "username_confirmation"
           (string
-             & equal ~equal:String.equal
-                ~pp:Format.pp_print_string
-                validated_user.username)
+             & V.String.equal validated_user.username)
       in ()
      ) user
   in Ok validated_user

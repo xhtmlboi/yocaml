@@ -153,7 +153,7 @@ let rec equal_value_error cst a b =
   match (a, b) with
   | ( Invalid_shape { expected = ea; given = ga }
     , Invalid_shape { expected = eb; given = gb } ) ->
-      String.equal ea eb && Yocaml.Data.equal ga gb
+      Stdlib.String.equal ea eb && Yocaml.Data.equal ga gb
   | ( Invalid_list { errors = ea; given = ga }
     , Invalid_list { errors = eb; given = gb } ) ->
       Yocaml.Nel.equal
@@ -166,11 +166,11 @@ let rec equal_value_error cst a b =
       Yocaml.Nel.equal (equal_record_error cst) ea eb
       && List.equal
            (fun (ka, va) (kb, vb) ->
-             String.equal ka kb && Yocaml.Data.equal va vb)
+             Stdlib.String.equal ka kb && Yocaml.Data.equal va vb)
            ga gb
   | ( With_message { given = ga; message = ma }
     , With_message { given = gb; message = mb } ) ->
-      String.equal ga gb && String.equal ma mb
+      Stdlib.String.equal ga gb && Stdlib.String.equal ma mb
   | Custom a, Custom b -> cst a b
   | _ -> false
 
@@ -178,10 +178,10 @@ and equal_record_error cst a b =
   let open Yocaml.Data.Validation in
   match (a, b) with
   | Missing_field { field = fa }, Missing_field { field = fb } ->
-      String.equal fa fb
+      Stdlib.String.equal fa fb
   | ( Invalid_field { given = ga; field = fa; error = ea }
     , Invalid_field { given = gb; field = fb; error = eb } ) ->
-      String.equal fa fb
+      Stdlib.String.equal fa fb
       && Yocaml.Data.equal ga gb
       && equal_value_error cst ea eb
   | _ -> false

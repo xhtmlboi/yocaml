@@ -51,7 +51,7 @@ struct
 
       let validate =
         let open Yocaml.Data.Validation in
-        string $ String.trim % String.lowercase_ascii & function
+        string $ Stdlib.String.trim % Stdlib.String.lowercase_ascii & function
         | "fr" -> Ok Fr
         | "uk" | "en" | "us" -> Ok En
         | given -> fail_with ~given "Invalid Lang value"
@@ -79,7 +79,7 @@ struct
 
       let validate =
         let open Yocaml.Data.Validation in
-        string $ String.trim % String.lowercase_ascii & function
+        string $ Stdlib.String.trim % Stdlib.String.lowercase_ascii & function
         | "blog" -> Ok Blog
         | "wiki" -> Ok Wiki
         | "hybrid" -> Ok Hybrid
