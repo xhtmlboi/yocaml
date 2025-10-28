@@ -4,6 +4,9 @@
 
 - Add `Action.with_cache` helper to simplify working with cached actions (by [Abiola-Zeenat](https://github.com/Abiola-Zeenat))
 
+#### Yocaml_liquid
+
+- ⁠First release - Add support for Shopify Liquid templating language (by [Dev-JoyA](https://github.com/Dev-JoyA))
 
 ### v2.6.0 2025-09-23 Nantes (France)
 

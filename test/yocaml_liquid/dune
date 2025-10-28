@@ -1,5 +1,0 @@
-(executable
- (public_name test_yocaml_liquid)
- (name liquid_test)
- (package yocaml_liquid)
- (libraries yocaml_liquid yocaml liquid_ml))
