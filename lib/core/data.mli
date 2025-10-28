@@ -458,7 +458,146 @@ module Validation : sig
 
   include module type of Syntax
   (** @inline *)
+
+  (** {2 String validators}
+
+      Validators specifically for string values. *)
+
+  module String : sig
+    val equal : string -> string -> string validated_value
+    (** [equal expected actual] ensures that [actual] is equal to [expected]. *)
+
+    val not_equal : string -> string -> string validated_value
+    (** [not_equal not_expected actual] ensures that [actual] is not equal to
+        [not_expected]. *)
+
+    val not_empty : string -> string validated_value
+    (** [not_empty actual] ensures that [actual] is not empty. *)
+
+    val not_blank : string -> string validated_value
+    (** [not_blank actual] ensures that [actual] is not blank (after trimming
+        whitespace). *)
+
+    val has_prefix : prefix:string -> string -> string validated_value
+    (** [has_prefix ~prefix actual] ensures that [actual] starts with [prefix].
+    *)
+
+    val has_suffix : suffix:string -> string -> string validated_value
+    (** [has_suffix ~suffix actual] ensures that [actual] ends with [suffix]. *)
+
+    val has_length : int -> string -> string validated_value
+    (** [has_length expected_length actual] ensures that [actual] has exactly
+        [expected_length] characters. *)
+
+    val length_gt : int -> string -> string validated_value
+    (** [length_gt min_length actual] ensures that [actual] has more than
+        [min_length] characters. *)
+
+    val length_ge : int -> string -> string validated_value
+    (** [length_ge min_length actual] ensures that [actual] has at least
+        [min_length] characters. *)
+
+    val length_eq : int -> string -> string validated_value
+    (** [length_eq expected_length actual] is an alias for [has_length]. *)
+
+    val length_lt : int -> string -> string validated_value
+    (** [length_lt max_length actual] ensures that [actual] has fewer than
+        [max_length] characters. *)
+
+    val length_le : int -> string -> string validated_value
+    (** [length_le max_length actual] ensures that [actual] has at most
+        [max_length] characters. *)
+
+    val contains_only : chars:char list -> string -> string validated_value
+    (** [contains_only ~chars actual] ensures that [actual] contains only
+        characters from [chars]. *)
+
+    val exclude_chars : chars:char list -> string -> string validated_value
+    (** [exclude_chars ~chars actual] ensures that [actual] does not contain any
+        characters from [chars]. *)
+
+    val one_of :
+      ?case_sensitive:bool -> string list -> string -> string validated_value
+    (** [one_of ?case_sensitive valid_strings actual] ensures that [actual] is
+        one of [valid_strings]. If [case_sensitive] is [false], comparison is
+        case-insensitive. *)
+
+    val where :
+         ?message:(string -> string)
+      -> (string -> bool)
+      -> string
+      -> string validated_value
+    (** [where ?message predicate actual] ensures that [actual] satisfies
+        [predicate]. [message] is used for custom error messages. *)
+  end
+
+  (** {2 Validator combinators} *)
+
+  val negate : ('a -> 'a validated_value) -> 'a -> 'a validated_value
+  (** [negate validator x] inverts the result of [validator x]. If [validator x]
+      returns [Ok x], then [negate validator x] returns [Error _]. If
+      [validator x] returns [Error _], then [negate validator x] returns [Ok x].
+  *)
+
+  (** {2 Validation signature} *)
+
+  module type S = sig
+    (** Modules that validate [Yocaml.Data.t] values into OCaml values of type
+        [t]. *)
+
+    type data := t
+    (** Local alias for {!type:Yocaml.Data.t}. *)
+
+    type t
+    (** The OCaml type produced by this validator. *)
+
+    val from_data : data -> t validated_value
+    (** [from_data data] converts a {!type:Yocaml.Data.t} into an OCaml value of
+        type [t]. Returns [Ok v] on success or [Error e] on failure. *)
+  end
+
+  (** {2 Using validator modules} *)
+
+  val from : (module S with type t = 'a) -> t -> 'a validated_value
+  (** [from (module M) data] applies [M.from_data] from the given validator
+      module [M] to the provided {!type:Yocaml.Data.t}, producing a validated
+      OCaml value of type ['a]. *)
 end
+
+(** {1 Conversion signature} *)
+
+module type S = sig
+  (** Modules that convert OCaml values into {!type:Yocaml.Data.t} values. *)
+
+  type data := t
+  (** Local alias for {!type:Yocaml.Data.t}. *)
+
+  type t
+  (** The OCaml type that can be converted. *)
+
+  val to_data : t -> data
+  (** [to_data v] converts an OCaml value [v] of type [t] into a
+      {!type:Yocaml.Data.t}. *)
+end
+
+(** {2 Using conversion modules} *)
+
+val into : (module S with type t = 'a) -> 'a -> t
+(** [into (module M) v] applies [M.to_data] from the given conversion module [M]
+    to the OCaml value [v], producing a {!type:Yocaml.Data.t}. *)
+
+(** {1 Validation helper types} *)
+
+type 'a converter = 'a -> t
+(** ['a converter] converts a value of type ['a] into a {!type:t}. *)
+
+type ('a, 'b) validator = 'a -> 'b Validation.validated_value
+(** [('a, 'b) validator] validates a value of type ['a] and returns a
+    {!Yocaml.Data.Validation.validated_value} of type ['b]. *)
+
+type 'a validable = (t, 'a) validator
+(** ['a validable] is a validator that takes a value of type [t] and returns a
+    validated value of type ['a]. *)
 
 (** {1 Utils} *)
 
