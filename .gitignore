@@ -20,4 +20,5 @@ setup.log
 *.install
 _opam/
 *.exe
-_html/_www/
+_html/
+_www/
