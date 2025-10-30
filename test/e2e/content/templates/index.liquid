@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Blog Index</title>
+  <link rel="stylesheet" href="global.css">
+</head>
+<body>
+  <h1>My Blog</h1>
+  <p>Welcome to my blog powered by YoCaml and Liquid!</p>
+  
+  {% if articles %}
+  <div class="articles">
+    <h2>Recent Articles</h2>
+    {% for article in articles %}
+    <article class="article-preview">
+      <h3><a href="{{ article.url }}">{{ article.title }}</a></h3>
+      <p><strong>By:</strong> {{ article.author }} | <strong>Date:</strong> {{ article.date }}</p>
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p>No articles yet.</p>
+  {% endif %}
+</body>
+</html>

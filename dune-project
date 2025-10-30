@@ -143,6 +143,18 @@
    (mustache (>= 3.3.0))))
 
 (package
+  (name yocaml_liquid)
+  (synopsis "Yocaml plugin for using Liquid as a template language")
+  (depends
+    (ocaml (>= 5.1.1))
+    (dune (>= 3.18))
+    ppx_expect
+    (mdx (and (>= 2.5.0) :with-test))
+    (yocaml (= :version))
+    (liquid_ml (>= 0.1.0))
+    (odoc :with-doc)))
+
+(package
   (name yocaml_syndication)
   (synopsis "Yocaml plugin for dealing with RSS and Atom feed")
   (depends

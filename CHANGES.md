@@ -1,7 +1,10 @@
 ### Unreleased
 
-#### Yocaml
+#### Yocaml_liquid
 
+- ⁠First release - Add support for Shopify Liquid templating language (by [Dev-JoyA](https://github.com/Dev-JoyA))
+
+#### Yocaml
 - Add `Action.with_cache` helper to simplify working with cached actions (by [Abiola-Zeenat](https://github.com/Abiola-Zeenat))
 - Introduce type aliases `converter`, `validator`, and `validable` to simplify the Validation API (by [Linda-Njau](https://github.com/Linda-Njau))
 - Add module signatures `S` in `Yocaml.Data` and `Yocaml.Data.Validation` to standardize conversion and validation (by [Linda-Njau](https://github.com/Linda-Njau))

@@ -1,0 +1,4 @@
+(library
+ (name yocaml_liquid)
+ (public_name yocaml_liquid)
+ (libraries liquid_ml yocaml))
