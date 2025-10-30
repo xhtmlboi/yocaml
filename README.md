@@ -42,6 +42,7 @@ repositories. In addition, you will find some basic examples in the
 | [Condor du plateau](https://site.condor-du-plateau.fr/) | [Repository](https://git.sr.ht/~tim-ats-d/site/) |
 | [Maiste](https://maiste.fr) | [Repository](https://codeberg.org/maiste/maiste.fr) |
 | [UnrealDev](https://unrealdev.xyz) | [Repository](https://github.com/six-shot/yocaml-portfolio) |
+| [zeenat.dev](https://abiola-zeenat.github.io/zeenat-dev/) | [Repository](https://github.com/Abiola-Zeenat/zeenat-dev) |
 
 
 Please **feel free** to add your website to this list!
