@@ -103,12 +103,20 @@ struct
     let is_directory ~on path =
       match on with
       | `Source -> Source.lift @@ Source.is_directory ~on path
-      | `Target -> Lwt.return true
+      | `Target ->
+          let open Lwt.Syntax in
+          let+ k = Store.exists store (to_kv_path path) in
+          Ok (k = Ok (Some `Dictionary))
+          |> Result.fold ~ok:Fun.id ~error:(Fun.const false)
 
     let is_file ~on path =
       match on with
       | `Source -> Source.lift @@ Source.is_file ~on path
-      | `Target -> Lwt.return true
+      | `Target ->
+          let open Lwt.Syntax in
+          let+ k = Store.exists store (to_kv_path path) in
+          Ok (k = Ok (Some `Value))
+          |> Result.fold ~ok:Fun.id ~error:(Fun.const false)
 
     let exec ?is_success prog args =
       lift_result @@ Source.exec ?is_success prog args
