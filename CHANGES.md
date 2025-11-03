@@ -11,7 +11,7 @@
 - Add `Yocaml.Data.into` and `Yocaml.Data.Validation.from` helpers for easier module use (by [Linda-Njau](https://github.com/Linda-Njau))
 - Add `Yocaml.Metadata.Injectable` and `Yocaml.Metadata.Readable` functors to simplify creation of injectable and readable modules (by [Linda-Njau](https://github.com/Linda-Njau))
 - Add `Yocaml.Data.Validation.String`, a set of validator for `String` (by [Okhuomon Ajayi](https://github.com/six-shot))
-
+- Adds missing test coverage for `Nel.equal` and `Nel.append` functions (by [Bill Njoroge](https://github.com/Bnjoroge1))
 ### v2.6.0 2025-09-23 Nantes (France)
 
 #### Yocaml

@@ -272,6 +272,27 @@ let test_fold_righti_1 =
       in
       check (list @@ pair int int) "should be equal" expected computed)
 
+let test_equal_1 =
+  let open Alcotest in
+  test_case "equal - two equal nels" `Quick (fun () ->
+      let a = Yocaml.Nel.[ 1; 2; 3 ] and b = Yocaml.Nel.[ 1; 2; 3 ] in
+      check bool "should be equal" true (Yocaml.Nel.equal Int.equal a b))
+
+let test_equal_2 =
+  let open Alcotest in
+  test_case "equal - two different nels" `Quick (fun () ->
+      let a = Yocaml.Nel.[ 1; 2; 3 ] and b = Yocaml.Nel.[ 1; 2; 4 ] in
+      check bool "should not be equal" false (Yocaml.Nel.equal Int.equal a b))
+
+let test_append_1 =
+  let open Alcotest in
+  test_case "append - simple test on append" `Quick (fun () ->
+      let expected = Yocaml.Nel.[ 1; 2; 3; 4; 5 ]
+      and computed =
+        Yocaml.Nel.append Yocaml.Nel.[ 1; 2 ] Yocaml.Nel.[ 3; 4; 5 ]
+      in
+      check (Testable.nel int) "should be equal" expected computed)
+
 let cases =
   ( "Yocaml.Nel"
   , [
@@ -303,4 +324,7 @@ let cases =
     ; test_fold_right_1
     ; test_fold_lefti_1
     ; test_fold_righti_1
+    ; test_equal_1
+    ; test_equal_2
+    ; test_append_1
     ] )
