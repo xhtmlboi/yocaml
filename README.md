@@ -44,7 +44,7 @@ repositories. In addition, you will find some basic examples in the
 | [UnrealDev](https://unrealdev.xyz) | [Repository](https://github.com/six-shot/yocaml-portfolio) |
 | [zeenat.dev](https://abiola-zeenat.github.io/zeenat-dev/) | [Repository](https://github.com/Abiola-Zeenat/zeenat-dev) |
 | [paws-planets-plates](https://paws-planets-plates.netlify.app/) | [Repository](https://github.com/Linda-Njau/paws-planets-plates) |
-| [Dev-JoyA](https://dev-joya.github.io/yocaml_blog/) | [Repository](https://github.com/Dev-JoyA/yocaml_blog) |
+| [Dev-JoyA](https://dev-joya.github.io/yocaml_blog/) | [Repository](https://github.com/Dev-JoyA/yocaml_blog)  |
 
 
 Please **feel free** to add your website to this list!
