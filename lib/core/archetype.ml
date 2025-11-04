@@ -119,9 +119,11 @@ module Datetime = struct
     | None -> Data.Validation.fail_with ~given:str "Invalid date format"
     | Some (year, month, day) -> make ~year ~month ~day ()
 
-  let validate =
+  let from_data =
     let open Data.Validation in
     string & (validate_from_datetime_str / validate_from_date_str)
+
+  let validate = from_data
 
   let month_to_int = function
     | Jan -> 1
@@ -235,7 +237,7 @@ module Datetime = struct
     Format.fprintf ppf "%04d-%02d-%02dT%02d:%02d:%02d%s" dt.year mon dt.day
       dt.hour dt.min dt.sec tz
 
-  let normalize ({ year; month; day; hour; min; sec } as dt) =
+  let to_data ({ year; month; day; hour; min; sec } as dt) =
     let has_time = not (Int.equal (compare_time dt dummy) 0) in
     let datetime_repr = Format.asprintf "%a" pp dt in
     let date_repr = Format.asprintf "%a" pp_date dt in
@@ -262,6 +264,8 @@ module Datetime = struct
             ; ("day_of_week", string (dow_to_string day_of_week))
             ] )
       ]
+
+  let normalize = to_data
 
   module Infix = struct
     let ( = ) = equal
@@ -325,6 +329,8 @@ module Page = struct
     let open Data.Validation in
     record validate_page
 
+  let from_data = validate
+
   let to_meta name = function
     | None -> []
     | Some x ->
@@ -362,6 +368,7 @@ module Page = struct
 
   let normalize_meta obj = Data.[ ("meta", list @@ meta_list obj) ]
   let normalize obj = normalize_parameters obj @ normalize_meta obj
+  let to_data obj = Data.record (normalize obj)
 end
 
 module Article = struct
@@ -408,6 +415,8 @@ module Article = struct
         and+ date = required fields "date" Datetime.validate in
         new article page ?synopsis ~title ~date ())
 
+  let from_data = validate
+
   let normalize obj =
     Page.normalize obj
     @ Data.
@@ -417,6 +426,8 @@ module Article = struct
         ; ("date", Datetime.normalize obj#date)
         ; ("has_synopsis", bool @@ Option.is_some obj#synopsis)
         ]
+
+  let to_data obj = Data.record (normalize obj)
 end
 
 module Articles = struct
@@ -478,4 +489,6 @@ module Articles = struct
     ("articles", list_of normalize_article obj#articles)
     :: ("has_articles", bool @@ not (is_empty_list obj#articles))
     :: Page.normalize obj
+
+  let to_data obj = Data.record (normalize obj)
 end

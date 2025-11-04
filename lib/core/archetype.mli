@@ -89,10 +89,14 @@ module Datetime : sig
   (** [make ?time ~year ~month ~day ()] Builds a date when all data and
       validates all data.*)
 
-  val validate : Data.t -> t Data.Validation.validated_value
+  include Data.Validation.S with type t := t
+
+  val validate : t Data.validable
   (** [validate data] try to read a date from a generic representation.*)
 
   (** {1 Dealing with date as metadata} *)
+
+  include Data.S with type t := t
 
   val normalize : t -> Data.t
   (** [normalize datetime] render data generically (with additional fields).
@@ -227,6 +231,8 @@ module Page : sig
 
       A page can be parsed and injected. *)
 
+  include Data.Validation.S with type t := t
+
   include Required.DATA_READABLE with type t := t
   (** @inline *)
 
@@ -238,6 +244,8 @@ module Page : sig
       It also exposes Boolean fields to determine whether a page has a title,
       description or charset with the parameters [has_page_title],
       [has_page_description], [has_page_charset] and [has_page_tags]. *)
+
+  include Data.S with type t := t
 
   include Required.DATA_INJECTABLE with type t := t
   (** @inline *)
@@ -270,12 +278,16 @@ module Article : sig
       metadata will use the article's [title]. The same applies to [description]
       and [synopsis]. *)
 
+  include Data.Validation.S with type t := t
+
   include Required.DATA_READABLE with type t := t
   (** @inline *)
 
   (** As an article is also a page, article-normalized data includes
       article-normalized data with additional fields. As with optional fields,
       [synopsis] has a [has_synopsis] version. *)
+
+  include Data.S with type t := t
 
   include Required.DATA_INJECTABLE with type t := t
   (** @inline *)
@@ -342,6 +354,8 @@ module Articles : sig
     -> (Page.t, t) Task.t
   (** Pipe {!val:fetch} into a computed page. You can refer to the examples to
       see how this is used in a classic pipeline. *)
+
+  include Data.S with type t := t
 
   include Required.DATA_INJECTABLE with type t := t
   (** @inline *)
