@@ -1,5 +1,9 @@
 ### Unreleased
 
+#### Yocaml_git
+
+- A more robust metric for `is_file` and `is_directory` in Git context (by [dinosaure](https://github.com/dinosaure))
+
 #### Yocaml_liquid
 
 - ⁠First release - Add support for Shopify Liquid templating language (by [Dev-JoyA](https://github.com/Dev-JoyA))
