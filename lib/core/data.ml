@@ -416,11 +416,9 @@ module Validation = struct
       Validators specifically for string values. *)
 
   module String = struct
-    (* String-specific parameters for generic validators *)
     let string_pp = Format.pp_print_string
     let string_equal = Stdlib.String.equal
 
-    (* Use generic validators with string-specific parameters *)
     let equal expected actual =
       equal ~pp:string_pp ~equal:string_equal expected actual
 
@@ -473,7 +471,6 @@ module Validation = struct
 
     let length_eq = has_length
 
-    (* String-specific validators that don't have generic equivalents *)
     let not_empty actual =
       let actual_length = Stdlib.String.length actual in
       if Int.compare actual_length 0 > 0 then Ok actual
@@ -542,6 +539,45 @@ module Validation = struct
 
     let where ?message predicate actual =
       where ~pp:string_pp ?message predicate actual
+
+    let lowercase_ascii = Stdlib.String.lowercase_ascii
+    let trim = Stdlib.String.trim
+  end
+
+  module Int = struct
+    let with_pp f = f ?pp:(Some Format.pp_print_int)
+    let with_equal f = f ?equal:(Some Stdlib.Int.equal)
+    let with_compare f = f ?compare:(Some Stdlib.Int.compare)
+    let pp_equal f = with_equal (with_pp f)
+    let pp_cmp f = with_compare (with_pp f)
+    let positive = positive
+    let bounded = bounded
+    let equal = pp_equal equal
+    let not_equal = pp_equal not_equal
+    let gt = pp_cmp gt
+    let ge = pp_cmp ge
+    let lt = pp_cmp lt
+    let le = pp_cmp le
+    let one_of = pp_equal one_of
+    let where = with_pp where
+  end
+
+  module Float = struct
+    let with_pp f = f ?pp:(Some Format.pp_print_float)
+    let with_equal f = f ?equal:(Some Float.equal)
+    let with_compare f = f ?compare:(Some Float.compare)
+    let pp_equal f = with_equal (with_pp f)
+    let pp_cmp f = with_compare (with_pp f)
+    let positive = positive'
+    let bounded = bounded'
+    let equal = pp_equal equal
+    let not_equal = pp_equal not_equal
+    let gt = pp_cmp gt
+    let ge = pp_cmp ge
+    let lt = pp_cmp lt
+    let le = pp_cmp le
+    let one_of = pp_equal one_of
+    let where = with_pp where
   end
 
   (** {2 Validator combinators} *)

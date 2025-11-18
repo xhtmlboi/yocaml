@@ -529,6 +529,88 @@ module Validation : sig
       -> string validated_value
     (** [where ?message predicate actual] ensures that [actual] satisfies
         [predicate]. [message] is used for custom error messages. *)
+
+    (** Useful function to be used with regular string validators. *)
+
+    val lowercase_ascii : string -> string
+    val trim : string -> string
+  end
+
+  (** {2 Int validators}
+
+      Validators specifically for int values. *)
+
+  module Int : sig
+    val positive : int -> int validated_value
+    (** Integer version of {!val:Data.Validation.positive} *)
+
+    val bounded : min:int -> max:int -> int -> int validated_value
+    (** Integer version of {!val:Data.Validation.bounded} *)
+
+    val equal : int -> int -> int validated_value
+    (** Integer version of {!val:Data.Validation.equal} *)
+
+    val not_equal : int -> int -> int validated_value
+    (** Integer version of {!val:Data.Validation.not_equal} *)
+
+    val gt : int -> int -> int validated_value
+    (** Integer version of {!val:Data.Validation.gt} *)
+
+    val ge : int -> int -> int validated_value
+    (** Integer version of {!val:Data.Validation.ge} *)
+
+    val lt : int -> int -> int validated_value
+    (** Integer version of {!val:Data.Validation.lt} *)
+
+    val le : int -> int -> int validated_value
+    (** Integer version of {!val:Data.Validation.le} *)
+
+    val one_of : int list -> int -> int validated_value
+    (** Integer version of {!val:Data.Validation.one_of} *)
+
+    val where :
+      ?message:(int -> string) -> (int -> bool) -> int -> int validated_value
+    (** Integer version of {!val:Data.Validation.where} *)
+  end
+
+  (** {2 Float validators}
+
+      Validators specifically for float values. *)
+
+  module Float : sig
+    val positive : float -> float validated_value
+    (** Float version of {!val:Data.Validation.positive} *)
+
+    val bounded : min:float -> max:float -> float -> float validated_value
+    (** Float version of {!val:Data.Validation.bounded} *)
+
+    val equal : float -> float -> float validated_value
+    (** Float version of {!val:Data.Validation.equal} *)
+
+    val not_equal : float -> float -> float validated_value
+    (** Float version of {!val:Data.Validation.not_equal} *)
+
+    val gt : float -> float -> float validated_value
+    (** Float version of {!val:Data.Validation.gt} *)
+
+    val ge : float -> float -> float validated_value
+    (** Float version of {!val:Data.Validation.ge} *)
+
+    val lt : float -> float -> float validated_value
+    (** Float version of {!val:Data.Validation.lt} *)
+
+    val le : float -> float -> float validated_value
+    (** Float version of {!val:Data.Validation.le} *)
+
+    val one_of : float list -> float -> float validated_value
+    (** Float version of {!val:Data.Validation.one_of} *)
+
+    val where :
+         ?message:(float -> string)
+      -> (float -> bool)
+      -> float
+      -> float validated_value
+    (** Float version of {!val:Data.Validation.where} *)
   end
 
   (** {2 Validator combinators} *)

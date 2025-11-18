@@ -158,7 +158,7 @@ let rec equal_value_error cst a b =
     , Invalid_list { errors = eb; given = gb } ) ->
       Yocaml.Nel.equal
         (fun (ia, va) (ib, vb) ->
-          Int.equal ia ib && equal_value_error cst va vb)
+          Stdlib.Int.equal ia ib && equal_value_error cst va vb)
         ea eb
       && List.equal Yocaml.Data.equal ga gb
   | ( Invalid_record { errors = ea; given = ga }

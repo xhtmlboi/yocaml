@@ -942,7 +942,9 @@ let test_equal =
   let open Alcotest in
   test_case "equal - validate equal" `Quick (fun () ->
       let check = check (Testable.validated_value int) "should be equal" in
-      let v = V.(int & equal ~pp:Format.pp_print_int ~equal:Int.equal 10) in
+      let v =
+        V.(int & equal ~pp:Format.pp_print_int ~equal:Stdlib.Int.equal 10)
+      in
       let () = check (Ok 10) (v @@ D.int 10) in
       let () =
         check
@@ -957,7 +959,9 @@ let test_not_equal =
   let open Alcotest in
   test_case "not_equal - validate not_equal" `Quick (fun () ->
       let check = check (Testable.validated_value int) "should be equal" in
-      let v = V.(int & not_equal ~pp:Format.pp_print_int ~equal:Int.equal 10) in
+      let v =
+        V.(int & not_equal ~pp:Format.pp_print_int ~equal:Stdlib.Int.equal 10)
+      in
       let () = check (Ok 11) (v @@ D.int 11) in
       let () =
         check
@@ -973,7 +977,9 @@ let test_gt =
   let open Alcotest in
   test_case "gt - validate gt" `Quick (fun () ->
       let check = check (Testable.validated_value int) "should be equal" in
-      let v = V.(int & gt ~pp:Format.pp_print_int ~compare:Int.compare 10) in
+      let v =
+        V.(int & gt ~pp:Format.pp_print_int ~compare:Stdlib.Int.compare 10)
+      in
       let () = check (Ok 11) (v @@ D.int 11) in
       let () =
         check
@@ -989,7 +995,9 @@ let test_ge =
   let open Alcotest in
   test_case "ge - validate ge" `Quick (fun () ->
       let check = check (Testable.validated_value int) "should be equal" in
-      let v = V.(int & ge ~pp:Format.pp_print_int ~compare:Int.compare 10) in
+      let v =
+        V.(int & ge ~pp:Format.pp_print_int ~compare:Stdlib.Int.compare 10)
+      in
       let () = check (Ok 11) (v @@ D.int 11) in
       let () = check (Ok 10) (v @@ D.int 10) in
       let () =
@@ -1006,7 +1014,9 @@ let test_lt =
   let open Alcotest in
   test_case "lt - validate lt" `Quick (fun () ->
       let check = check (Testable.validated_value int) "should be equal" in
-      let v = V.(int & lt ~pp:Format.pp_print_int ~compare:Int.compare 10) in
+      let v =
+        V.(int & lt ~pp:Format.pp_print_int ~compare:Stdlib.Int.compare 10)
+      in
       let () = check (Ok 9) (v @@ D.int 9) in
       let () =
         check
@@ -1022,7 +1032,9 @@ let test_le =
   let open Alcotest in
   test_case "le - validate le" `Quick (fun () ->
       let check = check (Testable.validated_value int) "should be equal" in
-      let v = V.(int & le ~pp:Format.pp_print_int ~compare:Int.compare 10) in
+      let v =
+        V.(int & le ~pp:Format.pp_print_int ~compare:Stdlib.Int.compare 10)
+      in
       let () = check (Ok 9) (v @@ D.int 9) in
       let () = check (Ok 10) (v @@ D.int 10) in
       let () =
@@ -1066,7 +1078,8 @@ let test_where_or_const =
         / ((int & where ~pp:Format.pp_print_int (fun x -> x mod 2 = 0))
           $ string_of_int)
         / ((float
-           & where ~pp:Format.pp_print_float (fun x -> Float.floor x >= 3.0))
+           & where ~pp:Format.pp_print_float (fun x ->
+                 Stdlib.Float.floor x >= 3.0))
           & const "a float")
       in
       let () = check (Ok "foo") (v @@ D.string "foo") in
