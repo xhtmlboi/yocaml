@@ -1,4 +1,4 @@
-### Unreleased
+### v2.7.0 2025-11-18 Nantes (France)
 
 #### Yocaml_git
 
