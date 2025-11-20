@@ -151,7 +151,7 @@
     ppx_expect
     (mdx (and (>= 2.5.0) :with-test))
     (yocaml (= :version))
-    (liquid_ml (>= 0.1.0))
+    (liquid_ml (>= 0.1.2))
     (odoc :with-doc)))
 
 (package
