@@ -31,6 +31,7 @@ module Required = Required
 module Nel = Nel
 module Path = Path
 module Cache = Cache
+module Trace = Trace
 module Deps = Deps
 module Metadata = Metadata
 module Archetype = Archetype

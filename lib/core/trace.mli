@@ -1,5 +1,5 @@
 (* YOCaml a static blog generator.
-   Copyright (C) 2024 The Funkyworkers and The YOCaml's developers
+   Copyright (C) 2025 The Funkyworkers and The YOCaml's developers
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -14,32 +14,28 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-module Data = Data
-module Nel = Nel
-module Path = Path
-module Cache = Cache
-module Trace = Trace
-module Eff = Eff
-module Deps = Deps
-module Task = Task
-module Pipeline = Pipeline
-module Action = Action
-module Batch = Batch
-module Required = Required
-module Metadata = Metadata
-module Archetype = Archetype
-module Diagnostic = Diagnostic
-module Cmd = Cmd
-module Slug = Slug
-module Reader = Reader
-module Make = Make
-module Markup = Markup
-module Toc = Markup.Toc
-module Datetime = Archetype.Datetime
+(** Describes a set of (unique) files. Used to apply diffs and delete files that
+    have not been created. *)
 
-module Sexp = struct
-  include Sexp
-  module Provider = Sexp_provider
-end
+type t
 
-module Runtime = Runtime
+val empty : t
+(** Creates an empty trace. *)
+
+val add : Path.t -> t -> t
+(** Add a path to the trace. *)
+
+val from_list : Path.t list -> t
+(** Creates a trace from a list of path. *)
+
+val diff : target:t -> t -> Path.t list
+(** File diff into a list. *)
+
+val from_directory : on:Eff.filesystem -> Path.t -> t Eff.t
+(** Compute a trace from a directory. *)
+
+val equal : t -> t -> bool
+(** Equality between traces. *)
+
+val pp : Format.formatter -> t -> unit
+(** Pretty printer for traces. *)
