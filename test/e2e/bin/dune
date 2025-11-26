@@ -13,3 +13,10 @@
  (name gen_liquid)
  (modules gen_liquid runtime)
  (libraries yocaml yocaml_unix yocaml_yaml yocaml_cmarkit yocaml_liquid))
+
+(executable
+ (name gen_residuals)
+ (modules gen_residuals runtime)
+ (libraries
+  yocaml
+  yocaml_unix))
