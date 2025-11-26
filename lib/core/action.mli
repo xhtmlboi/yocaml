@@ -32,6 +32,10 @@ type t = Cache.t -> Cache.t Eff.t
     production phases, an action is a function that takes a cache and returns
     the modified cache, wrapped in an effect. *)
 
+val remove_residuals : ?on:Eff.filesystem -> target:Path.t -> t
+(** [remove_residuals ?on ~target] deletes files that were not created by any of
+    the actions performed. *)
+
 val restore_cache : ?on:Eff.filesystem -> Path.t -> Cache.t Eff.t
 (** [restore_cache ?on path] Reads or initiates the cache in a given [path]. *)
 
@@ -39,9 +43,9 @@ val store_cache : ?on:Eff.filesystem -> Path.t -> Cache.t -> unit Eff.t
 (** [store_cache ?on path cache] saves the [cache] in a given [path]. *)
 
 val with_cache : ?on:Eff.filesystem -> Path.t -> t -> unit Eff.t
-(** [with_cache ?on path f] restores the cache from the given [path], executes
-    the action [f] using the cache, and then stores the updated cache back to
-    the same [path].
+(** [with_cache ?on ?remove_residuals_in path f] restores the cache from the
+    given [path], executes the action [f] using the cache, and then stores the
+    updated cache back to the same [path].
 
     This helps avoid repeating [restore_cache] and [store_cache] calls manually
     when chaining multiple cache-aware actions. *)
