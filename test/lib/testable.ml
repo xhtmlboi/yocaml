@@ -17,6 +17,7 @@
 let fs = Fs.testable
 let fs_item = Fs.testable_item
 let sexp = Alcotest.testable Yocaml.Sexp.pp Yocaml.Sexp.equal
+let trace = Alcotest.testable Yocaml.Trace.pp Yocaml.Trace.equal
 
 let csexp_error_equal a b =
   let open Yocaml.Sexp in

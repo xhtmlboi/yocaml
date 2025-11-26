@@ -19,6 +19,7 @@
 val fs : Fs.t Alcotest.testable
 val fs_item : Fs.item Alcotest.testable
 val sexp : Yocaml.Sexp.t Alcotest.testable
+val trace : Yocaml.Trace.t Alcotest.testable
 
 val csexp_result :
   unit -> (Yocaml.Sexp.t, Yocaml.Sexp.parsing_error) result Alcotest.testable
