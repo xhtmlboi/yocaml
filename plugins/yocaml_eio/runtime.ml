@@ -54,6 +54,13 @@ let is_file ~on:_ path env =
   let path = to_eio_path env path in
   Eio.Path.is_file path
 
+let erase_file ~on:_ path env =
+  try
+    let path = to_eio_path env path in
+    let () = Eio.Path.unlink path in
+    Ok ()
+  with _ -> Error (Yocaml_runtime.Error.Unable_to_create_directory path)
+
 let create_directory ~on:_ path env =
   try
     let path = to_eio_path env path in

@@ -100,6 +100,15 @@ struct
             (Fun.const @@ Yocaml_runtime.Error.Unable_to_read_file path)
             result
 
+    let erase_file ~on path =
+      match on with
+      | `Source -> lift_result @@ Source.erase_file ~on path
+      | `Target ->
+          let open Lwt.Infix in
+          Store.remove store (to_kv_path path)
+          >|= map_error
+                (Fun.const @@ Yocaml_runtime.Error.Unable_to_erase_file path)
+
     let is_directory ~on path =
       match on with
       | `Source -> Source.lift @@ Source.is_directory ~on path

@@ -109,6 +109,7 @@ type _ Effect.t +=
   | Yocaml_get_mtime : filesystem * Path.t -> int Effect.t
   | Yocaml_hash_content : string -> string Effect.t
   | Yocaml_write_file : filesystem * Path.t * string -> unit Effect.t
+  | Yocaml_erase_file : filesystem * Path.t -> unit Effect.t
   | Yocaml_is_directory : filesystem * Path.t -> bool Effect.t
   | Yocaml_is_file : filesystem * Path.t -> bool Effect.t
   | Yocaml_read_dir : filesystem * Path.t -> Path.fragment list Effect.t
@@ -209,6 +210,13 @@ let write_file ~on path content =
   let parent = Path.dirname path in
   let* () = create_directory ~on parent in
   perform @@ Yocaml_write_file (on, path, content)
+
+let erase_file ~on path =
+  let* file = is_file ~on path in
+  if file then perform @@ Yocaml_erase_file (on, path)
+  else
+    logf ~src:yocaml_log_src ~level:`Warning
+      "%a is not a file (or does not exists)" Path.pp path
 
 let read_directory ~on ?(only = `Both) ?(where = fun _ -> true) path =
   let* is_dir = is_directory ~on path in
