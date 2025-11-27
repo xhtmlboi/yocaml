@@ -297,3 +297,18 @@ Observe Residual Removing
   2.txt
   3.txt
   cache
+
+  $ ./bin/gen_residuals.exe
+  ./bin/gen_residuals.exe
+  [DEBUG]Cache restored from `./residuals_build/cache`
+  [DEBUG]`./residuals_build/1.txt` always has the same hash as in the cache, already up-to-date
+  [DEBUG]`./residuals_build/2.txt` always has the same hash as in the cache, already up-to-date
+  [DEBUG]`./residuals_build/3.txt` always has the same hash as in the cache, already up-to-date
+  [INFO]Remove residuals for ./residuals_build
+  [DEBUG]Cache stored in `./residuals_build/cache`
+
+  $ ls residuals_build
+  1.txt
+  2.txt
+  3.txt
+  cache
