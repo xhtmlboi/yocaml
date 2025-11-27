@@ -464,6 +464,7 @@ let test_action_with_dynamic_dependencies_1 =
         check Testable.cache "should be equal 1"
           Yocaml.Cache.(
             from_list
+              ~trace:(Yocaml.Trace.from_list [ ~/[ "_build"; "index.txt" ] ])
               [
                 ( ~/[ "_build"; "index.txt" ]
                 , entry ~last_build_date:2 "H:abc"

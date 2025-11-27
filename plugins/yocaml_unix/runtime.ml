@@ -36,6 +36,13 @@ let is_directory ~on:_ path =
 
 let is_file ~on path = file_exists ~on path && not (is_directory ~on path)
 
+let erase_file ~on:_ path =
+  try
+    let path = Yocaml.Path.to_string path in
+    let () = Sys.remove path in
+    Ok ()
+  with _ -> Error (Yocaml_runtime.Error.Unable_to_erase_file path)
+
 let create_directory ~on:_ path =
   try
     let path = Yocaml.Path.to_string path in

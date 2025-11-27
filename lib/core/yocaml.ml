@@ -18,6 +18,7 @@ module Data = Data
 module Nel = Nel
 module Path = Path
 module Cache = Cache
+module Trace = Trace
 module Eff = Eff
 module Deps = Deps
 module Task = Task

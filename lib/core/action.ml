@@ -64,6 +64,7 @@ let perform target task ~when_creation ~when_update cache =
   let open Eff.Syntax in
   let deps, eff, has_dynamic_deps = Task.destruct task in
   let* now = Eff.get_time () in
+  let cache = Cache.mark cache target in
   let* interaction = need_update cache has_dynamic_deps deps target in
   match interaction with
   | Nothing ->
@@ -185,6 +186,9 @@ let batch_list list action cache =
   in
   cache
 
+let mark_cache on cache path =
+  match on with `Source -> cache | `Target -> Cache.mark cache path
+
 let restore_cache ?(on = `Target) path =
   let open Eff.Syntax in
   let* exists = Eff.file_exists ~on path in
@@ -205,7 +209,7 @@ let restore_cache ?(on = `Target) path =
               Eff.log ~src:Eff.yocaml_log_src ~level:`Debug
               @@ Lexicon.cache_restored path
             in
-            cache)
+            mark_cache on cache path)
           ~error:(fun _ ->
             let+ () =
               Eff.log ~src:Eff.yocaml_log_src ~level:`Warning
@@ -225,6 +229,26 @@ let store_cache ?(on = `Target) path cache =
   let sexp_str = cache |> Cache.to_sexp |> Sexp.Canonical.to_string in
   let* () = Eff.write_file ~on path sexp_str in
   Eff.log ~src:Eff.yocaml_log_src ~level:`Debug @@ Lexicon.cache_stored path
+
+let remove_residuals ~target cache =
+  let on = `Target in
+  let open Eff.Syntax in
+  let trace = Cache.trace cache in
+  let* () =
+    Eff.logf ~src:Eff.yocaml_log_src ~level:`Info "Remove residuals for %a"
+      Path.pp target
+  in
+  let* target_trace = Trace.from_directory ~on target in
+  let residuals = Trace.diff ~target:target_trace trace in
+  let+ _ =
+    Eff.List.traverse
+      (fun residual ->
+        let* () = Eff.erase_file ~on residual in
+        Eff.logf ~src:Eff.yocaml_log_src ~level:`Info "%a deleted!" Path.pp
+          residual)
+      residuals
+  in
+  cache
 
 let with_cache ?on path f =
   let open Eff in

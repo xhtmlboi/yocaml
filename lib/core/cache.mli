@@ -34,7 +34,7 @@ val entry : ?last_build_date:int -> string -> Deps.t -> entry
 val empty : t
 (** [empty] returns an empty cache. *)
 
-val from_list : (Path.t * entry) list -> t
+val from_list : ?trace:Trace.t -> (Path.t * entry) list -> t
 (** [from_list l] creates a cache from a list. *)
 
 (** {1 Cache interaction} *)
@@ -46,6 +46,12 @@ val update : t -> Path.t -> ?deps:Deps.t -> now:int -> string -> t
 val get : t -> Path.t -> (string * Deps.t * int option) option
 (** [get cache path] returns the associated hash content, deps set and the last
     build date for a given path. *)
+
+val trace : t -> Trace.t
+(** Returns the trace of built artifact. *)
+
+val mark : t -> Path.t -> t
+(** [mark path] add [path] into the trace. *)
 
 (** {1 Serialization/Deserialization}
 

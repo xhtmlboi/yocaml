@@ -18,6 +18,7 @@ type common =
   | Unable_to_write_file of Yocaml.Path.t * string
   | Unable_to_create_directory of Yocaml.Path.t
   | Unable_to_read_file of Yocaml.Path.t
+  | Unable_to_erase_file of Yocaml.Path.t
   | Unable_to_read_directory of Yocaml.Path.t
   | Unable_to_read_mtime of Yocaml.Path.t
   | Unable_to_perform_command of string * exn
@@ -36,6 +37,9 @@ let common_to_string runtime_error =
         path
   | Unable_to_read_file path ->
       Format.asprintf "%s: Unable to read file: `%a`" heading Yocaml.Path.pp
+        path
+  | Unable_to_erase_file path ->
+      Format.asprintf "%s: Unable to erase file: `%a`" heading Yocaml.Path.pp
         path
   | Unable_to_create_directory path ->
       Format.asprintf "%s: Unable to create directory: `%a`" heading

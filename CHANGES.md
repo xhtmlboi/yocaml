@@ -1,3 +1,22 @@
+### unreleased
+
+#### Yocaml 
+
+- Add `Action.remove_residuals` for erasing residuals files (by [xvw](https://xvw.lol))
+
+#### Yocaml_git
+
+- Add `Action.remove_residuals` for erasing residuals files (by [xvw](https://xvw.lol))
+
+#### Yocaml_unix
+
+- Add `Action.remove_residuals` for erasing residuals files (by [xvw](https://xvw.lol))
+
+#### Yocaml_eio
+
+- Add `Action.remove_residuals` for erasing residuals files (by [xvw](https://xvw.lol))
+
+
 ### v2.7.0 2025-11-18 Nantes (France)
 
 #### Yocaml_git

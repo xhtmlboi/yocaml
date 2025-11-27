@@ -258,6 +258,8 @@ type _ Effect.t +=
             transformation). *)
   | Yocaml_write_file : filesystem * Path.t * string -> unit Effect.t
         (** Effect which describes the writing of a file *)
+  | Yocaml_erase_file : filesystem * Path.t -> unit Effect.t
+        (** Effect whicj describes the erasing of a file *)
   | Yocaml_is_directory : filesystem * Path.t -> bool Effect.t
         (** Effect that returns check if a path is a directory or not. *)
   | Yocaml_is_file : filesystem * Path.t -> bool Effect.t
@@ -410,13 +412,17 @@ val write_file : on:filesystem -> Path.t -> string -> unit t
     {!val:Yocaml.Eff.create_directory} for creating intermediate directory in
     the path. *)
 
+val erase_file : on:filesystem -> Path.t -> unit t
+(** [erase_file ~on target] performs the effect [Yocaml_erase_file] that should
+    erase a file, if the file exists. *)
+
 val is_directory : on:filesystem -> Path.t -> bool t
 (** [is_directory ~on target] performs the effect [Yocaml_is_directory] that
     should check if a file is a directory or not. *)
 
 val is_file : on:filesystem -> Path.t -> bool t
-(** [is_file ~on target] performs the effect [Yocaml_is_directory] and if the
-    file is not a directory, it return [true], [false] otherwise. *)
+(** [is_file ~on target] performs the effect [Yocaml_is_file] and if the file is
+    not a directory, it return [true], [false] otherwise. *)
 
 val read_directory :
      on:filesystem

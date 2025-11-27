@@ -202,12 +202,16 @@ module type RUNTIME = sig
   (** [get_time ()] returns the current timestamp. *)
 
   val file_exists : on:[ `Source | `Target ] -> Path.t -> bool t
-  (** [file_exists ~on:source -> path] returns [true] if the file exists, false
+  (** [file_exists ~on:source path] returns [true] if the file exists, false
       otherwise. *)
 
   val read_file :
     on:[ `Source | `Target ] -> Path.t -> (string, runtime_error) result t
-  (** [read_file ~on:source -> path] returns the content of a file. *)
+  (** [read_file ~on:source path] returns the content of a file. *)
+
+  val erase_file :
+    on:[ `Source | `Target ] -> Path.t -> (unit, runtime_error) result t
+  (** [erase_file ~on:source path] erase the given file *)
 
   val get_mtime :
     on:[ `Source | `Target ] -> Path.t -> (int, runtime_error) result t

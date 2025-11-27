@@ -276,3 +276,39 @@ Inspect Liquid Second Article
   </html>
 Clean the sandbox
   $ rm -r _www
+
+Observe Residual Removing
+  $ ./bin/gen_residuals.exe
+  ./bin/gen_residuals.exe
+  [DEBUG]Cache initiated in `./residuals_build/cache`
+  [DEBUG]`./residuals_build/1.txt` will be written
+  [INFO]`./residuals_build/1.txt` has been written
+  [DEBUG]`./residuals_build/2.txt` will be written
+  [INFO]`./residuals_build/2.txt` has been written
+  [DEBUG]`./residuals_build/3.txt` will be written
+  [INFO]`./residuals_build/3.txt` has been written
+  [INFO]Remove residuals for ./residuals_build
+  [INFO]./residuals_build/4.txt deleted!
+  [INFO]./residuals_build/5.txt deleted!
+  [DEBUG]Cache stored in `./residuals_build/cache`
+
+  $ ls residuals_build
+  1.txt
+  2.txt
+  3.txt
+  cache
+
+  $ ./bin/gen_residuals.exe
+  ./bin/gen_residuals.exe
+  [DEBUG]Cache restored from `./residuals_build/cache`
+  [DEBUG]`./residuals_build/1.txt` always has the same hash as in the cache, already up-to-date
+  [DEBUG]`./residuals_build/2.txt` always has the same hash as in the cache, already up-to-date
+  [DEBUG]`./residuals_build/3.txt` always has the same hash as in the cache, already up-to-date
+  [INFO]Remove residuals for ./residuals_build
+  [DEBUG]Cache stored in `./residuals_build/cache`
+
+  $ ls residuals_build
+  1.txt
+  2.txt
+  3.txt
+  cache

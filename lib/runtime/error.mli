@@ -25,6 +25,7 @@ type common =
   | Unable_to_write_file of Yocaml.Path.t * string
   | Unable_to_create_directory of Yocaml.Path.t
   | Unable_to_read_file of Yocaml.Path.t
+  | Unable_to_erase_file of Yocaml.Path.t
   | Unable_to_read_directory of Yocaml.Path.t
   | Unable_to_read_mtime of Yocaml.Path.t
   | Unable_to_perform_command of string * exn
