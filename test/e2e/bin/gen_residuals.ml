@@ -9,7 +9,7 @@ let program () =
     (Yocaml.Batch.iter_files
        (Yocaml.Path.rel [ "residuals" ])
        (Yocaml.Action.copy_file ~into:target)
-    >=> Yocaml.Action.remove_residuals ~on ~target)
+    >=> Yocaml.Action.remove_residuals ~target)
 
 let () =
   let () = Array.iter print_endline Sys.argv in

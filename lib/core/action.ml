@@ -230,7 +230,8 @@ let store_cache ?(on = `Target) path cache =
   let* () = Eff.write_file ~on path sexp_str in
   Eff.log ~src:Eff.yocaml_log_src ~level:`Debug @@ Lexicon.cache_stored path
 
-let remove_residuals ?(on = `Target) ~target cache =
+let remove_residuals ~target cache =
+  let on = `Target in
   let open Eff.Syntax in
   let trace = Cache.trace cache in
   let* () =
