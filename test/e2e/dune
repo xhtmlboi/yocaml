@@ -10,10 +10,9 @@
   (package yocaml_jingoo)
   (package yocaml_cmarkit)
   (package yocaml_liquid)
-   %{exe:bin/gen.exe}
-   %{exe:bin/gen_liquid.exe}
-   %{exe:bin/gen_residuals.exe}
-  (source_tree residuals) 
+  %{exe:bin/gen.exe}
+  %{exe:bin/gen_liquid.exe}
+  %{exe:bin/gen_residuals.exe}
+  (source_tree residuals)
   (source_tree residuals_build)
   (source_tree content)))
- 

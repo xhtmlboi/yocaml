@@ -17,6 +17,4 @@
 (executable
  (name gen_residuals)
  (modules gen_residuals runtime)
- (libraries
-  yocaml
-  yocaml_unix))
+ (libraries yocaml yocaml_unix))
