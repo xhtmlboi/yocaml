@@ -407,6 +407,39 @@ Build a validator for lists of users! Excellent! It is partly for this reason
 that errors are so complex; they must be nestable and handle increasingly
 complex cases to ensure the reusability of validators.
 
+{3 Sub-records}
+
+Sometimes, you may want to validate a record as a minimum record with
+additional data. For example, consider this type:
+
+{eof@ocaml[
+type p = {
+  page: Yocaml.Archetype.Page.t
+; authors: string list
+; category: string
+}
+]eof}
+
+In this example, we would like our source to be “a page” with two
+additional fields.
+
+{!val:Yocaml.Data.Validation.sub_record} allows you to validate an
+entire structure as a record field. For example:
+
+{eof@ocaml[
+let validate_p =
+  let open Yocaml.Data.Validation in
+  record (fun fields ->
+    let+ page = sub_record fields Yocaml.Archetype.Page.validate
+    and+ authors = optional_or ~default:[] fields "authors" (list_of string)
+    and+ category = required fields "category" string in
+    { page; authors; category }
+  )
+]eof}
+
+The overall idea is to enable the validation of a known model to be
+applied within the validation of a record.
+
 {2 Additional Validators}
 
 There are other additional validators that fit with common OCaml types. For

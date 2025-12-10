@@ -41,6 +41,7 @@ let list_of f l = list @@ List.map f l
 let record fields = Record fields
 let option some = Option.fold ~none:null ~some
 let path p = string (Path.to_string p)
+let mk_record = record
 
 let sum f value =
   let k, v = f value in
@@ -141,6 +142,7 @@ module Validation = struct
   and record_error =
     | Missing_field of { field : string }
     | Invalid_field of { given : t; field : string; error : value_error }
+    | Invalid_subrecord of value_error
 
   type 'a validated_value = ('a, value_error) result
   type 'a validated_record = ('a, record_error Nel.t) result
@@ -367,6 +369,10 @@ module Validation = struct
     let opt = optional assoc field validator in
     Result.bind opt (function Some x -> Ok x | None -> Ok default)
 
+  let sub_record assoc validator =
+    validator (mk_record assoc)
+    |> Result.map_error (fun err -> Nel.singleton (Invalid_subrecord err))
+
   module Infix = struct
     let ( & ) l r x = Result.bind (l x) r
     let ( / ) l r x = Result.fold ~ok:Result.ok ~error:(fun _ -> r x) (l x)
@@ -411,10 +417,6 @@ module Validation = struct
 
   let path = string $ Path.from_string
 
-  (** {2 String validators}
-
-      Validators specifically for string values. *)
-
   module String = struct
     let string_pp = Format.pp_print_string
     let string_equal = Stdlib.String.equal
@@ -425,7 +427,6 @@ module Validation = struct
     let not_equal not_expected actual =
       not_equal ~pp:string_pp ~equal:string_equal not_expected actual
 
-    (* Length-based validators - using Int.equal and Int.compare as suggested *)
     let has_length expected_length actual =
       let actual_length = Stdlib.String.length actual in
       if Int.equal actual_length expected_length then Ok actual
@@ -579,8 +580,6 @@ module Validation = struct
     let one_of = pp_equal one_of
     let where = with_pp where
   end
-
-  (** {2 Validator combinators} *)
 
   let negate validator x =
     match validator x with

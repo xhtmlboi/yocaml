@@ -148,6 +148,14 @@ and pp_record_error cst ppf err =
            ; field "given" (fun (_, _, g) -> g) (parens Yocaml.Data.pp)
            ])
         ppf (f, error, given)
+  | Invalid_subrecord error ->
+      braces
+        (record
+           [
+             field "kind" (Fun.const "invalid subrecord") string
+           ; field "error" Fun.id (parens (pp_value_error cst))
+           ])
+        ppf error
 
 let rec equal_value_error cst a b =
   let open Yocaml.Data.Validation in
