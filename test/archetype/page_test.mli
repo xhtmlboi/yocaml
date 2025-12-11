@@ -1,5 +1,5 @@
 (* YOCaml a static blog generator.
-   Copyright (C) 2024 The Funkyworkers and The YOCaml's developers
+   Copyright (C) 2025 The Funkyworkers and The YOCaml's developers
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -14,5 +14,5 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-let () =
-  Alcotest.run "Yocaml Archetype test" [ Datetime_test.cases; Page_test.cases ]
+val cases : string * unit Alcotest.test_case list
+(** Returns the list of test cases. *)

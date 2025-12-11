@@ -3,6 +3,7 @@
 #### Yocaml 
 
 - Add `Action.remove_residuals` for erasing residuals files (by [xvw](https://xvw.lol))
+- Add `Yocaml.Data.Validation.sub_record` for validating a complete structure as a record field (by [xvw](https://xvw.lol))
 
 #### Yocaml_git
 

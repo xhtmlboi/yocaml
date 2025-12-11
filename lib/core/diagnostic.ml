@@ -65,6 +65,10 @@ and pp_record_error custom_error ppf = function
         field
         (pp_validation_error custom_error)
         error Data.pp given
+  | Data.Validation.Invalid_subrecord error ->
+      Format.fprintf ppf "Invalid subrecord @[<2>%a@]"
+        (pp_validation_error custom_error)
+        error
 
 let pp_provider_error custom_error ppf = function
   | Required.Parsing_error { given; message } ->

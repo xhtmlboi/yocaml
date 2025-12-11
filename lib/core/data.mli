@@ -136,6 +136,7 @@ module Validation : sig
   and record_error =
     | Missing_field of { field : string }
     | Invalid_field of { given : t; field : string; error : value_error }
+    | Invalid_subrecord of value_error
 
   type 'a validated_value = ('a, value_error) result
   (** Used to validate data described by type {!type:t} to build validation
@@ -187,6 +188,10 @@ module Validation : sig
     ((string * t) list -> 'a validated_record) -> t -> 'a validated_value
   (** [record v x] ensure that [x] has the shape validated by [v] (all errors
       are collected). *)
+
+  val sub_record :
+    (string * t) list -> (t -> 'a validated_value) -> 'a validated_record
+  (** [sub_record] allows you to validate a record during record validation. *)
 
   val option : (t -> 'a validated_value) -> t -> 'a option validated_value
   (** [option v x] validate a value using [v] that can be [null] wrapped into an
