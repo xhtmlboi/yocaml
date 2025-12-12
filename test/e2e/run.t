@@ -274,8 +274,6 @@ Inspect Liquid Second Article
       </footer>
     </body>
   </html>
-Clean the sandbox
-  $ rm -r _www
 
 Observe Residual Removing
   $ ./bin/gen_residuals.exe
@@ -312,3 +310,8 @@ Observe Residual Removing
   2.txt
   3.txt
   cache
+
+
+Clean the sandbox
+  $ rm -r _www
+  $ rm -rf _residuals_build
