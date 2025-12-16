@@ -50,6 +50,7 @@ module Request_path = struct
     | ".css" -> "text/css"
     | ".js" -> "text/javascript"
     | ".json" -> "application/json"
+    | ".xml" -> "application/xml"
     | _ -> "text/plain"
 end
 
