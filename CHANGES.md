@@ -17,6 +17,9 @@
 
 - Add `Action.remove_residuals` for erasing residuals files (by [xvw](https://xvw.lol))
 
+#### Yocaml_runtime
+
+- Serve .xml, .rss, .atom, .feed files as application/xml (by [reynir](https://reyn.ir/))
 
 ### v2.7.0 2025-11-18 Nantes (France)
 
