@@ -4,6 +4,7 @@
 
 - Add `Action.remove_residuals` for erasing residuals files (by [xvw](https://xvw.lol))
 - Add `Yocaml.Data.Validation.sub_record` for validating a complete structure as a record field (by [xvw](https://xvw.lol))
+- Add `Batch.iter_tree` and `Batch.fold_tree` (by [gr-im](https://github.com/gr-im))
 
 #### Yocaml_git
 

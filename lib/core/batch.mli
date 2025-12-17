@@ -59,6 +59,26 @@ val iter_files :
   ?where:(Path.t -> bool) -> Path.t -> (Path.t -> Action.t) -> Action.t
 (** [iter_files] is [iter_children ~only:`Files]. *)
 
+val iter_tree :
+     ?where:([ `Directory | `File ] -> Path.t -> bool)
+  -> Path.t
+  -> (Path.t -> Action.t)
+  -> Action.t
+(** [iter_tree ?where path action] will apply the [action] passed as an argument
+    to all files, recursively in the directory tree located at [path]. You can
+    use the second parameter of the [where] predicate to distinguish whether you
+    are observing a file or a directory. *)
+
+val fold_tree :
+     ?where:([ `Directory | `File ] -> Path.t -> bool)
+  -> state:'a
+  -> Path.t
+  -> (Path.t -> 'a -> Cache.t -> (Cache.t * 'a) Eff.t)
+  -> Cache.t
+  -> (Cache.t * 'a) Eff.t
+(** [fold_tree ?where ~state path action] is like {!val:iter_children} but you
+    can maintain your own additional state. *)
+
 val fold_files :
      ?where:(Path.t -> bool)
   -> state:'a
