@@ -13,10 +13,9 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
+          - macos-latest
         ocaml-compiler:
-          - ocaml-base-compiler.5.3.0
-          - 5.2.x
-          - 5.1.x
+          - 5
     runs-on: ${{ matrix.os }}
 
     steps:
