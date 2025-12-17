@@ -24,3 +24,27 @@ let fold_files ?where ~state = fold_children ~only:`Files ?where ~state
 
 let fold_directories ?where ~state =
   fold_children ~only:`Directories ?where ~state
+
+let fold_tree ?(where = fun _ _ -> true) ~state path action =
+  let rec aux state path =
+    fold_children ~only:`Both ~state path (fun path state cache ->
+        let open Eff in
+        let* is_file = is_file ~on:`Source path in
+        if is_file && where `File path then action path state cache
+        else
+          let* is_dir = is_directory ~on:`Source path in
+          if is_dir && where `Directory path then aux state path cache
+          else return (cache, state))
+  in
+  aux state path
+
+let iter_tree ?where path action cache =
+  let open Eff in
+  let+ cache, () =
+    fold_tree ?where ~state:() path
+      (fun path () cache ->
+        let+ cache = action path cache in
+        (cache, ()))
+      cache
+  in
+  cache
