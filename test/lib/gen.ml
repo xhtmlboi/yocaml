@@ -16,11 +16,11 @@
 
 let csexp =
   let open QCheck2.Gen in
-  let atom = small_string ~gen:printable |> map Yocaml.Sexp.atom in
-  let node self n = small_list (self (n / 10)) |> map Yocaml.Sexp.node in
+  let atom = string_small |> map Yocaml.Sexp.atom in
+  let node self n = list_small (self (n / 10)) |> map Yocaml.Sexp.node in
   fix (fun self -> function
     | 0 -> atom
-    | n -> frequency [ (1, atom); (5, node self n) ])
+    | n -> oneof_weighted [ (1, atom); (5, node self n) ])
   |> sized
 
 let alphanumeric =
@@ -32,20 +32,20 @@ let sexp =
   let atom =
     string_size ~gen:alphanumeric (int_range 1 100) |> map Yocaml.Sexp.atom
   in
-  let node self n = small_list (self (n / 10)) |> map Yocaml.Sexp.node in
+  let node self n = list_small (self (n / 10)) |> map Yocaml.Sexp.node in
   fix (fun self -> function
     | 0 -> atom
-    | n -> frequency [ (1, atom); (5, node self n) ])
+    | n -> oneof_weighted [ (1, atom); (5, node self n) ])
   |> sized
 
 let path =
   let open QCheck2.Gen in
   let fragment =
-    string_size ~gen:(char_range 'a' 'z') (int_range 1 10) |> small_list
+    string_size ~gen:(char_range 'a' 'z') (int_range 1 10) |> list_small
   in
   let rel = fragment |> map Yocaml.Path.rel in
   let abs = fragment |> map Yocaml.Path.abs in
-  frequency [ (5, rel); (5, abs) ]
+  oneof_weighted [ (5, rel); (5, abs) ]
 
 let deps =
   let open QCheck2.Gen in
@@ -56,8 +56,8 @@ let cache_entry =
   map3
     (fun last_build_date hash deps ->
       Yocaml.Cache.entry ?last_build_date hash deps)
-    (opt int)
-    (small_string ~gen:printable)
+    (option int)
+    string_small
     deps
 
 let cache =
@@ -67,4 +67,4 @@ let cache =
     let+ k = path in
     (k, v)
   in
-  line |> small_list |> map Yocaml.Cache.from_list
+  line |> list_small |> map Yocaml.Cache.from_list
