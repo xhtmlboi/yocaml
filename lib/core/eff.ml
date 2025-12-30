@@ -216,7 +216,7 @@ let erase_file ~on path =
   if file then perform @@ Yocaml_erase_file (on, path)
   else
     logf ~src:yocaml_log_src ~level:`Warning
-      "%a is not a file (or does not exists)" Path.pp path
+      "%a is not a file (or does not exist)" Path.pp path
 
 let read_directory ~on ?(only = `Both) ?(where = fun _ -> true) path =
   let* is_dir = is_directory ~on path in
@@ -237,7 +237,7 @@ let read_directory ~on ?(only = `Both) ?(where = fun _ -> true) path =
     List.filter_map predicate children
   else
     let+ () =
-      logf ~src:yocaml_log_src ~level:`Warning "%a does not exists" Path.pp path
+      logf ~src:yocaml_log_src ~level:`Warning "%a does not exist" Path.pp path
     in
     []
 

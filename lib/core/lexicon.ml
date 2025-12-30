@@ -93,7 +93,7 @@ let unknown_error ppf exn =
     (Printexc.to_string exn)
 
 let file_not_exists source path ppf () =
-  Format.fprintf ppf "The file `%a` (on `%a`) does not exists" Path.pp path
+  Format.fprintf ppf "The file `%a` (on `%a`) does not exist" Path.pp path
     pp_filesystem source
 
 let invalid_path source path ppf () =
@@ -114,6 +114,6 @@ let directory_is_a_file source path ppf () =
 
 let directory_not_exists source path ppf () =
   Format.fprintf ppf
-    "The following directory: `%a` (on `%a`) does not exists (or is maybe a \
+    "The following directory: `%a` (on `%a`) does not exist (or is maybe a \
      file and not a directory)"
     Path.pp path pp_filesystem source

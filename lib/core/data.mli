@@ -410,7 +410,7 @@ module Validation : sig
     -> (t -> 'a validated_value)
     -> 'a validated_record
   (** [optional_or ~default assoc field validator] optional [field] of [assoc],
-      validated by [validator]. If the field does not exists, it return default.
+      validated by [validator]. If the field does not exist, it returns default.
       ([default] is not validated) *)
 
   val field :
