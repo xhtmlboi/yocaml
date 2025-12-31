@@ -56,9 +56,7 @@ let cache_entry =
   map3
     (fun last_build_date hash deps ->
       Yocaml.Cache.entry ?last_build_date hash deps)
-    (option int)
-    string_small
-    deps
+    (option int) string_small deps
 
 let cache =
   let open QCheck2.Gen in
