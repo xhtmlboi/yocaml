@@ -22,8 +22,8 @@
    (sherlodoc :with-doc)
    (fmt :with-test)
    (alcotest (and :with-test (>= 1.3.0)))
-   (qcheck :with-test)
-   (qcheck-alcotest :with-test)
+   (qcheck (and :with-test (>= 0.91)))
+   (qcheck-alcotest (and :with-test (>= 0.91)))
    ppx_expect
    (mdx (and :with-test (>= 2.5.0)))
    (ocamlformat :with-dev-setup)
@@ -162,8 +162,8 @@
    (yocaml (= :version))
    (fmt :with-test)
    (alcotest (and :with-test (>= 1.3.0)))
-   (qcheck :with-test)
-   (qcheck-alcotest :with-test)
+   (qcheck (and :with-test (>= 0.91)))
+   (qcheck-alcotest (and :with-test (>= 0.91)))
    ppx_expect
    (mdx (and :with-test (>= 2.5.0)))))
 
