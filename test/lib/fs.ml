@@ -366,7 +366,7 @@ let run ~trace program input =
                       match get !trace.system path with
                       | Some (Dir _) -> true
                       | _ -> false
-                      (* We suppose that if a file does not exists,
+                      (* We suppose that if a file does not exist,
                          it is not a directory... *)
                     in
                     continue k res)
@@ -379,7 +379,7 @@ let run ~trace program input =
                       match get !trace.system path with
                       | Some (File _) -> true
                       | _ -> false
-                      (* We suppose that if a file does not exists,
+                      (* We suppose that if a file does not exist,
                          it is not a file... *)
                     in
                     continue k res)

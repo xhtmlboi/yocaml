@@ -1,33 +1,33 @@
 Run the generator
   $ ./bin/gen.exe
   ./bin/gen.exe
-  [DEBUG]Trigger in ./
-  [DEBUG]Cache initiated in `./_www/.cache`
-  [DEBUG]`./_www/style.css` will be written
-  [INFO]`./_www/style.css` has been written
-  [DEBUG]`./_www/articles/first_article.html` will be written
-  [INFO]`./_www/articles/first_article.html` has been written
-  [DEBUG]./content/templates/article.html already stored
-  [DEBUG]./content/templates/layout.html already stored
-  [DEBUG]`./_www/articles/second_article.html` will be written
-  [INFO]`./_www/articles/second_article.html` has been written
-  [DEBUG]./content/templates/article.html already stored
-  [DEBUG]./content/templates/layout.html already stored
-  [DEBUG]`./_www/articles-with-applicative-read/first_article.html` will be written
-  [INFO]`./_www/articles-with-applicative-read/first_article.html` has been written
-  [DEBUG]./content/templates/article.html already stored
-  [DEBUG]./content/templates/layout.html already stored
-  [DEBUG]`./_www/articles-with-applicative-read/second_article.html` will be written
-  [INFO]`./_www/articles-with-applicative-read/second_article.html` has been written
-  [DEBUG]./content/templates/article.html already stored
-  [DEBUG]./content/templates/layout.html already stored
-  [DEBUG]`./_www/articles-with-applicative-read-2/first_article.html` will be written
-  [INFO]`./_www/articles-with-applicative-read-2/first_article.html` has been written
-  [DEBUG]./content/templates/article.html already stored
-  [DEBUG]./content/templates/layout.html already stored
-  [DEBUG]`./_www/articles-with-applicative-read-2/second_article.html` will be written
-  [INFO]`./_www/articles-with-applicative-read-2/second_article.html` has been written
-  [DEBUG]Cache stored in `./_www/.cache`
+  [DEBUG] Trigger in ./
+  [DEBUG] Cache initiated in `./_www/.cache`
+  [DEBUG] `./_www/style.css` will be written
+  [INFO] `./_www/style.css` has been written
+  [DEBUG] `./_www/articles/first_article.html` will be written
+  [INFO] `./_www/articles/first_article.html` has been written
+  [DEBUG] ./content/templates/article.html already stored
+  [DEBUG] ./content/templates/layout.html already stored
+  [DEBUG] `./_www/articles/second_article.html` will be written
+  [INFO] `./_www/articles/second_article.html` has been written
+  [DEBUG] ./content/templates/article.html already stored
+  [DEBUG] ./content/templates/layout.html already stored
+  [DEBUG] `./_www/articles-with-applicative-read/first_article.html` will be written
+  [INFO] `./_www/articles-with-applicative-read/first_article.html` has been written
+  [DEBUG] ./content/templates/article.html already stored
+  [DEBUG] ./content/templates/layout.html already stored
+  [DEBUG] `./_www/articles-with-applicative-read/second_article.html` will be written
+  [INFO] `./_www/articles-with-applicative-read/second_article.html` has been written
+  [DEBUG] ./content/templates/article.html already stored
+  [DEBUG] ./content/templates/layout.html already stored
+  [DEBUG] `./_www/articles-with-applicative-read-2/first_article.html` will be written
+  [INFO] `./_www/articles-with-applicative-read-2/first_article.html` has been written
+  [DEBUG] ./content/templates/article.html already stored
+  [DEBUG] ./content/templates/layout.html already stored
+  [DEBUG] `./_www/articles-with-applicative-read-2/second_article.html` will be written
+  [INFO] `./_www/articles-with-applicative-read-2/second_article.html` has been written
+  [DEBUG] Cache stored in `./_www/.cache`
 
 Inspect tree
   $ tree _www
@@ -204,15 +204,15 @@ Inspect Second Applicative read (same content of article)
 Run the Liquid generator
   $ ./bin/gen_liquid.exe
   ./bin/gen_liquid.exe
-  [DEBUG]Trigger in ./
-  [DEBUG]Cache restored from `./_www/.cache`
-  [DEBUG]`./_www/liquid-articles/first_article.html` will be written
-  [INFO]`./_www/liquid-articles/first_article.html` has been written
-  [DEBUG]./content/templates/article.liquid already stored
-  [DEBUG]./content/templates/layout.liquid already stored
-  [DEBUG]`./_www/liquid-articles/second_article.html` will be written
-  [INFO]`./_www/liquid-articles/second_article.html` has been written
-  [DEBUG]Cache stored in `./_www/.cache`
+  [DEBUG] Trigger in ./
+  [DEBUG] Cache restored from `./_www/.cache`
+  [DEBUG] `./_www/liquid-articles/first_article.html` will be written
+  [INFO] `./_www/liquid-articles/first_article.html` has been written
+  [DEBUG] ./content/templates/article.liquid already stored
+  [DEBUG] ./content/templates/layout.liquid already stored
+  [DEBUG] `./_www/liquid-articles/second_article.html` will be written
+  [INFO] `./_www/liquid-articles/second_article.html` has been written
+  [DEBUG] Cache stored in `./_www/.cache`
 Inspect tree after Liquid generation
   $ tree _www
   _www
@@ -278,17 +278,17 @@ Inspect Liquid Second Article
 Observe Residual Removing
   $ ./bin/gen_residuals.exe
   ./bin/gen_residuals.exe
-  [DEBUG]Cache initiated in `./residuals_build/cache`
-  [DEBUG]`./residuals_build/1.txt` will be written
-  [INFO]`./residuals_build/1.txt` has been written
-  [DEBUG]`./residuals_build/2.txt` will be written
-  [INFO]`./residuals_build/2.txt` has been written
-  [DEBUG]`./residuals_build/3.txt` will be written
-  [INFO]`./residuals_build/3.txt` has been written
-  [INFO]Remove residuals for ./residuals_build
-  [INFO]./residuals_build/4.txt deleted!
-  [INFO]./residuals_build/5.txt deleted!
-  [DEBUG]Cache stored in `./residuals_build/cache`
+  [DEBUG] Cache initiated in `./residuals_build/cache`
+  [DEBUG] `./residuals_build/1.txt` will be written
+  [INFO] `./residuals_build/1.txt` has been written
+  [DEBUG] `./residuals_build/2.txt` will be written
+  [INFO] `./residuals_build/2.txt` has been written
+  [DEBUG] `./residuals_build/3.txt` will be written
+  [INFO] `./residuals_build/3.txt` has been written
+  [INFO] Remove residuals for ./residuals_build
+  [INFO] ./residuals_build/4.txt deleted!
+  [INFO] ./residuals_build/5.txt deleted!
+  [DEBUG] Cache stored in `./residuals_build/cache`
 
   $ ls residuals_build
   1.txt
@@ -298,12 +298,12 @@ Observe Residual Removing
 
   $ ./bin/gen_residuals.exe
   ./bin/gen_residuals.exe
-  [DEBUG]Cache restored from `./residuals_build/cache`
-  [DEBUG]`./residuals_build/1.txt` always has the same hash as in the cache, already up-to-date
-  [DEBUG]`./residuals_build/2.txt` always has the same hash as in the cache, already up-to-date
-  [DEBUG]`./residuals_build/3.txt` always has the same hash as in the cache, already up-to-date
-  [INFO]Remove residuals for ./residuals_build
-  [DEBUG]Cache stored in `./residuals_build/cache`
+  [DEBUG] Cache restored from `./residuals_build/cache`
+  [DEBUG] `./residuals_build/1.txt` always has the same hash as in the cache, already up-to-date
+  [DEBUG] `./residuals_build/2.txt` always has the same hash as in the cache, already up-to-date
+  [DEBUG] `./residuals_build/3.txt` always has the same hash as in the cache, already up-to-date
+  [INFO] Remove residuals for ./residuals_build
+  [DEBUG] Cache stored in `./residuals_build/cache`
 
   $ ls residuals_build
   1.txt

@@ -289,10 +289,10 @@ val run : ('b, 'c) Effect.Deep.handler -> ('a -> 'b t) -> 'a -> 'c
     Exception that can be propagated by the performance of effects. *)
 
 exception File_not_exists of filesystem * Path.t
-(** Exception raised when a file does not exists. *)
+(** Exception raised when a file does not exist. *)
 
 exception Invalid_path of filesystem * Path.t
-(** Exception raised when a file does not has a basename. *)
+(** Exception raised when a file does not have a basename. *)
 
 exception File_is_a_directory of filesystem * Path.t
 (** Exception raised when we try to use a directory as a regular file. *)
@@ -358,7 +358,7 @@ val file_exists : on:filesystem -> Path.t -> bool t
 val read_file : ?snapshot:bool -> on:filesystem -> Path.t -> string t
 (** [read_file ?snapshot ~on path] perform the effect [Yocaml_read_file] with a
     given [path] and try to read it. Perform [Yocaml_failwith] with
-    {!exception:File_not_exists} if the file does not exists. [snapshot] is used
+    {!exception:File_not_exists} if the file does not exist. [snapshot] is used
     to perform a snapshot of the file. *)
 
 val read_file_as_metadata :
@@ -392,7 +392,7 @@ val read_file_with_metadata :
 val mtime : on:filesystem -> Path.t -> int t
 (** [mtime ~on path] perform the effect [Yocaml_source_get_mtime] with a given
     [path] and try to get the modification time. Perform [Yocaml_failwith] with
-    {!exception:File_not_exists} if the file does not exists.
+    {!exception:File_not_exists} if the file does not exist.
 
     The logic of [mtime] differs slightly from that of Unix. If a directory is
     given as an argument, the function will return the largest [mtime]
