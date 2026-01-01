@@ -32,13 +32,13 @@ let test_iter_tree_1 =
         return Yocaml.Cache.empty
         >>= Fs.increase_time_with 1
         >>= Batch.iter_tree (Path.rel [ "content" ]) (fun p ->
-                let into =
-                  p
-                  |> Path.dirname
-                  |> Path.trim ~prefix:(Path.rel [ "content" ])
-                  |> Path.relocate ~into:(Path.rel [ "_www" ])
-                in
-                Yocaml.Action.copy_file ~into p)
+            let into =
+              p
+              |> Path.dirname
+              |> Path.trim ~prefix:(Path.rel [ "content" ])
+              |> Path.relocate ~into:(Path.rel [ "_www" ])
+            in
+            Yocaml.Action.copy_file ~into p)
       in
       let trace, _cache = Fs.run ~trace program () in
       let computed_file_system = Fs.trace_system trace in
@@ -87,13 +87,13 @@ let test_iter_tree_2 =
         return Yocaml.Cache.empty
         >>= Fs.increase_time_with 1
         >>= Batch.iter_tree (Path.rel [ "content" ]) (fun p ->
-                let into =
-                  p
-                  |> Path.dirname
-                  |> Path.trim ~prefix:(Path.rel [ "content" ])
-                  |> Path.relocate ~into:(Path.rel [ "_www" ])
-                in
-                Yocaml.Action.copy_file ~into p)
+            let into =
+              p
+              |> Path.dirname
+              |> Path.trim ~prefix:(Path.rel [ "content" ])
+              |> Path.relocate ~into:(Path.rel [ "_www" ])
+            in
+            Yocaml.Action.copy_file ~into p)
       in
       let trace, _cache = Fs.run ~trace program () in
       let computed_file_system = Fs.trace_system trace in

@@ -149,7 +149,7 @@ let test_iter_1 =
         let () =
           Yocaml.Nel.[ 1; 2; 3; 4 ]
           |> Yocaml.Nel.iter (fun i ->
-                 Buffer.add_string buffer @@ "f" ^ string_of_int i)
+              Buffer.add_string buffer @@ "f" ^ string_of_int i)
         in
         Buffer.contents buffer
       in
@@ -164,10 +164,10 @@ let test_iteri_1 =
         let () =
           Yocaml.Nel.[ 1; 2; 3; 4 ]
           |> Yocaml.Nel.iteri (fun i x ->
-                 Buffer.add_string buffer
-                 @@ "f"
-                 ^ string_of_int i
-                 ^ string_of_int x)
+              Buffer.add_string buffer
+              @@ "f"
+              ^ string_of_int i
+              ^ string_of_int x)
         in
         Buffer.contents buffer
       in
@@ -213,7 +213,7 @@ let test_concat_map_1 =
         let open Yocaml in
         Nel.init 3 Fun.id
         |> Nel.concat_map (fun x ->
-               if x = 1 then Nel.[ 2; 2 ] else Nel.singleton (succ x))
+            if x = 1 then Nel.[ 2; 2 ] else Nel.singleton (succ x))
       in
       check (Testable.nel int) "should be equal" expected computed)
 
@@ -225,8 +225,7 @@ let test_concat_mapi_1 =
       and computed =
         Nel.init 3 Fun.id
         |> Nel.concat_mapi (fun i x ->
-               if x = 1 then Nel.[ (2, -2); (2, -3) ]
-               else Nel.singleton (succ x, i))
+            if x = 1 then Nel.[ (2, -2); (2, -3) ] else Nel.singleton (succ x, i))
       in
       check (Testable.nel @@ pair int int) "should be equal" expected computed)
 

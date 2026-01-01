@@ -100,7 +100,7 @@ let from_sexp sexp =
               line |> key_value_from_sexp |> Result.map (fun x -> x :: acc)))
         (Ok []) entries
       |> Result.map (fun e ->
-             make ~entries:(Path.Map.of_list e) ~trace:Trace.empty)
+          make ~entries:(Path.Map.of_list e) ~trace:Trace.empty)
   | _ -> Error (Sexp.Invalid_sexp (sexp, "cache"))
 
 let entry_equal

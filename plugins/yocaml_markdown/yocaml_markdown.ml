@@ -29,7 +29,7 @@ module Doc = struct
       ; Hilite.Grammars.diff
       ]
       |> List.iter (fun g ->
-             g |> TmLanguage.of_yojson_exn |> TmLanguage.add_grammar t)
+          g |> TmLanguage.of_yojson_exn |> TmLanguage.add_grammar t)
     in
     t
 

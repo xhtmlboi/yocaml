@@ -176,7 +176,7 @@ module Content = struct
           let typ =
             mime
             |> Option.map (fun x ->
-                   Xml.Attr.string ~key:"type" (Media_type.to_string x))
+                Xml.Attr.string ~key:"type" (Media_type.to_string x))
             |> Option.to_list
           in
           let value = Xml.Attr.string ~key:"src" v in
@@ -187,7 +187,7 @@ module Content = struct
         let attr =
           mime
           |> Option.map (fun x ->
-                 Xml.Attr.string ~key:"type" (Media_type.to_string x))
+              Xml.Attr.string ~key:"type" (Media_type.to_string x))
           |> Option.to_list
         in
         Xml.leaf ~name:"content" ~attr (Some value)

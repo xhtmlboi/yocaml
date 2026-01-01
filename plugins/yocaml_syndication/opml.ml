@@ -252,7 +252,7 @@ let opml2_from ?encoding ?standalone ?title ?date_created ?date_modified ?owner
   from ?title ?date_created ?date_modified ?owner ?expansion_state
     ?vert_scroll_state ?window_top ?window_left ?window_bottom ?window_right ()
   >>> lift (fun feed ->
-          feed |> Feed.to_opml2 ?encoding ?standalone |> Xml.to_string)
+      feed |> Feed.to_opml2 ?encoding ?standalone |> Xml.to_string)
 
 let opml1_from ?encoding ?standalone ?title ?date_created ?date_modified ?owner
     ?expansion_state ?vert_scroll_state ?window_top ?window_left ?window_bottom
@@ -261,4 +261,4 @@ let opml1_from ?encoding ?standalone ?title ?date_created ?date_modified ?owner
   from ?title ?date_created ?date_modified ?owner ?expansion_state
     ?vert_scroll_state ?window_top ?window_left ?window_bottom ?window_right ()
   >>> lift (fun feed ->
-          feed |> Feed.to_opml1 ?encoding ?standalone |> Xml.to_string)
+      feed |> Feed.to_opml1 ?encoding ?standalone |> Xml.to_string)

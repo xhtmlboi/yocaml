@@ -47,8 +47,8 @@ module Make (Runtime : Required.RUNTIME) = struct
             path
             |> Runtime.read_file ~on
             |> map_ok (fun content ->
-                   let () = snapshots := Path.Map.add path content !snapshots in
-                   content))
+                let () = snapshots := Path.Map.add path content !snapshots in
+                content))
 
   let run ?custom_error_handler program =
     let exnc = exnc ?custom_error_handler in

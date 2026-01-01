@@ -48,16 +48,16 @@ let read_template (module T : Required.DATA_TEMPLATE) ?(snapshot = true)
   let open Task in
   read_file ~snapshot template
   >>> lift ~has_dynamic_dependencies:false (fun template_content ->
-          let callback (type a)
-              (module I : Required.DATA_INJECTABLE with type t = a) ~metadata
-              content =
-            let parameters =
-              ("yocaml_body", Data.string content) :: I.normalize metadata
-              |> List.map (fun (k, v) -> (k, T.from v))
-            in
-            T.render ~strict parameters template_content
-          in
-          callback)
+      let callback (type a)
+          (module I : Required.DATA_INJECTABLE with type t = a) ~metadata
+          content =
+        let parameters =
+          ("yocaml_body", Data.string content) :: I.normalize metadata
+          |> List.map (fun (k, v) -> (k, T.from v))
+        in
+        T.render ~strict parameters template_content
+      in
+      callback)
 
 module type S = Required.DATA_INJECTABLE
 

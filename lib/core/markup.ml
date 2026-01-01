@@ -55,11 +55,11 @@ module Toc = struct
       | xs ->
           xs
           |> List.map (fun { content = id, title; children } ->
-                 let content = on_link ~id ~title in
-                 let children =
-                   Option.fold ~none:"" ~some:on_list (aux children)
-                 in
-                 li @@ content ^ children)
+              let content = on_link ~id ~title in
+              let children =
+                Option.fold ~none:"" ~some:on_list (aux children)
+              in
+              li @@ content ^ children)
           |> Option.some
     in
     aux toc |> Option.map on_list

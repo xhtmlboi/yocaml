@@ -39,8 +39,8 @@ module Data_provider = struct
     str
     |> Otoml.Parser.from_string_result
     |> Result.map_error (fun error ->
-           let given = str and message = "Toml: " ^ error in
-           Yocaml.Required.Parsing_error { given; message })
+        let given = str and message = "Toml: " ^ error in
+        Yocaml.Required.Parsing_error { given; message })
 end
 
 include Yocaml.Make.Data_reader (Data_provider)

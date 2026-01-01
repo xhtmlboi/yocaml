@@ -22,12 +22,11 @@ let print_toc_str ?(check_label = true) toc =
   |> Markup.Toc.from_list
   |> Markup.Toc.to_labelled_list
   |> List.iter (fun (i, elt) ->
-         let i = i |> List.map string_of_int |> String.concat "." in
-         let suffix =
-           if check_label then " : " ^ string_of_bool @@ String.equal i elt
-           else ""
-         in
-         i ^ "-" ^ elt ^ suffix |> print_endline)
+      let i = i |> List.map string_of_int |> String.concat "." in
+      let suffix =
+        if check_label then " : " ^ string_of_bool @@ String.equal i elt else ""
+      in
+      i ^ "-" ^ elt ^ suffix |> print_endline)
 
 let hashes_title x =
   match String.split_on_char ' ' x with
@@ -40,7 +39,7 @@ let from_markdown_title = List.filter_map hashes_title
 let print_html ?ol toc =
   toc
   |> List.filter_map (fun x ->
-         x |> hashes_title |> Option.map (fun (i, l) -> (i, (Slug.from l, l))))
+      x |> hashes_title |> Option.map (fun (i, l) -> (i, (Slug.from l, l))))
   |> Markup.Toc.from_list
   |> Markup.Toc.to_html ?ol (fun x -> x)
   |> Option.value ~default:"<div class='hidden'></div>"

@@ -39,10 +39,10 @@ module Data_provider = struct
     str
     |> Yaml.of_string
     |> Result.map_error (fun error ->
-           let message = match error with `Msg msg -> msg in
-           let given = str in
-           let message = "Yaml: " ^ message in
-           Yocaml.Required.Parsing_error { given; message })
+        let message = match error with `Msg msg -> msg in
+        let given = str in
+        let message = "Yaml: " ^ message in
+        Yocaml.Required.Parsing_error { given; message })
 end
 
 include Yocaml.Make.Data_reader (Data_provider)

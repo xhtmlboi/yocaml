@@ -330,7 +330,7 @@ module Validation = struct
     | Record li ->
         validator li
         |> Result.map_error (fun errors ->
-               Invalid_record { errors; given = li })
+            Invalid_record { errors; given = li })
     | invalid_value -> invalid_shape "record" invalid_value
 
   let field fetch validator =
@@ -339,7 +339,7 @@ module Validation = struct
     value
     |> validator
     |> Result.map_error (fun error ->
-           Nel.singleton @@ Invalid_field { given = value; error; field })
+        Nel.singleton @@ Invalid_field { given = value; error; field })
 
   let fetch fields field () = (field, find_assoc field fields)
   let ( .${} ) fields field = fetch fields field
@@ -352,7 +352,7 @@ module Validation = struct
         |> validator
         |> Result.map Option.some
         |> Result.map_error (fun error ->
-               Nel.singleton @@ Invalid_field { given = x; error; field })
+            Nel.singleton @@ Invalid_field { given = x; error; field })
 
   let required assoc field validator =
     let opt = optional assoc field validator in
@@ -363,7 +363,7 @@ module Validation = struct
           Null
           |> validator
           |> Result.map_error (fun _ ->
-                 Nel.singleton @@ Missing_field { field }))
+              Nel.singleton @@ Missing_field { field }))
 
   let optional_or assoc field ~default validator =
     let opt = optional assoc field validator in

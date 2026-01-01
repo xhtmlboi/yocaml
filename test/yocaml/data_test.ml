@@ -1079,7 +1079,7 @@ let test_where_or_const =
           $ string_of_int)
         / ((float
            & where ~pp:Format.pp_print_float (fun x ->
-                 Stdlib.Float.floor x >= 3.0))
+               Stdlib.Float.floor x >= 3.0))
           & const "a float")
       in
       let () = check (Ok "foo") (v @@ D.string "foo") in

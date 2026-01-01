@@ -404,7 +404,7 @@ module Article = struct
   let neutral =
     Data.Validation.fail_with ~given:"null" "Cannot be null"
     |> Result.map_error (fun error ->
-           Required.Validation_error { entity = entity_name; error })
+        Required.Validation_error { entity = entity_name; error })
 
   let validate =
     let open Data.Validation in

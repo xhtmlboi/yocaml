@@ -78,11 +78,11 @@ let validate (type a) (module P : Required.DATA_PROVIDER)
   |> Option.map P.from_string
   |> Option.map (Result.map P.normalize)
   |> Option.fold ~none:R.neutral ~some:(fun normalized ->
-         Result.bind normalized (fun value ->
-             value
-             |> R.validate
-             |> Result.map_error (fun error ->
-                    Required.Validation_error { entity = R.entity_name; error })))
+      Result.bind normalized (fun value ->
+          value
+          |> R.validate
+          |> Result.map_error (fun error ->
+              Required.Validation_error { entity = R.entity_name; error })))
 
 let required entity = Error (Required.Required_metadata { entity })
 

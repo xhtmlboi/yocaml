@@ -43,8 +43,8 @@ struct
     let lift_result x =
       x
       |> Source.bind (function
-           | Ok x -> Source.return @@ Ok x
-           | Error err -> Source.return @@ Error (Source err))
+        | Ok x -> Source.return @@ Ok x
+        | Error err -> Source.return @@ Error (Source err))
       |> Source.lift
 
     let map_error f_err = function
