@@ -29,3 +29,10 @@ val exception_to_diagnostic :
 val runtime_error_to_diagnostic : Format.formatter -> string -> unit
 (** Uses the same representation as an exception diagnostic to visually render
     an error message produced by the runtime. *)
+
+val pp_validation_error :
+     (Format.formatter -> Data.Validation.custom_error -> unit)
+  -> Format.formatter
+  -> Data.Validation.value_error
+  -> unit
+(** Pretty-print a validation error. *)

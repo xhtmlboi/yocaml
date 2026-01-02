@@ -14,75 +14,89 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. *)
 
-let comma_sep ppf () = Format.fprintf ppf ";@,"
+let pp_blankline ppf () = Format.fprintf ppf "@,@,"
+let pp_newline ppf () = Format.fprintf ppf "@,"
 
 let rec pp_validation_error custom_error ppf = function
   | Data.Validation.Invalid_shape { expected; given } ->
-      Format.fprintf ppf
-        "Fail with Invalid shape: @[<2>{ @[<1>expected =@ `%s`@];@,\
-         @[<1>given =@ `%a`@];@,\
-         }@]"
+      Format.fprintf ppf "@[<v 2>Invalid shape:@,Expected: %s@,Given: `%a`@]"
         expected Data.pp given
   | Data.Validation.With_message { message; given } ->
-      Format.fprintf ppf
-        "Fail with message: @[<2>{ @[<1>message =@ `%s`@];@,\
-         @[<1>given =@ `%s`@];@,\
-         }@]"
-        message given
+      Format.fprintf ppf "@[<v 2>Message:@,Message: %s@,Given: `%s`@]" message
+        given
   | Data.Validation.Custom custom ->
-      Format.fprintf ppf "Fail with Custom error: @[<2>%a@]" custom_error custom
+      Format.fprintf ppf "@[<v 2>Custom error:@,%a@]" custom_error custom
   | Data.Validation.Invalid_list { errors; given } ->
-      Format.fprintf ppf
-        "Fail with Invalid list @[<2>{ @[<1>errors =@ `%a`@];@,\
-         @[<1>given =@ `%a`@];@,\
-         }@]"
-        (Format.pp_print_list ~pp_sep:comma_sep (fun ppf (i, err) ->
-             Format.fprintf ppf "@[<1>%d =@ `%a`@]" i
-               (pp_validation_error custom_error)
-               err))
-        (Nel.to_list errors)
-        (Format.pp_print_list ~pp_sep:comma_sep Data.pp)
-        given
+      Format.fprintf ppf "@[<v 2>Invalid list:@,";
+
+      Format.fprintf ppf "Errors (%d):@," (Nel.length errors);
+
+      Nel.iteri
+        (fun i (index, err) ->
+          if i > 0 then pp_blankline ppf ();
+          Format.fprintf ppf "@[<v 2>%d) At index %d:@,%a@]" (i + 1) index
+            (pp_validation_error custom_error)
+            err)
+        errors;
+
+      pp_blankline ppf ();
+
+      Format.fprintf ppf "@[<v 2>Given list:@,";
+
+      List.iteri
+        (fun i v ->
+          Format.fprintf ppf "[%d] = `%a`" i Data.pp v;
+          pp_newline ppf ())
+        given;
+
+      Format.fprintf ppf "@]@]"
   | Data.Validation.Invalid_record { errors; given } ->
-      Format.fprintf ppf
-        "Fail with Invalid record: @[<2>{@[<1>errors =@ `%a`@];@,\
-         @[<1>given =@ `%a`@];@,\
-         }]"
-        (Format.pp_print_list ~pp_sep:comma_sep (pp_record_error custom_error))
-        (Nel.to_list errors)
-        (Format.pp_print_list ~pp_sep:comma_sep (fun ppf (k, v) ->
-             Format.fprintf ppf "@[<1>%s =@ `%a`@]" k Data.pp v))
-        given
+      Format.fprintf ppf "@[<v 2>Invalid record:@,";
+
+      Format.fprintf ppf "Errors (%d):@," (Nel.length errors);
+
+      Nel.iteri
+        (fun i err ->
+          if i > 0 then pp_blankline ppf ();
+          Format.fprintf ppf "%d) %a" (i + 1) (pp_record_error custom_error) err)
+        errors;
+
+      pp_blankline ppf ();
+
+      Format.fprintf ppf "@[<v 2>Given record:@,";
+
+      Format.pp_print_list
+        ~pp_sep:(fun ppf () -> pp_newline ppf ())
+        (fun ppf (k, v) -> Format.fprintf ppf "%s = `%a`" k Data.pp v)
+        ppf given;
+
+      Format.fprintf ppf "@]@]"
 
 and pp_record_error custom_error ppf = function
   | Data.Validation.Missing_field { field } ->
-      Format.fprintf ppf "Missing field =@ `%s`" field
-  | Data.Validation.Invalid_field { given; field; error } ->
-      Format.fprintf ppf
-        "Invalid field =@ `%s` @[<2>{@[<2>{@[<1>error =@ `%a`@];@,\
-         @[<1>given =@ `%a`@];@,\
-         }@]"
-        field
+      Format.fprintf ppf "Missing field `%s`" field
+  | Data.Validation.Invalid_field { field; error; given = _ } ->
+      Format.fprintf ppf "@[<v 2>Invalid field `%s`:@,%a@]" field
         (pp_validation_error custom_error)
-        error Data.pp given
+        error
   | Data.Validation.Invalid_subrecord error ->
-      Format.fprintf ppf "Invalid subrecord @[<2>%a@]"
+      Format.fprintf ppf "@[<v 2>Invalid subrecord:@,%a@]"
         (pp_validation_error custom_error)
         error
 
 let pp_provider_error custom_error ppf = function
   | Required.Parsing_error { given; message } ->
-      Format.fprintf ppf "Parsing error: @[given: @[`%s`@]\nmessage:@[`%s`@]@]"
-        given message
+      Format.fprintf ppf "Parsing error:@,Given: `%s`@,Message: `%s`" given
+        message
   | Required.Required_metadata { entity } ->
       Format.fprintf ppf "Required metadata: `%s`" entity
   | Required.Validation_error { entity; error } ->
-      Format.fprintf ppf "Validation error: `%s`\n @[%a@]" entity
+      Format.fprintf ppf "Validation error: `%s`@,@[%a@]" entity
         (pp_validation_error custom_error)
         error
 
 let glob_pp p v backtrace ppf =
-  Format.fprintf ppf "--- %a ---\n%a\n---\n%s" Lexicon.there_is_an_error () p v
+  Format.fprintf ppf "--- %a ---@,%a@,---@,%s" Lexicon.there_is_an_error () p v
     backtrace
 
 let exception_to_diagnostic

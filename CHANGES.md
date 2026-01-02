@@ -1,7 +1,7 @@
 ### unreleased
 
 #### Yocaml
-
+- Improve pretty-printing of validation errors (by [Linda-Njau](https://github.com/Linda-Njau))
 - Fix typos and improve logs display (by [clementd](https://clementd.wtf))
 
 ### v2.8.0 2025-12-17 Nantes (France)
