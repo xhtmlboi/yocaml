@@ -281,6 +281,16 @@ module Validation = struct
       fail_with ~given:(Format.asprintf "%a" pp x) (f x)
     else Ok x
 
+  let where_opt ?pp ?message predicate x =
+    match predicate x with
+    | Some x -> Ok x
+    | None ->
+        let pp = mk_pp pp in
+        let f =
+          Option.value ~default:(fun _ -> "unsatisfied predicate") message
+        in
+        fail_with ~given:(Format.asprintf "%a" pp x) (f x)
+
   let sum branch x =
     let str_expectation () =
       branch
@@ -541,6 +551,9 @@ module Validation = struct
     let where ?message predicate actual =
       where ~pp:string_pp ?message predicate actual
 
+    let where_opt ?message predicate actual =
+      where_opt ~pp:string_pp ?message predicate actual
+
     let lowercase_ascii = Stdlib.String.lowercase_ascii
     let trim = Stdlib.String.trim
   end
@@ -561,6 +574,7 @@ module Validation = struct
     let le = pp_cmp le
     let one_of = pp_equal one_of
     let where = with_pp where
+    let where_opt ?message f = (with_pp where_opt) ?message f
   end
 
   module Float = struct
@@ -579,6 +593,7 @@ module Validation = struct
     let le = pp_cmp le
     let one_of = pp_equal one_of
     let where = with_pp where
+    let where_opt ?message f = (with_pp where_opt) ?message f
   end
 
   let negate validator x =

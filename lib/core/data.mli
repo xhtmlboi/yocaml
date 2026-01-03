@@ -332,6 +332,15 @@ module Validation : sig
   (** [where ?pp predicate x] ensure that [x] is satisfying [predicate]. [pp] is
       used for error-reporting.*)
 
+  val where_opt :
+       ?pp:(Format.formatter -> 'a -> unit)
+    -> ?message:('a -> string)
+    -> ('a -> 'b option)
+    -> 'a
+    -> 'b validated_value
+  (** [where_opt ?pp predicate x] ensure that [predicate x] return [Some]. [pp]
+      is used for error-reporting.*)
+
   val const : 'a -> 'b -> ('a, 'c) result
   (** [const k r] wrap [k] as valid and discard [r]. *)
 
@@ -535,6 +544,14 @@ module Validation : sig
     (** [where ?message predicate actual] ensures that [actual] satisfies
         [predicate]. [message] is used for custom error messages. *)
 
+    val where_opt :
+         ?message:(string -> string)
+      -> (string -> 'b option)
+      -> string
+      -> 'b validated_value
+    (** [where_opt ?pp predicate x] ensure that [predicate x] return [Some].
+        [pp] is used for error-reporting.*)
+
     (** Useful function to be used with regular string validators. *)
 
     val lowercase_ascii : string -> string
@@ -576,6 +593,13 @@ module Validation : sig
     val where :
       ?message:(int -> string) -> (int -> bool) -> int -> int validated_value
     (** Integer version of {!val:Data.Validation.where} *)
+
+    val where_opt :
+         ?message:(int -> string)
+      -> (int -> 'b option)
+      -> int
+      -> 'b validated_value
+    (** Integer version of {!val:Data.Validation.where_opt} *)
   end
 
   (** {2 Float validators}
@@ -616,6 +640,13 @@ module Validation : sig
       -> float
       -> float validated_value
     (** Float version of {!val:Data.Validation.where} *)
+
+    val where_opt :
+         ?message:(float -> string)
+      -> (float -> 'b option)
+      -> float
+      -> 'b validated_value
+    (** Integer version of {!val:Data.Validation.where_opt} *)
   end
 
   (** {2 Validator combinators} *)
