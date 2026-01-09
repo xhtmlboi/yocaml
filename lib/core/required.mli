@@ -20,9 +20,13 @@
 (** {1 Dealing with Metadata} *)
 
 type provider_error =
-  | Parsing_error of { given : string; message : string }
-  | Validation_error of { entity : string; error : Data.Validation.value_error }
-  | Required_metadata of { entity : string }
+  | Parsing_error of { source : Path.t; given : string; message : string }
+  | Validation_error of {
+        source : Path.t
+      ; entity : string
+      ; error : Data.Validation.value_error
+    }
+  | Required_metadata of { source : Path.t; entity : string }
 
 module type DATA_PROVIDER = sig
   (** A Data Provider is used to deserialise metadata to data of type
@@ -31,8 +35,9 @@ module type DATA_PROVIDER = sig
   type t
   (** The type represented by the data provider.*)
 
-  val from_string : string -> (t, provider_error) result
-  (** Produces a [ type t ] value from a string. *)
+  val from_string : source:Path.t -> string -> (t, provider_error) result
+  (** Produces a [ type t ] value from a string, reporting errors with source
+      path. *)
 
   val normalize : t -> Data.t
   (** Converts a value of type {!type:t} into a value of type
@@ -50,9 +55,10 @@ module type DATA_READABLE = sig
   val entity_name : string
   (** Assigns a name to an entity (a set of metadata). *)
 
-  val neutral : (t, provider_error) result
-  (** Describes a neutral element, as a fallback in the absence of metadata. The
-      function can return an error if the request is mandatory. *)
+  val neutral : source:Path.t -> (t, provider_error) result
+  (** Describes a neutral element, as a fallback in the absence of metadata.
+      [source] indicates the file from which metadata was expected. The function
+      can return an error if the request is mandatory. *)
 
   val validate : Data.t -> t Data.Validation.validated_value
   (** [validate raw_data] Validates a data item represented by type
