@@ -21,18 +21,21 @@
 type 'a validated = ('a, Required.provider_error) result
 (** A type that describes validated metadata. *)
 
-val required : string -> ('a, Required.provider_error) result
+val required : source:Path.t -> string -> ('a, Required.provider_error) result
 (** Helper for [Yocaml.Required.DATA_READABLE.neutral]. *)
 
 val validate :
-     (module Required.DATA_PROVIDER)
+     source:Path.t
+  -> (module Required.DATA_PROVIDER)
   -> (module Required.DATA_READABLE with type t = 'a)
   -> string option
   -> 'a validated
-(** [validate (module Provider) (module Readable) opt_str] Validates an optional
-    string described in the syntax described by the [Provider] module using the
-    validation function described by the [Readable] module. The function uses
-    [Readable.neutral] as a fallback if the string is [null].*)
+
+(** [validate ~source (module Provider) (module Readable) opt_str] Validates an
+    optional string described in the syntax described by the [Provider] module
+    using the validation function described by the [Readable] module. The
+    optional string is assumed to come from [source]. The function uses
+    [Readable.neutral] as a fallback if the string is [null]. *)
 
 (** {1 Metadata extraction}
 
