@@ -30,13 +30,13 @@ let error_to_string = function
 module Data_provider = struct
   type t = Sexp.t
 
-  let from_string str =
+  let from_string ~source str =
     str
     |> Sexp.from_string
     |> Result.map_error (fun error ->
         let given = str in
         let message = error_to_string error in
-        Required.Parsing_error { given; message })
+        Required.Parsing_error { source; given; message })
 
   let ( <|> ) a b =
     match (a, b) with Some x, _ -> Some x | None, Some y -> Some y | _ -> None
@@ -71,13 +71,13 @@ module Canonical = struct
   module Data_provider = struct
     type t = Sexp.t
 
-    let from_string str =
+    let from_string ~source str =
       str
       |> Sexp.Canonical.from_string
       |> Result.map_error (fun error ->
           let given = str in
           let message = error_to_string error in
-          Required.Parsing_error { given; message })
+          Required.Parsing_error { source; given; message })
 
     let normalize = Data_provider.normalize
   end
