@@ -312,7 +312,7 @@ module Page = struct
   let charset p = p#page_charset
   let description p = p#description
   let tags p = p#tags
-  let neutral = Result.ok @@ new page ()
+  let neutral ~source:_ = Result.ok @@ new page ()
 
   let validate_page fields =
     let open Data.Validation in
@@ -401,10 +401,10 @@ module Article = struct
   let date a = a#date
   let with_toc a = a#with_toc
 
-  let neutral =
+  let neutral ~source =
     Data.Validation.fail_with ~given:"null" "Cannot be null"
     |> Result.map_error (fun error ->
-        Required.Validation_error { entity = entity_name; error })
+        Required.Validation_error { source; entity = entity_name; error })
 
   let validate =
     let open Data.Validation in
