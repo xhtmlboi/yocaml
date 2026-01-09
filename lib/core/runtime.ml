@@ -96,10 +96,15 @@ module Make (Runtime : Required.RUNTIME) = struct
               | Eff.Yocaml_write_file (filesystem, path, content) ->
                   Some
                     (fun (k : (a, _) continuation) ->
-                      Runtime.bind
-                        (function
-                          | Ok x -> continue k x | Error err -> runtimec err)
-                        (Runtime.write_file ~on:filesystem path content))
+                      try
+                        Runtime.bind
+                          (function
+                            | Ok x -> continue k x | Error err -> runtimec err)
+                          (Runtime.write_file ~on:filesystem path content)
+                      with Eff.Provider_error err when filesystem = `Target ->
+                        raise
+                          (Eff.Provider_error_with_target
+                             { target = path; error = err }))
               | Eff.Yocaml_create_dir (filesystem, path) ->
                   Some
                     (fun (k : (a, _) continuation) ->
