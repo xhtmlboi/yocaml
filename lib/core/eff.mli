@@ -306,6 +306,14 @@ exception Directory_not_exists of filesystem * Path.t
 exception Provider_error of Required.provider_error
 (** Exception raised when we try to validate an invalid source of metadata. *)
 
+exception
+  Provider_error_with_target of {
+      target : Path.t
+    ; error : Required.provider_error
+  }
+(** Exception raised when a provider error occurs while writing a target file.
+*)
+
 (** {2 Helpers for performing effects}
 
     Functions producing defined effects. *)

@@ -72,19 +72,20 @@ let extract_from_content ~strategy content =
   | Custom f -> f content
   | Regular delim -> extract_regular delim content
 
-let validate (type a) (module P : Required.DATA_PROVIDER)
+let validate ~(source : Path.t) (type a) (module P : Required.DATA_PROVIDER)
     (module R : Required.DATA_READABLE with type t = a) value =
   value
-  |> Option.map P.from_string
+  |> Option.map (P.from_string ~source)
   |> Option.map (Result.map P.normalize)
-  |> Option.fold ~none:R.neutral ~some:(fun normalized ->
+  |> Option.fold ~none:(R.neutral ~source) ~some:(fun normalized ->
       Result.bind normalized (fun value ->
           value
           |> R.validate
           |> Result.map_error (fun error ->
-              Required.Validation_error { entity = R.entity_name; error })))
+              Required.Validation_error { source; entity = R.entity_name; error })))
 
-let required entity = Error (Required.Required_metadata { entity })
+let required ~source entity =
+  Error (Required.Required_metadata { source; entity })
 
 module Injectable (D : Required.DATA_INJECTABLE) : sig
   include Data.S with type t = D.t
@@ -109,10 +110,11 @@ end = struct
 
   let entity_name = V.name
 
-  let neutral =
+  let neutral ~source =
     match V.neutral with
     | `Optional x -> Ok x
-    | `Required -> Error (Required.Required_metadata { entity = entity_name })
+    | `Required ->
+        Error (Required.Required_metadata { source; entity = entity_name })
 
   let validate = D.from_data
 end

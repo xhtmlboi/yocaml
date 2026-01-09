@@ -130,6 +130,12 @@ exception Directory_is_a_file of filesystem * Path.t
 exception Directory_not_exists of filesystem * Path.t
 exception Provider_error of Required.provider_error
 
+exception
+  Provider_error_with_target of {
+      target : Path.t
+    ; error : Required.provider_error
+  }
+
 let yocaml_log_src = Logs.Src.create ~doc:"Log emitted by YOCaml" "yocaml"
 
 let log ?src ?(level = `Debug) message =
@@ -168,7 +174,7 @@ let read_file_as_metadata (type a) (module P : Required.DATA_PROVIDER)
   let* file = read_file ?snapshot ~on path in
   file
   |> Option.some
-  |> Metadata.validate (module P) (module R)
+  |> Metadata.validate ~source:path (module P) (module R)
   |> Result.fold
        ~error:(fun err -> raise @@ Provider_error err)
        ~ok:(fun metadata -> return metadata)
@@ -181,7 +187,7 @@ let read_file_with_metadata (type a) (module P : Required.DATA_PROVIDER)
     Metadata.extract_from_content ~strategy:extraction_strategy file
   in
   raw_metadata
-  |> Metadata.validate (module P) (module R)
+  |> Metadata.validate ~source:path (module P) (module R)
   |> Result.fold
        ~error:(fun err -> raise @@ Provider_error err)
        ~ok:(fun metadata -> return (metadata, content))

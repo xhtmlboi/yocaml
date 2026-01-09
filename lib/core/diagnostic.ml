@@ -85,14 +85,16 @@ and pp_record_error custom_error ppf = function
         error
 
 let pp_provider_error custom_error ppf = function
-  | Required.Parsing_error { given; message } ->
-      Format.fprintf ppf "Parsing error:@,Given: `%s`@,Message: `%s`" given
-        message
-  | Required.Required_metadata { entity } ->
-      Format.fprintf ppf "Required metadata: `%s`" entity
-  | Required.Validation_error { entity; error } ->
-      Format.fprintf ppf "Validation error: `%s`@,@[%a@]" entity
-        (pp_validation_error custom_error)
+  | Required.Parsing_error { source; given; message } ->
+      Format.fprintf ppf "Parsing error in: %a@.@.Given:@.%s@.Message: `%s`"
+        Path.pp source given message
+  | Required.Required_metadata { source; entity } ->
+      Format.fprintf ppf "Required metadata in: %a (entity: `%s`)@." Path.pp
+        source entity
+  | Required.Validation_error { source; entity; error } ->
+      Format.fprintf ppf "Validation error in: %a (entity: `%s`):@,@[%a@]"
+        Path.pp source entity
+        (fun ppf err -> pp_validation_error custom_error ppf err)
         error
 
 let glob_pp p v backtrace ppf =
@@ -118,6 +120,14 @@ let exception_to_diagnostic
       glob_pp (Lexicon.directory_not_exists source path) ()
   | Eff.Directory_is_a_file (source, path) ->
       glob_pp (Lexicon.directory_is_a_file source path) ()
+  | Eff.Provider_error_with_target { target; error } ->
+      glob_pp
+        (fun ppf () ->
+          Format.fprintf ppf "Unable to write to target %a:@,@[%a@]" Path.pp
+            target
+            (pp_provider_error custom_error)
+            error)
+        ()
   | Eff.Provider_error error -> glob_pp (pp_provider_error custom_error) error
   | exn -> glob_pp Lexicon.unknown_error exn
 
