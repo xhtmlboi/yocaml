@@ -303,8 +303,15 @@ exception Directory_is_a_file of filesystem * Path.t
 exception Directory_not_exists of filesystem * Path.t
 (** Exception raised when we try to use a directory as a regular file. *)
 
-exception Provider_error of Required.provider_error
-(** Exception raised when we try to validate an invalid source of metadata. *)
+exception
+  Provider_error of {
+      source : Path.t option
+    ; target : Path.t option
+    ; error : Required.provider_error
+  }
+(** Exception raised when reading, validating, or writing metadata fails.
+    [source] indicates the file from which the metadata was read, when known.
+    [target] indicates the destination path we tried to write to, when known. *)
 
 (** {2 Helpers for performing effects}
 
