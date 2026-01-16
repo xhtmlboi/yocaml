@@ -2,6 +2,7 @@
 
 #### Yocaml
 
+- Add `Data.Validation.req` and `Data.Validation.opt` for compact validation and alternative name (by [xhtmlboi](https://github.com/xhtmlboi))
 - Add `Data.Validation.where_opt` (and `String`, `Int` and `Float` version) (by [xvw](https://xvw.lol))
 - Improve pretty-printing of validation errors (by [Linda-Njau](https://github.com/Linda-Njau))
 - Fix typos and improve logs display (by [clementd](https://clementd.wtf))

@@ -379,6 +379,32 @@ module Validation = struct
     let opt = optional assoc field validator in
     Result.bind opt (function Some x -> Ok x | None -> Ok default)
 
+  let req ?(alt = []) assoc field validation =
+    let alt_name =
+      match alt with [] -> "" | _ -> " or [" ^ String.concat ", " alt ^ "]"
+    in
+    let field_name = field ^ alt_name in
+    let rec aux = function
+      | [] -> Error (Nel.singleton @@ Missing_field { field = field_name })
+      | field :: xs -> (
+          match required assoc field validation with
+          | Ok x -> Ok x
+          | Error Nel.[ Missing_field _ ] -> aux xs
+          | Error err -> Error err)
+    in
+    aux (field :: alt)
+
+  let opt ?(alt = []) assoc field validation =
+    let rec aux = function
+      | [] -> Ok None
+      | field :: xs -> (
+          match optional assoc field validation with
+          | Ok None -> aux xs
+          | Ok x -> Ok x
+          | Error err -> Error err)
+    in
+    aux (field :: alt)
+
   let sub_record assoc validator =
     validator (mk_record assoc)
     |> Result.map_error (fun err -> Nel.singleton (Invalid_subrecord err))
