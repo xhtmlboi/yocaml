@@ -404,6 +404,15 @@ module Validation : sig
   (** [required assoc field validator] required [field] of [assoc], validated by
       [validator]. *)
 
+  val req :
+       ?alt:string list
+    -> (string * t) list
+    -> string
+    -> (t -> 'a validated_value)
+    -> 'a validated_record
+  (** [req ?alt assoc field validator] is a compact form of {!val:required}
+      allowing alternative field names. *)
+
   val optional :
        (string * t) list
     -> string
@@ -411,6 +420,15 @@ module Validation : sig
     -> 'a option validated_record
   (** [optional assoc field validator] optional [field] of [assoc], validated by
       [validator]. *)
+
+  val opt :
+       ?alt:string list
+    -> (string * t) list
+    -> string
+    -> (t -> 'a validated_value)
+    -> 'a option validated_record
+  (** [opt ?alt assoc field validator] is a compact form of {!val:optional}
+      allowing alternative field names. *)
 
   val optional_or :
        (string * t) list
