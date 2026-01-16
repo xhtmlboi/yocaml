@@ -314,4 +314,4 @@ Observe Residual Removing
 
 Clean the sandbox
   $ rm -r _www
-  $ rm -rf _residuals_build
+  $ rm -rf residuals_build
