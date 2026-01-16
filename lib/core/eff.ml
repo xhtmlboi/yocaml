@@ -128,7 +128,13 @@ exception Invalid_path of filesystem * Path.t
 exception File_is_a_directory of filesystem * Path.t
 exception Directory_is_a_file of filesystem * Path.t
 exception Directory_not_exists of filesystem * Path.t
-exception Provider_error of Required.provider_error
+
+exception
+  Provider_error of {
+      source : Path.t option
+    ; target : Path.t option
+    ; error : Required.provider_error
+  }
 
 let yocaml_log_src = Logs.Src.create ~doc:"Log emitted by YOCaml" "yocaml"
 
@@ -170,7 +176,9 @@ let read_file_as_metadata (type a) (module P : Required.DATA_PROVIDER)
   |> Option.some
   |> Metadata.validate (module P) (module R)
   |> Result.fold
-       ~error:(fun err -> raise @@ Provider_error err)
+       ~error:(fun err ->
+         raise
+         @@ Provider_error { source = Some path; target = None; error = err })
        ~ok:(fun metadata -> return metadata)
 
 let read_file_with_metadata (type a) (module P : Required.DATA_PROVIDER)
@@ -183,7 +191,9 @@ let read_file_with_metadata (type a) (module P : Required.DATA_PROVIDER)
   raw_metadata
   |> Metadata.validate (module P) (module R)
   |> Result.fold
-       ~error:(fun err -> raise @@ Provider_error err)
+       ~error:(fun err ->
+         raise
+         @@ Provider_error { source = Some path; target = None; error = err })
        ~ok:(fun metadata -> return (metadata, content))
 
 let get_mtime ~on path =

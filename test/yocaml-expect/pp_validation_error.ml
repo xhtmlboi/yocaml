@@ -233,3 +233,160 @@ let%expect_test "validation - invalid list with nested record" =
         [2] = `3`
         [3] = `"ok"`
   |}]
+
+let%expect_test "validation - prints source and entity" =
+  let source = Path.rel [ "content"; "posts"; "example.md" ] in
+  let entity = "post" in
+  let validation_error =
+    Data.Validation.Invalid_shape { expected = "string"; given = Data.int 42 }
+  in
+  let exn =
+    Eff.Provider_error
+      {
+        source = Some source
+      ; target = None
+      ; error = Required.Validation_error { entity; error = validation_error }
+      }
+  in
+  Format.asprintf "%a"
+    (Yocaml.Diagnostic.exception_to_diagnostic ~in_exception_handler:false
+       ~custom_error:custom_printer)
+    exn
+  |> print_endline;
+  [%expect
+    {|
+    --- Oh dear, an error has occurred ---
+    Validation error in: ./content/posts/example.md
+    Entity: `post`
+
+    Invalid shape:
+      Expected: string
+      Given: `42`---
+    The backtrace is not available because the function is called (according to the [in_exception_handler] parameter) outside an exception handler. This makes the trace unspecified.
+  |}]
+
+let%expect_test "required metadata - prints source and entity" =
+  let source = Path.rel [ "content"; "posts"; "example.md" ] in
+  let entity = "post" in
+  let exn =
+    Eff.Provider_error
+      {
+        source = Some source
+      ; target = None
+      ; error = Required.Required_metadata { entity }
+      }
+  in
+  Format.asprintf "%a"
+    (fun ppf exn ->
+      Yocaml.Diagnostic.exception_to_diagnostic ~in_exception_handler:false ppf
+        exn)
+    exn
+  |> print_endline;
+  [%expect
+    {|
+    --- Oh dear, an error has occurred ---
+    Required metadata in: ./content/posts/example.md
+    Entity: `post`
+
+    ---
+    The backtrace is not available because the function is called (according to the [in_exception_handler] parameter) outside an exception handler. This makes the trace unspecified.
+  |}]
+
+let%expect_test "parsing error - prints source and message" =
+  let source = Path.rel [ "content"; "posts"; "broken.md" ] in
+  let given = {|author linda
+age: 21
+|} in
+  let message =
+    "Yaml: error calling parser: could not find expected ':' character"
+  in
+  let exn =
+    Eff.Provider_error
+      {
+        source = Some source
+      ; target = None
+      ; error = Required.Parsing_error { given; message }
+      }
+  in
+  Format.asprintf "%a"
+    (fun ppf exn ->
+      Yocaml.Diagnostic.exception_to_diagnostic ~in_exception_handler:false ppf
+        exn)
+    exn
+  |> print_endline;
+  [%expect
+    {|
+    --- Oh dear, an error has occurred ---
+    Parsing error in: ./content/posts/broken.md
+
+    Given:
+    author linda
+    age: 21
+
+    Message: `Yaml: error calling parser: could not find expected ':' character`
+    ---
+    The backtrace is not available because the function is called (according to the [in_exception_handler] parameter) outside an exception handler. This makes the trace unspecified. |}]
+
+let%expect_test "validation - prints target, source and entity" =
+  let source = Path.rel [ "content"; "posts"; "example.md" ] in
+  let target = Path.rel [ "_www"; "posts"; "example.html" ] in
+  let entity = "post" in
+  let validation_error =
+    Data.Validation.Invalid_shape { expected = "string"; given = Data.int 42 }
+  in
+  let exn =
+    Eff.Provider_error
+      {
+        source = Some source
+      ; target = Some target
+      ; error = Required.Validation_error { entity; error = validation_error }
+      }
+  in
+  Format.asprintf "%a"
+    (Yocaml.Diagnostic.exception_to_diagnostic ~in_exception_handler:false
+       ~custom_error:custom_printer)
+    exn
+  |> print_endline;
+  [%expect
+    {|
+    --- Oh dear, an error has occurred ---
+    Unable to write to target ./_www/posts/example.html:
+    Validation error in: ./content/posts/example.md
+    Entity: `post`
+
+    Invalid shape:
+      Expected: string
+      Given: `42`---
+    The backtrace is not available because the function is called (according to the [in_exception_handler] parameter) outside an exception handler. This makes the trace unspecified.
+    |}]
+
+let%expect_test "validation - prints label and entity without target or source"
+    =
+  let entity = "post" in
+  let validation_error =
+    Data.Validation.Invalid_shape { expected = "string"; given = Data.int 42 }
+  in
+  let exn =
+    Eff.Provider_error
+      {
+        source = None
+      ; target = None
+      ; error = Required.Validation_error { entity; error = validation_error }
+      }
+  in
+  Format.asprintf "%a"
+    (Yocaml.Diagnostic.exception_to_diagnostic ~in_exception_handler:false
+       ~custom_error:custom_printer)
+    exn
+  |> print_endline;
+  [%expect
+    {|
+    --- Oh dear, an error has occurred ---
+    Validation error:
+    Entity: `post`
+
+    Invalid shape:
+      Expected: string
+      Given: `42`---
+    The backtrace is not available because the function is called (according to the [in_exception_handler] parameter) outside an exception handler. This makes the trace unspecified.
+    |}]

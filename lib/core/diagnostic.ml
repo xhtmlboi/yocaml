@@ -84,16 +84,31 @@ and pp_record_error custom_error ppf = function
         (pp_validation_error custom_error)
         error
 
-let pp_provider_error custom_error ppf = function
+let pp_source_label ppf label = function
+  | None -> Format.fprintf ppf "%s:@." label
+  | Some src -> Format.fprintf ppf "%s in: %a@." label Path.pp src
+
+let pp_entity ppf entity = Format.fprintf ppf "Entity: `%s`@,@." entity
+
+let pp_target ppf = function
+  | None -> ()
+  | Some tgt ->
+      Format.fprintf ppf "Unable to write to target %a:@,@," Path.pp tgt
+
+let pp_provider_error custom_error ~source ~target ppf = function
   | Required.Parsing_error { given; message } ->
-      Format.fprintf ppf "Parsing error:@,Given: `%s`@,Message: `%s`" given
-        message
+      pp_target ppf target;
+      pp_source_label ppf "Parsing error" source;
+      Format.fprintf ppf "@.Given:@.%s@.Message: `%s`" given message
   | Required.Required_metadata { entity } ->
-      Format.fprintf ppf "Required metadata: `%s`" entity
+      pp_target ppf target;
+      pp_source_label ppf "Required metadata" source;
+      pp_entity ppf entity
   | Required.Validation_error { entity; error } ->
-      Format.fprintf ppf "Validation error: `%s`@,@[%a@]" entity
-        (pp_validation_error custom_error)
-        error
+      pp_target ppf target;
+      pp_source_label ppf "Validation error" source;
+      pp_entity ppf entity;
+      Format.fprintf ppf "@,@[%a@]" (pp_validation_error custom_error) error
 
 let glob_pp p v backtrace ppf =
   Format.fprintf ppf "--- %a ---@,%a@,---@,%s" Lexicon.there_is_an_error () p v
@@ -118,7 +133,8 @@ let exception_to_diagnostic
       glob_pp (Lexicon.directory_not_exists source path) ()
   | Eff.Directory_is_a_file (source, path) ->
       glob_pp (Lexicon.directory_is_a_file source path) ()
-  | Eff.Provider_error error -> glob_pp (pp_provider_error custom_error) error
+  | Eff.Provider_error { source; target; error } ->
+      glob_pp (pp_provider_error custom_error ~source ~target) error
   | exn -> glob_pp Lexicon.unknown_error exn
 
 let runtime_error_to_diagnostic ppf message =
