@@ -107,14 +107,38 @@ let perform_update now target eff cache =
       in
       perform_writing now target cache fc hc dynamic_deps
 
+let propagate_target target program cache =
+  let handler =
+    Effect.Deep.
+      {
+        exnc = (fun exn -> raise exn)
+      ; retc = Eff.return
+      ; effc =
+          (fun (type a) (eff : a Effect.t) ->
+            match eff with
+            | Eff.Yocaml_failwith (Eff.Provider_error e) ->
+                Some
+                  (fun (k : (a, _) continuation) ->
+                    let open Eff in
+                    let new_exn =
+                      Eff.Provider_error { e with target = Some target }
+                    in
+                    let* x = raise new_exn in
+                    continue k x)
+            | _ -> None)
+      }
+  in
+  Eff.run handler (fun cache -> program cache) cache
+
 let write_dynamic_file target task =
-  perform target task
-    ~when_creation:(fun now target eff cache ->
-      let open Eff.Syntax in
-      let* fc, dynamic_deps = eff () in
-      let* hc = Eff.hash fc in
-      perform_writing now target cache fc hc dynamic_deps)
-    ~when_update:perform_update
+  propagate_target target
+    (perform target task
+       ~when_creation:(fun now target eff cache ->
+         let open Eff.Syntax in
+         let* fc, dynamic_deps = eff () in
+         let* hc = Eff.hash fc in
+         perform_writing now target cache fc hc dynamic_deps)
+       ~when_update:perform_update)
 
 let write_static_file target task cache =
   write_dynamic_file target Task.(task ||> no_dynamic_deps) cache
