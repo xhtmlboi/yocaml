@@ -18,3 +18,14 @@
  (name gen_residuals)
  (modules gen_residuals runtime)
  (libraries yocaml yocaml_unix))
+
+(executable
+ (name gen_pp_errors)
+ (modules gen_pp_errors runtime test_article)
+ (libraries
+  yocaml
+  yocaml_unix
+  yocaml_yaml
+  yocaml_jingoo
+  yocaml_cmarkit
+  yocaml_markdown))

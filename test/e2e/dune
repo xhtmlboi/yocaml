@@ -13,6 +13,8 @@
   %{exe:bin/gen.exe}
   %{exe:bin/gen_liquid.exe}
   %{exe:bin/gen_residuals.exe}
+  %{exe:bin/gen_pp_errors.exe}
   (source_tree residuals)
   (source_tree residuals_build)
-  (source_tree content)))
+  (source_tree content)
+  (source_tree content_pp_errors)))
