@@ -12,5 +12,5 @@ Required metadata diagnostic
   
   ---
   
-  Fatal error: exception Stdlib.Exit
+  Fatal error: exception Yocaml__Eff.Provider_error(_, _, _)
   [2]
