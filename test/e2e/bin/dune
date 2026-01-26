@@ -29,3 +29,15 @@
   yocaml_jingoo
   yocaml_cmarkit
   yocaml_markdown))
+
+(executable
+ (name server_error)
+ (modules server_error runtime test_article)
+ (libraries
+  yocaml
+  yocaml_unix
+  yocaml_eio
+  yocaml_yaml
+  yocaml_jingoo
+  yocaml_cmarkit
+  yocaml_markdown))
