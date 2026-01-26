@@ -54,6 +54,7 @@ module Pages : sig
 
   val error404 : string -> string
   val directory : string list -> Kind.t list -> string
+  val error500 : string -> string
 end
 
 (** {1 Helpers} *)
