@@ -1,9 +1,9 @@
-Server returns 500 and detailed required metadata error
+Unix server returns 500 and detailed required metadata error
 
-  $ pkill -f "server_error.exe 8089" 2>/dev/null || true
+  $ pkill -f "unix_server_error.exe 8089" 2>/dev/null || true
   $ fuser -k 8089/tcp >/dev/null 2>&1 || true
 
-  $ ./bin/server_error.exe 8089 content_pp_errors/required_metadata.md >/dev/null 2>&1 &
+  $ ./bin/unix_server_error.exe 8089 content_pp_errors/required_metadata.md >/dev/null 2>&1 &
 
   $ sleep 1
 
@@ -18,7 +18,7 @@ Server returns 500 and detailed required metadata error
   </pre>
 
 Cleanup
-  $ pkill -f "server_error.exe 8089" 2>/dev/null || true
+  $ pkill -f "unix_server_error.exe 8089" 2>/dev/null || true
   $ fuser -k 8089/tcp >/dev/null 2>&1 || true
 
 
