@@ -1,7 +1,7 @@
 ### unreleased
 
 #### Yocaml
-
+-
 - Add `Data.Validation.req` and `Data.Validation.opt` for compact validation and alternative name (by [xhtmlboi](https://github.com/xhtmlboi))
 - Add `Data.Validation.where_opt` (and `String`, `Int` and `Float` version) (by [xvw](https://xvw.lol))
 - Improve pretty-printing of validation errors (by [Linda-Njau](https://github.com/Linda-Njau))
@@ -83,10 +83,12 @@
 
 #### Yocaml_unix
 
+- Improve rendering of 500 error pages on server (by [Linda-Njau](https://github.com/Linda-Njau))
 - Adapt runtime to `is_file` (by [xvw](https://xvw.lol))
 
 #### Yocaml_eio
 
+- Improve rendering of 500 error pages on server (by [Linda-Njau](https://github.com/Linda-Njau))
 - Adapt runtime to `is_file` (by [xvw](https://xvw.lol))
 
 #### Yocaml_git
