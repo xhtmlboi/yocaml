@@ -60,11 +60,22 @@ let dir path lpath =
     render_html @@ Yocaml_runtime.Server.Pages.directory lpath children
 
 let handler htdoc refresh _socket request _body =
-  let () = refresh () in
-  match get_requested_uri htdoc request with
-  | Error404 -> error404 htdoc
-  | File (path, str) -> file path str
-  | Dir (path, lpath) -> dir path lpath
+  try
+    refresh ();
+    match get_requested_uri htdoc request with
+    | Error404 -> error404 htdoc
+    | File (path, str) -> file path str
+    | Dir (path, lpath) -> dir path lpath
+  with exn ->
+    let msg =
+      Format.asprintf "%a"
+        (fun ppf exn ->
+          Yocaml.Diagnostic.exception_to_diagnostic ~in_exception_handler:true
+            ppf exn)
+        exn
+    in
+    render_html ~status:`Internal_server_error
+      (Yocaml_runtime.Server.Pages.error500 msg)
 
 let run ?custom_error_handler directory port program env =
   Eio.Switch.run (fun sw ->
