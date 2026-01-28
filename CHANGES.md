@@ -84,10 +84,12 @@
 
 #### Yocaml_unix
 
+- Improve rendering of 500 error pages on server (by [Linda-Njau](https://github.com/Linda-Njau))
 - Adapt runtime to `is_file` (by [xvw](https://xvw.lol))
 
 #### Yocaml_eio
 
+- Improve rendering of 500 error pages on server (by [Linda-Njau](https://github.com/Linda-Njau))
 - Adapt runtime to `is_file` (by [xvw](https://xvw.lol))
 
 #### Yocaml_git
