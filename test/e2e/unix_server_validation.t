@@ -1,9 +1,9 @@
-Server returns 500 and detailed metadata validation error
+Unix server returns 500 and detailed metadata validation error
 
-  $ pkill -f "server_error.exe 8091" 2>/dev/null || true
+  $ pkill -f "unix_server_error.exe 8091" 2>/dev/null || true
   $ fuser -k 8091/tcp >/dev/null 2>&1 || true
 
-  $ ./bin/server_error.exe 8091 content_pp_errors/validation_error.md >/dev/null 2>&1 &
+  $ ./bin/unix_server_error.exe 8091 content_pp_errors/validation_error.md >/dev/null 2>&1 &
 
   $ sleep 1
 
@@ -28,5 +28,5 @@ Server returns 500 and detailed metadata validation error
   </pre>
 
 Cleanup
-  $ pkill -f "server_error.exe 8091" 2>/dev/null || true
+  $ pkill -f "unix_server_error.exe 8091" 2>/dev/null || true
   $ fuser -k 8091/tcp >/dev/null 2>&1 || true

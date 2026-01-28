@@ -33,15 +33,13 @@ let article (resolver : resolver) file =
 let program (resolver : resolver) file () =
   Yocaml.Action.with_cache ~on:`Target resolver#cache (article resolver file)
 
-let () =
+let setup () =
   let port, file =
     match Array.to_list Sys.argv with
     | _ :: port_str :: file :: _ -> (int_of_string port_str, file)
     | _ -> failwith "Usage: server_error.exe <port> <file>"
   in
-
   let cwd = Yocaml.Path.rel [] in
   let file = Yocaml.Path.rel [ file ] in
   let resolver = new resolver ~source:cwd ~target:cwd in
-
-  Yocaml_unix.serve ~target:resolver#target ~port (program resolver file)
+  (port, resolver, file)
