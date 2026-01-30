@@ -332,7 +332,7 @@ let test_relocate4 =
 
 let test_relocate5 =
   let open Alcotest in
-  test_case "relocate when common suffixes 1" `Quick (fun () ->
+  test_case "relocate when common prefixes 1" `Quick (fun () ->
       let open Yocaml.Path in
       let expected = rel [ "foo"; "bar"; "index.html" ]
       and computed =
@@ -344,13 +344,25 @@ let test_relocate5 =
 
 let test_relocate6 =
   let open Alcotest in
-  test_case "relocate when common suffixes 2" `Quick (fun () ->
+  test_case "relocate when common prefixes 2" `Quick (fun () ->
       let open Yocaml.Path in
       let expected = rel [ "foo"; "bar"; "baz"; "index.html" ]
       and computed =
         relocate
           ~into:(rel [ "foo"; "bar" ])
           (rel [ "foo"; "bar"; "baz"; "index.html" ])
+      in
+      check Testable.path "should be equal" expected computed)
+
+let test_relocate7 =
+  let open Alcotest in
+  test_case "relocate when partial common prefixes" `Quick (fun () ->
+      let open Yocaml.Path in
+      let expected = rel [ "foo"; "bar"; "foo"; "baz"; "index.html" ]
+      and computed =
+        relocate
+          ~into:(rel [ "foo"; "bar" ])
+          (rel [ "foo"; "baz"; "index.html" ])
       in
       check Testable.path "should be equal" expected computed)
 
@@ -435,6 +447,7 @@ let cases =
     ; test_relocate4
     ; test_relocate5
     ; test_relocate6
+    ; test_relocate7
     ; test_from_string1
     ; test_from_string2
     ; test_from_string3
