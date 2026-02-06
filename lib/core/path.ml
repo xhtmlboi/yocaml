@@ -148,8 +148,8 @@ let move ~into source =
   match basename source with None -> into | Some x -> append into [ x ]
 
 let remove_common_prefix into source =
-  let rec aux acc into source =
-    match (into, source) with
+  let rec aux acc s_into s_source =
+    match (s_into, s_source) with
     | [ x ], y :: xs when String.equal x y -> List.rev_append acc (x :: xs)
     | x :: xs, y :: ys when String.equal x y -> aux (x :: acc) xs ys
     | _ -> into @ source
