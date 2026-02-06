@@ -14,8 +14,6 @@
   %{exe:bin/gen_liquid.exe}
   %{exe:bin/gen_residuals.exe}
   %{exe:bin/gen_pp_errors.exe}
-  %{exe:bin/unix_server_error.exe}
-  %{exe:bin/eio_server_error.exe}
   (source_tree residuals)
   (source_tree residuals_build)
   (source_tree content)

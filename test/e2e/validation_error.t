@@ -22,6 +22,6 @@ Validation error diagnostic
       title = `"Valid title"`
       date = `[1, 2, 3]`---
   
-  Fatal error: exception Yocaml__Eff.Provider_error(_, _, _)
+  Fatal error: exception Stdlib.Exit
   [2]
 

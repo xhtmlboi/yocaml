@@ -16,6 +16,6 @@ Parsing error diagnostic
   Message: `Yaml: error calling parser: could not find expected ':' character 0 position 0 returned: 0`
   ---
   
-  Fatal error: exception Yocaml__Eff.Provider_error(_, _, _)
+  Fatal error: exception Stdlib.Exit
   [2]
 

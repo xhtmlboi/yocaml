@@ -107,12 +107,6 @@ module Pages = struct
       |> String.concat ""
     in
     Format.asprintf "<nav><h1>%s</h1></nav><ul>%s</ul>" top listing
-
-  let error500 msg =
-    Format.asprintf
-      "<h1>500 Internal server error</h1><hr /><p>The build failed while \
-       refreshing the site.</p><pre>%s</pre>"
-      msg
 end
 
 let prompt port =
