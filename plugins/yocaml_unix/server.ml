@@ -82,11 +82,22 @@ let dir reqd path lpath =
 
 let[@warning "-8"] handler htdoc refresh _socket
     (`V1 reqd : Httpcats.Server.reqd) =
-  let () = refresh () in
-  match get_requested_uri htdoc reqd with
-  | Error404 -> error404 reqd htdoc
-  | File (path, _) -> file reqd path
-  | Dir (path, lpath) -> dir reqd path lpath
+  try
+    refresh ();
+    match get_requested_uri htdoc reqd with
+    | Error404 -> error404 reqd htdoc
+    | File (path, _) -> file reqd path
+    | Dir (path, lpath) -> dir reqd path lpath
+  with exn ->
+    let msg =
+      Format.asprintf "%a"
+        (fun ppf exn ->
+          Yocaml.Diagnostic.exception_to_diagnostic ~in_exception_handler:true
+            ppf exn)
+        exn
+    in
+    render_html ~status:`Internal_server_error reqd
+      (Yocaml_runtime.Server.Pages.error500 msg)
 
 let run ?custom_error_handler directory port program =
   let refresh () = Runner.run ?custom_error_handler program in
