@@ -8,6 +8,14 @@
 - Improve pretty-printing of validation errors (by [Linda-Njau](https://github.com/Linda-Njau))
 - Fix typos and improve logs display (by [clementd](https://clementd.wtf))
 
+#### Yocaml_unix
+
+- Improve rendering of 500 error pages on server (by [Linda-Njau](https://github.com/Linda-Njau))
+
+#### Yocaml_eio
+
+- Improve rendering of 500 error pages on server (by [Linda-Njau](https://github.com/Linda-Njau))
+
 ### v2.8.0 2025-12-17 Nantes (France)
 
 #### Yocaml 
@@ -84,12 +92,10 @@
 
 #### Yocaml_unix
 
-- Improve rendering of 500 error pages on server (by [Linda-Njau](https://github.com/Linda-Njau))
 - Adapt runtime to `is_file` (by [xvw](https://xvw.lol))
 
 #### Yocaml_eio
 
-- Improve rendering of 500 error pages on server (by [Linda-Njau](https://github.com/Linda-Njau))
 - Adapt runtime to `is_file` (by [xvw](https://xvw.lol))
 
 #### Yocaml_git
