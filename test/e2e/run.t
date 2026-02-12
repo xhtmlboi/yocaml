@@ -287,7 +287,7 @@ Observe Residual Removing
   [INFO] `./residuals_build/3.txt` has been written
   [INFO] Remove residuals for ./residuals_build
   [INFO] ./residuals_build/4.txt deleted!
-  [INFO] ./residuals_build/5.txt deleted!
+  [INFO] ./residuals_build/5.tx deleted!
   [DEBUG] Cache stored in `./residuals_build/cache`
 
   $ ls residuals_build
@@ -299,9 +299,9 @@ Observe Residual Removing
   $ ./bin/gen_residuals.exe
   ./bin/gen_residuals.exe
   [DEBUG] Cache restored from `./residuals_build/cache`
-  [DEBUG] `./residuals_build/1.txt` always has the same hash as in the cache, already up-to-date
-  [DEBUG] `./residuals_build/2.txt` always has the same hash as in the cache, already up-to-date
-  [DEBUG] `./residuals_build/3.txt` always has the same hash as in the cache, already up-to-date
+  [DEBUG] `./residuals_build/1.txt` is already up-to-date
+  [DEBUG] `./residuals_build/2.txt` is already up-to-date
+  [DEBUG] `./residuals_build/3.txt` is already up-to-date
   [INFO] Remove residuals for ./residuals_build
   [DEBUG] Cache stored in `./residuals_build/cache`
 

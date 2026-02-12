@@ -297,7 +297,7 @@ let run ~trace program input =
                   (fun (k : (a, _) continuation) ->
                     let () = trace := push_time !trace in
                     let time = !trace.time in
-                    continue k time)
+                    continue k (float_of_int time))
             | Yocaml_file_exists (on, p) ->
                 Some
                   (fun (k : (a, _) continuation) ->
@@ -322,7 +322,7 @@ let run ~trace program input =
                     let path = Yocaml.Path.to_list gpath in
                     match get !trace.system path with
                     | Some (File { mtime; _ } | Dir { mtime; _ }) ->
-                        continue k mtime
+                        continue k (float_of_int mtime)
                     | _ ->
                         Stdlib.raise
                         @@ Yocaml.Eff.File_not_exists (`Source, gpath))

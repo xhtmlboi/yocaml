@@ -361,6 +361,9 @@ val with_dynamic_dependencies : Path.t list -> ('a, 'a * Deps.t) t
     dependencies to a task. Even the set of dependencies looks static, it is
     mostly used for attaching dependencies like folders. *)
 
+val drop_dynamic_dependencies : ('a, 'b) t -> ('a, 'b) t
+(** Remove the flag for dynamic deps. *)
+
 (** {1 Helpers for dealing with static and dynamic dependencies}
 
     The API can change considerably when processing tasks with or without

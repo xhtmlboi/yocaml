@@ -467,7 +467,7 @@ let test_action_with_dynamic_dependencies_1 =
               ~trace:(Yocaml.Trace.from_list [ ~/[ "_build"; "index.txt" ] ])
               [
                 ( ~/[ "_build"; "index.txt" ]
-                , entry ~last_build_date:2 "H:abc"
+                , entry ~last_build_date:2.0 "H:abc"
                   @@ Yocaml.Deps.from_list
                        [
                          ~/[ "includes"; "a.txt" ]
@@ -912,6 +912,7 @@ let test_action_using_pipes_1 =
                >>> Yocaml.Pipeline.pipe ( ^ )
                      (Yocaml.Pipeline.read_file Yocaml.Path.(rel [ "c.txt" ])))
       in
+
       let trace, _cache = Fs.run ~trace program () in
       let computed_file_system = Fs.trace_system trace in
       let expected_file_system =

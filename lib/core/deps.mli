@@ -55,7 +55,7 @@ val add : Path.t -> t -> t
 
     Retrieves information about sets of dependencies. *)
 
-val get_mtimes : t -> int list Eff.t
+val get_mtimes : t -> float list Eff.t
 (** [get_mtimes deps] Returns a list of modification dates for a set of
     dependencies. *)
 

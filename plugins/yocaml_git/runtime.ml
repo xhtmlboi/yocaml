@@ -79,7 +79,7 @@ struct
           let open Lwt.Syntax in
           let+ mtime = Store.last_modified store (to_kv_path path) in
           mtime
-          |> Result.map (fun x -> x |> Ptime.to_float_s |> Float.to_int)
+          |> Result.map (fun x -> x |> Ptime.to_float_s)
           |> map_error
                (Fun.const @@ Yocaml_runtime.Error.Unable_to_read_file path)
 

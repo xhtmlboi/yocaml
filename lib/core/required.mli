@@ -198,7 +198,7 @@ module type RUNTIME = sig
     -> unit t
   (** [log level message] log a [message] with a given [message]. *)
 
-  val get_time : unit -> int t
+  val get_time : unit -> float t
   (** [get_time ()] returns the current timestamp. *)
 
   val file_exists : on:[ `Source | `Target ] -> Path.t -> bool t
@@ -214,7 +214,7 @@ module type RUNTIME = sig
   (** [erase_file ~on:source path] erase the given file *)
 
   val get_mtime :
-    on:[ `Source | `Target ] -> Path.t -> (int, runtime_error) result t
+    on:[ `Source | `Target ] -> Path.t -> (float, runtime_error) result t
   (** [get_mtime ~on:source path] returns the modification time of a file. *)
 
   val hash_content : string -> string t

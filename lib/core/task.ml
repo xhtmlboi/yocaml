@@ -22,6 +22,8 @@ type (-'a, 'b) t = {
 
 type 'a ct = (unit, 'a) t
 
+let drop_dynamic_dependencies t = { t with has_dynamic_dependencies = false }
+
 let make ?(has_dynamic_dependencies = true) dependencies action =
   { dependencies; action; has_dynamic_dependencies }
 

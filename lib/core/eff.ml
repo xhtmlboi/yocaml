@@ -103,10 +103,10 @@ type _ Effect.t +=
       (Logs.src option * [ `App | `Error | `Warning | `Info | `Debug ] * string)
       -> unit Effect.t
   | Yocaml_failwith : exn -> 'a Effect.t
-  | Yocaml_get_time : unit -> int Effect.t
+  | Yocaml_get_time : unit -> float Effect.t
   | Yocaml_file_exists : filesystem * Path.t -> bool Effect.t
   | Yocaml_read_file : filesystem * bool * Path.t -> string Effect.t
-  | Yocaml_get_mtime : filesystem * Path.t -> int Effect.t
+  | Yocaml_get_mtime : filesystem * Path.t -> float Effect.t
   | Yocaml_hash_content : string -> string Effect.t
   | Yocaml_write_file : filesystem * Path.t * string -> unit Effect.t
   | Yocaml_erase_file : filesystem * Path.t -> unit Effect.t
@@ -198,7 +198,7 @@ let read_file_with_metadata (type a) (module P : Required.DATA_PROVIDER)
 
 let get_mtime ~on path =
   let* exists = file_exists ~on path in
-  if exists then perform @@ Yocaml_get_mtime (on, path) else return 0
+  if exists then perform @@ Yocaml_get_mtime (on, path) else return 0.0
 
 let hash str = perform @@ Yocaml_hash_content str
 
@@ -261,7 +261,7 @@ let mtime ~on path =
         (fun max_time f ->
           let* a = max_time in
           let+ b = aux f in
-          Int.max a b)
+          Float.max a b)
         (return t) children
     else return t
   in

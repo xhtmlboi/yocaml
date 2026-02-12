@@ -1,0 +1,3 @@
+(executable
+ (name write_files)
+ (libraries yocaml yocaml_unix yocaml_yaml))

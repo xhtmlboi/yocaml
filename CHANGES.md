@@ -2,6 +2,8 @@
 
 #### Yocaml
 
+- Use `float` instead of `int` for `time` and `mtime` (by [xhtmlboi](https://github.com/xhtmlboi))
+- Add `Action.write_files` (_et consort_) to share tasks between the creation of several files (by [xhtmlboi](https://github.com/xhtmlboi))
 - Fix `Path.relocate` (by [mspwn](https://github.com/mspwn))
 - Add `Data.Validation.req` and `Data.Validation.opt` for compact validation and alternative name (by [xhtmlboi](https://github.com/xhtmlboi))
 - Add `Data.Validation.where_opt` (and `String`, `Int` and `Float` version) (by [xvw](https://xvw.lol))
@@ -11,10 +13,16 @@
 #### Yocaml_unix
 
 - Improve rendering of 500 error pages on server (by [Linda-Njau](https://github.com/Linda-Njau))
+- Use `float` instead of `int` for `time` and `mtime` (by [xhtmlboi](https://github.com/xhtmlboi))
 
 #### Yocaml_eio
 
 - Improve rendering of 500 error pages on server (by [Linda-Njau](https://github.com/Linda-Njau))
+- Use `float` instead of `int` for `time` and `mtime` (by [xhtmlboi](https://github.com/xhtmlboi))
+
+#### Yocaml_git
+
+- Use `float` instead of `int` for `time` and `mtime` (by [xhtmlboi](https://github.com/xhtmlboi))
 
 ### v2.8.0 2025-12-17 Nantes (France)
 
