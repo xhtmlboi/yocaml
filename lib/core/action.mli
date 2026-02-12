@@ -64,6 +64,20 @@ val write_static_file : Path.t -> (unit, string) Task.t -> t
     dependencies are involved in the task. It is like using
     [ t ||> no_dynamic_deps ] at the end of the task pipeline. *)
 
+val write_dynamic_files :
+  (unit, 'a) Task.t -> (Path.t * ('a, string * Deps.t) Task.t) list -> t
+(** [write_dynamic_files task task_list cache] allows you to use a common task
+    to create multiple files. The [task_list] argument is an associative list of
+    file paths to be created, associated with a task that takes the result of
+    the common task as an argument. *)
+
+val write_static_files :
+  (unit, 'a) Task.t -> (Path.t * ('a, string) Task.t) list -> t
+(** [write_static_files target task cache] is exactly
+    [write_dynamic_files task task_list cache] but the action assume that no
+    dynamic dependencies are involved in the task. It is like using
+    [ t ||> no_dynamic_deps ] at the end of the task pipeline. *)
+
 val exec_cmd : ?is_success:(int -> bool) -> (Cmd.value -> Cmd.t) -> Path.t -> t
 (** [exec_cmd ?is_success cmd target] produces a [target] performing
     [cmd target] (the argument of the given callback, [cmd] is prefilled with
@@ -145,6 +159,10 @@ module Static : sig
   val write_file_with_metadata : Path.t -> (unit, 'a * string) Task.t -> t
   (** [write_file path task cache] is {!val:Yocaml.Action.write_static_file}
       that discards the metadata part. *)
+
+  val write_files :
+    (unit, 'a) Task.t -> (Path.t * ('a, string) Task.t) list -> t
+  (** [write_files] is {!val:Yocaml.Action.write_static_files}. *)
 end
 
 module Dynamic : sig
@@ -157,4 +175,8 @@ module Dynamic : sig
     Path.t -> (unit, ('a * string) * Deps.t) Task.t -> t
   (** [write_file path task cache] is {!val:Yocaml.Action.write_dynamic_file}
       that discards the metadata part. *)
+
+  val write_files :
+    (unit, 'a) Task.t -> (Path.t * ('a, string * Deps.t) Task.t) list -> t
+  (** [write_files] is {!val:Yocaml.Action.write_dynamic_files}. *)
 end

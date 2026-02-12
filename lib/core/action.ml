@@ -210,6 +210,53 @@ let batch_list list action cache =
   in
   cache
 
+let write_files f task assoc cache =
+  let deps = Task.dependencies_of task in
+  let has_dynamic_dependencies = Task.has_dynamic_dependencies task in
+  let open Eff in
+  let+ cache, _ =
+    fold_list ~state:None assoc
+      (fun (target, sub_task) performed_task cache ->
+        let* task_result =
+          (* Frustratingly, we perform the task once, but in the
+              presence of dynamic dependencies, it's a bit difficult
+              to find the right approach, so I think it's OK.
+              [Better API < Better performance] ... in a very subtle case. *)
+          match performed_task with
+          | None -> (
+              let is_maybe_dynamic =
+                has_dynamic_dependencies
+                && Task.has_dynamic_dependencies sub_task
+              in
+              if is_maybe_dynamic then
+                Eff.(Task.action_of task () >|= fun x -> `Continue x)
+              else
+                let full_deps =
+                  Deps.concat deps (Task.dependencies_of sub_task)
+                in
+                let* interaction = need_update cache false full_deps target in
+                match interaction with
+                | Nothing -> Eff.return `Cutoff
+                | Create | Update ->
+                    Eff.(Task.action_of task () >|= fun x -> `Continue x))
+          | Some r -> Eff.return (`Continue r)
+        in
+        match task_result with
+        | `Cutoff -> Eff.return (cache, None)
+        | `Continue task_result ->
+            let task =
+              Task.make ~has_dynamic_dependencies deps (fun () ->
+                  Eff.return task_result)
+            in
+            let+ cache = f target Task.(task >>> sub_task) cache in
+            (cache, Some task_result))
+      cache
+  in
+  cache
+
+let write_dynamic_files t = write_files write_dynamic_file t
+let write_static_files t = write_files write_static_file t
+
 let mark_cache on cache path =
   match on with `Source -> cache | `Target -> Cache.mark cache path
 
@@ -290,6 +337,7 @@ let exec_cmd ?is_success cmd target =
 
 module Static = struct
   let write_file path task = write_static_file path task
+  let write_files task = write_static_files task
 
   let write_file_with_metadata path task =
     write_file path
@@ -299,6 +347,7 @@ end
 
 module Dynamic = struct
   let write_file path task = write_dynamic_file path task
+  let write_files task = write_dynamic_files task
 
   let write_file_with_metadata path task =
     write_file path
