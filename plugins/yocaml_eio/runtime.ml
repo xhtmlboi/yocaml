@@ -40,7 +40,7 @@ let log ?src level message _env = Yocaml_runtime.Log.msg ?src level message
 
 let get_time () env =
   let clock = Eio.Stdenv.clock env in
-  Eio.Time.now clock |> int_of_float
+  Eio.Time.now clock
 
 let file_exists ~on:_ path env =
   let path = to_eio_path env path in
@@ -86,7 +86,7 @@ let get_mtime ~on:_ path env =
     let path = to_eio_path env path in
     let stat = Eio.Path.stat ~follow:true path in
     let mtim = stat.Eio.File.Stat.mtime in
-    Result.ok @@ int_of_float mtim
+    Result.ok mtim
   with _ -> Result.error @@ Yocaml_runtime.Error.Unable_to_read_mtime path
 
 let read_file ~on:_ path env =

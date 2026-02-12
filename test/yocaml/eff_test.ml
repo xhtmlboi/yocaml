@@ -108,13 +108,13 @@ let test_mtime =
         let computed =
           snd @@ Fs.run ~trace (fun () -> Eff.mtime ~on:`Source path) ()
         in
-        check int
-          (Format.asprintf "%a should has mtime `%d`" Path.pp path expected)
+        check (float 1.0)
+          (Format.asprintf "%a should has mtime `%f`" Path.pp path expected)
           expected computed
       in
-      expect_mtime ~/[] 20;
-      expect_mtime ~/[ "about.md" ] 16;
-      expect_mtime ~/[ "images"; "logo.svg" ] 4)
+      expect_mtime ~/[] 20.0;
+      expect_mtime ~/[ "about.md" ] 16.0;
+      expect_mtime ~/[ "images"; "logo.svg" ] 4.0)
 
 let test_is_directory =
   let open Alcotest in
@@ -203,15 +203,15 @@ let test_mtime_recursive =
         let computed =
           snd @@ Fs.run ~trace (fun () -> Eff.mtime ~on:`Source path) ()
         in
-        check int
-          (Format.asprintf "%a should has mtime `%d`" Path.pp path expected)
+        check (float 1.0)
+          (Format.asprintf "%a should has mtime `%f`" Path.pp path expected)
           expected computed
       in
       let open Path in
-      expect_mtime ~/[] 13;
-      expect_mtime ~/[ "www" ] 13;
-      expect_mtime ~/[ "www"; "x" ] 10;
-      expect_mtime ~/[ "foo" ] 1)
+      expect_mtime ~/[] 13.0;
+      expect_mtime ~/[ "www" ] 13.0;
+      expect_mtime ~/[ "www"; "x" ] 10.0;
+      expect_mtime ~/[ "foo" ] 1.0)
 
 let test_list_fold_left_1 =
   let open Alcotest in

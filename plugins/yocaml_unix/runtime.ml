@@ -24,7 +24,7 @@ type runtime_error = Yocaml_runtime.Error.common
 let runtime_error_to_string = Yocaml_runtime.Error.common_to_string
 let hash_content s = Yocaml_runtime.Hash.content s
 let log = Yocaml_runtime.Log.msg
-let get_time () = Unix.time () |> int_of_float
+let get_time () = Unix.gettimeofday ()
 
 let file_exists ~on:_ path =
   let path = Yocaml.Path.to_string path in
@@ -72,7 +72,7 @@ let get_mtime ~on:_ path =
     let path = Yocaml.Path.to_string path in
     let stat = Unix.lstat path in
     let mtim = stat.Unix.st_mtime in
-    Result.ok @@ int_of_float mtim
+    Result.ok mtim
   with _ -> Result.error @@ Yocaml_runtime.Error.Unable_to_read_mtime path
 
 let read_file ~on:_ path =

@@ -17,7 +17,7 @@
 type entry = {
     hashed_content : string
   ; dynamic_dependencies : Deps.t
-  ; last_build_date : int option
+  ; last_build_date : float option
 }
 
 type t = { entries : entry Path.Map.t; trace : Trace.t }
@@ -46,7 +46,7 @@ let entry_to_sexp { hashed_content; dynamic_dependencies; last_build_date } =
   let open Sexp in
   let last_build_date =
     last_build_date
-    |> Option.map (fun x -> x |> string_of_int |> atom)
+    |> Option.map (fun x -> x |> string_of_float |> atom)
     |> Option.to_list
   in
   node
@@ -54,7 +54,7 @@ let entry_to_sexp { hashed_content; dynamic_dependencies; last_build_date } =
     @ last_build_date)
 
 let last_build_date_from_string lbd =
-  match int_of_string_opt lbd with
+  match float_of_string_opt lbd with
   | None -> Error (Sexp.Invalid_sexp (Sexp.Atom lbd, "last_build_date"))
   | Some x -> Ok x
 
@@ -116,7 +116,7 @@ let entry_equal
     } =
   String.equal hashed_a hashed_b
   && Deps.equal deps_a deps_b
-  && Option.equal Int.equal lbd_a lbd_b
+  && Option.equal Float.equal lbd_a lbd_b
 
 let equal { entries; trace } b =
   Path.Map.equal entry_equal entries b.entries && Trace.equal trace b.trace
@@ -124,7 +124,7 @@ let equal { entries; trace } b =
 let pp_kv ppf (key, { hashed_content; dynamic_dependencies; last_build_date }) =
   Format.fprintf ppf "%a => deps: @[<v 0>%a@] hash:%s (%a)" Path.pp key Deps.pp
     dynamic_dependencies hashed_content
-    (Format.pp_print_option Format.pp_print_int)
+    (Format.pp_print_option Format.pp_print_float)
     last_build_date
 
 let trace { trace; _ } = trace

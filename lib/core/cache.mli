@@ -28,7 +28,7 @@ type entry
 
 (** {1 Building} *)
 
-val entry : ?last_build_date:int -> string -> Deps.t -> entry
+val entry : ?last_build_date:float -> string -> Deps.t -> entry
 (** [entry ?last_build_date hashed_content deps] creates an entry.*)
 
 val empty : t
@@ -39,11 +39,11 @@ val from_list : ?trace:Trace.t -> (Path.t * entry) list -> t
 
 (** {1 Cache interaction} *)
 
-val update : t -> Path.t -> ?deps:Deps.t -> now:int -> string -> t
+val update : t -> Path.t -> ?deps:Deps.t -> now:float -> string -> t
 (** [update cache path ?deps ~now content] updates the cache for the [path]
     entry. If an entry already existed at the given key, it will be deleted. *)
 
-val get : t -> Path.t -> (string * Deps.t * int option) option
+val get : t -> Path.t -> (string * Deps.t * float option) option
 (** [get cache path] returns the associated hash content, deps set and the last
     build date for a given path. *)
 

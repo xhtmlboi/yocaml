@@ -2,6 +2,7 @@
 
 #### Yocaml
 
+- Add `Action.write_files` (_et consort_) to share tasks between the creation of several files (by [xhtmlboi](https://github.com/xhtmlboi))
 - Fix `Path.relocate` (by [mspwn](https://github.com/mspwn))
 - Add `Data.Validation.req` and `Data.Validation.opt` for compact validation and alternative name (by [xhtmlboi](https://github.com/xhtmlboi))
 - Add `Data.Validation.where_opt` (and `String`, `Int` and `Float` version) (by [xvw](https://xvw.lol))

@@ -1,7 +1,7 @@
 Run the generator in an empty tree
 
 
-  $ sleep 1; ./bin/write_files.exe
+  $ ./bin/write_files.exe
   [DEBUG] Cache initiated in `./_cache`
   [WARNING] ./content does not exist
   [INFO] Remove residuals for ./_www
@@ -19,7 +19,7 @@ Create files
 
 Run the generator with one file
 
-  $ sleep 1; sleep 1; ./bin/write_files.exe
+  $ ./bin/write_files.exe
   [DEBUG] Cache restored from `./_cache`
   [DEBUG] `./_www/1/title` will be written
   [INFO] `./_www/1/title` has been written
@@ -40,7 +40,7 @@ Run the generator with one file
 Run the generator with one file
 
 
-  $ sleep 1; sleep 1; ./bin/write_files.exe
+  $ ./bin/write_files.exe
   [DEBUG] Cache restored from `./_cache`
   [DEBUG] `./_www/1/title` is already up-to-date
   [DEBUG] `./_www/1/subtitle` is already up-to-date
@@ -54,7 +54,7 @@ Run the generator with one file
   World
   $ cat _www/1/tags
 
-  $ sleep 1; sleep 1; ./bin/write_files.exe
+  $ ./bin/write_files.exe
   [DEBUG] Cache restored from `./_cache`
   [DEBUG] `./_www/1/title` is already up-to-date
   [DEBUG] `./_www/1/subtitle` is already up-to-date

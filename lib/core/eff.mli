@@ -243,7 +243,7 @@ type _ Effect.t +=
             library. *)
   | Yocaml_failwith : exn -> 'a Effect.t
         (** Effect that propagates an error. *)
-  | Yocaml_get_time : unit -> int Effect.t
+  | Yocaml_get_time : unit -> float Effect.t
         (** Effect that get the current time. *)
   | Yocaml_file_exists : filesystem * Path.t -> bool Effect.t
         (** Effect that check if a file exists. *)
@@ -251,7 +251,7 @@ type _ Effect.t +=
         (** Effect that read a file from a given filepath (the second argument
             is used to notice if we need to perform a snapshot or not of the
             given file). *)
-  | Yocaml_get_mtime : filesystem * Path.t -> int Effect.t
+  | Yocaml_get_mtime : filesystem * Path.t -> float Effect.t
         (** Effect that get the modification time of a filepath. *)
   | Yocaml_hash_content : string -> string Effect.t
         (** Effect that hashes a string (used to hide the result of a
@@ -343,7 +343,7 @@ val failwith : string -> 'a t
 (** [failwith message] perform the effect [Yocaml_failwith] with a message that
     produces an error wrapped into a [Failure] exception. *)
 
-val get_time : unit -> int t
+val get_time : unit -> float t
 (** [get_time ()] returns the current timestamp. *)
 
 val exec : ?is_success:(int -> bool) -> string -> ?args:string list -> string t
@@ -396,7 +396,7 @@ val read_file_with_metadata :
     {!module-type:Yocaml.Required.DATA_PROVIDER}, [P], using the description
     provided by [R] of type {!module-type:Yocaml.Required.DATA_READABLE}. *)
 
-val mtime : on:filesystem -> Path.t -> int t
+val mtime : on:filesystem -> Path.t -> float t
 (** [mtime ~on path] perform the effect [Yocaml_source_get_mtime] with a given
     [path] and try to get the modification time. Perform [Yocaml_failwith] with
     {!exception:File_not_exists} if the file does not exist.

@@ -89,8 +89,8 @@ val exec_cmd : ?is_success:(int -> bool) -> (Cmd.value -> Cmd.t) -> Path.t -> t
 val perform :
      Path.t
   -> ('a, 'b) Task.t
-  -> when_creation:(int -> Path.t -> ('a -> 'b Eff.t) -> t)
-  -> when_update:(int -> Path.t -> ('a -> 'b Eff.t) -> t)
+  -> when_creation:(float -> Path.t -> ('a -> 'b Eff.t) -> t)
+  -> when_update:(float -> Path.t -> ('a -> 'b Eff.t) -> t)
   -> t
 (** [perform target task ~when_creation ~when_update cache] is a generic task
     performer. (It executes [when_creation] if the target has to be created, and

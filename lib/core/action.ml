@@ -51,7 +51,7 @@ let need_update cache has_dynamic_deps deps target =
       let mtime_target =
         Option.fold ~none:real_mtime_target
           ~some:(fun last_build_date ->
-            Int.max last_build_date real_mtime_target)
+            Float.max last_build_date real_mtime_target)
           last_build_date
       in
       let+ mtime_deps = Deps.get_mtimes deps in
