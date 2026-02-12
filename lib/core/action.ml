@@ -217,6 +217,7 @@ let write_files f task assoc cache =
   let+ cache, _ =
     fold_list ~state:None assoc
       (fun (target, sub_task) performed_task cache ->
+        let cache = Cache.mark cache target in
         let* task_result =
           (* Frustratingly, we perform the task once, but in the
               presence of dynamic dependencies, it's a bit difficult
@@ -242,7 +243,12 @@ let write_files f task assoc cache =
           | Some r -> Eff.return (`Continue r)
         in
         match task_result with
-        | `Cutoff -> Eff.return (cache, None)
+        | `Cutoff ->
+            let+ () =
+              Eff.log ~src:Eff.yocaml_log_src ~level:`Debug
+              @@ Lexicon.target_already_up_to_date target
+            in
+            (cache, None)
         | `Continue task_result ->
             let task =
               Task.make ~has_dynamic_dependencies deps (fun () ->
@@ -255,7 +261,10 @@ let write_files f task assoc cache =
   cache
 
 let write_dynamic_files t = write_files write_dynamic_file t
-let write_static_files t = write_files write_static_file t
+
+let write_static_files t l =
+  write_files write_static_file t
+    (List.map (fun (p, t) -> (p, Task.(t ||> drop_dynamic_dependencies))) l)
 
 let mark_cache on cache path =
   match on with `Source -> cache | `Target -> Cache.mark cache path

@@ -1,0 +1,10 @@
+(cram
+ ;; In order to not make the OPAM CI
+ (enabled_if
+  (<> %{profile} release))
+ (applies_to :whole_subtree)
+ (deps
+  (package yocaml)
+  (package yocaml_unix)
+  (package yocaml_yaml)
+  %{exe:bin/write_files.exe}))
