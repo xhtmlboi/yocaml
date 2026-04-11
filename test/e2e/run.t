@@ -30,20 +30,23 @@ Run the generator
   [DEBUG] Cache stored in `./_www/.cache`
 
 Inspect tree
-  $ tree _www
-  _www
-  |-- articles
-  |   |-- first_article.html
-  |   `-- second_article.html
-  |-- articles-with-applicative-read
-  |   |-- first_article.html
-  |   `-- second_article.html
-  |-- articles-with-applicative-read-2
-  |   |-- first_article.html
-  |   `-- second_article.html
-  `-- style.css
-  
-  4 directories, 7 files
+
+  $ ls _www
+  articles
+  articles-with-applicative-read
+  articles-with-applicative-read-2
+  style.css
+
+  $ ls _www/articles
+  first_article.html
+  second_article.html
+
+  $ ls _www/articles-with-applicative-read
+  first_article.html
+  second_article.html
+  $ ls _www/articles-with-applicative-read-2
+  first_article.html
+  second_article.html
 
 Inspect CSS files
   $ cat _www/style.css
@@ -213,24 +216,30 @@ Run the Liquid generator
   [DEBUG] `./_www/liquid-articles/second_article.html` will be written
   [INFO] `./_www/liquid-articles/second_article.html` has been written
   [DEBUG] Cache stored in `./_www/.cache`
+
 Inspect tree after Liquid generation
-  $ tree _www
-  _www
-  |-- articles
-  |   |-- first_article.html
-  |   `-- second_article.html
-  |-- articles-with-applicative-read
-  |   |-- first_article.html
-  |   `-- second_article.html
-  |-- articles-with-applicative-read-2
-  |   |-- first_article.html
-  |   `-- second_article.html
-  |-- liquid-articles
-  |   |-- first_article.html
-  |   `-- second_article.html
-  `-- style.css
-  
-  5 directories, 9 files
+
+  $ ls _www
+  articles
+  articles-with-applicative-read
+  articles-with-applicative-read-2
+  liquid-articles
+  style.css
+
+  $ ls _www/articles
+  first_article.html
+  second_article.html
+
+  $ ls _www/articles-with-applicative-read
+  first_article.html
+  second_article.html
+  $ ls _www/articles-with-applicative-read-2
+  first_article.html
+  second_article.html
+
+  $ ls _www/liquid-articles
+  first_article.html
+  second_article.html
 
 Inspect Liquid First Article
   $ cat _www/liquid-articles/first_article.html | head -15
