@@ -65,7 +65,7 @@
    (ocaml (>= 5.1.1))
    ppx_expect
    (mdx (and :with-test (>= 2.5.0)))
-   (httpcats (>= 0.0.1))
+   (httpcats (>= 0.3.0))
    (yocaml (= :version))
    (yocaml_runtime (= :version))))
 

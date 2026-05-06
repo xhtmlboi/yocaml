@@ -80,7 +80,7 @@ let dir reqd path lpath =
     in
     render_html reqd (Yocaml_runtime.Server.Pages.directory lpath children)
 
-let[@warning "-8"] handler htdoc refresh _socket
+let[@warning "-8"] handler htdoc refresh _socket _conn
     (`V1 reqd : Httpcats.Server.reqd) =
   try
     refresh ();
@@ -106,4 +106,4 @@ let run ?custom_error_handler directory port program =
   let sockaddr = Unix.(ADDR_INET (inet_addr_loopback, port)) in
   Miou_unix.run ~domains:0 @@ fun () ->
   Yocaml_runtime.Server.prompt port;
-  Httpcats.Server.clear ~handler sockaddr
+  Httpcats.Server.clear ~handler (Httpcats.Server.Bind sockaddr)
