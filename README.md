@@ -48,5 +48,6 @@ repositories. In addition, you will find some basic examples in the
 | [clementd](https://cltdl.fr) | [Repository](https://github.com/divarvel/homepage) |
 | [Linda-Njau](https://engineering-yocaml-with-linda.netlify.app/) | [Repository](https://github.com/Linda-Njau/my-blog) |
 | [bthuillier](https://gilwath.com) | [Repository](https://github.com/bthuillier/gilwath.com) |
+| [fantazio](https://fantazio.eu) | [Repository](https://github.com/fantazio/fantazio.eu) |
 
 Please **feel free** to add your website to this list!
