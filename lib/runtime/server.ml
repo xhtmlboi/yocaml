@@ -26,6 +26,16 @@ module Request_path = struct
   type 'a t = File of 'a * string | Dir of 'a * string list | Error404
 
   let from_path ~is_file ~is_directory ~concat ~native htdoc ~path =
+    let path =
+      match String.index_opt path '?' with
+      | Some i -> String.sub path 0 i
+      | None -> path
+    in
+    let path =
+      match String.index_opt path '#' with
+      | Some i -> String.sub path 0 i
+      | None -> path
+    in
     let lpath =
       path
       |> String.split_on_char '/'
