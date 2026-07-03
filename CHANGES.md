@@ -1,3 +1,9 @@
+### Unreleased (Paris SG)
+
+#### Yocaml_runtime
+
+- Lint the given target to remove queries and anchor and be able to have a cleaned path to find it (regardless given queries and anchor by the client) ([Romain Calascibetta](https://github.com/dinosaure))
+
 ### v3.0.0 2026-02-12 Nantes (France)
 
 #### Yocaml
