@@ -1,8 +1,12 @@
-### Unreleased (Paris SG)
+### v3.0.1 2026-08-21 Nantes (France)
 
 #### Yocaml_runtime
 
 - Lint the given target to remove queries and anchor and be able to have a cleaned path to find it (regardless given queries and anchor by the client) ([Romain Calascibetta](https://github.com/dinosaure))
+
+#### Yocaml_unix
+
+- Upgrade `httpcats` ([Romain Calascibetta](https://github.com/dinosaure))
 
 ### v3.0.0 2026-02-12 Nantes (France)
 
